@@ -1,0 +1,6 @@
+node_modules/
+.venv/
+out/
+.env
+__pycache__/
+motion/renders/

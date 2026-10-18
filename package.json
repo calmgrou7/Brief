@@ -1,0 +1,34 @@
+{
+  "name": "brief-video-stack",
+  "version": "1.0.0",
+  "description": "영상 제작 자동화 스택: HyperFrames · Remotion · Whisper · FFmpeg · Google AI Studio",
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "doctor": "hyperframes doctor && ffmpeg -version | head -1 && .venv/bin/python -c \"import faster_whisper; print(\\\"whisper ok\\\")\"",
+    "motion:dev": "cd motion && hyperframes preview",
+    "motion:render": "cd motion && hyperframes render",
+    "series:preview": "remotion studio remotion/index.ts",
+    "series:render": "remotion render remotion/index.ts Episode",
+    "tts": "node --env-file-if-exists=.env scripts/tts.mjs",
+    "transcribe": ".venv/bin/python scripts/transcribe.py",
+    "cut": "bash scripts/cut.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calmgrou7/Brief.git"
+  },
+  "bugs": {
+    "url": "https://github.com/calmgrou7/Brief/issues"
+  },
+  "homepage": "https://github.com/calmgrou7/Brief#readme",
+  "dependencies": {
+    "@google/genai": "^2.30.0",
+    "@remotion/cli": "^4.0.536",
+    "hyperframes": "^0.8.173",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.536"
+  },
+  "private": true,
+  "type": "module"
+}
