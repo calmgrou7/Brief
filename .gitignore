@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env*.local
+.env
+# 실제 고객 광고계정 설정 (예시는 clients.config.example.json)
+clients.config.json

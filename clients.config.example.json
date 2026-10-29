@@ -1,0 +1,13 @@
+[
+  {
+    "id": "haru",
+    "name": "하루공방",
+    "industry": "핸드메이드 주얼리 쇼핑몰",
+    "objective": "purchase",
+    "targetCpa": 25000,
+    "targetRoas": 3,
+    "monthlyBudget": 3000000,
+    "contract": { "feeModel": "hybrid", "feePercent": 15, "minFee": 300000 },
+    "metaAccountId": "act_1234567890"
+  }
+]
