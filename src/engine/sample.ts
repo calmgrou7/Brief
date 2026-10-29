@@ -1,0 +1,86 @@
+import type { CompanyProfile, ComparativeStatements } from './types';
+
+const M = 1_000_000;
+
+/** 데모용 가상 기업(제조업). 실존 기업과 무관 */
+export const sampleCompany: CompanyProfile = {
+  name: '(주)한빛정밀',
+  ceo: '김대표',
+  industry: '금속가공 제조업',
+  isSme: true,
+  isRealEstateHeavy: false,
+  sharesOutstanding: 60_000,
+  ceoShares: 48_000,
+  netIncomeTwoYearsAgo: 280 * M,
+  purposes: ['policyFund', 'bankLoan', 'succession'],
+};
+
+export const sampleStatements: ComparativeStatements = {
+  interimDate: '2026-09-30',
+  current: {
+    bs: {
+      cash: 180 * M,
+      receivables: 1420 * M,
+      inventory: 820 * M,
+      officerLoans: 560 * M,
+      otherCurrentAssets: 110 * M,
+      tangibleAssets: 2050 * M,
+      intangibleAssets: 25 * M,
+      otherNoncurrentAssets: 150 * M,
+      payables: 780 * M,
+      shortTermBorrowings: 1100 * M,
+      currentLongTermDebt: 200 * M,
+      officerAdvances: 0,
+      otherCurrentLiabilities: 190 * M,
+      longTermBorrowings: 1320 * M,
+      retirementProvision: 185 * M,
+      otherNoncurrentLiabilities: 0,
+      capitalStock: 300 * M,
+      otherEquity: 0,
+      retainedEarnings: 1240 * M,
+    },
+    is: {
+      revenue: 5700 * M,
+      costOfSales: 4617 * M,
+      sga: 830 * M,
+      depreciation: 160 * M,
+      nonOperatingIncome: 25 * M,
+      interestExpense: 98 * M,
+      otherNonOperatingExpense: 20 * M,
+      incomeTax: 0,
+    },
+  },
+  prior: {
+    bs: {
+      cash: 320 * M,
+      receivables: 1150 * M,
+      inventory: 680 * M,
+      officerLoans: 420 * M,
+      otherCurrentAssets: 90 * M,
+      tangibleAssets: 2100 * M,
+      intangibleAssets: 30 * M,
+      otherNoncurrentAssets: 150 * M,
+      payables: 720 * M,
+      shortTermBorrowings: 900 * M,
+      currentLongTermDebt: 200 * M,
+      officerAdvances: 0,
+      otherCurrentLiabilities: 260 * M,
+      longTermBorrowings: 1300 * M,
+      retirementProvision: 180 * M,
+      otherNoncurrentLiabilities: 0,
+      capitalStock: 300 * M,
+      otherEquity: 0,
+      retainedEarnings: 1080 * M,
+    },
+    is: {
+      revenue: 7800 * M,
+      costOfSales: 6240 * M,
+      sga: 1050 * M,
+      depreciation: 210 * M,
+      nonOperatingIncome: 40 * M,
+      interestExpense: 120 * M,
+      otherNonOperatingExpense: 30 * M,
+      incomeTax: 62 * M,
+    },
+  },
+};
