@@ -20,7 +20,13 @@ def main() -> None:
     client = ccxt.lighter()
     if cfg.testnet:
         client.set_sandbox_mode(True)
-    res = client.publicGetAccountsByL1Address({"l1_address": sys.argv[1]})
+    try:
+        res = client.publicGetAccountsByL1Address({"l1_address": sys.argv[1]})
+    except ccxt.ExchangeError as e:
+        print(f"조회 실패: {e}")
+        print("주소가 맞다면 아직 이 지갑으로 Lighter 계정이 만들어지지 않은 것입니다. "
+              "사이트에서 지갑을 연결하고 테스트 자금을 받은 뒤 다시 실행하세요.")
+        sys.exit(1)
     accounts = res.get("sub_accounts") or res.get("accounts") or []
     if not accounts:
         print("이 지갑으로 만든 Lighter 계정이 없습니다. 먼저 사이트에서 지갑을 연결하고 입금(테스트 자금)을 받으세요.")
