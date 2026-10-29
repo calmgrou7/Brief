@@ -4,9 +4,13 @@ import { DiagnosisView } from './DiagnosisView';
 import { InputView } from './InputView';
 import { ReportView } from './ReportView';
 import { ScenarioView } from './ScenarioView';
+import { ClientsView } from './ClientsView';
+import { isoDate } from './crm';
+import { inFrame } from './env';
 import { blankCase, loadState, sampleCase, saveState, type AppState, type CaseFile } from './store';
 
 const TABS = [
+  { id: 'clients', label: '고객 관리' },
   { id: 'input', label: '자료 입력' },
   { id: 'diagnosis', label: '진단' },
   { id: 'scenario', label: '시나리오' },
@@ -16,7 +20,7 @@ type TabId = (typeof TABS)[number]['id'];
 
 const tabFromHash = (): TabId => {
   const h = location.hash.slice(1);
-  return (TABS.find((t) => t.id === h)?.id ?? 'input') as TabId;
+  return (TABS.find((t) => t.id === h)?.id ?? 'clients') as TabId;
 };
 
 export interface CaseProps {
@@ -38,7 +42,11 @@ export function App() {
 
   const file = state.cases.find((c) => c.id === state.activeCase) ?? state.cases[0];
   const update = (fn: (c: CaseFile) => CaseFile) =>
-    setState((s) => ({ ...s, cases: s.cases.map((c) => (c.id === file.id ? fn(c) : c)) }));
+    setState((s) => ({ ...s, cases: s.cases.map((c) => (c.id === file.id ? { ...fn(c), updatedAt: isoDate(new Date()) } : c)) }));
+  const open = (id: string, t: string) => {
+    setState((s) => ({ ...s, activeCase: id }));
+    location.hash = t;
+  };
 
   const analyses = useMemo(
     () => file.scenarios.map((sc) => analyze(file.statements, file.company, file.projection, sc.levers)),
@@ -72,7 +80,7 @@ export function App() {
         <div className="topbar-inner">
           <div className="brand">
             <span className="brand-mark">채움</span>
-            <span className="brand-ver">ver2.0</span>
+            <span className="brand-ver">ver2.1</span>
             <span className="brand-sub">가결산 진단</span>
           </div>
           <div className="case-picker">
@@ -88,21 +96,21 @@ export function App() {
               ))}
             </select>
             <button className="btn ghost" onClick={addCase}>
-              + 새 기업
+              + 새 고객
             </button>
           </div>
         </div>
         <nav className="tabs" aria-label="단계">
           {TABS.map((t, i) => (
-            <a key={t.id} href={`#${t.id}`} className={`tab step ${tab === t.id ? 'on' : ''}`} aria-current={tab === t.id ? 'page' : undefined}>
-              <span className="step-no">{i + 1}</span>
+            <a key={t.id} href={`#${t.id}`} className={`tab step ${t.id === 'clients' ? 'home' : ''} ${tab === t.id ? 'on' : ''}`} aria-current={tab === t.id ? 'page' : undefined}>
+              {t.id !== 'clients' && <span className="step-no">{i}</span>}
               {t.label}
             </a>
           ))}
         </nav>
       </header>
 
-      {file.isSample && (
+      {file.isSample && tab !== 'clients' && (
         <p className="sample-note">
           예시 기업(가상 데이터)으로 열려 있습니다. 숫자를 바꿔 보거나 <button className="link" onClick={addCase}>새 기업</button>을 만들어 실제 자료를 입력하세요.
           {' '}
@@ -111,6 +119,7 @@ export function App() {
       )}
 
       <main className="main">
+        {tab === 'clients' && <ClientsView state={state} setState={setState} open={open} addCase={addCase} inFrame={inFrame} />}
         {tab === 'input' && <InputView {...props} onRemove={state.cases.length > 1 ? removeCase : undefined} />}
         {tab === 'diagnosis' && <DiagnosisView {...props} />}
         {tab === 'scenario' && <ScenarioView {...props} />}

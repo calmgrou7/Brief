@@ -1,6 +1,7 @@
 import { emptyLevers, type CompanyProfile, type ComparativeStatements, type ProjectionInput, type ScenarioLevers } from '../engine';
 import { emptyBalanceSheet, emptyIncomeStatement } from '../engine/statements';
 import { sampleCompany, sampleStatements } from '../engine/sample';
+import { emptyCrm, isoDate, type Crm, type Snapshot } from './crm';
 
 export interface Scenario {
   name: string;
@@ -21,6 +22,9 @@ export interface CaseFile {
   scenarios: Scenario[];
   activeScenario: number;
   accountingFirm: string;
+  crm: Crm;
+  history: Snapshot[];
+  updatedAt: string;
   isSample?: boolean;
 }
 
@@ -53,6 +57,14 @@ export function sampleCase(): CaseFile {
     ],
     activeScenario: 1,
     accountingFirm: '○○세무회계사무소',
+    crm: {
+      stage: '진단 완료',
+      nextDate: '2026-11-12',
+      nextAction: '시나리오 B 제안, 회계사무실 요청서 전달',
+      memos: [{ date: '2026-10-20', text: '9월말 비교식 재무제표 수령. 내년 정책자금 신청 희망, 자녀 지분 이전 관심.' }],
+    },
+    history: [],
+    updatedAt: isoDate(new Date()),
   };
 }
 
@@ -84,6 +96,9 @@ export function blankCase(): CaseFile {
     ],
     activeScenario: 1,
     accountingFirm: '',
+    crm: emptyCrm(),
+    history: [],
+    updatedAt: isoDate(new Date()),
   };
 }
 
@@ -92,7 +107,7 @@ export function loadState(): AppState {
     const raw = localStorage.getItem(KEY);
     if (raw) {
       const s = JSON.parse(raw) as AppState;
-      if (s.cases?.length) return s;
+      if (s.cases?.length) return { ...s, cases: s.cases.map(normalizeCase) };
     }
   } catch {
     /* 저장소를 쓸 수 없으면 샘플로 시작 */
@@ -106,4 +121,26 @@ export function saveState(s: AppState) {
   } catch {
     /* 무시 */
   }
+}
+
+/** 예전 버전에서 저장한 자료에 새 항목 기본값을 채운다 */
+export function normalizeCase(c: CaseFile): CaseFile {
+  return { ...c, crm: { ...emptyCrm(), ...c.crm }, history: c.history ?? [], updatedAt: c.updatedAt ?? isoDate(new Date()) };
+}
+
+/** 백업 파일 내용 */
+export function exportBackup(s: AppState): string {
+  return JSON.stringify({ app: 'chaeum', version: 1, exportedAt: new Date().toISOString(), advisor: s.advisor, cases: s.cases }, null, 1);
+}
+
+/** 백업 파일 읽기. 같은 고객(id)은 백업 내용으로 바꾸고 새 고객은 추가한다 */
+export function mergeBackup(s: AppState, text: string): { state: AppState; added: number; replaced: number } {
+  const data = JSON.parse(text);
+  if (data?.app !== 'chaeum' || !Array.isArray(data.cases)) throw new Error('채움 백업 파일이 아닙니다.');
+  const incoming = (data.cases as CaseFile[]).map(normalizeCase);
+  const ids = new Set(s.cases.map((c) => c.id));
+  const replaced = incoming.filter((c) => ids.has(c.id)).length;
+  const byId = new Map(incoming.map((c) => [c.id, c]));
+  const cases = [...s.cases.map((c) => byId.get(c.id) ?? c), ...incoming.filter((c) => !ids.has(c.id))];
+  return { state: { ...s, cases, advisor: data.advisor ?? s.advisor }, added: incoming.length - replaced, replaced };
 }

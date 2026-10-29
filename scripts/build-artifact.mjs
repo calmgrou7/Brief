@@ -9,7 +9,7 @@ const assets = readdirSync('dist/assets');
 const js = readFileSync(join('dist/assets', assets.find((f) => f.endsWith('.js'))), 'utf8').replace(/<\/script/gi, '<\\/script');
 const css = readFileSync(join('dist/assets', assets.find((f) => f.endsWith('.css'))), 'utf8');
 
-const body = `<title>채움 ver2.0</title>
+const body = `<title>채움 ver2.1</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>${css}</style>
 <div id="root"></div>

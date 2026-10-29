@@ -3,6 +3,7 @@ import { profit } from '../engine/statements';
 import type { CaseProps } from './App';
 import { BS_ROWS, IS_ROWS, type Row } from './accounts';
 import { mil, won } from './format';
+import { CrmPanel } from './CrmPanel';
 import { ImportPanel } from './ImportPanel';
 import { MoneyInput } from './MoneyInput';
 
@@ -40,6 +41,7 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
 
   return (
     <div className="stack">
+      <CrmPanel file={file} update={update} />
       <ImportPanel onApply={update} />
 
       <section className="panel">

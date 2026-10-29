@@ -12,6 +12,7 @@ import {
   type Analysis,
 } from '../engine';
 import type { CaseProps } from './App';
+import { inFrame } from './env';
 import { mil, won } from './format';
 import { SignalPill } from './parts';
 import type { Advisor } from './store';
@@ -23,13 +24,7 @@ const DOCS: { id: Doc; label: string }[] = [
   { id: 'note', label: '설계사 상담노트' },
 ];
 
-const inFrame = (() => {
-  try {
-    return window.self !== window.top;
-  } catch {
-    return true;
-  }
-})();
+
 
 const DISCLAIMER =
   '본 자료는 가결산 재무제표를 바탕으로 한 상담용 시뮬레이션입니다. 세무조정, 자산 시가, 개별 공제·감면 요건이 반영되지 않았으며, 실제 결산과 신고는 담당 세무대리인의 확인을 거쳐야 합니다. 특정 금융상품의 권유 자료가 아닙니다.';
@@ -161,7 +156,7 @@ function Page({ children, n, total, title }: { children: React.ReactNode; n: num
       <div className="paper-body">{children}</div>
       <footer className="paper-foot">
         <span>
-          {title} · 채움 ver2.0
+          {title} · 채움 ver2.1
         </span>
         <span>
           {n} / {total}
