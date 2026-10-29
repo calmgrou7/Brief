@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from .config import Config
-from .exchange import BybitFutures
+from .exchange import create_exchange
 from .notifier import Notifier
 from .risk import KST
 from .strategy import add_indicators, ohlcv_to_df
@@ -11,12 +11,13 @@ from .strategy import add_indicators, ohlcv_to_df
 def main() -> None:
     cfg = Config.from_env()
     cfg.validate()
-    print(f"모드: {'테스트넷' if cfg.testnet else '⚠️ 실거래'} / {cfg.symbol} {cfg.timeframe} {cfg.leverage}x")
+    print(f"모드: {cfg.exchange} {'테스트넷' if cfg.testnet else '⚠️ 실거래'} / "
+          f"{cfg.symbol} {cfg.timeframe} {cfg.leverage}x")
 
-    ex = BybitFutures(cfg)
+    ex = create_exchange(cfg)
     ex.setup()
     print("✅ 마켓 로드 + 레버리지 설정 OK")
-    print(f"✅ USDT 잔고: {ex.equity_usdt():.2f}")
+    print(f"✅ {ex.settle} 잔고: {ex.equity():.2f}")
     pos = ex.position()
     print(f"✅ 현재 포지션: {pos if pos else '없음'}")
     print(f"✅ 최소 주문 수량: {ex.min_amount()}")

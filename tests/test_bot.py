@@ -7,7 +7,7 @@ import pytest
 
 from backtest import run_backtest
 from bot.config import Config
-from bot.exchange import BybitFutures
+from bot.exchange import FuturesExchange
 from bot.main import TradingBot
 from bot.notifier import Notifier
 from bot.risk import KST, DailyGuard, position_size
@@ -119,7 +119,8 @@ class FakeClient:
         self.equity = equity
         self.positions = []
         self.orders = []
-        self.markets = {"BTC/USDT:USDT": {}}
+        self.prices = []
+        self.markets = {"BTC/USDT:USDT": {}, "BTC/USDC:USDC": {}}
 
     def market(self, symbol):
         return {"limits": {"amount": {"min": 0.001}}}
@@ -141,6 +142,7 @@ class FakeClient:
 
     def create_order(self, symbol, type, side, amount, price, params):
         self.orders.append((side, amount, params))
+        self.prices.append(price)
         return {"id": str(len(self.orders))}
 
     def cancel_all_orders(self, symbol):
@@ -149,7 +151,7 @@ class FakeClient:
 
 def make_bot(tmp_path, client):
     cfg = make_cfg(tmp_path)
-    return TradingBot(cfg, BybitFutures(cfg, client=client), Notifier("", ""),
+    return TradingBot(cfg, FuturesExchange(cfg, client=client), Notifier("", ""),
                       DailyGuard(cfg.state_file, cfg.max_daily_loss))
 
 
@@ -269,3 +271,102 @@ def test_adx_filter_blocks_flat_market(tmp_path):
     flat = candles([100 + (0.05 if i % 2 else -0.05) for i in range(200)])
     shifted = [[r[0] + 200 * 900_000] + r[1:] for r in window[-25:]]
     assert generate_signal(ohlcv_to_df(flat + shifted), cfg) is None
+
+
+# ---------- Lighter ----------
+
+def lighter_cfg(tmp_path, **overrides):
+    values = dict(exchange="lighter", symbol="BTC/USDC:USDC", lighter_account_index=123,
+                  lighter_api_key_index=10, lighter_api_private_key="0xabc")
+    return make_cfg(tmp_path, **{**values, **overrides})
+
+
+def test_lighter_config_validation(tmp_path):
+    lighter_cfg(tmp_path).validate()
+    with pytest.raises(ValueError):
+        lighter_cfg(tmp_path, lighter_api_key_index=2).validate()  # slots 0-3 are Lighter's own
+    with pytest.raises(ValueError):
+        lighter_cfg(tmp_path, lighter_api_private_key="").validate()
+
+
+def test_lighter_client_uses_api_key_only_and_no_builder_fee(tmp_path, monkeypatch):
+    import bot.lighter_signer
+    from bot.exchange import LighterFutures
+
+    monkeypatch.setattr(bot.lighter_signer, "ensure_signer", lambda path="": "/fake/signer.so")
+    ex = LighterFutures(lighter_cfg(tmp_path))
+    c = ex.client
+    assert c.options["chainId"] == 300  # testnet
+    assert c.options["builderFee"] is False
+    assert c.options["libraryPath"] == "/fake/signer.so"
+    assert c.options["auths"]["123"]["10"]["lighterPrivateKey"] == "0xabc"
+    assert not c.privateKey  # the wallet (L1) key is never given to the bot
+    assert ex.settle == "USDC"
+
+
+class FakeLighterClient(FakeClient):
+    def fetch_ticker(self, symbol):
+        return {"last": 100.0}
+
+    def price_to_precision(self, symbol, price):
+        return f"{price:.1f}"
+
+
+def test_lighter_open_position_bounds_market_prices(tmp_path):
+    from bot.exchange import LighterFutures
+
+    client = FakeLighterClient(candles([100] * 5))
+    ex = LighterFutures(lighter_cfg(tmp_path), client=client)
+    ex.open_position("long", 0.5, stop_loss=95.0, take_profit=110.0, ref_price=100.0)
+    side, amount, params = client.orders[0]
+    assert side == "buy" and amount == 0.5
+    assert params["stopLoss"] == {"triggerPrice": 95.0, "type": "market", "price": 93.1}
+    assert params["takeProfit"] == {"triggerPrice": 110.0, "type": "market", "price": 107.8}
+    assert client.prices[0] == 101.0  # 1% worst-case entry price for a buy
+
+
+def test_lighter_close_position_is_reduce_only(tmp_path):
+    from bot.exchange import LighterFutures, Position
+
+    client = FakeLighterClient(candles([100] * 5))
+    LighterFutures(lighter_cfg(tmp_path), client=client).close_position(Position("short", 0.3, 100, 0))
+    assert client.orders == [("buy", 0.3, {"reduceOnly": True})]
+    assert client.prices[0] == 102.0
+
+
+def test_signer_download_verifies_hash(tmp_path, monkeypatch):
+    import hashlib
+    import io
+    import zipfile
+
+    import bot.lighter_signer as ls
+
+    name = ls.library_name()
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr(f"lighter/signers/{name}", b"signer-bytes")
+    wheel = buf.getvalue()
+
+    class Resp:
+        def __init__(self, content=None, payload=None):
+            self.content, self.payload = content, payload
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return self.payload
+
+    def fake_get(url, timeout):
+        if url.endswith("/json"):
+            return Resp(payload={"urls": [{"filename": "x.whl", "url": "https://files/x.whl",
+                                           "digests": {"sha256": digest}}]})
+        return Resp(content=wheel)
+
+    monkeypatch.setattr(ls.requests, "get", fake_get)
+    digest = "0" * 64
+    with pytest.raises(RuntimeError):
+        ls.ensure_signer(vendor_dir=str(tmp_path))
+    digest = hashlib.sha256(wheel).hexdigest()
+    path = ls.ensure_signer(vendor_dir=str(tmp_path))
+    assert open(path, "rb").read() == b"signer-bytes"

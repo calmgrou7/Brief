@@ -9,7 +9,7 @@ from logging.handlers import RotatingFileHandler
 import ccxt
 
 from .config import Config
-from .exchange import BybitFutures
+from .exchange import FuturesExchange, create_exchange
 from .notifier import Notifier
 from .risk import DailyGuard, position_size
 from .strategy import generate_signal, ohlcv_to_df
@@ -32,7 +32,7 @@ def setup_logging(log_file: str) -> None:
 
 
 class TradingBot:
-    def __init__(self, cfg: Config, exchange: BybitFutures, notifier: Notifier, guard: DailyGuard):
+    def __init__(self, cfg: Config, exchange: FuturesExchange, notifier: Notifier, guard: DailyGuard):
         self.cfg = cfg
         self.ex = exchange
         self.notify = notifier
@@ -42,7 +42,7 @@ class TradingBot:
 
     def step(self) -> None:
         """One iteration: check equity/kill switch, then act at most once per closed candle."""
-        equity = self.ex.equity_usdt()
+        equity = self.ex.equity()
         halted, event = self.guard.update(equity)
         pos = self.ex.position()
 
@@ -50,7 +50,7 @@ class TradingBot:
             prev = self.guard.get("prev_day")
             if prev and prev.get("start_equity"):
                 pnl = prev["end_equity"] - prev["start_equity"]
-                self.notify.send(f"📊 {prev['day']} 마감: {pnl:+.2f} USDT "
+                self.notify.send(f"📊 {prev['day']} 마감: {pnl:+.2f} {self.ex.settle} "
                                  f"({pnl / prev['start_equity'] * 100:+.2f}%), 잔고 {equity:.2f}")
         if event == "tripped":
             self.notify.send(f"🛑 일일 손실 한도 {self.cfg.max_daily_loss * 100:.0f}% 도달. "
@@ -80,17 +80,17 @@ class TradingBot:
         if pos:
             self.ex.cancel_all()
             self.ex.close_position(pos)
-            self.notify.send(f"🔄 반대 신호로 {pos.side} 청산 (미실현 {pos.unrealized_pnl:+.2f} USDT)")
-            equity = self.ex.equity_usdt()
+            self.notify.send(f"🔄 반대 신호로 {pos.side} 청산 (미실현 {pos.unrealized_pnl:+.2f} {self.ex.settle})")
+            equity = self.ex.equity()
 
         qty = self.ex.round_amount(position_size(
             equity, sig.entry, sig.stop_loss, self.cfg.leverage,
             self.cfg.risk_per_trade, self.cfg.max_position_pct))
         if qty <= 0 or qty < self.ex.min_amount():
-            self.notify.send(f"⚠️ 주문 수량 부족({qty}). 잔고 {equity:.2f} USDT로는 최소 주문 불가")
+            self.notify.send(f"⚠️ 주문 수량 부족({qty}). 잔고 {equity:.2f} {self.ex.settle}로는 최소 주문 불가")
             return
 
-        order = self.ex.open_position(sig.side, qty, sig.stop_loss, sig.take_profit)
+        order = self.ex.open_position(sig.side, qty, sig.stop_loss, sig.take_profit, sig.entry)
         self.notify.send(
             f"{'🟢 롱' if sig.side == 'long' else '🔴 숏'} 진입 {self.cfg.symbol}\n"
             f"수량 {qty} @ ~{sig.entry:.2f}\n손절 {sig.stop_loss:.2f} / 익절 {sig.take_profit:.2f}\n"
@@ -98,7 +98,7 @@ class TradingBot:
 
     def run(self) -> None:
         mode = "테스트넷" if self.cfg.testnet else "⚠️실거래"
-        self.notify.send(f"🚀 봇 시작 [{mode}] {self.cfg.symbol} {self.cfg.timeframe} {self.cfg.leverage}x")
+        self.notify.send(f"🚀 봇 시작 [{self.cfg.exchange} {mode}] {self.cfg.symbol} {self.cfg.timeframe} {self.cfg.leverage}x")
         while self.running:
             try:
                 self.step()
@@ -130,7 +130,7 @@ def main() -> None:
     cfg.validate()
     notifier = Notifier(cfg.telegram_token, cfg.telegram_chat_id,
                         prefix="[TEST] " if cfg.testnet else "[LIVE] ")
-    exchange = BybitFutures(cfg)
+    exchange = create_exchange(cfg)
     exchange.setup()
     bot = TradingBot(cfg, exchange, notifier, DailyGuard(cfg.state_file, cfg.max_daily_loss))
     signal.signal(signal.SIGTERM, bot.stop)

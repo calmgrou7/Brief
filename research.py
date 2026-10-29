@@ -19,7 +19,7 @@ GRID = {
     "trend_ema": [0, 200],
     "adx_min": [0, 20, 25],
     "sl_tp": [(1.5, 3.0), (2.0, 4.0)],
-    "fee": [("taker", TAKER_FEE), ("maker", MAKER_FEE)],
+    "fee": [("bybit-taker", TAKER_FEE), ("bybit-maker", MAKER_FEE), ("lighter", 0.0)],
 }
 
 
@@ -32,8 +32,8 @@ def main(paths: list[str]) -> None:
             cfg = Config.from_env()
             cfg.ema_fast, cfg.ema_slow, cfg.trend_ema, cfg.adx_min = fast, slow, trend, adx_min
             cfg.sl_atr_mult, cfg.tp_atr_mult = sl, tp
-            train = run_backtest(df, cfg, end=split, entry_fee_rate=fee)
-            test = run_backtest(df, cfg, start=split, entry_fee_rate=fee)
+            train = run_backtest(df, cfg, end=split, fee_rate=fee)
+            test = run_backtest(df, cfg, start=split, fee_rate=fee)
             rows.append({"data": path, "ema": f"{fast}/{slow}", "trend": trend, "adx": adx_min,
                          "sl/tp": f"{sl}/{tp}", "fee": fee_name,
                          "train%": train["return_pct"], "train_n": train["trades"],

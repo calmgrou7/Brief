@@ -27,8 +27,13 @@ def _int(name: str, default: int) -> int:
 @dataclass
 class Config:
     # Exchange
+    exchange: str  # "lighter" or "bybit"
     api_key: str
     api_secret: str
+    lighter_account_index: int
+    lighter_api_key_index: int
+    lighter_api_private_key: str
+    lighter_signer_path: str
     testnet: bool
     live_trading_confirm: str
     symbol: str
@@ -64,12 +69,19 @@ class Config:
 
     @classmethod
     def from_env(cls) -> "Config":
+        exchange = os.getenv("EXCHANGE", "bybit").strip().lower()
+        default_symbol = "BTC/USDC:USDC" if exchange == "lighter" else "BTC/USDT:USDT"
         return cls(
+            exchange=exchange,
             api_key=os.getenv("BYBIT_API_KEY", ""),
             api_secret=os.getenv("BYBIT_API_SECRET", ""),
-            testnet=_bool("BYBIT_TESTNET", True),
+            lighter_account_index=_int("LIGHTER_ACCOUNT_INDEX", -1),
+            lighter_api_key_index=_int("LIGHTER_API_KEY_INDEX", -1),
+            lighter_api_private_key=os.getenv("LIGHTER_API_PRIVATE_KEY", ""),
+            lighter_signer_path=os.getenv("LIGHTER_SIGNER_PATH", ""),
+            testnet=_bool("TESTNET", _bool("BYBIT_TESTNET", True)),
             live_trading_confirm=os.getenv("LIVE_TRADING_CONFIRM", ""),
-            symbol=os.getenv("SYMBOL", "BTC/USDT:USDT"),
+            symbol=os.getenv("SYMBOL") or default_symbol,
             timeframe=os.getenv("TIMEFRAME", "15m"),
             leverage=_int("LEVERAGE", 3),
             ema_fast=_int("EMA_FAST", 20),
@@ -94,8 +106,17 @@ class Config:
         )
 
     def validate(self) -> None:
-        if not self.api_key or not self.api_secret:
-            raise ValueError("BYBIT_API_KEY / BYBIT_API_SECRET 가 비어 있습니다 (.env 확인)")
+        if self.exchange == "lighter":
+            if self.lighter_account_index < 0 or not self.lighter_api_private_key:
+                raise ValueError("LIGHTER_ACCOUNT_INDEX / LIGHTER_API_PRIVATE_KEY 가 비어 있습니다 (.env 확인)")
+            # ccxt only signs with API key slots 4-254 (lower slots belong to Lighter's own apps).
+            if not 4 <= self.lighter_api_key_index <= 254:
+                raise ValueError("LIGHTER_API_KEY_INDEX 는 4~254 사이여야 합니다")
+        elif self.exchange == "bybit":
+            if not self.api_key or not self.api_secret:
+                raise ValueError("BYBIT_API_KEY / BYBIT_API_SECRET 가 비어 있습니다 (.env 확인)")
+        else:
+            raise ValueError(f"EXCHANGE 는 lighter 또는 bybit 이어야 합니다: {self.exchange}")
         if not self.testnet and self.live_trading_confirm != "I_UNDERSTAND_THE_RISK":
             raise ValueError(
                 "실거래 모드입니다. 정말 실거래하려면 LIVE_TRADING_CONFIRM=I_UNDERSTAND_THE_RISK 를 설정하세요"

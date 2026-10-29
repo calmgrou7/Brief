@@ -1,7 +1,12 @@
-# Bybit 선물 자동매매 봇 (테스트넷 우선)
+# 암호화폐 선물 자동매매 봇 (Lighter / Bybit, 테스트넷 우선)
 
-Bybit USDT 무기한 선물을 24시간 자동매매하는 봇입니다. **기본값은 테스트넷(가짜 돈)** 이며,
-실거래로 바꾸려면 별도의 확인 문구를 넣어야만 동작합니다.
+무기한 선물을 24시간 자동매매하는 봇입니다. 거래소는 `.env` 의 `EXCHANGE` 로 고릅니다.
+
+- **lighter** (기본): 탈중앙 선물 거래소. 이용약관상 한국 제한 없음, 기본 계정 수수료 0.
+  주문은 Lighter **API 키**로만 서명하며, 지갑 개인키·시드 문구는 봇에 넣지 않습니다.
+- **bybit**: 한국 거주자는 규제로 이용 불가(오류 10024). 코드만 남겨둠.
+
+**기본값은 테스트넷(가짜 돈)** 이며, 실거래로 바꾸려면 별도의 확인 문구를 넣어야만 동작합니다.
 
 > ⚠️ 이 봇은 수익을 보장하지 않습니다. 선물은 레버리지로 인해 원금 전액 손실이 가능합니다.
 > 테스트넷에서 최소 1~2주 검증 후, 잃어도 되는 소액으로만 실거래하세요.
@@ -20,12 +25,15 @@ Bybit USDT 무기한 선물을 24시간 자동매매하는 봇입니다. **기�
 
 모든 값은 `.env` 에서 바꿀 수 있습니다 (`.env.example` 참고).
 
-## 1단계: 테스트넷 API 키 발급
+## 1단계: Lighter 테스트넷 API 키 발급
 
-1. https://testnet.bybit.com 가입 (실계정과 별개)
-2. 우측 상단 계정 → **API** → **Create New Key** → *System-generated API Keys*
-3. 권한: **Read-Write**, **Contract(Orders, Positions)** 체크. 출금 권한은 없음
-4. 테스트넷 자산 페이지에서 테스트용 USDT 받기 (Faucet / Request Test Coins)
+1. 봇 전용 **새 지갑**을 만듭니다 (MetaMask 등). 시드 문구는 종이에만 적고 누구에게도 보내지 마세요.
+2. https://testnet.app.lighter.xyz 에 지갑을 연결하고 테스트 자금을 받습니다.
+3. 계정 번호 확인: `python -m bot.lighter_account 0x지갑주소` → `LIGHTER_ACCOUNT_INDEX`
+4. 사이트의 **API Keys** 메뉴에서 키를 만듭니다. 키 번호는 **4~254** 중 하나(예: 10)로 하고,
+   번호 → `LIGHTER_API_KEY_INDEX`, 개인키(private key) → `LIGHTER_API_PRIVATE_KEY`
+5. 서명 라이브러리는 첫 실행 때 PyPI 의 공식 `lighter-sdk` 에서 자동으로 받아 `vendor/` 에 저장합니다
+   (해시 검증 포함).
 
 ## 2단계: 내 PC에서 점검
 
@@ -66,8 +74,8 @@ docker compose down                   # 중지 (거래소에 걸린 손절/익�
 
 ## 실거래 전환 (충분히 검증한 뒤에만)
 
-1. 실계정 API 키: 출금 권한 OFF, **서버 IP만 허용(IP 화이트리스트)**
-2. `.env`: `BYBIT_TESTNET=false`, `LIVE_TRADING_CONFIRM=I_UNDERSTAND_THE_RISK`
+1. 실계정 API 키를 새로 발급 (테스트넷 키와 별개). 탈중앙 거래소 이용의 국내 법적 지위는 불분명하니 먼저 확인
+2. `.env`: `TESTNET=false`, `LIVE_TRADING_CONFIRM=I_UNDERSTAND_THE_RISK`
 3. 레버리지 낮게(2~3x), 소액으로 시작
 
 ## 파일 구조
@@ -76,16 +84,21 @@ docker compose down                   # 중지 (거래소에 걸린 손절/익�
 bot/config.py     설정 (.env)
 bot/strategy.py   EMA/RSI/ATR 지표와 신호
 bot/risk.py       수량 계산, 일일 손실 한도
-bot/exchange.py   Bybit 연결 (ccxt), 재시도
+bot/exchange.py   거래소 연결 (ccxt): Lighter / Bybit, 재시도
+bot/lighter_signer.py   Lighter 서명 라이브러리 자동 다운로드
+bot/lighter_account.py  지갑 주소로 Lighter 계정 번호 조회
 bot/notifier.py   텔레그램
 bot/main.py       24시간 메인 루프
 bot/check.py      연결 점검
-backtest.py       백테스트
+backtest.py       백테스트 (lighter 는 수수료 0 으로 계산)
+research.py       앞 2/3 로 설정 고르고 뒤 1/3 로 검증
 tests/            오프라인 테스트
 ```
 
 ## 알아둘 한계
 
 - 백테스트는 캔들 종가 체결을 가정합니다. 실제는 슬리피지와 펀딩비가 추가로 붙습니다.
-- 계정은 단방향(One-Way) 포지션 모드를 전제로 합니다 (Bybit 기본값).
+- 백테스트용 과거 시세는 Bybit 공개 데이터(USDT 선물)를 씁니다. 로그인이 필요 없어 한국에서도 받아집니다.
+- 단방향(One-Way) 포지션을 전제로 합니다. Lighter 는 교차(cross) 마진으로 설정합니다.
+- Lighter 시장가 주문은 최악 체결가를 함께 보냅니다 (진입 1%, 손절/익절 2% 범위).
 - 봇이 관리하는 심볼에서 수동으로 거래하면 봇 판단이 꼬일 수 있습니다.

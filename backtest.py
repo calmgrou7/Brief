@@ -19,13 +19,19 @@ from bot.strategy import LONG, add_indicators, ohlcv_to_df, signal_from_rows, wa
 TAKER_FEE = 0.00055
 
 
+def history_symbol(cfg: Config) -> str:
+    """Price history always comes from Bybit's public USDT perpetuals (no account needed),
+    which track the same coins as Lighter's USDC perpetuals closely."""
+    return cfg.symbol.split("/")[0] + "/USDT:USDT"
+
+
 def _fetch_with_retry(ex, cfg: Config, since: int, attempts: int = 6) -> list:
     """Bybit occasionally answers kline requests with transient server errors (e.g. retCode 10016)."""
     import ccxt
 
     for i in range(attempts):
         try:
-            return ex.fetch_ohlcv(cfg.symbol, cfg.timeframe, since=since, limit=200)
+            return ex.fetch_ohlcv(history_symbol(cfg), cfg.timeframe, since=since, limit=200)
         except (ccxt.NetworkError, ccxt.ExchangeError) as e:
             if i == attempts - 1:
                 raise
@@ -41,7 +47,7 @@ def download(cfg: Config, days: int, ex=None) -> pd.DataFrame:
     tf_ms = ex.parse_timeframe(cfg.timeframe) * 1000
     since = ex.milliseconds() - days * 24 * 60 * 60 * 1000
     rows = []
-    print(f"{cfg.symbol} {cfg.timeframe} {days}일치 캔들 다운로드 중...")
+    print(f"{history_symbol(cfg)} {cfg.timeframe} {days}일치 캔들 다운로드 중...")
     while since < ex.milliseconds() - tf_ms:
         batch = _fetch_with_retry(ex, cfg, since)
         if not batch:
@@ -54,7 +60,7 @@ def download(cfg: Config, days: int, ex=None) -> pd.DataFrame:
 
 
 def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0,
-                 start: int = 0, end: int | None = None, entry_fee_rate: float = TAKER_FEE) -> dict:
+                 start: int = 0, end: int | None = None, fee_rate: float = TAKER_FEE) -> dict:
     """Simulate trading on df[start:end]. Indicators use the whole history before each bar,
     like the live bot, so a later test window is warmed up by the data before it."""
     equity = start_equity
@@ -80,7 +86,7 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0,
                 elif bar["low"] <= pos["tp"]:
                     exit_price = pos["tp"]
             if exit_price is not None:
-                equity += _close(pos, exit_price, trades)
+                equity += _close(pos, exit_price, trades, fee_rate)
                 pos = None
 
         sig = signal_from_rows(ind.iloc[i - 1], bar, cfg)
@@ -89,12 +95,12 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0,
                 pass
             else:
                 if pos:
-                    equity += _close(pos, sig.entry, trades)
+                    equity += _close(pos, sig.entry, trades, fee_rate)
                     pos = None
                 qty = position_size(equity, sig.entry, sig.stop_loss, cfg.leverage,
                                     cfg.risk_per_trade, cfg.max_position_pct)
                 if qty > 0:
-                    entry_fee = qty * sig.entry * entry_fee_rate
+                    entry_fee = qty * sig.entry * fee_rate
                     equity -= entry_fee
                     pos = {"side": sig.side, "qty": qty, "entry": sig.entry,
                            "sl": sig.stop_loss, "tp": sig.take_profit, "entry_fee": entry_fee}
@@ -103,7 +109,7 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0,
         max_dd = max(max_dd, (peak - equity) / peak if peak > 0 else 0)
 
     if pos:
-        equity += _close(pos, float(ind.iloc[end - 1]["close"]), trades)
+        equity += _close(pos, float(ind.iloc[end - 1]["close"]), trades, fee_rate)
 
     fees = [t[1] for t in trades]
     trades = [t[0] for t in trades]
@@ -120,9 +126,9 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0,
     }
 
 
-def _close(pos: dict, price: float, trades: list) -> float:
+def _close(pos: dict, price: float, trades: list, fee_rate: float) -> float:
     direction = 1 if pos["side"] == LONG else -1
-    exit_fee = pos["qty"] * price * TAKER_FEE
+    exit_fee = pos["qty"] * price * fee_rate
     pnl = (price - pos["entry"]) * pos["qty"] * direction - exit_fee
     trades.append((pnl, pos["entry_fee"] + exit_fee))
     return pnl
@@ -133,6 +139,8 @@ def main() -> None:
     parser.add_argument("--days", type=int, default=90)
     parser.add_argument("--csv")
     parser.add_argument("--equity", type=float, default=1000.0)
+    parser.add_argument("--fee", type=float, default=None,
+                        help="거래당 수수료율 (기본: lighter 0, bybit 0.00055)")
     args = parser.parse_args()
 
     cfg = Config.from_env()
@@ -144,8 +152,9 @@ def main() -> None:
         path = os.path.join("data", f"{cfg.symbol.split('/')[0]}_{cfg.timeframe}_{args.days}d.csv")
         df.to_csv(path, index=False)
         print(f"캔들 저장: {path}  (다음엔 --csv {path} 로 다운로드 없이 실행 가능)")
-    result = run_backtest(df, cfg, args.equity)
-    print(f"\n=== 백테스트 결과: {cfg.symbol} {cfg.timeframe}, {cfg.leverage}x ===")
+    fee = args.fee if args.fee is not None else (0.0 if cfg.exchange == "lighter" else TAKER_FEE)
+    result = run_backtest(df, cfg, args.equity, fee_rate=fee)
+    print(f"\n=== 백테스트 결과: {cfg.symbol} {cfg.timeframe}, {cfg.leverage}x, 수수료 {fee * 100:.3f}% ===")
     labels = {"start_equity": "시작 잔고", "end_equity": "최종 잔고", "return_pct": "수익률(%)",
               "trades": "거래 수", "win_rate_pct": "승률(%)", "max_drawdown_pct": "최대 낙폭(%)", "fees_paid": "낸 수수료",
               "candles": "캔들 수"}
