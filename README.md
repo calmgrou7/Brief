@@ -29,9 +29,13 @@ Bybit USDT 무기한 선물을 24시간 자동매매하는 봇입니다. **기�
 
 ## 2단계: 내 PC에서 점검
 
+**Python 3.13 을 사용하세요.** 3.14 이상은 일부 의존성(zlib-ng, cffi)의 Windows 설치 파일이 아직 없어
+설치가 실패합니다. 다른 버전이 이미 깔려 있어도 3.13 을 추가로 설치하면 됩니다.
+
 ```bash
 git clone <이 레포> && cd Brief
-python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+py -3.13 -m venv .venv && .venv\Scripts\activate     # Windows
+# python3.13 -m venv .venv && source .venv/bin/activate   # Mac/Linux
 pip install -r requirements-dev.txt
 cp .env.example .env        # 그리고 .env 에 API 키 입력
 
