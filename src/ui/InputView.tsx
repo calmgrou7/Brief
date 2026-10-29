@@ -3,6 +3,7 @@ import { profit } from '../engine/statements';
 import type { CaseProps } from './App';
 import { BS_ROWS, IS_ROWS, type Row } from './accounts';
 import { mil, won } from './format';
+import { ImportPanel } from './ImportPanel';
 import { MoneyInput } from './MoneyInput';
 
 type Col = 'current' | 'prior';
@@ -39,6 +40,8 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
 
   return (
     <div className="stack">
+      <ImportPanel onApply={update} />
+
       <section className="panel">
         <h2>기업 정보</h2>
         <div className="form-grid">

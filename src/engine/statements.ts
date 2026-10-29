@@ -43,7 +43,8 @@ export function ratios(bs: BalanceSheet, is: IncomeStatement, priorRevenue?: num
   const p = profit(is);
   return {
     debtRatio: div(t.liabilities, t.equity),
-    currentRatio: div(t.currentAssets, t.currentLiabilities),
+    // 가지급금은 금융기관이 회수 가능 자산으로 보지 않으므로 유동자산에서 뺀다
+    currentRatio: div(t.currentAssets - bs.officerLoans, t.currentLiabilities),
     equityRatio: div(t.equity, t.assets),
     borrowingDependence: div(t.borrowings, t.assets),
     capitalImpairment: bs.capitalStock > 0 ? Math.max(0, (bs.capitalStock - t.equity) / bs.capitalStock) : null,

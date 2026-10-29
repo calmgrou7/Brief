@@ -103,7 +103,7 @@ export interface Threshold {
 
 export const RATIO_LABELS: Record<RatioKey, { label: string; unit: '%' | '배'; hint: string }> = {
   debtRatio: { label: '부채비율', unit: '%', hint: '부채총계 ÷ 자본총계' },
-  currentRatio: { label: '유동비율', unit: '%', hint: '유동자산 ÷ 유동부채' },
+  currentRatio: { label: '유동비율', unit: '%', hint: '(유동자산 − 가지급금) ÷ 유동부채' },
   equityRatio: { label: '자기자본비율', unit: '%', hint: '자본총계 ÷ 자산총계' },
   borrowingDependence: { label: '차입금의존도', unit: '%', hint: '총차입금(가수금 포함) ÷ 자산총계' },
   capitalImpairment: { label: '자본잠식률', unit: '%', hint: '(자본금 − 자본총계) ÷ 자본금' },
