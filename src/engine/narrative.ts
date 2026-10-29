@@ -45,8 +45,12 @@ export function headline(a: Analysis, company: CompanyProfile, scenarioName: str
   const after = countSignals(a.rows, 'scenarioSignal');
   const changed = a.rows.some((r) => r.projected !== r.scenario);
   if (changed) {
+    const b = before.bad + before.caution;
+    const n = after.bad + after.caution;
     lines.push(
-      `'${scenarioName}' 조치를 결산 전에 실행하면 주의·미달 지표가 ${before.bad + before.caution}개에서 ${after.bad + after.caution}개로 바뀝니다.`,
+      n === b
+        ? `'${scenarioName}' 조치를 결산 전에 실행해도 주의·미달 지표 수는 ${n}개로 같습니다 — 지표 개선보다 세금·주식가치 관리에 초점을 둔 안입니다.`
+        : `'${scenarioName}' 조치를 결산 전에 실행하면 주의·미달 지표가 ${b}개에서 ${n}개로 ${n < b ? '줄어듭니다' : '늘어납니다'}.`,
     );
   }
 

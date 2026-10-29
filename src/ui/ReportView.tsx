@@ -34,13 +34,61 @@ const inFrame = (() => {
 const DISCLAIMER =
   '본 자료는 가결산 재무제표를 바탕으로 한 상담용 시뮬레이션입니다. 세무조정, 자산 시가, 개별 공제·감면 요건이 반영되지 않았으며, 실제 결산과 신고는 담당 세무대리인의 확인을 거쳐야 합니다. 특정 금융상품의 권유 자료가 아닙니다.';
 
-export function ReportView({ file, analyses, advisor, setAdvisor }: CaseProps & { advisor: Advisor; setAdvisor: (a: Advisor) => void }) {
+export function ReportView({ file, update, analyses, advisor, setAdvisor }: CaseProps & { advisor: Advisor; setAdvisor: (a: Advisor) => void }) {
   const [doc, setDoc] = useState<Doc>('ceo');
   const a = analyses[file.activeScenario];
   const today = new Date().toLocaleDateString('ko-KR');
 
   return (
     <div className="stack">
+      <section className="panel no-print">
+        <div className="panel-head">
+          <h2>리포트에 넣을 시나리오</h2>
+          <p className="muted">고르면 아래 리포트 3종이 바로 그 시나리오 기준으로 바뀝니다.</p>
+        </div>
+        <div className="scenario-pick" role="radiogroup" aria-label="리포트 시나리오">
+          {file.scenarios.map((sc, i) => {
+            const x = analyses[i];
+            const c = countSignals(x.rows, 'scenarioSignal');
+            const debt = x.rows.find((r) => r.key === 'debtRatio');
+            const on = i === file.activeScenario;
+            return (
+              <button
+                key={i}
+                role="radio"
+                aria-checked={on}
+                className={`pick-card ${on ? 'on' : ''}`}
+                onClick={() => update((c0) => ({ ...c0, activeScenario: i }))}
+              >
+                <span className="pick-name">
+                  <span className="pick-dot" aria-hidden="true" />
+                  {sc.name}
+                </span>
+                <span className="pick-stats">
+                  <span>
+                    주의·미달 <strong>{c.caution + c.bad}개</strong>
+                  </span>
+                  {debt && (
+                    <span>
+                      부채비율 <strong>{formatRatio(debt.scenario, '%')}</strong>
+                    </span>
+                  )}
+                  <span>
+                    순이익 <strong>{mil(profit(x.scenario.is).netIncome)}백만</strong>
+                  </span>
+                  <span>
+                    1주당 <strong>{won(x.valuation.scenario.valuePerShare)}원</strong>
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <a className="link small" href="#scenario">
+          시나리오 내용 고치기 →
+        </a>
+      </section>
+
       <section className="panel no-print">
         <div className="report-bar">
           <div className="seg" role="tablist">
@@ -76,10 +124,7 @@ export function ReportView({ file, analyses, advisor, setAdvisor }: CaseProps & 
             <input id="adv-phone" value={advisor.phone} onChange={(e) => setAdvisor({ ...advisor, phone: e.target.value })} />
           </div>
         </div>
-        <p className="muted small">
-          리포트는 시나리오 화면에서 선택한 <strong>{file.scenarios[file.activeScenario].name}</strong> 기준입니다.
-          {inFrame && ' PDF 저장은 설치형(웹 배포) 버전에서 사용할 수 있습니다.'}
-        </p>
+        {inFrame && <p className="muted small">PDF 저장은 설치형(웹 배포) 버전에서 사용할 수 있습니다.</p>}
       </section>
 
       <div className="paper-stack">
@@ -261,8 +306,11 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
           <thead>
             <tr>
               <th></th>
-              {file.scenarios.map((s) => (
-                <th key={s.name}>{s.name}</th>
+              {file.scenarios.map((s, i) => (
+                <th key={i} className={i === file.activeScenario ? 'picked' : ''}>
+                  {s.name}
+                  {i === file.activeScenario && <span className="picked-tag">제안</span>}
+                </th>
               ))}
             </tr>
           </thead>
@@ -271,31 +319,31 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
               <th>주의·미달 지표</th>
               {analyses.map((x, i) => {
                 const c = countSignals(x.rows, 'scenarioSignal');
-                return <td key={i}>{c.caution + c.bad}개</td>;
+                return <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{c.caution + c.bad}개</td>;
               })}
             </tr>
             <tr>
               <th>부채비율</th>
               {analyses.map((x, i) => (
-                <td key={i}>{formatRatio(x.rows.find((r) => r.key === 'debtRatio')?.scenario ?? null, '%')}</td>
+                <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{formatRatio(x.rows.find((r) => r.key === 'debtRatio')?.scenario ?? null, '%')}</td>
               ))}
             </tr>
             <tr>
               <th>당기순이익(백만원)</th>
               {analyses.map((x, i) => (
-                <td key={i}>{mil(profit(x.scenario.is).netIncome)}</td>
+                <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{mil(profit(x.scenario.is).netIncome)}</td>
               ))}
             </tr>
             <tr>
               <th>추정 법인세(백만원)</th>
               {analyses.map((x, i) => (
-                <td key={i}>{mil(x.scenario.is.incomeTax)}</td>
+                <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{mil(x.scenario.is.incomeTax)}</td>
               ))}
             </tr>
             <tr>
               <th>1주당 평가액(원)</th>
               {analyses.map((x, i) => (
-                <td key={i}>{won(x.valuation.scenario.valuePerShare)}</td>
+                <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{won(x.valuation.scenario.valuePerShare)}</td>
               ))}
             </tr>
           </tbody>

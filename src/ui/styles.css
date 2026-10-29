@@ -1130,3 +1130,77 @@ tfoot .unit-row td {
   gap: 8px;
   flex-wrap: wrap;
 }
+
+/* 리포트 시나리오 선택 */
+.scenario-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+.pick-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+}
+.pick-card:hover {
+  border-color: var(--accent);
+}
+.pick-card.on {
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+}
+.pick-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+.pick-dot {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+}
+.pick-card.on .pick-dot {
+  border-color: var(--accent);
+  background: radial-gradient(circle, var(--accent) 45%, transparent 50%);
+}
+.pick-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.pick-stats strong {
+  color: var(--ink);
+}
+.doc-table .picked {
+  background: #eef2f8;
+  font-weight: 700;
+}
+.picked-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: var(--paper-accent);
+  color: var(--paper);
+  font-size: 8pt;
+  vertical-align: middle;
+}
+@media print {
+  .doc-table .picked {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
