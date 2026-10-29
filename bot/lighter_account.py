@@ -2,6 +2,7 @@
 
     python -m bot.lighter_account 0xYourWalletAddress
 """
+import re
 import sys
 
 import ccxt
@@ -10,8 +11,10 @@ from .config import Config
 
 
 def main() -> None:
-    if len(sys.argv) != 2 or not sys.argv[1].startswith("0x"):
-        print("사용법: python -m bot.lighter_account 0x지갑주소")
+    if len(sys.argv) != 2 or not re.fullmatch(r"0x[0-9a-fA-F]{40}", sys.argv[1]):
+        print("사용법: python -m bot.lighter_account 0x1234...abcd")
+        print("  '0x지갑주소' 자리에 실제 지갑 주소(0x 로 시작하는 42자리)를 넣으세요.")
+        print("  MetaMask 상단 계정 이름 아래 주소를 클릭하면 복사됩니다.")
         sys.exit(1)
     cfg = Config.from_env()
     client = ccxt.lighter()
