@@ -1,0 +1,16 @@
+{
+  "channel": "nowro",
+  "out": "../output/nowro_youngdo.mp4",
+  "scenes": [
+    {"type": "card", "img": "", "top": "배와 바다의 시간이\n남아 있는 골목", "sub": "부산 영도, 깡깡이예술마을", "move": "in",
+     "narration": "부산 영도에는 배와 바다의 시간이 그대로 남아 있는 골목이 있습니다."},
+    {"type": "card", "img": "", "top": "망치 소리가\n예술이 된 마을", "sub": "배 수리 골목의 벽화와 조형물", "move": "pan",
+     "narration": "배를 고치던 망치 소리가 이제는 벽화와 예술이 되었습니다."},
+    {"type": "card", "img": "", "top": "영도대교 → 깡깡이마을\n→ 골목산책 → 노을", "sub": "오늘의 영도 여행 루트", "move": "out",
+     "narration": "오늘의 영도 여행은 깡깡이예술마을에서 완성됩니다."}
+  ],
+  "post": {
+    "title": "부산 영도 깡깡이예술마을, 배와 바다의 골목 #shorts",
+    "description": "영도대교에서 깡깡이예술마을, 골목산책, 노을까지 반나절 코스."
+  }
+}

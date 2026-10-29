@@ -1,0 +1,32 @@
+{
+  "nowro": {
+    "badge": "NOWRO 나우로",
+    "bg": "#FAFCFF", "main": "#13285A", "accent": "#1E6FD9",
+    "footer": "HERITAGE STUDIO B  ×  NOWRO",
+    "character": "묵자",
+    "voice": "ko-KR-SunHiNeural",
+    "cta": ["저장해두고 부산 여행 때", "따라가 보세요!"],
+    "contact": "더 많은 부산 이야기 → 프로필 링크",
+    "hashtags": ["#부산여행", "#나우로", "#부산가볼만한곳", "#shorts"]
+  },
+  "venture": {
+    "badge": "벤처의 기준",
+    "bg": "#F4F6FB", "main": "#111827", "accent": "#6D28D9",
+    "footer": "벤처의 기준  |  창업·인증·지원사업을 쉽게",
+    "character": "벤처쌤",
+    "voice": "ko-KR-InJoonNeural",
+    "cta": ["팔로우하고", "다음 기준도 받아보세요"],
+    "contact": "벤처인증·지원사업 문의 → 프로필 링크",
+    "hashtags": ["#벤처의기준", "#벤처인증", "#창업", "#정부지원사업"]
+  },
+  "bohumjigi": {
+    "badge": "지혜로운 보험생활",
+    "bg": "#FFF8EC", "main": "#1F2A44", "accent": "#0E9F6E",
+    "footer": "보험지기  |  지혜로운 보험·재무 생활",
+    "character": "보험지기",
+    "voice": "ko-KR-SunHiNeural",
+    "cta": ["무료 보험 점검 상담", "프로필 링크 / 전화"],
+    "contact": "무료 상담 신청 → 프로필 링크 (전화·방문 상담 가능)",
+    "hashtags": ["#보험지기", "#지혜로운보험생활", "#보험리모델링", "#재무설계"]
+  }
+}
