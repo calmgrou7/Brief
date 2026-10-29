@@ -214,3 +214,33 @@ def test_backtest_runs(tmp_path):
     result = run_backtest(ohlcv_to_df(rows), cfg)
     assert result["trades"] > 0
     assert result["end_equity"] > 0
+
+
+def test_download_retries_transient_exchange_error(tmp_path, monkeypatch):
+    import ccxt
+
+    import backtest
+
+    monkeypatch.setattr(backtest.time, "sleep", lambda s: None)
+    cfg = make_cfg(tmp_path, timeframe="1h")
+    now = 10 * 3_600_000
+
+    class FlakyExchange:
+        rateLimit = 0
+        calls = 0
+
+        def parse_timeframe(self, tf):
+            return 3600
+
+        def milliseconds(self):
+            return now
+
+        def fetch_ohlcv(self, symbol, timeframe, since, limit):
+            FlakyExchange.calls += 1
+            if FlakyExchange.calls <= 2:
+                raise ccxt.ExchangeError('bybit {"retCode":10016,"retMsg":"svc error: Get kline failed"}')
+            return [[t, 1, 1, 1, 1, 1] for t in range(since, now, 3_600_000)][:limit]
+
+    df = backtest.download(cfg, 1, ex=FlakyExchange())
+    assert FlakyExchange.calls >= 3
+    assert len(df) > 0
