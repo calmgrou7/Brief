@@ -9,7 +9,7 @@ const css = readFileSync(join('dist/assets', assets.find((f) => f.endsWith('.css
 
 writeFileSync(
   out,
-  `<title>Brief 가결산</title>
+  `<title>채움 ver2.0</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>${css}</style>
 <div id="root"></div>

@@ -1,7 +1,7 @@
 import { countSignals, profit, totals, type CashFlowLine } from '../engine';
 import type { CaseProps } from './App';
 import { mil } from './format';
-import { RatioTable } from './parts';
+import { RatioCards } from './parts';
 
 export function DiagnosisView({ file, analyses }: CaseProps) {
   const a = analyses[0];
@@ -59,12 +59,12 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
         <div className="panel-head">
           <h2>목적별 핵심 지표</h2>
           <p className="summary-line">
-            <span className="pill good">충족 {counts.good}</span>
-            <span className="pill caution">주의 {counts.caution}</span>
-            <span className="pill bad">미달 {counts.bad}</span>
+            <span className="pill good">● 충족 {counts.good}</span>
+            <span className="pill caution">▲ 주의 {counts.caution}</span>
+            <span className="pill bad">✕ 미달 {counts.bad}</span>
           </p>
         </div>
-        <RatioTable rows={a.rows} cols={['prior', 'projected']} />
+        <RatioCards rows={a.rows} from="prior" to="projected" />
         <p className="muted small">목표치는 상담용 기본값입니다. 기관·은행별 실제 심사 기준은 다를 수 있습니다.</p>
       </section>
 

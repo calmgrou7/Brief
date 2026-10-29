@@ -2,7 +2,7 @@ import { countSignals, profit, totals, type ScenarioLevers } from '../engine';
 import type { CaseProps } from './App';
 import { mil, won } from './format';
 import { MoneyInput } from './MoneyInput';
-import { RatioTable } from './parts';
+import { RatioCards } from './parts';
 
 export function ScenarioView({ file, update, analyses }: CaseProps) {
   const idx = file.activeScenario;
@@ -151,7 +151,7 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
                 주의·미달 <strong>{before.caution + before.bad}</strong> → <strong>{after.caution + after.bad}</strong>
               </p>
             </div>
-            <RatioTable rows={a.rows} cols={['projected', 'scenario']} />
+            <RatioCards rows={a.rows} from="projected" to="scenario" />
           </section>
 
           <section className="panel tradeoff">

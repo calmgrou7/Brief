@@ -71,7 +71,8 @@ export function App() {
       <header className="topbar">
         <div className="topbar-inner">
           <div className="brand">
-            <span className="brand-mark">Brief</span>
+            <span className="brand-mark">채움</span>
+            <span className="brand-ver">ver2.0</span>
             <span className="brand-sub">가결산 진단</span>
           </div>
           <div className="case-picker">
@@ -92,8 +93,9 @@ export function App() {
           </div>
         </div>
         <nav className="tabs" aria-label="단계">
-          {TABS.map((t) => (
-            <a key={t.id} href={`#${t.id}`} className={`tab ${tab === t.id ? 'on' : ''}`} aria-current={tab === t.id ? 'page' : undefined}>
+          {TABS.map((t, i) => (
+            <a key={t.id} href={`#${t.id}`} className={`tab step ${tab === t.id ? 'on' : ''}`} aria-current={tab === t.id ? 'page' : undefined}>
+              <span className="step-no">{i + 1}</span>
               {t.label}
             </a>
           ))}

@@ -96,7 +96,9 @@ function Page({ children, n, total, title }: { children: React.ReactNode; n: num
     <article className="paper">
       <div className="paper-body">{children}</div>
       <footer className="paper-foot">
-        <span>{title}</span>
+        <span>
+          {title} · 채움 ver2.0
+        </span>
         <span>
           {n} / {total}
         </span>

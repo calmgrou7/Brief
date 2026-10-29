@@ -1,5 +1,5 @@
 import { useState, type ClipboardEvent } from 'react';
-import { parseWon, won } from './format';
+import { koreanAmount, parseWon, won } from './format';
 
 interface Props {
   id: string;
@@ -9,9 +9,11 @@ interface Props {
   onPasteColumn?: (values: number[]) => boolean;
   suffix?: string;
   ariaLabel?: string;
+  /** 입력값 아래에 '5억원'처럼 한글 단위 읽기를 표시 */
+  reading?: boolean;
 }
 
-export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLabel }: Props) {
+export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLabel, reading = suffix === '원' }: Props) {
   const [draft, setDraft] = useState<string | null>(null);
   const onPaste = (e: ClipboardEvent<HTMLInputElement>) => {
     const text = e.clipboardData.getData('text');
@@ -26,6 +28,7 @@ export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLab
     }
   };
   return (
+    <span className="money-wrap">
     <span className="money">
       <input
         id={id}
@@ -41,6 +44,8 @@ export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLab
         onPaste={onPaste}
       />
       {suffix && <span className="suffix">{suffix}</span>}
+    </span>
+    {reading && Math.abs(value) >= 10_000 && <span className="reading">{koreanAmount(value)}</span>}
     </span>
   );
 }
