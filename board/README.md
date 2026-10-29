@@ -1,70 +1,90 @@
-# 운영 보드 — 채움 · 위들리 통합 현황
+# 종합 보드 — 서비스별 대시보드를 한 화면에
 
-채움(법인 컨설팅 웹앱)과 위들리는 각자 따로 돌아가고, 이 보드는 **두 앱이 보내는 활동 기록을 한 화면에 모아** 보여줍니다.
-앱끼리 서로 직접 연결하지 않으므로, 한 앱을 고치거나 새 앱을 추가해도 다른 앱은 영향을 받지 않습니다.
+각 서비스(채움, 위들리, 앞으로 붙일 서비스)는 **자기 대시보드와 자기 데이터를 그대로** 갖습니다.
+종합 보드는 데이터를 모으거나 저장하지 않고, 각 서비스가 내주는 **요약(JSON) 하나만 읽어서** 나란히 보여줍니다.
 
 ```
-채움  ──┐  sendHubEvent()
-        ├──▶ Supabase ops_events ──▶ 운영 보드
-위들리 ─┘
+채움    ── 자체 DB · 자체 대시보드 ── 요약 JSON ──┐
+위들리  ── 자체 DB · 자체 대시보드 ── 요약 JSON ──┼──▶ 종합 보드 (읽기 전용, 저장 없음)
+서비스N ── 자체 DB · 자체 대시보드 ── 요약 JSON ──┘
 ```
+
+- 한 서비스가 꺼지거나 주소가 틀려도 그 타일만 '오류'로 표시되고 나머지는 정상으로 보입니다.
+- 요약 주소가 아직 없는 서비스는 '예시' 데이터로 자리만 잡아 둡니다.
 
 ## 화면
 
-- **요약 카드**: 이번 주 활동(지난주 대비), 진행 중, 7일 넘게 밀린 일, 두 앱 공통 고객
-- **앱별 카드**: 이번 주·진행 중·밀린 일·고객 수, 최근 활동, 사흘 넘게 조용하면 알림, 앱 바로가기
-- **할 일 · 진행 중**: 두 앱의 열린 항목을 오래된 순으로. 체크하면 완료, 바로 추가 가능
-- **통합 타임라인**: 전체/앱별 필터
-- **두 앱에 모두 있는 고객**: `(주)`·띄어쓰기 차이는 같은 고객으로 묶음 → 교차 제안 대상
+| 위치 | 내용 |
+|---|---|
+| 상단 탭 | `종합` + 서비스별 탭. 서비스가 늘면 탭이 하나씩 늘고, 좁은 화면에서는 옆으로 밀어 봅니다 |
+| 종합 › 요약 줄 | 연결된 서비스 수, 전체 진행 중, 확인할 알림, 공통 고객 |
+| 종합 › 확인할 것 | 모든 서비스의 알림 + 연결 실패 + 24시간 넘게 갱신 안 된 요약. 심각한 순으로 6건까지, 나머지는 '더 보기' |
+| 종합 › 서비스 타일 | 서비스마다 KPI 4개, 가장 급한 알림 1개, 최근 활동 3개, `자세히` · `대시보드 열기`. 서비스 수에 맞춰 자동으로 줄을 바꿉니다 |
+| 종합 › 통합 최근 활동 | 모든 서비스 활동을 시간순으로, 서비스별 필터 |
+| 종합 › 공통 고객 | 둘 이상 서비스에 나온 고객(`(주)`·띄어쓰기 차이는 같은 고객으로 묶음) |
+| 서비스 탭 | 그 서비스의 KPI 전체·알림·활동. `EMBED_URL`을 주면 그 서비스 대시보드를 탭 안에 그대로 띄웁니다 |
+
+요약은 열 때, 탭으로 돌아올 때, 5분마다 다시 읽습니다.
 
 ## 실행
 
 ```bash
 cd board
 npm install
-npm run dev      # 개발 서버 (설정 없으면 예시 데이터로 뜸)
-npm test         # 집계 로직 테스트
+npm run dev      # 개발 서버 (요약 주소가 없으면 예시로 뜸)
+npm test         # 요약 검사·종합 계산 테스트
 npm run build    # 배포용 빌드(dist/)
 ```
 
-## 실제 데이터 연결 (한 번만)
+`.env.example`을 `.env`로 복사해 서비스별 주소를 채웁니다.
 
-1. Supabase 프로젝트의 SQL Editor에서 `supabase/ops_events.sql`을 실행합니다.
-   실행 전 파일 끝의 `you@example.com`을 보드에 로그인할 본인 이메일로 바꿉니다.
-2. Supabase Authentication에서 그 이메일 사용자를 만들어 두고(Invite user), 새 가입은 꺼 둡니다.
-3. `board/.env.example`을 `.env`로 복사해 `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, 두 앱 주소를 채웁니다.
-4. 각 앱의 전송 키를 확인합니다: `select id, ingest_key from ops_apps;`
+## 새 서비스 붙이기 (3단계)
 
-보드는 로그인한 등록 이메일만 볼 수 있습니다(고객명이 들어 있으므로). 앱 쪽은 로그인 없이 **앱별 전송 키**로만 기록을 넣을 수 있고, 읽지는 못합니다.
+1. `src/services/_template.ts`를 복사해 `src/services/<id>.ts`로 저장하고 이름·설명·색·예시 KPI를 채웁니다.
+2. `src/services/index.ts`의 `SERVICES` 배열에 한 줄 추가합니다. 배열 순서가 탭·타일 순서입니다.
+3. `.env`에 `VITE_<ID>_APP_URL`, `VITE_<ID>_SUMMARY_URL`을 넣습니다(`vite-env.d.ts`에도 이름 추가).
 
-## 각 앱에서 보내기
+보드의 화면 코드는 건드리지 않습니다.
 
-`src/hub-client.ts`를 앱에 복사하고, 의미 있는 순간에 한 줄씩 부릅니다. 실패해도 앱 동작을 막지 않습니다.
+## 요약 규격 (각 서비스가 내주는 JSON)
 
-```ts
-const hub = {
-  url: import.meta.env.VITE_HUB_URL,
-  anonKey: import.meta.env.VITE_HUB_ANON_KEY,
-  app: 'chaeum',                              // 위들리는 'widly'
-  ingestKey: import.meta.env.VITE_HUB_INGEST_KEY,
-};
-
-// 채움 예: 리포트를 만들었을 때
-sendHubEvent(hub, { externalId: `case-${c.id}-report`, kind: 'report', title: '대표용 리포트 생성', client: c.company.name });
-
-// 진행 중인 상담 → 끝나면 같은 externalId로 status만 바꿔 다시 보냄
-sendHubEvent(hub, { externalId: `case-${c.id}-consult`, kind: 'consult', title: '정책자금 상담', client: c.company.name, status: 'open' });
-sendHubEvent(hub, { externalId: `case-${c.id}-consult`, kind: 'consult', title: '정책자금 상담', client: c.company.name, status: 'done', amount: 1_500_000 });
+```json
+{
+  "updatedAt": "2026-10-29T09:00:00+09:00",
+  "kpis": [
+    { "label": "진행 중 법인", "value": 4, "unit": "곳" },
+    { "label": "회신 대기", "value": 1, "unit": "건", "tone": "caution", "hint": "회계사무실 요청서" }
+  ],
+  "alerts": [
+    { "level": "caution", "message": "소망식품 요청서 회신이 8일째 없습니다", "link": "https://..." }
+  ],
+  "items": [
+    { "title": "대표용 리포트 발송", "at": "2026-10-29T15:00:00+09:00", "status": "done",
+      "kind": "리포트", "client": "(주)한빛정밀", "amount": 1500000, "link": "https://..." }
+  ]
+}
 ```
 
-| 필드 | 뜻 |
-|---|---|
-| `kind` | `client`(신규 고객) · `consult`(상담) · `report`(리포트) · `task`(할 일) · `note`(메모) |
-| `status` | `open`이면 보드의 '할 일·진행 중'에 뜸. 기본값 `done` |
-| `externalId` | 같은 값으로 다시 보내면 새로 쌓지 않고 갱신 |
-| `amount` | 원 단위 금액(이번 달 합계에 반영) |
-| `client` | 고객사명. 두 앱에 같은 고객이 나오면 공통 고객으로 묶임 |
+| 필드 | 필수 | 뜻 |
+|---|---|---|
+| `kpis` | ✓ | 서비스마다 자유. 타일에는 앞의 4개, 서비스 탭에는 전부. `tone`: `good`·`caution`·`bad` |
+| `alerts` | | `level`: `info`·`caution`·`bad`. `caution`·`bad`가 종합의 '확인할 것'에 올라감 |
+| `items` | | 최근 활동. `status: "open"`이면 '진행 중'으로 셈. 최근 20~50건이면 충분 |
+| `updatedAt` | | 24시간 넘게 그대로면 보드가 '갱신 멈춤'으로 알림 |
 
-## 앱 추가
+잘못된 항목은 그 항목만 버리고 나머지는 보여줍니다.
 
-`src/apps.ts`에 한 줄, `ops_apps`에 한 행(`insert into ops_apps (id, name) values ('새앱', '이름');`)을 추가하면 됩니다.
+### 요약을 내주는 방법 (서비스마다 편한 것)
+
+- **서비스 서버에 읽기 전용 주소 하나**: `GET /api/board-summary` — 가장 깔끔함
+- **서비스 자체 Supabase의 Edge Function**: 그 서비스 DB를 집계해 위 JSON을 반환
+- **정적 JSON 파일**: 서비스가 하루 몇 번 `summary.json`을 만들어 올림
+
+어느 방법이든 보드 주소에서 읽을 수 있도록 CORS 허용(`Access-Control-Allow-Origin: <보드 주소>`)이 필요합니다.
+
+> 채움은 지금 데이터가 브라우저(localStorage)에만 있어 요약 주소를 낼 수 없습니다. 채움에 서버 저장(Supabase)이 붙는 단계에서 요약 주소를 함께 만들면 됩니다.
+
+### 보안
+
+- 요약에는 고객사명이 들어가므로, 요약 주소는 토큰(`VITE_<ID>_SUMMARY_TOKEN`)을 요구하게 하고 **읽기 전용·요약 전용** 권한만 주세요.
+- `VITE_` 값은 빌드 결과에 포함됩니다. 보드는 공개 주소가 아니라 본인만 들어가는 곳(접근 제한 배포, 사내망 등)에 두세요.

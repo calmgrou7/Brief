@@ -1,322 +1,357 @@
-import { useMemo, useState, type FormEvent } from 'react';
-import { APPS, appById } from './apps';
-import { KIND_LABEL, STALE_DAYS, daysSince, openItems, sharedClients, sortByRecent, summarizeApp, type OpsEvent } from './events';
-import { delta, relDay, won } from './format';
-import { supabase } from './sources/supabase';
-import { useBoard } from './useBoard';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Alert, Item, Kpi } from './contract';
+import { relDay, won } from './format';
+import { loadService } from './load';
+import { combinedAlerts, combinedItems, countOpen, sharedClients, summaryOf, type LoadState } from './overview';
+import { SERVICES, serviceById, type ServiceDef } from './services';
+
+const REFRESH_MS = 5 * 60_000;
+/** 종합 화면에 처음 보여줄 알림 수. 서비스가 늘어도 화면이 알림으로 덮이지 않게. */
+const ALERT_LIMIT = 6;
+
+function useRoute(): string {
+  const read = () => location.hash.replace(/^#\/?/, '');
+  const [route, setRoute] = useState(read);
+  useEffect(() => {
+    const on = () => setRoute(read());
+    window.addEventListener('hashchange', on);
+    return () => window.removeEventListener('hashchange', on);
+  }, []);
+  return route;
+}
+
+function useSummaries() {
+  const [states, setStates] = useState<Record<string, LoadState>>(() => Object.fromEntries(SERVICES.map((s) => [s.id, { status: 'loading' }])));
+  const [now, setNow] = useState(new Date());
+
+  const reload = useCallback(() => {
+    const t = new Date();
+    setNow(t);
+    for (const s of SERVICES) loadService(s, t).then((st) => setStates((cur) => ({ ...cur, [s.id]: st })));
+  }, []);
+
+  useEffect(() => {
+    reload();
+    const timer = setInterval(reload, REFRESH_MS);
+    const onVisible = () => document.visibilityState === 'visible' && reload();
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [reload]);
+
+  return { states, now, reload };
+}
 
 export function App() {
-  const board = useBoard();
-  const now = board.updatedAt;
-
-  const summaries = useMemo(() => APPS.map((a) => summarizeApp(board.events, a.id, now)), [board.events, now]);
-  const open = useMemo(() => openItems(board.events), [board.events]);
-  const shared = useMemo(() => sharedClients(board.events), [board.events]);
-  const total = summaries.reduce(
-    (t, s) => ({ thisWeek: t.thisWeek + s.thisWeek, lastWeek: t.lastWeek + s.lastWeek, stale: t.stale + s.stale, amount: t.amount + s.amountThisMonth }),
-    { thisWeek: 0, lastWeek: 0, stale: 0, amount: 0 },
-  );
+  const route = useRoute();
+  const { states, now, reload } = useSummaries();
+  const current = serviceById(route);
+  const anyDemo = Object.values(states).some((s) => s.status === 'demo');
 
   return (
     <>
       <header className="topbar">
         <div className="topbar-inner">
-          <div className="brand">
-            <span className="brand-mark">운영 보드</span>
-            <span className="brand-sub">{APPS.map((a) => a.name).join(' · ')}</span>
-          </div>
-          <div className="top-actions">
-            <SourcePill mode={board.mode} />
-            {board.mode !== 'signin' && (
-              <button className="btn ghost" onClick={board.reload} disabled={board.loading}>
-                {board.loading ? '불러오는 중…' : `새로고침 · ${now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`}
-              </button>
-            )}
-            {board.mode === 'live' && (
-              <button className="btn ghost" onClick={() => supabase?.auth.signOut()}>
-                로그아웃
-              </button>
-            )}
-          </div>
+          <a className="brand" href="#/">
+            <span className="brand-mark">종합 보드</span>
+            <span className="brand-sub">서비스 {SERVICES.length}개</span>
+          </a>
+          <button className="btn ghost" onClick={reload}>
+            새로고침 · {now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+          </button>
         </div>
+        <nav className="tabs" aria-label="서비스">
+          <a href="#/" className={current ? 'tab' : 'tab on'}>
+            종합
+          </a>
+          {SERVICES.map((s) => (
+            <a key={s.id} href={`#/${s.id}`} className={current?.id === s.id ? 'tab on' : 'tab'} style={{ ['--svc' as string]: s.color }}>
+              <i className="dot" />
+              {s.name}
+              {states[s.id].status === 'error' && <span className="tab-badge">!</span>}
+            </a>
+          ))}
+        </nav>
       </header>
 
-      {board.mode === 'demo' && (
+      {anyDemo && (
         <p className="note">
-          지금은 <strong>예시 데이터</strong>입니다. Supabase를 연결하고 두 앱이 이벤트를 보내면 실제 현황으로 바뀝니다(연결 방법은 README). 여기서 적은 할 일은 이 브라우저에만 저장됩니다.
+          <strong>예시</strong> 표시가 붙은 서비스는 아직 요약 주소가 연결되지 않아 예시 데이터로 자리만 보여줍니다. 각 서비스의 데이터는 그 서비스에 그대로 두고, 이 보드는 요약만 읽습니다.
         </p>
       )}
-      {board.error && <p className="note bad">불러오기·저장 중 문제가 생겼습니다: {board.error}</p>}
 
-      <main className="main">
-        {board.mode === 'signin' ? (
-          board.authReady && <SignIn />
-        ) : (
-          <>
-            <section className="kpis">
-              <Kpi label="이번 주 활동" value={`${total.thisWeek}건`} sub={delta(total.thisWeek, total.lastWeek)} />
-              <Kpi label="진행 중" value={`${open.length}건`} sub="열려 있는 상담·할 일" />
-              <Kpi label={`밀린 일 (${STALE_DAYS}일+)`} value={`${total.stale}건`} sub={total.stale ? '먼저 처리할 것' : '밀린 일 없음'} tone={total.stale ? 'bad' : 'good'} />
-              <Kpi label="두 앱 공통 고객" value={`${shared.length}곳`} sub={total.amount ? `이번 달 금액 ${won(total.amount)}` : '교차 제안 대상'} />
-            </section>
-
-            <section className="apps">
-              {summaries.map((s) => {
-                const app = appById(s.app)!;
-                const idle = s.lastActivity ? daysSince(s.lastActivity, now) : undefined;
-                return (
-                  <article key={s.app} className="panel app-card" style={{ ['--app' as string]: app.color }}>
-                    <div className="app-head">
-                      <div>
-                        <h2>{app.name}</h2>
-                        <p className="muted">{app.description}</p>
-                      </div>
-                      {app.url ? (
-                        <a className="btn" href={app.url} target="_blank" rel="noreferrer">
-                          열기
-                        </a>
-                      ) : (
-                        <span className="muted small">주소 미설정</span>
-                      )}
-                    </div>
-                    <dl className="stats">
-                      <Stat label="이번 주" value={s.thisWeek} />
-                      <Stat label="진행 중" value={s.open} />
-                      <Stat label="밀린 일" value={s.stale} warn={s.stale > 0} />
-                      <Stat label="고객" value={s.clients} />
-                    </dl>
-                    {idle === undefined ? (
-                      <p className="callout">아직 들어온 활동이 없습니다. 이 앱에서 이벤트 전송을 켰는지 확인하세요.</p>
-                    ) : idle >= 3 ? (
-                      <p className="callout">마지막 활동이 {idle}일 전입니다.</p>
-                    ) : null}
-                    <ul className="feed">
-                      {s.recent.map((e) => (
-                        <FeedRow key={e.id} e={e} now={now} />
-                      ))}
-                    </ul>
-                  </article>
-                );
-              })}
-            </section>
-
-            <section className="two">
-              <TodoPanel items={open} now={now} onAdd={board.add} onToggle={board.toggle} />
-              <Timeline events={board.events} now={now} />
-            </section>
-
-            {shared.length > 0 && (
-              <section className="panel">
-                <div className="panel-head">
-                  <h2>두 앱에 모두 있는 고객</h2>
-                  <p className="muted">한쪽 서비스만 쓰는 고객보다 다음 제안을 하기 쉬운 곳입니다.</p>
-                </div>
-                <ul className="shared">
-                  {shared.map((c) => (
-                    <li key={c.name}>
-                      <strong>{c.name}</strong>
-                      <span className="tags">
-                        {c.apps.map((id) => (
-                          <AppTag key={id} id={id} />
-                        ))}
-                      </span>
-                      <span className="muted small">최근 {relDay(c.lastAt, now)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
-          </>
-        )}
-      </main>
+      <main className="main">{current ? <ServicePage svc={current} state={states[current.id]} now={now} /> : <Overview states={states} now={now} />}</main>
     </>
   );
 }
 
-function SourcePill({ mode }: { mode: 'demo' | 'signin' | 'live' }) {
-  const text = mode === 'live' ? '실시간 연결' : mode === 'signin' ? '로그인 필요' : '예시 데이터';
-  return <span className={`pill ${mode}`}>{text}</span>;
+function Overview({ states, now }: { states: Record<string, LoadState>; now: Date }) {
+  const alerts = useMemo(() => combinedAlerts(states, now), [states, now]);
+  const items = useMemo(() => combinedItems(states), [states]);
+  const shared = useMemo(() => sharedClients(states), [states]);
+  const [filter, setFilter] = useState('all');
+  const [showAll, setShowAll] = useState(false);
+  const counts = { ok: 0, demo: 0, error: 0 };
+  for (const s of Object.values(states)) if (s.status in counts) counts[s.status as keyof typeof counts]++;
+  const shown = (filter === 'all' ? items : items.filter((t) => t.service === filter)).slice(0, 20);
+
+  return (
+    <>
+      <section className="strip">
+        <Metric label="연결된 서비스" value={`${counts.ok} / ${SERVICES.length}`} sub={[counts.demo && `예시 ${counts.demo}`, counts.error && `오류 ${counts.error}`].filter(Boolean).join(' · ') || '모두 연결됨'} />
+        <Metric label="진행 중" value={`${countOpen(states)}건`} sub="모든 서비스의 열린 항목" />
+        <Metric label="확인할 알림" value={`${alerts.filter((a) => a.value.level !== 'info').length}건`} sub="주의·긴급" tone={alerts.some((a) => a.value.level === 'bad') ? 'bad' : undefined} />
+        <Metric label="공통 고객" value={`${shared.length}곳`} sub="둘 이상 서비스 이용" />
+      </section>
+
+      {alerts.length > 0 && (
+        <section className="panel">
+          <h2>확인할 것</h2>
+          <ul className="alerts">
+            {(showAll ? alerts : alerts.slice(0, ALERT_LIMIT)).map((a, i) => (
+              <AlertRow key={i} alert={a.value} service={a.service} />
+            ))}
+          </ul>
+          {alerts.length > ALERT_LIMIT && (
+            <button className="link small" onClick={() => setShowAll(!showAll)}>
+              {showAll ? '접기' : `${alerts.length - ALERT_LIMIT}건 더 보기`}
+            </button>
+          )}
+        </section>
+      )}
+
+      <section className="tiles">
+        {SERVICES.map((s) => (
+          <Tile key={s.id} svc={s} state={states[s.id]} now={now} />
+        ))}
+      </section>
+
+      <section className="two">
+        <div className="panel">
+          <div className="panel-head">
+            <h2>통합 최근 활동</h2>
+            <div className="seg" role="group" aria-label="서비스 필터">
+              {[{ id: 'all', name: '전체' }, ...SERVICES].map((s) => (
+                <button key={s.id} className={filter === s.id ? 'on' : ''} onClick={() => setFilter(s.id)}>
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          {shown.length ? (
+            <ul className="feed">
+              {shown.map((t, i) => (
+                <ItemRow key={i} item={t.value} now={now} service={filter === 'all' ? t.service : undefined} />
+              ))}
+            </ul>
+          ) : (
+            <p className="muted">활동이 없습니다.</p>
+          )}
+        </div>
+        <div className="panel">
+          <div className="panel-head">
+            <h2>공통 고객</h2>
+            <p className="muted small">여러 서비스에 등장한 고객 — 다음 제안 대상</p>
+          </div>
+          {shared.length ? (
+            <ul className="shared">
+              {shared.map((c) => (
+                <li key={c.name}>
+                  <strong>{c.name}</strong>
+                  <span>
+                    {c.services.map((id) => (
+                      <SvcTag key={id} id={id} />
+                    ))}
+                  </span>
+                  <span className="muted small">최근 {relDay(c.lastAt, now)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="muted">아직 없습니다.</p>
+          )}
+        </div>
+      </section>
+    </>
+  );
 }
 
-function Kpi({ label, value, sub, tone }: { label: string; value: string; sub: string; tone?: 'good' | 'bad' }) {
+function Tile({ svc, state, now }: { svc: ServiceDef; state: LoadState; now: Date }) {
+  const sum = summaryOf(state);
+  const topAlert = sum?.alerts.find((a) => a.level !== 'info');
   return (
-    <div className={`panel kpi ${tone ?? ''}`}>
-      <span className="kpi-label">{label}</span>
-      <strong className="kpi-value">{value}</strong>
-      <span className="kpi-sub">{sub}</span>
+    <article className="panel tile" style={{ ['--svc' as string]: svc.color }}>
+      <div className="tile-head">
+        <div>
+          <h2>{svc.name}</h2>
+          <p className="muted small">{svc.description}</p>
+        </div>
+        <StatusPill state={state} now={now} />
+      </div>
+      {state.status === 'loading' && <p className="muted">불러오는 중…</p>}
+      {state.status === 'error' && <p className="callout bad">요약을 불러오지 못했습니다: {state.error}</p>}
+      {sum && (
+        <>
+          <KpiGrid kpis={sum.kpis.slice(0, 4)} />
+          {topAlert && <p className={`callout ${topAlert.level}`}>{topAlert.message}</p>}
+          <ul className="feed compact">
+            {sum.items.slice(0, 3).map((it, i) => (
+              <ItemRow key={i} item={it} now={now} />
+            ))}
+          </ul>
+        </>
+      )}
+      <div className="tile-actions">
+        <a className="btn" href={`#/${svc.id}`}>
+          자세히
+        </a>
+        {svc.appUrl && (
+          <a className="btn" href={svc.appUrl} target="_blank" rel="noreferrer">
+            {svc.name} 대시보드 열기 ↗
+          </a>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function ServicePage({ svc, state, now }: { svc: ServiceDef; state: LoadState; now: Date }) {
+  const sum = summaryOf(state);
+  return (
+    <>
+      <section className="panel svc-head" style={{ ['--svc' as string]: svc.color }}>
+        <div>
+          <h2>{svc.name}</h2>
+          <p className="muted">{svc.description}</p>
+        </div>
+        <div className="row">
+          <StatusPill state={state} now={now} />
+          {svc.appUrl && (
+            <a className="btn primary" href={svc.appUrl} target="_blank" rel="noreferrer">
+              대시보드 열기 ↗
+            </a>
+          )}
+        </div>
+      </section>
+      {state.status === 'error' && <p className="callout bad">요약을 불러오지 못했습니다: {state.error}</p>}
+      {sum && (
+        <>
+          <KpiGrid kpis={sum.kpis} wide />
+          {sum.alerts.length > 0 && (
+            <section className="panel">
+              <h2>알림</h2>
+              <ul className="alerts">
+                {sum.alerts.map((a, i) => (
+                  <AlertRow key={i} alert={a} />
+                ))}
+              </ul>
+            </section>
+          )}
+          <section className="panel">
+            <h2>최근 활동</h2>
+            {sum.items.length ? (
+              <ul className="feed">
+                {[...sum.items].sort((a, b) => b.at.localeCompare(a.at)).map((it, i) => (
+                  <ItemRow key={i} item={it} now={now} />
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">활동이 없습니다.</p>
+            )}
+          </section>
+        </>
+      )}
+      {svc.embedUrl && (
+        <section className="panel embed">
+          <h2>{svc.name} 대시보드</h2>
+          <iframe src={svc.embedUrl} title={`${svc.name} 대시보드`} loading="lazy" />
+        </section>
+      )}
+    </>
+  );
+}
+
+function StatusPill({ state, now }: { state: LoadState; now: Date }) {
+  if (state.status === 'ok') return <span className="pill ok">연결됨 · {relDay(state.summary.updatedAt, now)} 갱신</span>;
+  if (state.status === 'demo') return <span className="pill demo">예시</span>;
+  if (state.status === 'error') return <span className="pill bad">오류</span>;
+  if (state.status === 'loading') return <span className="pill">불러오는 중</span>;
+  return <span className="pill">미연결</span>;
+}
+
+function Metric({ label, value, sub, tone }: { label: string; value: string; sub: string; tone?: 'bad' }) {
+  return (
+    <div className={`panel metric ${tone ?? ''}`}>
+      <span className="metric-label">{label}</span>
+      <strong className="metric-value">{value}</strong>
+      <span className="metric-sub">{sub}</span>
     </div>
   );
 }
 
-function Stat({ label, value, warn }: { label: string; value: number; warn?: boolean }) {
+function KpiGrid({ kpis, wide }: { kpis: Kpi[]; wide?: boolean }) {
+  if (!kpis.length) return null;
   return (
-    <div className={warn ? 'warn' : ''}>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
-    </div>
+    <dl className={wide ? 'kpis wide' : 'kpis'}>
+      {kpis.map((k) => (
+        <div key={k.label} className={k.tone ?? ''} title={k.hint}>
+          <dt>{k.label}</dt>
+          <dd>
+            {typeof k.value === 'number' ? k.value.toLocaleString('ko-KR') : k.value}
+            {k.unit && <small>{k.unit}</small>}
+          </dd>
+          {wide && k.hint && <span className="muted small">{k.hint}</span>}
+        </div>
+      ))}
+    </dl>
   );
 }
 
-function AppTag({ id }: { id: string }) {
-  const app = appById(id);
+function SvcTag({ id }: { id: string }) {
+  const s = serviceById(id);
   return (
-    <span className="app-tag" style={{ ['--app' as string]: app?.color ?? '#586b7b' }}>
-      {app?.name ?? id}
+    <span className="svc-tag" style={{ ['--svc' as string]: s?.color ?? '#586b7b' }}>
+      {s?.name ?? id}
     </span>
   );
 }
 
-function FeedRow({ e, now, withApp }: { e: OpsEvent; now: Date; withApp?: boolean }) {
-  const title = e.link ? (
-    <a href={e.link} target="_blank" rel="noreferrer">
-      {e.title}
+function AlertRow({ alert, service }: { alert: Alert; service?: string }) {
+  const text = alert.link ? (
+    <a href={alert.link} target="_blank" rel="noreferrer">
+      {alert.message}
     </a>
   ) : (
-    e.title
+    alert.message
   );
   return (
-    <li className={e.status === 'open' ? 'open' : ''}>
-      <span className="when">{relDay(e.at, now)}</span>
-      <span className="what">
-        {withApp && <AppTag id={e.app} />}
-        <span className="kind">{KIND_LABEL[e.kind]}</span>
-        {title}
-        {e.client && <span className="muted"> · {e.client}</span>}
-      </span>
-      {e.amount ? <span className="amount">{won(e.amount)}</span> : null}
+    <li className={alert.level}>
+      {service && <SvcTag id={service} />}
+      {text}
     </li>
   );
 }
 
-function TodoPanel({ items, now, onAdd, onToggle }: { items: OpsEvent[]; now: Date; onAdd: (app: string, title: string) => void; onToggle: (e: OpsEvent) => void }) {
-  const [title, setTitle] = useState('');
-  const [app, setApp] = useState(APPS[0].id);
-  const [done, setDone] = useState<OpsEvent[]>([]);
-
-  const submit = (ev: FormEvent) => {
-    ev.preventDefault();
-    if (!title.trim()) return;
-    onAdd(app, title.trim());
-    setTitle('');
-  };
-  const check = (e: OpsEvent) => {
-    setDone((d) => [e, ...d].slice(0, 3));
-    onToggle(e);
-  };
-
-  return (
-    <div className="panel">
-      <div className="panel-head">
-        <h2>할 일 · 진행 중</h2>
-        <p className="muted">두 앱의 열린 항목을 오래된 순으로 모았습니다.</p>
-      </div>
-      <form className="add" onSubmit={submit}>
-        <select value={app} onChange={(e) => setApp(e.target.value)} aria-label="앱">
-          {APPS.map((a) => (
-            <option key={a.id} value={a.id}>
-              {a.name}
-            </option>
-          ))}
-        </select>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="할 일 추가" aria-label="할 일" maxLength={300} />
-        <button className="btn primary" type="submit">
-          추가
-        </button>
-      </form>
-      {items.length === 0 ? (
-        <p className="muted">열린 항목이 없습니다.</p>
-      ) : (
-        <ul className="todos">
-          {items.map((e) => {
-            const age = daysSince(e.at, now);
-            return (
-              <li key={e.id} className={age >= STALE_DAYS ? 'stale' : ''}>
-                <label>
-                  <input type="checkbox" checked={false} onChange={() => check(e)} />
-                  <span>
-                    <AppTag id={e.app} /> {e.title}
-                    {e.client && <span className="muted"> · {e.client}</span>}
-                  </span>
-                </label>
-                <span className="age">{age <= 0 ? '오늘' : `${age}일째`}</span>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-      {done.length > 0 && (
-        <p className="muted small undo">
-          완료: {done[0].title}{' '}
-          <button className="link" onClick={() => { onToggle({ ...done[0], status: 'done' }); setDone((d) => d.slice(1)); }}>
-            되돌리기
-          </button>
-        </p>
-      )}
-    </div>
+function ItemRow({ item, now, service }: { item: Item; now: Date; service?: string }) {
+  const title = item.link ? (
+    <a href={item.link} target="_blank" rel="noreferrer">
+      {item.title}
+    </a>
+  ) : (
+    item.title
   );
-}
-
-function Timeline({ events, now }: { events: OpsEvent[]; now: Date }) {
-  const [filter, setFilter] = useState('all');
-  const list = sortByRecent(filter === 'all' ? events : events.filter((e) => e.app === filter)).slice(0, 25);
   return (
-    <div className="panel">
-      <div className="panel-head">
-        <h2>통합 타임라인</h2>
-        <div className="seg" role="group" aria-label="앱 필터">
-          {[{ id: 'all', name: '전체' }, ...APPS].map((a) => (
-            <button key={a.id} className={filter === a.id ? 'on' : ''} onClick={() => setFilter(a.id)}>
-              {a.name}
-            </button>
-          ))}
-        </div>
-      </div>
-      {list.length === 0 ? (
-        <p className="muted">활동이 없습니다.</p>
-      ) : (
-        <ul className="feed">
-          {list.map((e) => (
-            <FeedRow key={e.id} e={e} now={now} withApp={filter === 'all'} />
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-function SignIn() {
-  const [email, setEmail] = useState('');
-  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
-  const [msg, setMsg] = useState('');
-
-  const submit = async (ev: FormEvent) => {
-    ev.preventDefault();
-    if (!supabase) return;
-    setState('sending');
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + location.pathname, shouldCreateUser: false } });
-    if (error) {
-      setState('error');
-      setMsg(error.message);
-    } else setState('sent');
-  };
-
-  return (
-    <section className="panel signin">
-      <div className="panel-head">
-        <h2>로그인</h2>
-        <p className="muted">고객 정보가 들어 있어 등록된 이메일로만 볼 수 있습니다. 로그인 링크를 메일로 보내 드립니다.</p>
-      </div>
-      {state === 'sent' ? (
-        <p className="callout good">{email}로 로그인 링크를 보냈습니다. 메일의 링크를 누르면 이 화면으로 돌아옵니다.</p>
-      ) : (
-        <form className="add" onSubmit={submit}>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="이메일" aria-label="이메일" autoComplete="email" />
-          <button className="btn primary" type="submit" disabled={state === 'sending'}>
-            {state === 'sending' ? '보내는 중…' : '로그인 링크 받기'}
-          </button>
-        </form>
-      )}
-      {state === 'error' && <p className="callout bad">보내지 못했습니다: {msg}</p>}
-    </section>
+    <li className={item.status === 'open' ? 'open' : ''}>
+      <span className="when">{relDay(item.at, now)}</span>
+      <span className="what">
+        {service && <SvcTag id={service} />}
+        {item.kind && <span className="kind">{item.kind}</span>}
+        {title}
+        {item.client && <span className="muted"> · {item.client}</span>}
+      </span>
+      {item.amount ? <span className="amount">{won(item.amount)}</span> : null}
+    </li>
   );
 }

@@ -14,7 +14,3 @@ export function relDay(at: string, now: Date): string {
   return `${d1.getMonth() + 1}/${d1.getDate()}`;
 }
 
-export function delta(cur: number, prev: number): string {
-  if (cur === prev) return '지난주와 같음';
-  return cur > prev ? `지난주보다 +${cur - prev}` : `지난주보다 ${cur - prev}`;
-}
