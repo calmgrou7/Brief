@@ -244,3 +244,28 @@ def test_download_retries_transient_exchange_error(tmp_path, monkeypatch):
     df = backtest.download(cfg, 1, ex=FlakyExchange())
     assert FlakyExchange.calls >= 3
     assert len(df) > 0
+
+
+def test_trend_filter_blocks_counter_trend_long(tmp_path):
+    from bot.strategy import signal_from_rows
+
+    cfg = make_cfg(tmp_path)
+    prev = {"ema_fast": 99.0, "ema_slow": 100.0}
+    last = {"ema_fast": 101.0, "ema_slow": 100.0, "close": 102.0, "atr": 1.0, "rsi": 55.0,
+            "ema_trend": 110.0, "adx": 30.0}
+    assert signal_from_rows(prev, last, cfg).side == LONG  # filter off
+    cfg.trend_ema = 200
+    assert signal_from_rows(prev, last, cfg) is None  # price below long-term trend
+    last["ema_trend"] = 90.0
+    assert signal_from_rows(prev, last, cfg).side == LONG
+    cfg.adx_min = 35
+    assert signal_from_rows(prev, last, cfg) is None  # trend too weak
+
+
+def test_adx_filter_blocks_flat_market(tmp_path):
+    cfg = make_cfg(tmp_path, adx_min=25)
+    window = first_signal_window(make_cfg(tmp_path))
+    # a long flat stretch before the cross keeps ADX low
+    flat = candles([100 + (0.05 if i % 2 else -0.05) for i in range(200)])
+    shifted = [[r[0] + 200 * 900_000] + r[1:] for r in window[-25:]]
+    assert generate_signal(ohlcv_to_df(flat + shifted), cfg) is None

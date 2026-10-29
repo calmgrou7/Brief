@@ -46,21 +46,46 @@ def atr(df: pd.DataFrame, period: int) -> pd.Series:
     return tr.ewm(alpha=1 / period, adjust=False).mean()
 
 
+def adx(df: pd.DataFrame, period: int) -> pd.Series:
+    """Wilder's ADX: trend strength (0-100) regardless of direction."""
+    up = df["high"].diff()
+    down = -df["low"].diff()
+    plus_dm = up.where((up > down) & (up > 0), 0.0)
+    minus_dm = down.where((down > up) & (down > 0), 0.0)
+    atr_w = atr(df, period)
+    plus_di = 100 * plus_dm.ewm(alpha=1 / period, adjust=False).mean() / atr_w
+    minus_di = 100 * minus_dm.ewm(alpha=1 / period, adjust=False).mean() / atr_w
+    dx = (100 * (plus_di - minus_di).abs() / (plus_di + minus_di)).fillna(0)
+    return dx.ewm(alpha=1 / period, adjust=False).mean()
+
+
 def add_indicators(df: pd.DataFrame, cfg) -> pd.DataFrame:
     df = df.copy()
     df["ema_fast"] = ema(df["close"], cfg.ema_fast)
     df["ema_slow"] = ema(df["close"], cfg.ema_slow)
     df["rsi"] = rsi(df["close"], cfg.rsi_period)
     df["atr"] = atr(df, cfg.atr_period)
+    if cfg.trend_ema > 0:
+        df["ema_trend"] = ema(df["close"], cfg.trend_ema)
+    if cfg.adx_min > 0:
+        df["adx"] = adx(df, cfg.adx_period)
     return df
+
+
+def warmup_bars(cfg) -> int:
+    return max(cfg.ema_slow, cfg.trend_ema) + 2
 
 
 def generate_signal(df: pd.DataFrame, cfg) -> Optional[Signal]:
     """Return a Signal if the last closed candle produced an EMA cross."""
-    if len(df) < cfg.ema_slow + 2:
+    if len(df) < warmup_bars(cfg):
         return None
     df = add_indicators(df, cfg)
-    prev, last = df.iloc[-2], df.iloc[-1]
+    return signal_from_rows(df.iloc[-2], df.iloc[-1], cfg)
+
+
+def signal_from_rows(prev, last, cfg) -> Optional[Signal]:
+    """Evaluate two consecutive rows that already carry indicator columns."""
     entry = float(last["close"])
     dist_sl = float(last["atr"]) * cfg.sl_atr_mult
     dist_tp = float(last["atr"]) * cfg.tp_atr_mult
@@ -69,6 +94,13 @@ def generate_signal(df: pd.DataFrame, cfg) -> Optional[Signal]:
 
     crossed_up = prev["ema_fast"] <= prev["ema_slow"] and last["ema_fast"] > last["ema_slow"]
     crossed_down = prev["ema_fast"] >= prev["ema_slow"] and last["ema_fast"] < last["ema_slow"]
+
+    # Optional filters: trade only with the long-term trend, and only when a trend exists at all.
+    if cfg.trend_ema > 0:
+        crossed_up = crossed_up and last["close"] > last["ema_trend"]
+        crossed_down = crossed_down and last["close"] < last["ema_trend"]
+    if cfg.adx_min > 0 and last["adx"] < cfg.adx_min:
+        return None
 
     if crossed_up and last["rsi"] < cfg.rsi_overbought:
         return Signal(LONG, entry, entry - dist_sl, entry + dist_tp,

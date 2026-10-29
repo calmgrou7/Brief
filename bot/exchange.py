@@ -54,7 +54,7 @@ class BybitFutures:
                 raise
         log.info("레버리지 %dx 설정 완료 (%s)", self.cfg.leverage, self.symbol)
 
-    def fetch_closed_candles(self, limit: int = 300) -> list:
+    def fetch_closed_candles(self, limit: int = 1000) -> list:
         """OHLCV rows with the still-forming last candle removed."""
         ohlcv = retry(self.client.fetch_ohlcv, self.symbol, self.cfg.timeframe, limit=limit)
         return ohlcv[:-1] if ohlcv else []

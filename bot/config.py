@@ -44,6 +44,9 @@ class Config:
     atr_period: int
     sl_atr_mult: float
     tp_atr_mult: float
+    trend_ema: int
+    adx_period: int
+    adx_min: float
 
     # Risk
     risk_per_trade: float
@@ -77,6 +80,9 @@ class Config:
             atr_period=_int("ATR_PERIOD", 14),
             sl_atr_mult=_float("SL_ATR_MULT", 1.5),
             tp_atr_mult=_float("TP_ATR_MULT", 3.0),
+            trend_ema=_int("TREND_EMA", 0),
+            adx_period=_int("ADX_PERIOD", 14),
+            adx_min=_float("ADX_MIN", 0),
             risk_per_trade=_float("RISK_PER_TRADE", 0.01),
             max_daily_loss=_float("MAX_DAILY_LOSS", 0.05),
             max_position_pct=_float("MAX_POSITION_PCT", 0.9),

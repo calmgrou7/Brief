@@ -14,7 +14,7 @@ import pandas as pd
 
 from bot.config import Config
 from bot.risk import position_size
-from bot.strategy import LONG, generate_signal, ohlcv_to_df
+from bot.strategy import LONG, add_indicators, ohlcv_to_df, signal_from_rows, warmup_bars
 
 TAKER_FEE = 0.00055
 
@@ -53,16 +53,20 @@ def download(cfg: Config, days: int, ex=None) -> pd.DataFrame:
     return df.iloc[:-1].reset_index(drop=True)  # drop the forming candle
 
 
-def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) -> dict:
+def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0,
+                 start: int = 0, end: int | None = None, entry_fee_rate: float = TAKER_FEE) -> dict:
+    """Simulate trading on df[start:end]. Indicators use the whole history before each bar,
+    like the live bot, so a later test window is warmed up by the data before it."""
     equity = start_equity
     peak = equity
     max_dd = 0.0
     trades = []
     pos = None
-    warmup = cfg.ema_slow + 2
+    end = len(df) if end is None else end
+    ind = add_indicators(df, cfg)
 
-    for i in range(warmup, len(df)):
-        bar = df.iloc[i]
+    for i in range(max(start, warmup_bars(cfg)), end):
+        bar = ind.iloc[i]
         if pos:
             exit_price = None
             if pos["side"] == LONG:
@@ -79,7 +83,7 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
                 equity += _close(pos, exit_price, trades)
                 pos = None
 
-        sig = generate_signal(df.iloc[max(0, i - 300): i + 1], cfg)
+        sig = signal_from_rows(ind.iloc[i - 1], bar, cfg)
         if sig:
             if pos and pos["side"] == sig.side:
                 pass
@@ -90,7 +94,7 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
                 qty = position_size(equity, sig.entry, sig.stop_loss, cfg.leverage,
                                     cfg.risk_per_trade, cfg.max_position_pct)
                 if qty > 0:
-                    entry_fee = qty * sig.entry * TAKER_FEE
+                    entry_fee = qty * sig.entry * entry_fee_rate
                     equity -= entry_fee
                     pos = {"side": sig.side, "qty": qty, "entry": sig.entry,
                            "sl": sig.stop_loss, "tp": sig.take_profit, "entry_fee": entry_fee}
@@ -99,7 +103,7 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
         max_dd = max(max_dd, (peak - equity) / peak if peak > 0 else 0)
 
     if pos:
-        equity += _close(pos, float(df.iloc[-1]["close"]), trades)
+        equity += _close(pos, float(ind.iloc[end - 1]["close"]), trades)
 
     fees = [t[1] for t in trades]
     trades = [t[0] for t in trades]
@@ -112,7 +116,7 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
         "win_rate_pct": round(len(wins) / len(trades) * 100, 1) if trades else 0.0,
         "max_drawdown_pct": round(max_dd * 100, 2),
         "fees_paid": round(sum(fees), 2),
-        "candles": len(df),
+        "candles": end - start,
     }
 
 
