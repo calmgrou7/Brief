@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   PURPOSE_LABELS,
   consultingQuestions,
@@ -36,6 +36,16 @@ const DISCLAIMER =
 
 export function ReportView({ file, update, analyses, advisor, setAdvisor }: CaseProps & { advisor: Advisor; setAdvisor: (a: Advisor) => void }) {
   const [doc, setDoc] = useState<Doc>('ceo');
+  const [printAll, setPrintAll] = useState(false);
+  useEffect(() => {
+    const done = () => setPrintAll(false);
+    addEventListener('afterprint', done);
+    return () => removeEventListener('afterprint', done);
+  }, []);
+  useEffect(() => {
+    // 3종 모두 출력: 세 문서를 화면에 그린 다음 인쇄 창을 연다
+    if (printAll) requestAnimationFrame(() => window.print());
+  }, [printAll]);
   const a = analyses[file.activeScenario];
   const today = new Date().toLocaleDateString('ko-KR');
 
@@ -99,9 +109,14 @@ export function ReportView({ file, update, analyses, advisor, setAdvisor }: Case
             ))}
           </div>
           {!inFrame && (
-            <button className="btn primary" onClick={() => window.print()}>
-              PDF로 저장
-            </button>
+            <div className="print-actions">
+              <button className="btn primary" onClick={() => window.print()}>
+                출력
+              </button>
+              <button className="btn" onClick={() => setPrintAll(true)}>
+                3종 모두 출력
+              </button>
+            </div>
           )}
         </div>
         <div className="form-grid">
@@ -124,13 +139,17 @@ export function ReportView({ file, update, analyses, advisor, setAdvisor }: Case
             <input id="adv-phone" value={advisor.phone} onChange={(e) => setAdvisor({ ...advisor, phone: e.target.value })} />
           </div>
         </div>
-        {inFrame && <p className="muted small">PDF 저장은 설치형(웹 배포) 버전에서 사용할 수 있습니다.</p>}
+        {inFrame ? (
+          <p className="frame-note">이 미리보기 화면에서는 브라우저가 출력을 막습니다. 내려받은 채움 파일(또는 웹 배포 버전)에서 열면 출력 버튼이 나타납니다.</p>
+        ) : (
+          <p className="muted small">출력 창에서 프린터를 고르면 바로 인쇄되고, 'PDF로 저장'을 고르면 A4 PDF 파일이 됩니다.</p>
+        )}
       </section>
 
       <div className="paper-stack">
-        {doc === 'ceo' && <CeoReport file={file} analyses={analyses} a={a} advisor={advisor} today={today} />}
-        {doc === 'firm' && <FirmLetter file={file} a={a} today={today} />}
-        {doc === 'note' && <AdvisorNote file={file} a={a} />}
+        {(printAll || doc === 'ceo') && <CeoReport file={file} analyses={analyses} a={a} advisor={advisor} today={today} />}
+        {(printAll || doc === 'firm') && <FirmLetter file={file} a={a} today={today} />}
+        {(printAll || doc === 'note') && <AdvisorNote file={file} a={a} />}
       </div>
     </div>
   );

@@ -1204,3 +1204,18 @@ tfoot .unit-row td {
     -webkit-print-color-adjust: exact;
   }
 }
+
+.print-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.print-actions .btn.primary {
+  min-width: 96px;
+}
+.frame-note {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--caution-soft);
+}
