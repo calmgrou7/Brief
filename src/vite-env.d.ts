@@ -1,0 +1,4 @@
+interface ImportMetaEnv {
+  readonly VITE_APP_NAME?: string
+  readonly VITE_CHECKOUT_URL: string
+}
