@@ -1,0 +1,124 @@
+"""Backtest the strategy on historical candles.
+
+    python backtest.py --days 90                 # downloads Bybit public candles (no API key needed)
+    python backtest.py --csv data/btc_15m.csv    # or uses a CSV: timestamp,open,high,low,close,volume
+
+Assumptions: entry at the signal candle's close, SL/TP checked against later candles'
+high/low (stop loss first when both are touched in one candle), taker fee on both sides.
+"""
+import argparse
+import time
+
+import pandas as pd
+
+from bot.config import Config
+from bot.risk import position_size
+from bot.strategy import LONG, generate_signal, ohlcv_to_df
+
+TAKER_FEE = 0.00055
+
+
+def download(cfg: Config, days: int) -> pd.DataFrame:
+    import ccxt
+
+    ex = ccxt.bybit({"enableRateLimit": True, "options": {"defaultType": "swap"}})
+    tf_ms = ex.parse_timeframe(cfg.timeframe) * 1000
+    since = ex.milliseconds() - days * 24 * 60 * 60 * 1000
+    rows = []
+    while since < ex.milliseconds() - tf_ms:
+        batch = ex.fetch_ohlcv(cfg.symbol, cfg.timeframe, since=since, limit=1000)
+        if not batch:
+            break
+        rows += batch
+        since = batch[-1][0] + tf_ms
+        time.sleep(ex.rateLimit / 1000)
+    df = ohlcv_to_df(rows).drop_duplicates("timestamp")
+    return df.iloc[:-1].reset_index(drop=True)  # drop the forming candle
+
+
+def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) -> dict:
+    equity = start_equity
+    peak = equity
+    max_dd = 0.0
+    trades = []
+    pos = None
+    warmup = cfg.ema_slow + 2
+
+    for i in range(warmup, len(df)):
+        bar = df.iloc[i]
+        if pos:
+            exit_price = None
+            if pos["side"] == LONG:
+                if bar["low"] <= pos["sl"]:
+                    exit_price = pos["sl"]
+                elif bar["high"] >= pos["tp"]:
+                    exit_price = pos["tp"]
+            else:
+                if bar["high"] >= pos["sl"]:
+                    exit_price = pos["sl"]
+                elif bar["low"] <= pos["tp"]:
+                    exit_price = pos["tp"]
+            if exit_price is not None:
+                equity += _close(pos, exit_price, trades)
+                pos = None
+
+        sig = generate_signal(df.iloc[max(0, i - 300): i + 1], cfg)
+        if sig:
+            if pos and pos["side"] == sig.side:
+                pass
+            else:
+                if pos:
+                    equity += _close(pos, sig.entry, trades)
+                    pos = None
+                qty = position_size(equity, sig.entry, sig.stop_loss, cfg.leverage,
+                                    cfg.risk_per_trade, cfg.max_position_pct)
+                if qty > 0:
+                    equity -= qty * sig.entry * TAKER_FEE
+                    pos = {"side": sig.side, "qty": qty, "entry": sig.entry,
+                           "sl": sig.stop_loss, "tp": sig.take_profit}
+
+        peak = max(peak, equity)
+        max_dd = max(max_dd, (peak - equity) / peak if peak > 0 else 0)
+
+    if pos:
+        equity += _close(pos, float(df.iloc[-1]["close"]), trades)
+
+    wins = [t for t in trades if t > 0]
+    return {
+        "start_equity": start_equity,
+        "end_equity": round(equity, 2),
+        "return_pct": round((equity / start_equity - 1) * 100, 2),
+        "trades": len(trades),
+        "win_rate_pct": round(len(wins) / len(trades) * 100, 1) if trades else 0.0,
+        "max_drawdown_pct": round(max_dd * 100, 2),
+        "candles": len(df),
+    }
+
+
+def _close(pos: dict, price: float, trades: list) -> float:
+    direction = 1 if pos["side"] == LONG else -1
+    pnl = (price - pos["entry"]) * pos["qty"] * direction - pos["qty"] * price * TAKER_FEE
+    trades.append(pnl)
+    return pnl
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--days", type=int, default=90)
+    parser.add_argument("--csv")
+    parser.add_argument("--equity", type=float, default=1000.0)
+    args = parser.parse_args()
+
+    cfg = Config.from_env()
+    df = pd.read_csv(args.csv) if args.csv else download(cfg, args.days)
+    result = run_backtest(df, cfg, args.equity)
+    print(f"\n=== 백테스트 결과: {cfg.symbol} {cfg.timeframe}, {cfg.leverage}x ===")
+    labels = {"start_equity": "시작 잔고", "end_equity": "최종 잔고", "return_pct": "수익률(%)",
+              "trades": "거래 수", "win_rate_pct": "승률(%)", "max_drawdown_pct": "최대 낙폭(%)",
+              "candles": "캔들 수"}
+    for k, v in result.items():
+        print(f"{labels[k]:>10}: {v}")
+
+
+if __name__ == "__main__":
+    main()
