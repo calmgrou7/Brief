@@ -73,9 +73,10 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
                 qty = position_size(equity, sig.entry, sig.stop_loss, cfg.leverage,
                                     cfg.risk_per_trade, cfg.max_position_pct)
                 if qty > 0:
-                    equity -= qty * sig.entry * TAKER_FEE
+                    entry_fee = qty * sig.entry * TAKER_FEE
+                    equity -= entry_fee
                     pos = {"side": sig.side, "qty": qty, "entry": sig.entry,
-                           "sl": sig.stop_loss, "tp": sig.take_profit}
+                           "sl": sig.stop_loss, "tp": sig.take_profit, "entry_fee": entry_fee}
 
         peak = max(peak, equity)
         max_dd = max(max_dd, (peak - equity) / peak if peak > 0 else 0)
@@ -83,6 +84,8 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
     if pos:
         equity += _close(pos, float(df.iloc[-1]["close"]), trades)
 
+    fees = [t[1] for t in trades]
+    trades = [t[0] for t in trades]
     wins = [t for t in trades if t > 0]
     return {
         "start_equity": start_equity,
@@ -91,14 +94,16 @@ def run_backtest(df: pd.DataFrame, cfg: Config, start_equity: float = 1000.0) ->
         "trades": len(trades),
         "win_rate_pct": round(len(wins) / len(trades) * 100, 1) if trades else 0.0,
         "max_drawdown_pct": round(max_dd * 100, 2),
+        "fees_paid": round(sum(fees), 2),
         "candles": len(df),
     }
 
 
 def _close(pos: dict, price: float, trades: list) -> float:
     direction = 1 if pos["side"] == LONG else -1
-    pnl = (price - pos["entry"]) * pos["qty"] * direction - pos["qty"] * price * TAKER_FEE
-    trades.append(pnl)
+    exit_fee = pos["qty"] * price * TAKER_FEE
+    pnl = (price - pos["entry"]) * pos["qty"] * direction - exit_fee
+    trades.append((pnl, pos["entry_fee"] + exit_fee))
     return pnl
 
 
@@ -114,7 +119,7 @@ def main() -> None:
     result = run_backtest(df, cfg, args.equity)
     print(f"\n=== 백테스트 결과: {cfg.symbol} {cfg.timeframe}, {cfg.leverage}x ===")
     labels = {"start_equity": "시작 잔고", "end_equity": "최종 잔고", "return_pct": "수익률(%)",
-              "trades": "거래 수", "win_rate_pct": "승률(%)", "max_drawdown_pct": "최대 낙폭(%)",
+              "trades": "거래 수", "win_rate_pct": "승률(%)", "max_drawdown_pct": "최대 낙폭(%)", "fees_paid": "낸 수수료",
               "candles": "캔들 수"}
     for k, v in result.items():
         print(f"{labels[k]:>10}: {v}")
