@@ -7,3 +7,5 @@ next-env.d.ts
 .env
 # 실제 고객 광고계정 설정 (예시는 clients.config.example.json)
 clients.config.json
+# 로컬 결정 기록 (2단계에서 Supabase로 이동)
+.data/

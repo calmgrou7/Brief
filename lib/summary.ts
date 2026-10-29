@@ -7,7 +7,6 @@ import {
   kpiStatus,
   metricsByAd,
   sumMetrics,
-  ZERO,
   type Kpis,
   type Verdict,
 } from "./kpi";
@@ -88,72 +87,6 @@ export function adPerformance({ client, ads, rows }: ClientInput, range: DateRan
     })
     .filter((a) => a.kpis.spend > 0)
     .sort((a, b) => b.kpis.spend - a.kpis.spend);
-}
-
-export interface Insight {
-  tone: Status;
-  text: string;
-}
-
-const won = (n: number) => `${Math.round(n).toLocaleString("ko-KR")}원`;
-const pct = (n: number) => `${Math.round(n * 100)}%`;
-
-/**
- * 규칙 기반 인사이트. 5단계에서 분석 에이전트(LLM)가 이 자리를 대체하되,
- * 같은 근거 데이터를 입력으로 받는다.
- */
-export function insights(input: ClientInput, range: DateRange): Insight[] {
-  const { client, rows, anchor } = input;
-  const out: Insight[] = [];
-  const perf = adPerformance(input, range);
-  const unit = client.objective === "purchase" ? "CPA" : "CPL";
-
-  const winners = perf.filter((a) => a.verdict === "winner" && a.kpis.cpa != null);
-  const best = winners.sort((a, b) => (a.kpis.cpa ?? 0) - (b.kpis.cpa ?? 0))[0];
-  if (best?.kpis.cpa != null) {
-    out.push({
-      tone: "good",
-      text: `‘${best.name}’ 소재의 ${unit}가 ${won(best.kpis.cpa)}로 목표보다 ${pct(1 - best.kpis.cpa / client.targetCpa)} 낮습니다. 예산 증액 후보입니다.`,
-    });
-  }
-
-  for (const a of perf.filter((p) => p.verdict === "pause")) {
-    const detail = a.kpis.cpa != null ? `${unit} ${won(a.kpis.cpa)}` : "전환 0건";
-    out.push({
-      tone: "critical",
-      text: `‘${a.name}’ 소재는 ${won(a.kpis.spend)}를 썼지만 ${detail}입니다. 일시중지를 권장합니다.`,
-    });
-  }
-
-  // 소재 피로도: 최근 7일 CTR이 그 전 7일보다 20% 넘게 떨어진 소재
-  const last7 = presetRange("7d", anchor);
-  const prev7 = { since: addDays(last7.since, -7), until: addDays(last7.since, -1) };
-  const now = metricsByAd(inRange(rows, last7));
-  const before = metricsByAd(inRange(rows, prev7));
-  for (const a of input.ads) {
-    const n = deriveKpis(now.get(a.id) ?? ZERO, client.objective).ctr;
-    const b = deriveKpis(before.get(a.id) ?? ZERO, client.objective).ctr;
-    if (n != null && b != null && n < b * 0.8) {
-      out.push({
-        tone: "warning",
-        text: `‘${a.name}’ 소재의 CTR이 지난주보다 ${pct(1 - n / b)} 떨어졌습니다. 소재 피로도가 의심되니 새 변형을 준비하세요.`,
-      });
-    }
-  }
-
-  const m = monthSummary(input);
-  if (m.pace !== "on") {
-    const ratio = m.projectedSpend / client.monthlyBudget;
-    out.push({
-      tone: "warning",
-      text:
-        m.pace === "over"
-          ? `지금 속도면 월말 광고비가 ${won(m.projectedSpend)}로 예산의 ${pct(ratio)}입니다. 일 예산 조정이 필요합니다.`
-          : `지금 속도면 월말 광고비가 예산의 ${pct(ratio)}에 그칩니다. 성과 좋은 소재에 예산을 더 배정할 여유가 있습니다.`,
-    });
-  }
-
-  return out;
 }
 
 export function monthLabel(anchor: string): string {

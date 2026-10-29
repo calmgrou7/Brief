@@ -2,12 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CpaChart, SpendChart } from "@/components/charts";
 import { count, multiple, percent, won, wonShort } from "@/components/format";
+import { DecisionCard } from "@/components/decision-card";
 import { Card, Delta, StatusBadge } from "@/components/ui";
 import { getClientData } from "@/lib/data";
+import { isOpen, loadRecords } from "@/lib/decision-store";
+import { decisionsFor, rankDecisions } from "@/lib/decisions";
 import { isPreset, presetRange, previousRange, PRESET_LABEL } from "@/lib/dates";
 import { describeContract } from "@/lib/finance";
 import { dailySeries, delta, deriveKpis, funnel, inRange, kpiStatus, sumMetrics, type Verdict } from "@/lib/kpi";
-import { adPerformance, insights } from "@/lib/summary";
+import { adPerformance } from "@/lib/summary";
 import type { RangePreset, Status } from "@/lib/types";
 
 const VERDICT: Record<Verdict, { status: Status | "neutral"; label: string }> = {
@@ -36,7 +39,8 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
   const stages = funnel(metrics, client.objective);
   const series = dailySeries(rows, range, client.objective).map((d) => ({ date: d.date, spend: d.spend, cpa: d.cpa }));
   const ads = adPerformance(data, range);
-  const notes = insights(data, range);
+  const records = await loadRecords();
+  const decisions = rankDecisions(decisionsFor(data)).filter((d) => isOpen(records[d.id], anchor));
 
   const isPurchase = client.objective === "purchase";
   const unit = isPurchase ? "CPA" : "CPL";
@@ -72,6 +76,17 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
         {range.since} ~ {range.until}
         {preset === "mtd" ? " (오늘은 집계 중)" : ""} · 비교: 직전 같은 기간 ({prev.since} ~ {prev.until})
       </p>
+
+      {decisions.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold">
+            이 고객의 결정 <span className="text-muted">{decisions.length}건</span>
+          </h2>
+          {decisions.map((d, i) => (
+            <DecisionCard key={d.id} d={d} rank={i + 1} showClient={false} />
+          ))}
+        </section>
+      )}
 
       <Card title="마케팅 퍼널" aside="광고비가 매출이 되기까지">
         <ol className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
@@ -115,21 +130,6 @@ export default async function ClientPage({ params, searchParams }: { params: Pro
           <CpaChart data={series} target={client.targetCpa} label={unit} />
         </Card>
       </div>
-
-      {notes.length > 0 && (
-        <Card title="이번 기간 인사이트" aside="규칙 기반 자동 분석">
-          <ul className="space-y-2">
-            {notes.map((n, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm leading-relaxed">
-                <span className="mt-0.5">
-                  <StatusBadge status={n.tone} label="" />
-                </span>
-                <span>{n.text}</span>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      )}
 
       <Card title="소재별 성과" aside={`${ads.length}개 · 광고비 순`}>
         <div className="-mx-4 overflow-x-auto px-4 sm:-mx-5 sm:px-5">
