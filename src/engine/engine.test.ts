@@ -195,6 +195,34 @@ describe('지표 쉬운 설명과 종합 판정', async () => {
     const a = analyze(sampleStatements, sampleCompany, { method: 'simple', remainingRevenue: 0 }, emptyLevers());
     const v = verdict(a.rows, 'projected');
     expect(v.grade).toBe('위험');
-    expect(v.line).toBe('매출이 2.6% 줄었고 가지급금이 많습니다(자산의 10.4%). 미달 2개·주의 6개로, 결산 전 개선 계획이 꼭 필요합니다.');
+    expect(v.line).toBe('매출이 2.6% 줄었고 가지급금이 많습니다(자산의 10.4%). 미달 2개·주의 6개로, 결산 전에 개선 계획이 꼭 필요합니다.');
+    expect(verdict(a.rows, 'projected', true).line).toContain('다음 결산까지 개선 계획');
+  });
+});
+
+describe('확정 결산·개인사업자', () => {
+  it('확정 결산은 추정 없이 그대로, 신고 법인세 유지', () => {
+    const cs = { ...sampleStatements, interimDate: '2025-12-31', current: sampleStatements.prior };
+    const a = analyze(cs, sampleCompany, { method: 'final', remainingRevenue: 0 }, emptyLevers());
+    expect(a.final).toBe(true);
+    expect(a.projected.is).toEqual(sampleStatements.prior.is);
+    expect(a.scenario.is.incomeTax).toBe(62 * M);
+    // 비용을 늘리면 세전이익 변화분만큼만 세금이 줄어든다
+    const b = analyze(cs, sampleCompany, { method: 'final', remainingRevenue: 0 }, { ...emptyLevers(), expenseAdd: 100 * M });
+    const p = TAX_PARAMETERS[2025];
+    expect(b.scenario.is.incomeTax).toBe(62 * M + estimateCorporateTax(300 * M, p) - estimateCorporateTax(400 * M, p));
+    expect(totals(b.scenario.bs).imbalance).toBe(0);
+  });
+
+  it('개인사업자: 세금을 재무제표에 넣지 않고 종합소득세를 따로 추정', async () => {
+    const { estimatePersonalIncomeTax } = await import('./params');
+    const person = { ...sampleCompany, entity: 'individual' as const };
+    const a = analyze(sampleStatements, person, { method: 'simple', remainingRevenue: 0 }, emptyLevers());
+    expect(a.projected.is.incomeTax).toBe(0);
+    expect(a.rows.some((r) => r.key === 'capitalImpairment' || r.key === 'officerLoanShare')).toBe(false);
+    expect(a.personalTax).toBe(estimatePersonalIncomeTax(profit(a.scenario.is).pretaxIncome, p2026));
+    // 과세표준 1억: 1,400만×6% + 3,600만×15% + 3,800만×24% + 1,200만×35% = 1,956만 → 지방세 포함 2,151.6만
+    expect(estimatePersonalIncomeTax(100 * M, p2026)).toBe(21_516_000);
+    expect(totals(a.scenario.bs).imbalance).toBe(0);
   });
 });

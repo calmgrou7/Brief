@@ -146,7 +146,7 @@ export function ClientsView({ state, setState, open, addCase, inFrame }: Props) 
                       {c.company.name}
                     </button>
                     <span className="hint">
-                      {[c.company.ceo && `대표 ${c.company.ceo}`, c.company.industry, s.hasData && `기준일 ${c.statements.interimDate}`].filter(Boolean).join(' · ')}
+                      {[c.company.ceo && `대표 ${c.company.ceo}`, c.company.industry, s.hasData && `${c.projection.method === 'final' ? '결산' : '가결산'} ${c.statements.interimDate}`].filter(Boolean).join(' · ')}
                       {c.isSample && ' · 예시'}
                     </span>
                   </th>

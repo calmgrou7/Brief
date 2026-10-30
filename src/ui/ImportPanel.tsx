@@ -50,6 +50,8 @@ export function ImportPanel({ onApply }: { onApply: (patch: (c: CaseFile) => Cas
               ...c,
               isSample: false,
               company: { ...c.company, name: result.companyName ?? c.company.name },
+              // 12월 31일 기준이면 신고 후 확정 결산으로 본다
+              projection: result.interimDate?.endsWith('-12-31') ? { ...c.projection, method: 'final' } : c.projection.method === 'final' ? { ...c.projection, method: 'simple' } : c.projection,
               statements: {
                 interimDate: result.interimDate ?? c.statements.interimDate,
                 current: { bs: current, is: result.income.current },

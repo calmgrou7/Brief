@@ -63,7 +63,7 @@ export function clientSummary(c: {
   const t = totals(a.projected.bs);
   return {
     hasData,
-    grade: verdict(a.rows, 'projected').grade as Grade | null,
+    grade: verdict(a.rows, 'projected', c.projection.method === 'final').grade as Grade | null,
     bad: a.rows.filter((r) => r.projectedSignal === 'bad').length,
     caution: a.rows.filter((r) => r.projectedSignal === 'caution').length,
     debtRatio: ratio('debtRatio') ?? (t.equity > 0 ? t.liabilities / t.equity : null),

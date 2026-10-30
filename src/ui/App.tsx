@@ -81,7 +81,7 @@ export function App() {
           <div className="brand">
             <span className="brand-mark">채움</span>
             <span className="brand-ver">ver2.1</span>
-            <span className="brand-sub">가결산 진단</span>
+            <span className="brand-sub">결산·가결산 진단</span>
           </div>
           <div className="case-picker">
             <label htmlFor="case-select" className="sr-only">

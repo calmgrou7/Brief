@@ -62,7 +62,9 @@ export function applyScenario(
   lv: ScenarioLevers,
   params: TaxParameters,
   monthsElapsed: number,
+  bookTax = true,
 ): ScenarioResult {
+  const basePretax = profit(base.is).pretaxIncome;
   const bs = { ...base.bs };
   const is = { ...base.is };
   const warnings: string[] = [];
@@ -156,9 +158,9 @@ export function applyScenario(
     }
   }
 
-  const newTax = estimateCorporateTax(profit(is).pretaxIncome, params);
-  const taxDelta = newTax - is.incomeTax;
-  is.incomeTax = newTax;
+  // 세전이익 변화분만큼 법인세를 더하거나 뺀다(확정 결산의 신고 세액은 그대로 두고 차이만 반영)
+  const taxDelta = bookTax ? estimateCorporateTax(profit(is).pretaxIncome, params) - estimateCorporateTax(basePretax, params) : 0;
+  is.incomeTax += taxDelta;
   bs.otherCurrentLiabilities += taxDelta;
   bs.retainedEarnings -= taxDelta;
 

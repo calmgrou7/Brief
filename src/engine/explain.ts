@@ -87,7 +87,8 @@ export type Grade = '양호' | '보통' | '주의' | '위험';
 const rank: Record<Signal, number> = { bad: 0, caution: 1, good: 2, na: 3 };
 
 /** 지표 여러 개를 대표님이 한 번에 이해할 한 줄로 */
-export function verdict(rows: RatioRow[], col: 'projected' | 'scenario' | 'prior'): { grade: Grade; line: string } {
+export function verdict(rows: RatioRow[], col: 'projected' | 'scenario' | 'prior', final = false): { grade: Grade; line: string } {
+  const when = final ? '다음 결산까지' : '결산 전에';
   const sig = (r: RatioRow) => r[`${col}Signal`];
   const bad = rows.filter((r) => sig(r) === 'bad');
   const caution = rows.filter((r) => sig(r) === 'caution');
@@ -100,9 +101,9 @@ export function verdict(rows: RatioRow[], col: 'projected' | 'scenario' | 'prior
   const issues = top.join(' ').replace(/고$/, '습니다').replace(/고(\([^)]*\))$/, '습니다$1');
   const tail =
     grade === '보통'
-      ? '큰 문제는 없지만 결산 전에 관리하면 심사에 더 유리합니다.'
+      ? `큰 문제는 없지만 ${when} 관리하면 심사에 더 유리합니다.`
       : grade === '주의'
-        ? '정책자금·대출 심사에서 먼저 지적될 수 있어 결산 전 조치가 필요합니다.'
-        : `미달 ${bad.length}개·주의 ${caution.length}개로, 결산 전 개선 계획이 꼭 필요합니다.`;
+        ? `정책자금·대출 심사에서 먼저 지적될 수 있어 ${when} 조치가 필요합니다.`
+        : `미달 ${bad.length}개·주의 ${caution.length}개로, ${when} 개선 계획이 꼭 필요합니다.`;
   return { grade, line: `${issues}. ${tail}` };
 }

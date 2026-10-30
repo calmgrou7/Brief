@@ -1,4 +1,4 @@
-import { countSignals, profit, totals, type ScenarioLevers } from '../engine';
+import { countSignals, estimatePersonalIncomeTax, profit, taxParametersFor, totals, type ScenarioLevers } from '../engine';
 import type { CaseProps } from './App';
 import { mil, won } from './format';
 import { MoneyInput } from './MoneyInput';
@@ -116,11 +116,14 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
                 </button>
               </div>
             )}
+            {!a.individual && (
             <Lever id="lv-shares" label="자녀에게 증여할 주식수" note="재무비율엔 영향 없음 · 주식가치와 증여세로 계산">
               <MoneyInput id="lv-shares" value={lv.sharesToTransfer} onChange={(v) => set({ sharesToTransfer: Math.min(v, file.company.ceoShares) })} suffix="주" />
             </Lever>
+            )}
           </fieldset>
 
+          {!a.individual && (
           <fieldset>
             <legend>가지급금</legend>
             <Lever id="lv-ol" label={`정리 금액 (잔액 ${mil(a.projected.bs.officerLoans)}백만원)`}>
@@ -142,6 +145,7 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
               </div>
             )}
           </fieldset>
+          )}
         </section>
 
         <div className="stack results">
@@ -152,8 +156,8 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
                 주의·미달 <strong>{before.caution + before.bad}</strong> → <strong>{after.caution + after.bad}</strong>
               </p>
             </div>
-            <Verdict rows={a.rows} col="scenario" before="projected" />
-            <RatioCards rows={a.rows} from="projected" to="scenario" />
+            <Verdict rows={a.rows} col="scenario" before="projected" final={a.final} />
+            <RatioCards rows={a.rows} from="projected" to="scenario" final={a.final} />
           </section>
 
           <section className="panel tradeoff">
@@ -163,18 +167,22 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
                 <h3>대출·정책자금 쪽</h3>
                 <Delta label="영업이익" a={pProj.operatingIncome} b={pScen.operatingIncome} unit="백만원" higherIsBetter />
                 <Delta label="자본총계" a={totals(a.projected.bs).equity} b={totals(a.scenario.bs).equity} unit="백만원" higherIsBetter />
-                <Delta label="연말 현금" a={a.projected.bs.cash} b={a.scenario.bs.cash} unit="백만원" higherIsBetter />
+                <Delta label={a.final ? '기말 현금' : '연말 현금'} a={a.projected.bs.cash} b={a.scenario.bs.cash} unit="백만원" higherIsBetter />
               </div>
               <div>
                 <h3>세금·승계 쪽</h3>
-                <Delta label="추정 법인세" a={a.projected.is.incomeTax} b={a.scenario.is.incomeTax} unit="백만원" />
-                <Delta label="1주당 평가액(주당)" a={a.valuation.projected.valuePerShare} b={a.valuation.scenario.valuePerShare} unit="원" />
-                <Delta label="대표 지분가치" a={ceoStake(a.valuation.projected.valuePerShare)} b={ceoStake(a.valuation.scenario.valuePerShare)} unit="백만원" />
+                {a.individual ? (
+                  <Delta label="종합소득세(추정)" a={estimatePersonalIncomeTax(pProj.pretaxIncome, taxParametersFor(a.year))} b={a.personalTax ?? 0} unit="백만원" />
+                ) : (
+                  <Delta label={a.final ? '법인세' : '추정 법인세'} a={a.projected.is.incomeTax} b={a.scenario.is.incomeTax} unit="백만원" />
+                )}
+                {!a.individual && <Delta label="1주당 평가액(주당)" a={a.valuation.projected.valuePerShare} b={a.valuation.scenario.valuePerShare} unit="원" />}
+                {!a.individual && <Delta label="대표 지분가치" a={ceoStake(a.valuation.projected.valuePerShare)} b={ceoStake(a.valuation.scenario.valuePerShare)} unit="백만원" />}
                 {lv.sharesToTransfer > 0 && <Delta label={`증여세 (${won(lv.sharesToTransfer)}주)`} a={a.giftTax.projected} b={a.giftTax.scenario} unit="백만원" />}
               </div>
             </div>
-            {!succession && <p className="muted small">진단 목적에 가업승계를 넣으면 리포트에 주식가치 페이지가 추가됩니다.</p>}
-            <p className="muted small">주식가치는 상증법 보충적 평가 약식(올해 예상 순이익 가중치 3)으로, 내년 이전 시점 기준 추정치입니다.</p>
+            {!succession && !a.individual && <p className="muted small">진단 목적에 가업승계를 넣으면 리포트에 주식가치 페이지가 추가됩니다.</p>}
+            {!a.individual && <p className="muted small">주식가치는 상증법 보충적 평가 약식(올해 예상 순이익 가중치 3)으로, 내년 이전 시점 기준 추정치입니다.</p>}
           </section>
 
           {(a.scenario.warnings.length > 0 || a.scenario.deferred.length > 0 || a.scenario.nextYearInterest > 0) && (

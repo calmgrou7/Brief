@@ -32,13 +32,13 @@ export function headline(a: Analysis, company: CompanyProfile, scenarioName: str
     .sort((x, y) => rank[x.projectedSignal] - rank[y.projectedSignal]);
 
   if (issues.length === 0) {
-    lines.push(`현재 추세대로 결산하면 ${purposes} 기준 핵심 지표가 모두 목표 범위 안에 있습니다.`);
+    lines.push(`${a.final ? `${a.year} 확정 결산 기준` : '현재 추세대로 결산하면'} ${purposes} 기준 핵심 지표가 모두 목표 범위 안에 있습니다.`);
   } else {
     const top = issues
       .slice(0, 2)
       .map((r) => `${r.label} ${formatRatio(r.projected, r.unit)}(목표 ${formatTarget(r)})`)
       .join(', ');
-    lines.push(`현재 추세대로 결산하면 ${purposes} 기준 ${issues.length}개 지표가 목표에 못 미칩니다: ${top}.`);
+    lines.push(`${a.final ? `${a.year} 확정 결산 기준` : '현재 추세대로 결산하면'} ${purposes} 기준 ${issues.length}개 지표가 목표에 못 미칩니다: ${top}.`);
   }
 
   const before = countSignals(a.rows, 'projectedSignal');
@@ -49,12 +49,12 @@ export function headline(a: Analysis, company: CompanyProfile, scenarioName: str
     const n = after.bad + after.caution;
     lines.push(
       n === b
-        ? `'${scenarioName}' 조치를 결산 전에 실행해도 주의·미달 지표 수는 ${n}개로 같습니다 — 지표 개선보다 세금·주식가치 관리에 초점을 둔 안입니다.`
-        : `'${scenarioName}' 조치를 결산 전에 실행하면 주의·미달 지표가 ${b}개에서 ${n}개로 ${n < b ? '줄어듭니다' : '늘어납니다'}.`,
+        ? `'${scenarioName}' 조치를 ${a.final ? '실행해도' : '결산 전에 실행해도'} 주의·미달 지표 수는 ${n}개로 같습니다 — 지표 개선보다 세금·주식가치 관리에 초점을 둔 안입니다.`
+        : `'${scenarioName}' 조치를 ${a.final ? '올해 실행하면 다음 결산에서' : '결산 전에 실행하면'} 주의·미달 지표가 ${b}개에서 ${n}개로 ${n < b ? '줄어듭니다' : '늘어납니다'}.`,
     );
   }
 
-  if (company.purposes.includes('succession')) {
+  if (company.purposes.includes('succession') && !a.individual) {
     const v0 = a.valuation.projected.valuePerShare;
     const v1 = a.valuation.scenario.valuePerShare;
     const diff = v1 - v0;
@@ -65,7 +65,12 @@ export function headline(a: Analysis, company: CompanyProfile, scenarioName: str
     );
   } else {
     const ni = profit(a.scenario.is).netIncome;
-    lines.push(`연말 예상 당기순이익은 약 ${Math.round(ni / 1e6).toLocaleString('ko-KR')}백만원, 추정 법인세는 ${Math.round(a.scenario.is.incomeTax / 1e6).toLocaleString('ko-KR')}백만원입니다.`);
+    const niLabel = a.final ? '당기순이익' : '연말 예상 당기순이익';
+    lines.push(
+      a.individual
+        ? `${a.individual && a.final ? '사업소득' : '연말 예상 사업소득'}은 약 ${Math.round(ni / 1e6).toLocaleString('ko-KR')}백만원, 종합소득세(지방세 포함, 공제 전)는 약 ${Math.round((a.personalTax ?? 0) / 1e6).toLocaleString('ko-KR')}백만원으로 추정됩니다.`
+        : `${niLabel}은 약 ${Math.round(ni / 1e6).toLocaleString('ko-KR')}백만원, ${a.final ? '법인세' : '추정 법인세'}는 ${Math.round(a.scenario.is.incomeTax / 1e6).toLocaleString('ko-KR')}백만원입니다.`,
+    );
   }
   return lines;
 }

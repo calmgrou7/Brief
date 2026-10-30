@@ -15,12 +15,13 @@ import {
 import type { CaseProps } from './App';
 import { inFrame } from './env';
 import { mil, won } from './format';
+import { periodLabels } from './labels';
 import { SignalPill, Verdict } from './parts';
 import type { Advisor } from './store';
 
 type Doc = 'ceo' | 'firm' | 'note';
 const DOCS: { id: Doc; label: string }[] = [
-  { id: 'ceo', label: '대표용 가결산 리포트' },
+  { id: 'ceo', label: '대표용 리포트' },
   { id: 'firm', label: '회계사무실 협조 요청서' },
   { id: 'note', label: '설계사 상담노트' },
 ];
@@ -28,7 +29,7 @@ const DOCS: { id: Doc; label: string }[] = [
 
 
 const DISCLAIMER =
-  '본 자료는 가결산 재무제표를 바탕으로 한 상담용 시뮬레이션입니다. 세무조정, 자산 시가, 개별 공제·감면 요건이 반영되지 않았으며, 실제 결산과 신고는 담당 세무대리인의 확인을 거쳐야 합니다. 특정 금융상품의 권유 자료가 아닙니다.';
+  '본 자료는 회계사무실 재무제표를 바탕으로 한 상담용 시뮬레이션입니다. 세무조정, 자산 시가, 개별 공제·감면 요건이 반영되지 않았으며, 실제 결산과 신고는 담당 세무대리인의 확인을 거쳐야 합니다. 특정 금융상품의 권유 자료가 아닙니다.';
 
 export function ReportView({ file, update, analyses, advisor, setAdvisor }: CaseProps & { advisor: Advisor; setAdvisor: (a: Advisor) => void }) {
   const [doc, setDoc] = useState<Doc>('ceo');
@@ -171,9 +172,10 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
   const { company, statements: cs } = file;
   const sc = file.scenarios[file.activeScenario];
   const lines = headline(a, company, sc.name);
-  const succession = company.purposes.includes('succession');
+  const succession = company.purposes.includes('succession') && !a.individual;
   const total = succession ? 5 : 4;
-  const title = `${company.name} ${a.year} 가결산 리포트`;
+  const L = periodLabels(a.final, a.individual);
+  const title = `${company.name} ${a.year} ${L.kind} 리포트`;
   const pPrior = profit(cs.prior.is);
   const pYtd = profit(cs.current.is);
   const pProj = profit(a.projected.is);
@@ -189,13 +191,13 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
     <>
       <Page n={1} total={total} title={title}>
         <p className="doc-eyebrow">
-          {a.year}년 가결산 진단 · 기준일 {cs.interimDate}
+          {a.year}년 {a.final ? '확정 결산' : '가결산'} 진단 · 기준일 {cs.interimDate}
         </p>
         <h1 className="doc-title">{company.name}</h1>
         <p className="doc-meta">
-          대표이사 {company.ceo || '—'} · {company.industry || '업종 미입력'} · 진단 목적 {company.purposes.map((p) => PURPOSE_LABELS[p]).join(', ')}
+          대표{a.individual ? '' : '이사'} {company.ceo || '—'} · {company.industry || '업종 미입력'} · 진단 목적 {company.purposes.map((p) => PURPOSE_LABELS[p]).join(', ')}
         </p>
-        <Verdict rows={a.rows} col="scenario" before="projected" />
+        <Verdict rows={a.rows} col="scenario" before="projected" final={a.final} />
         <div className="doc-summary">
           <h2>대표님께 드리는 요약</h2>
           <ol>
@@ -205,9 +207,9 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
           </ol>
         </div>
         <div className="doc-kpis">
-          <Kpi label="연말 예상 매출" value={mil(a.projected.is.revenue)} unit="백만원" sub={`전기 ${mil(cs.prior.is.revenue)}`} />
-          <Kpi label="연말 예상 영업이익" value={mil(pProj.operatingIncome)} unit="백만원" sub={`전기 ${mil(pPrior.operatingIncome)}`} />
-          <Kpi label="연말 부채비율" value={formatRatio(tProj.equity > 0 ? tProj.liabilities / tProj.equity : null, '%')} sub={`전기 ${formatRatio(tPrior.equity > 0 ? tPrior.liabilities / tPrior.equity : null, '%')}`} />
+          <Kpi label={a.final ? '당기 매출' : '연말 예상 매출'} value={mil(a.projected.is.revenue)} unit="백만원" sub={`전기 ${mil(cs.prior.is.revenue)}`} />
+          <Kpi label={a.final ? '당기 영업이익' : '연말 예상 영업이익'} value={mil(pProj.operatingIncome)} unit="백만원" sub={`전기 ${mil(pPrior.operatingIncome)}`} />
+          <Kpi label={a.final ? '당기말 부채비율' : '연말 부채비율'} value={formatRatio(tProj.equity > 0 ? tProj.liabilities / tProj.equity : null, '%')} sub={`전기 ${formatRatio(tPrior.equity > 0 ? tPrior.liabilities / tPrior.equity : null, '%')}`} />
           <Kpi label="지표 점검" value={`${counts.good} / ${a.rows.length}`} unit="충족" sub={`주의 ${counts.caution} · 미달 ${counts.bad}`} />
         </div>
         <div className="doc-sign">
@@ -219,17 +221,20 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
       </Page>
 
       <Page n={2} total={total} title={title}>
-        <h2 className="doc-h2">1. 올해 실적과 연말 예상</h2>
+        <h2 className="doc-h2">1. {a.final ? '결산 실적' : '올해 실적과 연말 예상'}</h2>
         <p className="doc-p">
-          {a.months.toFixed(0)}개월 누적 실적을 {file.projection.method === 'simple' ? '단순 연환산' : '대표님 예상 매출을 반영'}해 연말 결산을 추정했습니다. (단위: 백만원)
+          {a.final
+            ? `${a.year} 확정 결산(신고 후) 재무제표를 전기와 비교했습니다. 시나리오는 올해 실행할 조치를 반영한 모습입니다.`
+            : `${a.months.toFixed(0)}개월 누적 실적을 ${file.projection.method === 'simple' ? '단순 연환산' : '대표님 예상 매출을 반영'}해 연말 결산을 추정했습니다.`}{' '}
+          (단위: 백만원)
         </p>
         <table className="doc-table">
           <thead>
             <tr>
               <th></th>
               <th>전기 결산</th>
-              <th>가결산 누적</th>
-              <th>연말 예상</th>
+              {!a.final && <th>가결산 누적</th>}
+              <th>{L.current}</th>
               <th>시나리오</th>
             </tr>
           </thead>
@@ -239,19 +244,21 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
                 ['매출액', cs.prior.is.revenue, cs.current.is.revenue, a.projected.is.revenue, a.scenario.is.revenue],
                 ['영업이익', pPrior.operatingIncome, pYtd.operatingIncome, pProj.operatingIncome, pScen.operatingIncome],
                 ['당기순이익', pPrior.netIncome, pYtd.netIncome, pProj.netIncome, pScen.netIncome],
-                ['법인세(추정)', cs.prior.is.incomeTax, cs.current.is.incomeTax, a.projected.is.incomeTax, a.scenario.is.incomeTax],
+                ...(a.individual ? [] : [[L.tax, cs.prior.is.incomeTax, cs.current.is.incomeTax, a.projected.is.incomeTax, a.scenario.is.incomeTax]]),
                 ['자산총계', tPrior.assets, totals(cs.current.bs).assets, tProj.assets, tScen.assets],
                 ['부채총계', tPrior.liabilities, totals(cs.current.bs).liabilities, tProj.liabilities, tScen.liabilities],
                 ['자본총계', tPrior.equity, totals(cs.current.bs).equity, tProj.equity, tScen.equity],
                 ['차입금(가수금 포함)', tPrior.borrowings, totals(cs.current.bs).borrowings, tProj.borrowings, tScen.borrowings],
-                ['가지급금', cs.prior.bs.officerLoans, cs.current.bs.officerLoans, a.projected.bs.officerLoans, a.scenario.bs.officerLoans],
+                ...(a.individual ? [] : [['가지급금', cs.prior.bs.officerLoans, cs.current.bs.officerLoans, a.projected.bs.officerLoans, a.scenario.bs.officerLoans]]),
               ] as [string, number, number, number, number][]
             ).map(([l, ...v]) => (
               <tr key={l}>
                 <th>{l}</th>
-                {v.map((x, i) => (
-                  <td key={i}>{mil(x)}</td>
-                ))}
+                {v
+                  .filter((_, i) => !(a.final && i === 1))
+                  .map((x, i) => (
+                    <td key={i}>{mil(x)}</td>
+                  ))}
               </tr>
             ))}
           </tbody>
@@ -259,7 +266,7 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
 
         <h2 className="doc-h2">2. 돈의 흐름</h2>
         <p className="doc-p">
-          올해 누적 순이익은 {mil(pYtd.netIncome)}백만원이지만 현금은 {mil(Math.abs(a.cashFlow.netChange))}백만원 {a.cashFlow.netChange < 0 ? '줄었습니다' : '늘었습니다'}.
+          {a.final ? '당기' : '올해 누적'} 순이익은 {mil(pYtd.netIncome)}백만원이지만 현금은 {mil(Math.abs(a.cashFlow.netChange))}백만원 {a.cashFlow.netChange < 0 ? '줄었습니다' : '늘었습니다'}.
           {a.cashFlow.topUses.length > 0 && ` 돈이 묶인 곳은 ${a.cashFlow.topUses.map((l) => `${l.label.replace(' 증감', '')}(${mil(-l.amount)})`).join(', ')}입니다.`}
         </p>
         <table className="doc-table narrow">
@@ -287,14 +294,14 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
 
       <Page n={3} total={total} title={title}>
         <h2 className="doc-h2">3. 목적별 핵심 지표</h2>
-        <Verdict rows={a.rows} col="scenario" before="projected" />
+        <Verdict rows={a.rows} col="scenario" before="projected" final={a.final} />
         <table className="doc-table">
           <thead>
             <tr>
               <th>지표</th>
               <th>목표</th>
               <th>전기</th>
-              <th>연말 예상</th>
+              <th>{L.current}</th>
               <th>시나리오</th>
             </tr>
           </thead>
@@ -355,9 +362,9 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
               ))}
             </tr>
             <tr>
-              <th>추정 법인세(백만원)</th>
+              <th>{a.individual ? '종합소득세 추정(백만원)' : a.final ? '법인세(백만원)' : '추정 법인세(백만원)'}</th>
               {analyses.map((x, i) => (
-                <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{mil(x.scenario.is.incomeTax)}</td>
+                <td key={i} className={i === file.activeScenario ? 'picked' : ''}>{mil(a.individual ? (x.personalTax ?? 0) : x.scenario.is.incomeTax)}</td>
               ))}
             </tr>
             <tr>
@@ -399,9 +406,19 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
         )}
         <h3 className="doc-h3">다음 점검 일정</h3>
         <ul className="doc-list">
-          <li>12월 중순: 실행 여부 확인, 회계사무실 결산 방향 공유</li>
-          <li>다음 해 3월: 확정 결산 재무제표로 지표 재점검</li>
-          <li>다음 해 9~10월: 가결산 진단</li>
+          {a.final ? (
+            <>
+              <li>{a.year + 1}년 상반기: 실행 조치 진행 확인</li>
+              <li>{a.year + 1}년 9~10월: 가결산 진단으로 연말 비율 미리 점검</li>
+              <li>{a.year + 1}년 12월: 결산 전 실행 확인, 회계사무실과 결산 방향 공유</li>
+            </>
+          ) : (
+            <>
+              <li>12월 중순: 실행 여부 확인, 회계사무실 결산 방향 공유</li>
+              <li>다음 해 3월: 확정 결산 재무제표로 지표 재점검</li>
+              <li>다음 해 9~10월: 가결산 진단</li>
+            </>
+          )}
         </ul>
         {!succession && <p className="doc-disclaimer">{DISCLAIMER}</p>}
       </Page>
@@ -416,7 +433,7 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
             <thead>
               <tr>
                 <th></th>
-                <th>연말 예상</th>
+                <th>{L.current}</th>
                 <th>{sc.name}</th>
               </tr>
             </thead>
@@ -515,8 +532,8 @@ function FirmLetter({ file, a, today }: { file: CaseProps['file']; a: Analysis; 
         </tbody>
       </table>
       <p className="doc-p">
-        항상 회사 회계 업무를 챙겨 주셔서 감사합니다. {a.year}년 {file.statements.interimDate} 가결산 자료를 검토한 결과,{' '}
-        {company.purposes.map((p) => PURPOSE_LABELS[p]).join('·')}을(를) 위해 올해 결산에서 아래 재무비율을 유지하는 것을 목표로 하고자 합니다. 결산 방향 검토에 참고 부탁드립니다.
+        항상 회사 회계 업무를 챙겨 주셔서 감사합니다. {a.year}년 {file.statements.interimDate} {a.final ? '확정 결산' : '가결산'} 자료를 검토한 결과,{' '}
+        {company.purposes.map((p) => PURPOSE_LABELS[p]).join('·')}을(를) 위해 {a.final ? `${a.year + 1}년 결산` : '올해 결산'}에서 아래 재무비율을 목표로 하고자 합니다. 결산 방향 검토에 참고 부탁드립니다.
       </p>
       <h3 className="doc-h3">목표 재무비율</h3>
       <table className="doc-table">
@@ -524,7 +541,7 @@ function FirmLetter({ file, a, today }: { file: CaseProps['file']; a: Analysis; 
           <tr>
             <th>지표</th>
             <th>목표</th>
-            <th>가결산 기준 연말 예상</th>
+            <th>{a.final ? `${a.year} 결산` : '가결산 기준 연말 예상'}</th>
             <th>계획 반영 후</th>
           </tr>
         </thead>
@@ -553,7 +570,13 @@ function FirmLetter({ file, a, today }: { file: CaseProps['file']; a: Analysis; 
       )}
       <h3 className="doc-h3">확인 요청 사항</h3>
       <ul className="doc-list">
-        <li>연말 예상 법인세 규모와 적용 가능한 공제·감면 검토 (가결산 기준 추정 {mil(a.scenario.is.incomeTax)}백만원, 지방소득세 포함)</li>
+        {a.individual ? (
+          <li>사업소득 기준 종합소득세 규모와 적용 가능한 공제·감면 검토 (추정 {mil(a.personalTax ?? 0)}백만원, 지방소득세 포함)</li>
+        ) : a.final ? (
+          <li>다음 결산의 법인세 규모와 적용 가능한 공제·감면 사전 검토 ({a.year} 신고 법인세 {mil(a.projected.is.incomeTax)}백만원)</li>
+        ) : (
+          <li>연말 예상 법인세 규모와 적용 가능한 공제·감면 검토 (가결산 기준 추정 {mil(a.scenario.is.incomeTax)}백만원, 지방소득세 포함)</li>
+        )}
         {a.projected.bs.officerLoans > 0 && <li>가지급금 {mil(a.projected.bs.officerLoans)}백만원의 인정이자 계상과 정리 방안</li>}
         <li>재고자산 실사, 매출채권 대손 등 결산 조정 항목</li>
         <li>감가상각 방법과 결산 반영 여부</li>
@@ -561,7 +584,9 @@ function FirmLetter({ file, a, today }: { file: CaseProps['file']; a: Analysis; 
       </ul>
       <div className="doc-sign letter">
         <span>{company.name}</span>
-        <span>대표이사 {company.ceo} (인)</span>
+        <span>
+          대표{a.individual ? '' : '이사'} {company.ceo} (인)
+        </span>
       </div>
     </Page>
   );

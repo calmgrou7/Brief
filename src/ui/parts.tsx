@@ -14,7 +14,8 @@ export function SignalPill({ s }: { s: Signal }) {
 }
 
 /** 지표 카드: 큰 숫자 + 목표 + 비교 값 */
-export function RatioCards({ rows, from, to }: { rows: RatioRow[]; from: Col; to: Col }) {
+export function RatioCards({ rows, from, to, final = false }: { rows: RatioRow[]; from: Col; to: Col; final?: boolean }) {
+  const COL_LABEL = colLabels(final);
   return (
     <div className="ratio-cards">
       {rows.map((r) => {
@@ -48,14 +49,14 @@ export function RatioCards({ rows, from, to }: { rows: RatioRow[]; from: Col; to
 }
 
 type Col = 'prior' | 'projected' | 'scenario';
-const COL_LABEL: Record<Col, string> = { prior: '전기 결산', projected: '연말 예상', scenario: '시나리오 적용' };
+const colLabels = (final: boolean): Record<Col, string> => ({ prior: '전기 결산', projected: final ? '당기 결산' : '연말 예상', scenario: '시나리오 적용' });
 
 const GRADE_TONE: Record<Grade, Signal> = { 양호: 'good', 보통: 'caution', 주의: 'caution', 위험: 'bad' };
 
 /** 지표 여러 개를 한 줄로 요약한 종합 판정 */
-export function Verdict({ rows, col, before }: { rows: RatioRow[]; col: Col; before?: Col }) {
-  const v = verdict(rows, col);
-  const b = before ? verdict(rows, before) : null;
+export function Verdict({ rows, col, before, final = false }: { rows: RatioRow[]; col: Col; before?: Col; final?: boolean }) {
+  const v = verdict(rows, col, final);
+  const b = before ? verdict(rows, before, final) : null;
   return (
     <div className={`verdict ${GRADE_TONE[v.grade]}`}>
       <span className="verdict-grade">

@@ -1,5 +1,6 @@
 import {
   DEFAULT_THRESHOLDS,
+  estimatePersonalIncomeTax,
   RATIO_LABELS,
   taxParametersFor,
   type RatioKey,
@@ -59,6 +60,11 @@ export interface RatioRow {
 export interface Analysis {
   year: number;
   months: number;
+  /** 신고 후 확정 결산 진단이면 true(가결산이면 false) */
+  final: boolean;
+  individual: boolean;
+  /** 개인사업자: 사업소득 기준 종합소득세 추정(지방세 포함) */
+  personalTax: number | null;
   interimTotals: ReturnType<typeof totals>;
   priorTotals: ReturnType<typeof totals>;
   projected: Statements;
@@ -85,15 +91,22 @@ export function analyze(
 ): Analysis {
   const year = fiscalYear(cs.interimDate);
   const params = taxParametersFor(year);
-  const months = monthsElapsed(cs.interimDate);
-  const projected = projectYearEnd(cs, projection);
-  const scenario = applyScenario(projected, levers, params, months);
+  const final = projection.method === 'final';
+  const individual = company.entity === 'individual';
+  const months = final ? 12 : monthsElapsed(cs.interimDate);
+  const projected = projectYearEnd(cs, projection, !individual);
+  const scenario = applyScenario(projected, levers, params, months, !individual);
   const priorRevenue = cs.prior.is.revenue;
 
   const rPrior = ratios(cs.prior.bs, cs.prior.is);
   const rProj = ratios(projected.bs, projected.is, priorRevenue);
   const rScen = ratios(scenario.bs, scenario.is, priorRevenue);
-  const thresholds = mergedThresholds(company.purposes, overrides);
+  const thresholds = mergedThresholds(individual ? company.purposes.filter((p) => p !== 'succession') : company.purposes, overrides);
+  // 개인사업자는 자본금·가지급금 개념이 없다
+  if (individual) {
+    delete thresholds.capitalImpairment;
+    delete thresholds.officerLoanShare;
+  }
   const rows: RatioRow[] = (Object.entries(thresholds) as [RatioKey, Threshold][]).map(([key, th]) => ({
     key,
     ...RATIO_LABELS[key],
@@ -130,6 +143,9 @@ export function analyze(
   return {
     year,
     months,
+    final,
+    individual,
+    personalTax: individual ? estimatePersonalIncomeTax(profit(scenario.is).pretaxIncome, params) : null,
     interimTotals: totals(cs.current.bs),
     priorTotals: totals(cs.prior.bs),
     projected,
@@ -138,7 +154,7 @@ export function analyze(
     rows,
     valuation,
     giftTax,
-    actions: recommendActions(rows, company, projected, levers, scenario),
+    actions: recommendActions(rows, individual ? { ...company, purposes: company.purposes.filter((p) => p !== 'succession') } : company, projected, levers, scenario),
   };
 }
 

@@ -12,7 +12,7 @@ export function CrmPanel({ file, update }: Pick<CaseProps, 'file' | 'update'>) {
   const crm = file.crm;
   const setCrm = (patch: Partial<typeof crm>) => update((c) => ({ ...c, crm: { ...c.crm, ...patch } }));
   const year = file.statements.interimDate.slice(0, 4);
-  const [label, setLabel] = useState(`${year} 가결산`);
+  const [label, setLabel] = useState(`${year} ${file.projection.method === 'final' ? '확정 결산' : '가결산'}`);
 
   const addMemo = () => {
     if (!memo.trim()) return;

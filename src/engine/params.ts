@@ -13,6 +13,7 @@ export interface TaxParameters {
   localIncomeTaxRate: number; // 법인지방소득세 = 법인세 × 10%
   deemedInterestRate: number; // 가지급금 인정이자율(당좌대출이자율)
   giftTax: { brackets: TaxBracket[]; adultChildDeduction: number; filingCredit: number };
+  personalIncomeTax: TaxBracket[]; // 종합소득세(과세표준 기준)
   stockValuation: { capitalizationRate: number; netAssetFloorRatio: number };
 }
 
@@ -22,6 +23,18 @@ const GIFT_TAX_BRACKETS: TaxBracket[] = [
   { upTo: 1_000_000_000, rate: 0.3 },
   { upTo: 3_000_000_000, rate: 0.4 },
   { upTo: Infinity, rate: 0.5 },
+];
+
+
+const PERSONAL_INCOME_TAX: TaxBracket[] = [
+  { upTo: 14_000_000, rate: 0.06 },
+  { upTo: 50_000_000, rate: 0.15 },
+  { upTo: 88_000_000, rate: 0.24 },
+  { upTo: 150_000_000, rate: 0.35 },
+  { upTo: 300_000_000, rate: 0.38 },
+  { upTo: 500_000_000, rate: 0.4 },
+  { upTo: 1_000_000_000, rate: 0.42 },
+  { upTo: Infinity, rate: 0.45 },
 ];
 
 export const TAX_PARAMETERS: Record<number, TaxParameters> = {
@@ -37,6 +50,7 @@ export const TAX_PARAMETERS: Record<number, TaxParameters> = {
     deemedInterestRate: 0.046,
     giftTax: { brackets: GIFT_TAX_BRACKETS, adultChildDeduction: 50_000_000, filingCredit: 0.03 },
     stockValuation: { capitalizationRate: 0.1, netAssetFloorRatio: 0.8 },
+    personalIncomeTax: PERSONAL_INCOME_TAX,
   },
   2026: {
     year: 2026,
@@ -50,6 +64,7 @@ export const TAX_PARAMETERS: Record<number, TaxParameters> = {
     deemedInterestRate: 0.046,
     giftTax: { brackets: GIFT_TAX_BRACKETS, adultChildDeduction: 50_000_000, filingCredit: 0.03 },
     stockValuation: { capitalizationRate: 0.1, netAssetFloorRatio: 0.8 },
+    personalIncomeTax: PERSONAL_INCOME_TAX,
   },
 };
 
@@ -76,6 +91,12 @@ export function progressiveTax(base: number, brackets: TaxBracket[]): number {
 /** 법인세 + 법인지방소득세 (세무조정 없이 세전이익을 과세표준으로 보는 약식) */
 export function estimateCorporateTax(pretaxIncome: number, p: TaxParameters): number {
   const national = progressiveTax(pretaxIncome, p.corporateTax);
+  return national + Math.round(national * p.localIncomeTaxRate);
+}
+
+/** 개인사업자 종합소득세 + 지방소득세 (사업소득만, 소득공제·세액공제 전 약식) */
+export function estimatePersonalIncomeTax(businessIncome: number, p: TaxParameters): number {
+  const national = progressiveTax(businessIncome, p.personalIncomeTax);
   return national + Math.round(national * p.localIncomeTaxRate);
 }
 

@@ -1,6 +1,7 @@
 import { countSignals, profit, totals, type CashFlowLine } from '../engine';
 import type { CaseProps } from './App';
 import { mil } from './format';
+import { periodLabels } from './labels';
 import { RatioCards, Verdict } from './parts';
 
 export function DiagnosisView({ file, analyses }: CaseProps) {
@@ -10,15 +11,19 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
   const pYtd = profit(cs.current.is);
   const pProj = profit(a.projected.is);
   const counts = countSignals(a.rows, 'projectedSignal');
+  const L = periodLabels(a.final, a.individual);
   const cf = a.cashFlow;
 
   return (
     <div className="stack">
       <section className="panel">
         <div className="panel-head">
-          <h2>연말 예상 손익</h2>
+          <h2>{a.final ? '당기 결산 손익' : '연말 예상 손익'}</h2>
           <p className="muted">
-            {cs.interimDate} 기준 {a.months.toFixed(0)}개월 누적 → {file.projection.method === 'simple' ? '단순 연환산' : '대표님 예상 매출 반영'} · 단위: 백만원
+            {a.final
+              ? `${cs.interimDate} 확정 결산(신고 후) 재무제표 기준`
+              : `${cs.interimDate} 기준 ${a.months.toFixed(0)}개월 누적 → ${file.projection.method === 'simple' ? '단순 연환산' : '대표님 예상 매출 반영'}`}{' '}
+            · 단위: 백만원
           </p>
         </div>
         <div className="table-wrap">
@@ -27,8 +32,8 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
               <tr>
                 <th></th>
                 <th className="num">전기 결산</th>
-                <th className="num">가결산 누적</th>
-                <th className="num">연말 예상</th>
+                {!a.final && <th className="num">가결산 누적</th>}
+                <th className="num">{L.current}</th>
                 <th className="num">전기 대비</th>
               </tr>
             </thead>
@@ -38,14 +43,14 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
                   ['매출액', cs.prior.is.revenue, cs.current.is.revenue, a.projected.is.revenue],
                   ['영업이익', pPrior.operatingIncome, pYtd.operatingIncome, pProj.operatingIncome],
                   ['법인세차감전이익', pPrior.pretaxIncome, pYtd.pretaxIncome, pProj.pretaxIncome],
-                  ['법인세(추정, 지방세 포함)', cs.prior.is.incomeTax, cs.current.is.incomeTax, a.projected.is.incomeTax],
+                  ...(a.individual ? [] : [[L.tax, cs.prior.is.incomeTax, cs.current.is.incomeTax, a.projected.is.incomeTax]]),
                   ['당기순이익', pPrior.netIncome, pYtd.netIncome, pProj.netIncome],
                 ] as [string, number, number, number][]
               ).map(([l, p, y, e]) => (
                 <tr key={l}>
                   <th scope="row">{l}</th>
                   <td className="num">{mil(p)}</td>
-                  <td className="num">{mil(y)}</td>
+                  {!a.final && <td className="num">{mil(y)}</td>}
                   <td className="num strong">{mil(e)}</td>
                   <td className="num muted">{p !== 0 ? `${(((e - p) / Math.abs(p)) * 100).toFixed(1)}%` : '—'}</td>
                 </tr>
@@ -53,6 +58,11 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
             </tbody>
           </table>
         </div>
+        {a.individual && (
+          <p className="callout">
+            개인사업자 종합소득세 추정(지방세 포함): <strong>{mil(a.personalTax ?? 0)}백만원</strong> — 사업소득만 반영한 소득공제·세액공제 전 금액이라 실제 신고 세액과 다를 수 있습니다.
+          </p>
+        )}
       </section>
 
       <section className="panel">
@@ -64,15 +74,15 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
             <span className="pill bad">✕ 미달 {counts.bad}</span>
           </p>
         </div>
-        <Verdict rows={a.rows} col="projected" />
-        <RatioCards rows={a.rows} from="prior" to="projected" />
+        <Verdict rows={a.rows} col="projected" final={a.final} />
+        <RatioCards rows={a.rows} from="prior" to="projected" final={a.final} />
         <p className="muted small">목표치는 상담용 기본값입니다. 기관·은행별 실제 심사 기준은 다를 수 있습니다.</p>
       </section>
 
       <section className="panel">
         <div className="panel-head">
           <h2>돈의 흐름 (추정 현금흐름)</h2>
-          <p className="muted">전기말 → 가결산 기준일 재무상태표 변동으로 추정 · 단위: 백만원</p>
+          <p className="muted">전기말 → {a.final ? '당기말' : '가결산 기준일'} 재무상태표 변동으로 추정 · 단위: 백만원</p>
         </div>
         <div className="cf-grid">
           <CfBlock title="영업활동" total={cf.operating} lines={cf.lines.operating} />
@@ -91,7 +101,7 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
           )}
         </div>
         <p className="muted small">
-          가결산 자산총계 {mil(totals(cs.current.bs).assets)} · 부채총계 {mil(totals(cs.current.bs).liabilities)} · 자본총계 {mil(totals(cs.current.bs).equity)}
+          {L.kind} 자산총계 {mil(totals(cs.current.bs).assets)} · 부채총계 {mil(totals(cs.current.bs).liabilities)} · 자본총계 {mil(totals(cs.current.bs).equity)}
         </p>
       </section>
     </div>

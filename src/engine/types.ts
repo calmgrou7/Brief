@@ -44,6 +44,8 @@ export interface ComparativeStatements {
 }
 
 export type Purpose = 'policyFund' | 'bankLoan' | 'succession';
+/** 법인(법인세) / 개인사업자(종합소득세) */
+export type Entity = 'corporation' | 'individual';
 
 export interface CompanyProfile {
   name: string;
@@ -55,9 +57,11 @@ export interface CompanyProfile {
   ceoShares: number; // 대표 보유 주식수
   netIncomeTwoYearsAgo: number; // 전전기 당기순이익(주식평가용)
   purposes: Purpose[];
+  entity?: Entity; // 없으면 법인
 }
 
-export type AnnualizeMethod = 'simple' | 'ceoForecast';
+/** simple·ceoForecast: 가결산(연말 추정) / final: 신고 후 확정 결산(그대로 사용) */
+export type AnnualizeMethod = 'simple' | 'ceoForecast' | 'final';
 
 export interface ProjectionInput {
   method: AnnualizeMethod;

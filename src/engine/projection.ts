@@ -19,7 +19,9 @@ export function fiscalYear(interimDate: string): number {
  * - 법인세: 연말 세전이익 기준 추정
  * - 재무상태표: 남은 기간 이익(감가상각 가산)은 현금으로, 추가 법인세는 미지급법인세로 반영
  */
-export function projectYearEnd(cs: ComparativeStatements, input: ProjectionInput): Statements {
+export function projectYearEnd(cs: ComparativeStatements, input: ProjectionInput, bookTax = true): Statements {
+  // 신고 후 확정 결산은 추정 없이 그대로 쓴다(법인세도 신고된 금액)
+  if (input.method === 'final') return { bs: { ...cs.current.bs }, is: { ...cs.current.is } };
   const m = monthsElapsed(cs.interimDate);
   const factor = m > 0 ? 12 / m : 1;
   const ytd = cs.current.is;
@@ -38,7 +40,8 @@ export function projectYearEnd(cs: ComparativeStatements, input: ProjectionInput
     incomeTax: 0,
   };
   const params = taxParametersFor(fiscalYear(cs.interimDate));
-  is.incomeTax = estimateCorporateTax(profit(is).pretaxIncome, params);
+  // 개인사업자는 종합소득세가 회사 비용이 아니므로 재무제표에 넣지 않는다
+  is.incomeTax = bookTax ? estimateCorporateTax(profit(is).pretaxIncome, params) : ytd.incomeTax;
 
   const remainingPretax = profit(is).pretaxIncome - profit(ytd).pretaxIncome;
   const remainingDepreciation = is.depreciation - ytd.depreciation;

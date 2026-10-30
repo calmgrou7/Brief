@@ -34,6 +34,8 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
   const togglePurpose = (p: Purpose) =>
     setCompany({ purposes: company.purposes.includes(p) ? company.purposes.filter((x) => x !== p) : [...company.purposes, p] });
 
+  const final = projection.method === 'final';
+  const individual = company.entity === 'individual';
   const tc = totals(cs.current.bs);
   const tp = totals(cs.prior.bs);
   const pc = profit(cs.current.is);
@@ -59,6 +61,8 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
           <Field id="co-firm" label="담당 회계사무실">
             <input id="co-firm" value={file.accountingFirm} onChange={(e) => update((c) => ({ ...c, accountingFirm: e.target.value }))} />
           </Field>
+          {!individual && (
+            <>
           <Field id="co-shares" label="발행주식총수">
             <MoneyInput id="co-shares" value={company.sharesOutstanding} onChange={(v) => setCompany({ sharesOutstanding: v })} suffix="주" />
           </Field>
@@ -68,20 +72,35 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
           <Field id="co-ni2" label="전전기 당기순이익" hint="주식가치 3년 가중평균용">
             <MoneyInput id="co-ni2" value={company.netIncomeTwoYearsAgo} onChange={(v) => setCompany({ netIncomeTwoYearsAgo: v })} suffix="원" />
           </Field>
+            </>
+          )}
           <div className="field">
-            <span className="field-label">기업 구분</span>
-            <label className="check">
-              <input type="checkbox" id="co-sme" checked={company.isSme} onChange={(e) => setCompany({ isSme: e.target.checked })} /> 중소기업
-            </label>
-            <label className="check">
-              <input type="checkbox" id="co-re" checked={company.isRealEstateHeavy} onChange={(e) => setCompany({ isRealEstateHeavy: e.target.checked })} /> 부동산과다보유법인
-            </label>
+            <span className="field-label">사업자 구분</span>
+            <div className="seg">
+              <button className={!individual ? 'on' : ''} onClick={() => setCompany({ entity: 'corporation' })}>
+                법인
+              </button>
+              <button className={individual ? 'on' : ''} onClick={() => setCompany({ entity: 'individual' })}>
+                개인사업자
+              </button>
+            </div>
           </div>
+          {!individual && (
+            <div className="field">
+              <span className="field-label">기업 구분</span>
+              <label className="check">
+                <input type="checkbox" id="co-sme" checked={company.isSme} onChange={(e) => setCompany({ isSme: e.target.checked })} /> 중소기업
+              </label>
+              <label className="check">
+                <input type="checkbox" id="co-re" checked={company.isRealEstateHeavy} onChange={(e) => setCompany({ isRealEstateHeavy: e.target.checked })} /> 부동산과다보유법인
+              </label>
+            </div>
+          )}
         </div>
         <div className="purpose-row">
           <span className="field-label">진단 목적</span>
           <div className="chips">
-            {(Object.keys(PURPOSE_LABELS) as Purpose[]).map((p) => (
+            {(Object.keys(PURPOSE_LABELS) as Purpose[]).filter((p) => !(individual && p === 'succession')).map((p) => (
               <button key={p} className={`chip ${company.purposes.includes(p) ? 'on' : ''}`} aria-pressed={company.purposes.includes(p)} onClick={() => togglePurpose(p)}>
                 {PURPOSE_LABELS[p]}
               </button>
@@ -91,22 +110,30 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
       </section>
 
       <section className="panel">
-        <h2>가결산 기준과 연말 예상 방식</h2>
+        <div className="panel-head">
+          <h2>진단 기준</h2>
+          <p className="muted">가결산은 연말을 추정하고, 확정 결산은 {individual ? '종합소득세' : '법인세'} 신고 후 재무제표를 그대로 진단합니다.</p>
+        </div>
         <div className="form-grid">
-          <Field id="interim-date" label="가결산 기준일">
-            <input id="interim-date" type="date" value={cs.interimDate} onChange={(e) => e.target.value && update((c) => ({ ...c, statements: { ...c.statements, interimDate: e.target.value } }))} />
-          </Field>
-          <div className="field">
-            <span className="field-label">연말 예상 방식</span>
+          <div className="field wide">
+            <span className="field-label">어떤 재무제표인가요?</span>
             <div className="seg">
-              <button className={projection.method === 'simple' ? 'on' : ''} onClick={() => update((c) => ({ ...c, projection: { ...c.projection, method: 'simple' } }))}>
-                단순 연환산
-              </button>
-              <button className={projection.method === 'ceoForecast' ? 'on' : ''} onClick={() => update((c) => ({ ...c, projection: { ...c.projection, method: 'ceoForecast' } }))}>
-                대표님 예상 매출
-              </button>
+              {(
+                [
+                  ['simple', '가결산 · 단순 연환산'],
+                  ['ceoForecast', '가결산 · 대표님 예상 매출'],
+                  ['final', '확정 결산 (신고 후)'],
+                ] as const
+              ).map(([m, l]) => (
+                <button key={m} className={projection.method === m ? 'on' : ''} onClick={() => update((c) => ({ ...c, projection: { ...c.projection, method: m } }))}>
+                  {l}
+                </button>
+              ))}
             </div>
           </div>
+          <Field id="interim-date" label={final ? '결산일 (재무상태표 기준일)' : '가결산 기준일'}>
+            <input id="interim-date" type="date" value={cs.interimDate} onChange={(e) => e.target.value && update((c) => ({ ...c, statements: { ...c.statements, interimDate: e.target.value } }))} />
+          </Field>
           {projection.method === 'ceoForecast' && (
             <Field id="remaining-rev" label="기준일 이후 연말까지 예상 매출">
               <MoneyInput id="remaining-rev" value={projection.remainingRevenue} onChange={(v) => update((c) => ({ ...c, projection: { ...c.projection, remainingRevenue: v } }))} suffix="원" />
@@ -126,6 +153,7 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
           set={setBs}
           paste={(k, col) => pasteInto(BS_ROWS, k, col, 'bs')}
           prefix="bs"
+          currentLabel={final ? '당기 (결산)' : '당기 (가결산)'}
           footer={[
             ['자산총계', tc.assets, tp.assets],
             ['부채총계', tc.liabilities, tp.liabilities],
@@ -142,7 +170,7 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
       <section className="panel">
         <div className="panel-head">
           <h2>비교식 손익계산서</h2>
-          <p className="muted">당기는 1월부터 가결산 기준일까지 누적 금액입니다.</p>
+          <p className="muted">{final ? '당기는 1년 전체(결산) 금액입니다.' : '당기는 1월부터 가결산 기준일까지 누적 금액입니다.'}{individual && ' 개인사업자는 소득세를 비용에 넣지 않으므로 법인세비용 칸은 비워 두세요.'}</p>
         </div>
         <StatementTable
           rows={IS_ROWS}
@@ -150,6 +178,7 @@ export function InputView({ file, update, onRemove }: CaseProps & { onRemove?: (
           set={setIs}
           paste={(k, col) => pasteInto(IS_ROWS, k, col, 'is')}
           prefix="is"
+          currentLabel={final ? '당기 (결산)' : '당기 (가결산)'}
           footer={[
             ['영업이익', pc.operatingIncome, pp.operatingIncome],
             ['법인세차감전이익', pc.pretaxIncome, pp.pretaxIncome],
@@ -196,6 +225,7 @@ function StatementTable<K extends string>({
   set,
   paste,
   prefix,
+  currentLabel,
   footer,
 }: {
   rows: Row<K>[];
@@ -203,6 +233,7 @@ function StatementTable<K extends string>({
   set: (col: Col, k: K, v: number) => void;
   paste: (k: K, col: Col) => (values: number[]) => boolean;
   prefix: string;
+  currentLabel: string;
   footer: [string, number, number][];
 }) {
   return (
@@ -211,7 +242,7 @@ function StatementTable<K extends string>({
         <thead>
           <tr>
             <th>계정과목</th>
-            <th className="num">당기 (가결산)</th>
+            <th className="num">{currentLabel}</th>
             <th className="num">전기 (결산)</th>
           </tr>
         </thead>
