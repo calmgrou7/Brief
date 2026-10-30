@@ -17,19 +17,31 @@ export function QuickContact({ companyId, companyName, now, autoOpen }: { compan
     setStamp(nowLocal());
     ref.current?.showModal();
   };
-  useEffect(() => { if (autoOpen) open(); }, [autoOpen]);
   useEffect(() => {
-    if (state.ok) {
-      formRef.current?.reset();
-      ref.current?.close();
-    }
+    if (!autoOpen) return;
+    open();
+    // 닫은 뒤 새로고침해도 다시 열리지 않도록 주소에서 뺀다
+    const u = new URL(window.location.href); u.searchParams.delete('log'); window.history.replaceState(null, '', u);
+  }, [autoOpen]);
+  useEffect(() => {
+    const onReg = (e: Event) => { if ((e as CustomEvent).detail === 'contact') open(); };
+    window.addEventListener('chaeum:register', onReg);
+    return () => window.removeEventListener('chaeum:register', onReg);
+  }, []);
+  const [toast, setToast] = useState('');
+  useEffect(() => {
+    if (!state.ok) return;
+    formRef.current?.reset();
+    ref.current?.close();
+    setToast(state.ok);
+    const t = setTimeout(() => setToast(''), 3000);
+    return () => clearTimeout(t);
   }, [state]);
 
   return (
     <>
-      <button type="button" className="btn primary hide-m" onClick={open}><Icon name="plus" />접촉 기록</button>
-      <button type="button" className="btn primary fab" onClick={open} aria-label="접촉 기록 추가"><Icon name="plus" />기록</button>
-      {state.ok && <p className="notice ok" role="status" style={{ position: 'fixed', top: 12, left: '50%', transform: 'translateX(-50%)', zIndex: 50, boxShadow: 'var(--shadow)' }}>{state.ok}</p>}
+      <button type="button" className="btn primary" onClick={open}><Icon name="note" />기록</button>
+      {toast && <p className="toast" role="status">{toast}</p>}
       <dialog ref={ref} className="sheet" aria-labelledby="qc-title">
         <form ref={formRef} action={action} onSubmit={keepForm(action)} className="sheet-in">
           <div className="sheet-head">

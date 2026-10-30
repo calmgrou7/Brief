@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: '채움파트너스 고객사 통합 관리',
     start_url: '/',
     display: 'standalone',
-    background_color: '#102a3c',
-    theme_color: '#102a3c',
+    background_color: '#f7fafc',
+    theme_color: '#ffffff',
     lang: 'ko',
     icons: [
       { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },

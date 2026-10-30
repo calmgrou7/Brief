@@ -121,6 +121,7 @@ export const CERT: FieldMap = {
   amount: ['금액(원)', 'number'],
   year: ['연도', 'number'],
   memo: ['메모', 'text'],
+  proof: ['증빙', 'files'],
 };
 
 export const INSURANCE: FieldMap = {
@@ -137,6 +138,7 @@ export const INSURANCE: FieldMap = {
   managed: ['채움 관리계약', 'checkbox'],
   insured: ['피보험자·목적물', 'text'],
   memo: ['메모', 'text'],
+  policy: ['증권', 'files'],
 };
 
 export const FINANCE: FieldMap = {
@@ -220,13 +222,13 @@ export interface Contact extends Row {
 export interface Cert extends Row {
   name: string; companyIds: string[]; kind: string; status: string; by: string;
   agency: string; regNo: string; acquired: string; expires: string;
-  amount: number | null; year: number | null; memo: string;
+  amount: number | null; year: number | null; memo: string; proof: FileRef[];
 }
 
 export interface Insurance extends Row {
   product: string; companyIds: string[]; insurer: string; kind: string;
   monthly: number | null; yearly: number | null; coverage: number | null;
-  period: Range; maturity: string; payStatus: string; managed: boolean; insured: string; memo: string;
+  period: Range; maturity: string; payStatus: string; managed: boolean; insured: string; memo: string; policy: FileRef[];
 }
 
 export interface Finance extends Row {

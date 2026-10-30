@@ -210,3 +210,143 @@ export function fmtDate(s: string): string {
   const t = s.length > 10 ? ` ${s.slice(11, 16)}` : '';
   return `${y}.${m}.${d}${t}`;
 }
+
+/* ---------- 할 일(업무관리) ---------- */
+
+export type TaskKind = 'over' | 'today' | 'stale' | 'ins' | 'soon';
+export const TASK_LABEL: Record<TaskKind, string> = { over: '지난 일', today: '오늘', stale: '연락 필요', ins: '보험 만기', soon: '예정' };
+export type TaskSource = '다음 액션' | '후속조치' | '연락 필요' | '보험 만기';
+
+export interface Task {
+  key: string;
+  kind: TaskKind;
+  source: TaskSource;
+  title: string;
+  companyId: string;
+  companyName: string;
+  date: string; // '' = 기한 없음
+  detail: string;
+  contactId?: string;
+}
+
+const kindOf = (date: string, today: string): TaskKind =>
+  !date ? 'soon' : day(date) < today ? 'over' : day(date) === today ? 'today' : 'soon';
+
+/**
+ * 할 일 = 업체의 다음 액션 + 미완료 후속조치 + 연락이 끊긴 진행 업체 + 90일 내 보험 만기.
+ * 별도 할 일 DB 없이 노션에 이미 있는 값에서 계산한다.
+ */
+export function tasks(data: Pick<Dataset, 'companies' | 'contacts' | 'insurances'>, today: string): Task[] {
+  const live = new Map(data.companies.filter((c) => c.status !== '종료').map((c) => [c.id, c]));
+  const out: Task[] = [];
+  for (const c of live.values()) {
+    if (c.nextAction || c.nextActionDate) {
+      out.push({
+        key: `a-${c.id}`, kind: kindOf(c.nextActionDate, today), source: '다음 액션',
+        title: c.nextAction || '다음 액션', companyId: c.id, companyName: c.name,
+        date: c.nextActionDate ? day(c.nextActionDate) : '', detail: [c.industry, c.region].filter(Boolean).join(' · '),
+      });
+    }
+  }
+  for (const k of data.contacts) {
+    const c = live.get(k.companyIds[0]);
+    if (!c || !k.followUp || k.followUpDone) continue;
+    out.push({
+      key: `f-${k.id}`, kind: kindOf(k.followUpDue, today), source: '후속조치', title: k.followUp,
+      companyId: c.id, companyName: c.name, date: k.followUpDue ? day(k.followUpDue) : '',
+      detail: `${k.method} 접촉(${fmtDate(k.date)}) 후속`, contactId: k.id,
+    });
+  }
+  for (const r of companyRows({ companies: [...live.values()], contacts: data.contacts }, today)) {
+    if (!r.stale) continue;
+    out.push({
+      key: `s-${r.id}`, kind: 'stale', source: '연락 필요',
+      title: r.daysSince === null ? '접촉 기록 없음' : `${r.daysSince}일째 연락 없음`,
+      companyId: r.id, companyName: r.name, date: '',
+      detail: r.touch ? `최근 ${r.touch.method} ${fmtDate(r.touch.date)}` : '첫 접촉을 기록해 주세요',
+    });
+  }
+  for (const i of insuranceDue({ insurances: data.insurances, companies: [...live.values()] }, today)) {
+    const c = live.get(i.companyIds[0])!;
+    out.push({
+      key: `i-${i.id}`, kind: 'ins', source: '보험 만기', title: `${i.product} 만기`,
+      companyId: c.id, companyName: c.name, date: day(i.maturity),
+      detail: [i.insurer, i.managed ? '채움 관리' : '타사 계약'].filter(Boolean).join(' · '),
+    });
+  }
+  const rank: Record<TaskKind, number> = { over: 0, today: 1, stale: 2, ins: 3, soon: 4 };
+  return out.sort((a, b) => rank[a.kind] - rank[b.kind] || (a.date || '9999').localeCompare(b.date || '9999'));
+}
+
+export type TaskFilter = 'all' | 'now' | 'stale' | 'ins' | 'soon';
+export const TASK_FILTERS: { key: TaskFilter; label: string }[] = [
+  { key: 'all', label: '전체' }, { key: 'now', label: '지금' }, { key: 'stale', label: '연락 필요' },
+  { key: 'ins', label: '보험 만기' }, { key: 'soon', label: '예정' },
+];
+export function filterTasks(list: Task[], f: TaskFilter): Task[] {
+  if (f === 'all') return list;
+  if (f === 'now') return list.filter((t) => t.kind === 'over' || t.kind === 'today');
+  return list.filter((t) => t.kind === f);
+}
+
+/** '2일 지남' · '오늘' · 'D-3' · '기한 없음' */
+export function dueText(date: string, today: string): string {
+  if (!date) return '기한 없음';
+  const n = daysBetween(today, date);
+  return n < 0 ? `${-n}일 지남` : n === 0 ? '오늘' : `D-${n}`;
+}
+
+/* ---------- 진행 단계 ---------- */
+
+export const STAGES = ['잠재', '상담중', '계약·진행', '사후관리'] as const;
+/** 단계 표시줄용 현재 위치. 종료나 미지정은 -1 */
+export const stageIndex = (status: string) => (STAGES as readonly string[]).indexOf(status);
+
+/* ---------- 일정 ---------- */
+
+export type EventType = '다음 액션' | '후속조치' | '보험 만기' | '인증 만료' | '공고 마감';
+export interface CalEvent { key: string; date: string; type: EventType; title: string; companyId: string; companyName: string; done: boolean }
+
+export function calendarEvents(data: Pick<Dataset, 'companies' | 'contacts' | 'insurances' | 'certs' | 'matches'>): CalEvent[] {
+  const names = new Map(data.companies.map((c) => [c.id, c.name]));
+  const out: CalEvent[] = [];
+  const push = (key: string, date: string, type: EventType, title: string, companyId: string | undefined, done = false) => {
+    if (!date || !companyId || !names.has(companyId)) return;
+    out.push({ key, date: day(date), type, title, companyId, companyName: names.get(companyId)!, done });
+  };
+  for (const c of data.companies) if (c.status !== '종료') push(`a-${c.id}`, c.nextActionDate, '다음 액션', c.nextAction || '다음 액션', c.id);
+  for (const k of data.contacts) if (k.followUp) push(`f-${k.id}`, k.followUpDue, '후속조치', k.followUp, k.companyIds[0], k.followUpDone);
+  for (const i of data.insurances) if (!['해지', '실효'].includes(i.payStatus)) push(`i-${i.id}`, i.maturity, '보험 만기', `${i.product} 만기`, i.companyIds[0]);
+  for (const t of data.certs) if (t.status !== '만료·탈락') push(`t-${t.id}`, t.expires, '인증 만료', `${t.name} 만료`, t.companyIds[0]);
+  for (const m of data.matches) if (!['제외', '선정'].includes(m.status)) push(`m-${m.id}`, m.deadline, '공고 마감', `${m.title} 접수 마감`, m.companyIds[0]);
+  return out.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/** 달력 칸: 일요일 시작, 앞뒤 달 날짜 포함 6주 이하 */
+export function monthGrid(month: string): string[][] {
+  const first = `${month}-01`;
+  const start = addDays(first, -new Date(`${first}T00:00:00Z`).getUTCDay());
+  const weeks: string[][] = [];
+  for (let d = start; weeks.length < 6; ) {
+    const w = Array.from({ length: 7 }, (_, i) => addDays(d, i));
+    if (weeks.length && w[0].slice(0, 7) !== month) break;
+    weeks.push(w);
+    d = addDays(d, 7);
+  }
+  return weeks;
+}
+
+export function shiftMonth(month: string, n: number): string {
+  const [y, m] = month.split('-').map(Number);
+  const d = new Date(Date.UTC(y, m - 1 + n, 1));
+  return d.toISOString().slice(0, 7);
+}
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+export const weekday = (date: string) => WEEKDAYS[new Date(`${day(date)}T00:00:00Z`).getUTCDay()];
+
+/** 전년 대비 증감률(%). 둘 중 하나라도 없거나 0이면 계산하지 않는다 */
+export function yoy(cur: number | null, prev: number | null): number | null {
+  if (cur === null || prev === null || prev === 0) return null;
+  return Math.round(((cur - prev) / Math.abs(prev)) * 1000) / 10;
+}

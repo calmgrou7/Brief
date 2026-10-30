@@ -153,6 +153,38 @@ export async function toggleFollowUp(f: FormData) {
   revalidatePath('/', 'layout');
 }
 
+/* ---------- 할 일 ---------- */
+
+/** 할 일 완료: 후속조치는 '후속완료' 체크, 다음 액션은 비워서 새 다음 액션을 정할 수 있게 한다 */
+export async function completeTask(_: FormState, f: FormData): Promise<FormState> {
+  await guard();
+  const kind = str(f, 'kind');
+  try {
+    if (kind === 'followup') await setFollowUpDone(str(f, 'contactId'), true);
+    else if (kind === 'action') await updateCompany(str(f, 'companyId'), { nextAction: '', nextActionDate: '' });
+    else return { error: '완료할 수 없는 항목입니다.' };
+  } catch (e) {
+    return { error: friendly(e) };
+  }
+  revalidatePath('/', 'layout');
+  return { ok: '완료했습니다.' };
+}
+
+export async function saveNextAction(_: FormState, f: FormData): Promise<FormState> {
+  await guard();
+  const nextAction = str(f, 'nextAction');
+  const nextActionDate = str(f, 'nextActionDate');
+  if (!nextAction) return { error: '다음에 할 일을 입력해 주세요.' };
+  if (nextActionDate && !/^\d{4}-\d{2}-\d{2}$/.test(nextActionDate)) return { error: '날짜 형식이 올바르지 않습니다.' };
+  try {
+    await updateCompany(str(f, 'companyId'), { nextAction, nextActionDate });
+  } catch (e) {
+    return { error: friendly(e) };
+  }
+  revalidatePath('/', 'layout');
+  return { ok: '다음 액션을 저장했습니다.' };
+}
+
 /* ---------- 연계 대시보드 링크 ---------- */
 
 export async function saveDashLink(_: FormState, f: FormData): Promise<FormState> {

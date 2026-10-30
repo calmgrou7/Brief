@@ -87,3 +87,64 @@ describe('금액 표기', () => {
     expect(won(null)).toBe('—');
   });
 });
+
+import { calendarEvents, dueText, filterTasks, monthGrid, shiftMonth, stageIndex, tasks, weekday, yoy } from './derive';
+
+describe('할 일', () => {
+  const data = demoDataset(TODAY);
+  const list = tasks(data, TODAY);
+
+  it('지난 일 → 오늘 → 연락 필요 → 보험 만기 → 예정 순', () => {
+    const order = ['over', 'today', 'stale', 'ins', 'soon'];
+    const ranks = list.map((t) => order.indexOf(t.kind));
+    expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
+  });
+  it('네 종류의 출처를 모두 모은다', () => {
+    expect(new Set(list.map((t) => t.source))).toEqual(new Set(['다음 액션', '후속조치', '연락 필요', '보험 만기']));
+  });
+  it('완료한 후속조치·종료 업체는 빠진다', () => {
+    const d2 = demoDataset(TODAY);
+    d2.contacts.forEach((k) => (k.followUpDone = true));
+    d2.companies.find((c) => c.name.includes('해솔'))!.status = '종료';
+    const l2 = tasks(d2, TODAY);
+    expect(l2.some((t) => t.source === '후속조치')).toBe(false);
+    expect(l2.some((t) => t.companyName.includes('해솔'))).toBe(false);
+  });
+  it('필터: 지금 = 지난 일 + 오늘', () => {
+    expect(filterTasks(list, 'now').every((t) => t.kind === 'over' || t.kind === 'today')).toBe(true);
+    expect(filterTasks(list, 'all')).toHaveLength(list.length);
+  });
+  it('기한 표기', () => {
+    expect(dueText('2026-10-28', TODAY)).toBe('2일 지남');
+    expect(dueText('2026-10-30', TODAY)).toBe('오늘');
+    expect(dueText('2026-11-02', TODAY)).toBe('D-3');
+    expect(dueText('', TODAY)).toBe('기한 없음');
+  });
+});
+
+describe('일정·단계·재무', () => {
+  it('달력은 일요일 시작, 그 달을 모두 덮는다', () => {
+    const g = monthGrid('2026-10');
+    expect(g[0][0]).toBe('2026-09-27'); // 10/1은 목요일
+    expect(weekday(g[0][0])).toBe('일');
+    expect(g.flat()).toContain('2026-10-31');
+    expect(g.every((w) => w.length === 7)).toBe(true);
+    expect(shiftMonth('2026-12', 1)).toBe('2027-01');
+    expect(shiftMonth('2026-01', -1)).toBe('2025-12');
+  });
+  it('일정에는 날짜 있는 항목만, 날짜순', () => {
+    const ev = calendarEvents(demoDataset(TODAY));
+    expect(ev.every((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date))).toBe(true);
+    expect(ev.map((e) => e.date)).toEqual([...ev.map((e) => e.date)].sort());
+    expect(new Set(ev.map((e) => e.type))).toEqual(new Set(['다음 액션', '후속조치', '보험 만기', '인증 만료', '공고 마감']));
+  });
+  it('진행 단계 위치', () => {
+    expect(stageIndex('계약·진행')).toBe(2);
+    expect(stageIndex('종료')).toBe(-1);
+  });
+  it('전년비는 두 값이 있을 때만', () => {
+    expect(yoy(86, 74)).toBe(16.2);
+    expect(yoy(86, null)).toBeNull();
+    expect(yoy(86, 0)).toBeNull();
+  });
+});
