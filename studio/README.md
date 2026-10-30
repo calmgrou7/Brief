@@ -36,7 +36,7 @@ python3 studio/make_video.py studio/examples/nowro.json studio/examples/venture.
   "post": {"title": "업로드 제목", "description": "설명", "hashtags": ["#추가태그"]}
 }
 ```
-- `character`: 배경이 투명한 PNG 캐릭터 이미지. 비워두면 임시 캐릭터가 들어갑니다.
+- `character`: 배경이 투명한 PNG 캐릭터 이미지 (`assets/`에 보관, 예: `assets/bohumjigi_female.png`). 비워두면 임시 캐릭터가 들어갑니다.
 - `img`가 비어 있으면 임시 카드가 들어갑니다 (나우로 카드뉴스 PNG로 교체).
 - 채널별 색상·뱃지·푸터·목소리·연락처·기본 해시태그는 `channels.json`에서 바꿉니다.
 - `\n`으로 직접 줄을 나눌 수 있습니다.

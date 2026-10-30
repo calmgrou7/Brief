@@ -72,22 +72,23 @@ def text_layer(ch, sc, kind, last, cfg):
         if sc.get("sub"):
             draw_lines(d, wrap(sc["sub"], 22), font("Bold", 44), accent, W / 2, 1530)
     else:
-        # 말풍선: 캐릭터(왼쪽 아래) 위쪽
+        # 말풍선 → 강조 박스 → 캐릭터(가운데 아래) 순서로 위에서부터 쌓는다
         say = wrap(sc.get("say", ""), 18)
         fs = font("Bold", 54)
         bh = len(say) * (fs.size + 20) + 90
-        box = [70, 520, W - 70, 520 + bh]
+        box = [70, 440, W - 70, 440 + bh]
         d.rounded_rectangle(box, radius=48, fill=(255, 255, 255, 250), outline=accent, width=6)
-        d.polygon([(250, box[3] - 3), (330, box[3] - 3), (230, box[3] + 80)], fill=(255, 255, 255, 250))
-        d.line([(250, box[3]), (230, box[3] + 80), (330, box[3])], fill=accent, width=6)
+        d.polygon([(480, box[3] - 3), (580, box[3] - 3), (520, box[3] + 70)], fill=(255, 255, 255, 250))
+        d.line([(480, box[3]), (520, box[3] + 70), (580, box[3])], fill=accent, width=6)
         draw_lines(d, say, fs, rgb("#1A1A1A"), W / 2, box[1] + 45, gap=20)
         if sc.get("point"):
             fp = font("Black", 46)
-            lines = wrap(sc["point"], 12)
-            ph = len(lines) * (fp.size + 14) + 50
-            pb = [W - 560, 1280, W - 60, 1280 + ph]
+            lines = wrap(sc["point"], 14)
+            ph = len(lines) * (fp.size + 14) + 40
+            pw = max(d.textlength(ln, font=fp) for ln in lines) + 80
+            pb = [W - 70 - pw, box[3] + 30, W - 70, box[3] + 30 + ph]
             d.rounded_rectangle(pb, radius=28, fill=accent)
-            draw_lines(d, lines, fp, (255, 255, 255), (pb[0] + pb[2]) / 2, pb[1] + 25, gap=14)
+            draw_lines(d, lines, fp, (255, 255, 255), (pb[0] + pb[2]) / 2, pb[1] + 20, gap=14)
 
     if last:
         cta = cfg.get("cta") or ch.get("cta") or []
@@ -174,8 +175,9 @@ def render_scene(i, sc, ch, cfg, tmp, base, last):
     else:
         img = asset("char", lambda p: placeholder_character(p, ch))
         # 캐릭터가 살짝 통통 튀며 말하는 느낌
-        fc = (f"[1:v]scale=-1:{sc.get('char_h', 620)}[c];"
-              f"[0:v][c]overlay=x=40:y='{H - 260 - sc.get('char_h', 620)}+14*sin(2*PI*t*1.6)'[b];")
+        ch_h = sc.get("char_h", 700)
+        fc = (f"[1:v]scale=-1:{ch_h}[c];"
+              f"[0:v][c]overlay=x=(W-w)/2:y='{1630 - ch_h}+12*sin(2*PI*t*1.6)'[b];")
     fc += f"[2:v]format=rgba,fade=in:st=0.2:d=0.35:alpha=1[t];[b][t]overlay=0:0,format=yuv420p[v]"
     ff("-loop", "1", "-i", bg, "-loop", "1", "-i", img, "-loop", "1", "-i", tx,
        "-filter_complex", fc, "-map", "[v]", "-frames:v", str(n), "-r", str(FPS),

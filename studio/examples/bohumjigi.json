@@ -1,7 +1,7 @@
 {
   "channel": "bohumjigi",
   "out": "../output/bohumjigi_check.mp4",
-  "character": "",
+  "character": "../assets/bohumjigi_female.png",
   "scenes": [
     {"type": "talk", "top": "보험료는 내는데\n뭐가 보장되는지 모른다면?", "say": "안녕하세요, 보험지기예요!\n그런 분 정말 많아요.",
      "narration": "보험료는 매달 내는데, 정작 뭐가 보장되는지 모르신다면 잘 오셨어요."},
