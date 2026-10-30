@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { logout } from "@/app/auth-actions";
+import { authMode, isOwner } from "@/lib/auth";
 import { getMode, listClients } from "@/lib/data";
 
 // 운영자 화면 공통 헤더 (전체 고객 메뉴). 고객 공유 리포트(/r)에는 붙지 않는다.
 export default async function OwnerLayout({ children }: { children: React.ReactNode }) {
+  // 로그인 전에는 고객 이름이 담긴 헤더를 그리지 않는다.
+  // 로그인 화면으로 보내는 일은 각 페이지가 자기 주소를 담아서 한다 (돌아갈 곳을 알아야 하므로).
+  if (!(await isOwner())) return <>{children}</>;
   const [mode, clients] = await Promise.all([getMode(), listClients()]);
   return (
     <>
@@ -22,13 +27,22 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
               </Link>
             ))}
           </nav>
-          {mode === "sample" ? (
-            <span className="shrink-0 rounded-full bg-surface-2 px-2.5 py-1 text-xs text-ink-2" title="META_ACCESS_TOKEN과 clients.config.json을 설정하면 실제 데이터로 바뀝니다">
-              샘플 데이터
-            </span>
-          ) : (
-            <span className="shrink-0 rounded-full bg-surface-2 px-2.5 py-1 text-xs text-ink-2">메타 연결됨</span>
-          )}
+          <div className="flex shrink-0 items-center gap-2">
+            {mode === "sample" ? (
+              <span className="shrink-0 rounded-full bg-surface-2 px-2.5 py-1 text-xs text-ink-2" title="META_ACCESS_TOKEN과 clients.config.json을 설정하면 실제 데이터로 바뀝니다">
+                샘플 데이터
+              </span>
+            ) : (
+              <span className="shrink-0 rounded-full bg-surface-2 px-2.5 py-1 text-xs text-ink-2">메타 연결됨</span>
+            )}
+            {authMode() === "password" && (
+              <form action={logout}>
+                <button type="submit" className="rounded-md px-2 py-1 text-xs text-ink-2 hover:bg-surface-2 hover:text-ink">
+                  로그아웃
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>

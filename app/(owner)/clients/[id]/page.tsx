@@ -5,6 +5,7 @@ import { DecisionCard } from "@/components/decision-card";
 import { multiple, won } from "@/components/format";
 import { CreativeTable, FunnelCard, KpiTiles, PeriodTabs, RangeNote, TrendCharts } from "@/components/performance";
 import { performanceView } from "@/lib/performance";
+import { requireOwner } from "@/lib/auth";
 import { getClientData } from "@/lib/data";
 import { addDays, isPreset } from "@/lib/dates";
 import { isOpen, loadRecords } from "@/lib/decision-store";
@@ -15,6 +16,7 @@ import type { RangePreset } from "@/lib/types";
 
 export default async function ClientPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ range?: string }> }) {
   const { id } = await params;
+  await requireOwner(`/clients/${encodeURIComponent(id)}`);
   const { range: rangeParam } = await searchParams;
   const preset: RangePreset = isPreset(rangeParam) ? rangeParam : "30d";
 

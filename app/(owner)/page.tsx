@@ -3,6 +3,7 @@ import { UndoButton } from "@/components/decision-buttons";
 import { DecisionCard } from "@/components/decision-card";
 import { count, multiple, percent, won, wonShort } from "@/components/format";
 import { Card, Meter, StatusBadge } from "@/components/ui";
+import { requireOwner } from "@/lib/auth";
 import { getClientData, listClients, type ClientData } from "@/lib/data";
 import { isOpen, loadRecords, type DecisionStatus } from "@/lib/decision-store";
 import { decisionsFor, rankDecisions } from "@/lib/decisions";
@@ -37,6 +38,7 @@ interface Row {
 }
 
 export default async function Home() {
+  await requireOwner("/");
   const clients = await listClients();
   const results = await Promise.allSettled(clients.map((c) => getClientData(c.id)));
   const rows: Row[] = clients.map((client, i) => {
