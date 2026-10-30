@@ -2,7 +2,7 @@ import { countSignals, profit, totals, type ScenarioLevers } from '../engine';
 import type { CaseProps } from './App';
 import { mil, won } from './format';
 import { MoneyInput } from './MoneyInput';
-import { RatioCards } from './parts';
+import { RatioCards, Verdict } from './parts';
 
 export function ScenarioView({ file, update, analyses }: CaseProps) {
   const idx = file.activeScenario;
@@ -39,10 +39,11 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
             <input id="sc-name" value={sc.name} onChange={(e) => update((c) => ({ ...c, scenarios: c.scenarios.map((s, i) => (i === idx ? { ...s, name: e.target.value } : s)) }))} />
           </div>
 
+          <p className="muted small">금액 단위: 백만원 (예: 5억원 → 500)</p>
           <fieldset>
             <legend>매출·매입</legend>
             <Lever id="lv-rev" label="연내 추가 매출">
-              <MoneyInput id="lv-rev" value={lv.revenueAdd} onChange={(v) => set({ revenueAdd: v })} suffix="원" />
+              <MoneyInput id="lv-rev" value={lv.revenueAdd} onChange={(v) => set({ revenueAdd: v })} suffix="백만원" scale={1e6} />
             </Lever>
             {lv.revenueAdd > 0 && (
               <div className="two">
@@ -55,17 +56,17 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
               </div>
             )}
             <Lever id="lv-exp" label="연내 추가 비용(판관비 지출)">
-              <MoneyInput id="lv-exp" value={lv.expenseAdd} onChange={(v) => set({ expenseAdd: v })} suffix="원" />
+              <MoneyInput id="lv-exp" value={lv.expenseAdd} onChange={(v) => set({ expenseAdd: v })} suffix="백만원" scale={1e6} />
             </Lever>
             <Lever id="lv-inv" label="재고 매입(외상)" note="팔리기 전까지 이익에는 영향이 없습니다">
-              <MoneyInput id="lv-inv" value={lv.inventoryAdd} onChange={(v) => set({ inventoryAdd: v })} suffix="원" />
+              <MoneyInput id="lv-inv" value={lv.inventoryAdd} onChange={(v) => set({ inventoryAdd: v })} suffix="백만원" scale={1e6} />
             </Lever>
           </fieldset>
 
           <fieldset>
             <legend>대출</legend>
             <Lever id="lv-loan" label="신규 대출">
-              <MoneyInput id="lv-loan" value={lv.loanAmount} onChange={(v) => set({ loanAmount: v })} suffix="원" />
+              <MoneyInput id="lv-loan" value={lv.loanAmount} onChange={(v) => set({ loanAmount: v })} suffix="백만원" scale={1e6} />
             </Lever>
             {lv.loanAmount > 0 && (
               <>
@@ -93,17 +94,17 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
               </>
             )}
             <Lever id="lv-repay" label="연내 대출 상환">
-              <MoneyInput id="lv-repay" value={lv.repayAmount} onChange={(v) => set({ repayAmount: v })} suffix="원" />
+              <MoneyInput id="lv-repay" value={lv.repayAmount} onChange={(v) => set({ repayAmount: v })} suffix="백만원" scale={1e6} />
             </Lever>
           </fieldset>
 
           <fieldset>
             <legend>자본·주주</legend>
             <Lever id="lv-cap" label="유상증자">
-              <MoneyInput id="lv-cap" value={lv.capitalIncrease} onChange={(v) => set({ capitalIncrease: v })} suffix="원" />
+              <MoneyInput id="lv-cap" value={lv.capitalIncrease} onChange={(v) => set({ capitalIncrease: v })} suffix="백만원" scale={1e6} />
             </Lever>
             <Lever id="lv-red" label="감자">
-              <MoneyInput id="lv-red" value={lv.capitalReduction} onChange={(v) => set({ capitalReduction: v })} suffix="원" />
+              <MoneyInput id="lv-red" value={lv.capitalReduction} onChange={(v) => set({ capitalReduction: v })} suffix="백만원" scale={1e6} />
             </Lever>
             {lv.capitalReduction > 0 && (
               <div className="seg">
@@ -123,7 +124,7 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
           <fieldset>
             <legend>가지급금</legend>
             <Lever id="lv-ol" label={`정리 금액 (잔액 ${mil(a.projected.bs.officerLoans)}백만원)`}>
-              <MoneyInput id="lv-ol" value={lv.officerLoanSettle} onChange={(v) => set({ officerLoanSettle: v })} suffix="원" />
+              <MoneyInput id="lv-ol" value={lv.officerLoanSettle} onChange={(v) => set({ officerLoanSettle: v })} suffix="백만원" scale={1e6} />
             </Lever>
             {lv.officerLoanSettle > 0 && (
               <div className="seg">
@@ -151,6 +152,7 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
                 주의·미달 <strong>{before.caution + before.bad}</strong> → <strong>{after.caution + after.bad}</strong>
               </p>
             </div>
+            <Verdict rows={a.rows} col="scenario" before="projected" />
             <RatioCards rows={a.rows} from="projected" to="scenario" />
           </section>
 
@@ -166,7 +168,7 @@ export function ScenarioView({ file, update, analyses }: CaseProps) {
               <div>
                 <h3>세금·승계 쪽</h3>
                 <Delta label="추정 법인세" a={a.projected.is.incomeTax} b={a.scenario.is.incomeTax} unit="백만원" />
-                <Delta label="1주당 평가액" a={a.valuation.projected.valuePerShare} b={a.valuation.scenario.valuePerShare} unit="원" />
+                <Delta label="1주당 평가액(주당)" a={a.valuation.projected.valuePerShare} b={a.valuation.scenario.valuePerShare} unit="원" />
                 <Delta label="대표 지분가치" a={ceoStake(a.valuation.projected.valuePerShare)} b={ceoStake(a.valuation.scenario.valuePerShare)} unit="백만원" />
                 {lv.sharesToTransfer > 0 && <Delta label={`증여세 (${won(lv.sharesToTransfer)}주)`} a={a.giftTax.projected} b={a.giftTax.scenario} unit="백만원" />}
               </div>

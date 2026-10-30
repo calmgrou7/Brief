@@ -1,7 +1,7 @@
 import { countSignals, profit, totals, type CashFlowLine } from '../engine';
 import type { CaseProps } from './App';
 import { mil } from './format';
-import { RatioCards } from './parts';
+import { RatioCards, Verdict } from './parts';
 
 export function DiagnosisView({ file, analyses }: CaseProps) {
   const a = analyses[0];
@@ -64,6 +64,7 @@ export function DiagnosisView({ file, analyses }: CaseProps) {
             <span className="pill bad">✕ 미달 {counts.bad}</span>
           </p>
         </div>
+        <Verdict rows={a.rows} col="projected" />
         <RatioCards rows={a.rows} from="prior" to="projected" />
         <p className="muted small">목표치는 상담용 기본값입니다. 기관·은행별 실제 심사 기준은 다를 수 있습니다.</p>
       </section>

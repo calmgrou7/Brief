@@ -108,7 +108,7 @@ export function ClientsView({ state, setState, open, addCase, inFrame }: Props) 
           </label>
           <select id="client-sort" value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
             <option value="next">다음 일정 빠른 순</option>
-            <option value="risk">미달 지표 많은 순</option>
+            <option value="risk">판정 나쁜 순</option>
             <option value="updated">최근 수정 순</option>
             <option value="name">회사명 순</option>
           </select>
@@ -131,7 +131,7 @@ export function ClientsView({ state, setState, open, addCase, inFrame }: Props) 
                 <th>회사</th>
                 <th>상담 단계</th>
                 <th>진단 목적</th>
-                <th className="num">미달·주의</th>
+                <th>종합 판정</th>
                 <th className="num">부채비율</th>
                 <th className="num">가지급금 비중</th>
                 <th>다음 일정</th>
@@ -161,9 +161,10 @@ export function ClientsView({ state, setState, open, addCase, inFrame }: Props) 
                     </select>
                   </td>
                   <td className="small">{c.company.purposes.map((p) => PURPOSE_LABELS[p]).join(' · ') || '—'}</td>
-                  <td className="num">
+                  <td>
                     {s.hasData ? (
-                      <span className="ratio-cell">
+                      <span className="ratio-cell left">
+                        <span className={`grade-pill ${s.grade}`}>{s.grade}</span>
                         {s.bad > 0 && <span className="pill bad">✕ {s.bad}</span>}
                         {s.caution > 0 && <span className="pill caution">▲ {s.caution}</span>}
                         {s.bad + s.caution === 0 && <span className="pill good">● 0</span>}

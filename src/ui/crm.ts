@@ -1,4 +1,4 @@
-import { analyze, emptyLevers, totals, type BalanceSheet, type IncomeStatement } from '../engine';
+import { analyze, emptyLevers, totals, verdict, type BalanceSheet, type Grade, type IncomeStatement } from '../engine';
 
 // 고객 관리: 상담 단계·일정·기록, 연도별 재무제표 보관
 
@@ -57,12 +57,13 @@ export function clientSummary(c: {
   projection: Parameters<typeof analyze>[2];
 }) {
   const hasData = totals(c.statements.current.bs).assets > 0 && c.statements.current.is.revenue > 0;
-  if (!hasData) return { hasData, bad: 0, caution: 0, debtRatio: null as number | null, officerLoanShare: null as number | null };
+  if (!hasData) return { hasData, grade: null as Grade | null, bad: 0, caution: 0, debtRatio: null as number | null, officerLoanShare: null as number | null };
   const a = analyze(c.statements, c.company, c.projection, emptyLevers());
   const ratio = (k: string) => a.rows.find((r) => r.key === k)?.projected ?? null;
   const t = totals(a.projected.bs);
   return {
     hasData,
+    grade: verdict(a.rows, 'projected').grade as Grade | null,
     bad: a.rows.filter((r) => r.projectedSignal === 'bad').length,
     caution: a.rows.filter((r) => r.projectedSignal === 'caution').length,
     debtRatio: ratio('debtRatio') ?? (t.equity > 0 ? t.liabilities / t.equity : null),

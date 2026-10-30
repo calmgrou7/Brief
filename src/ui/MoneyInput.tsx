@@ -11,9 +11,12 @@ interface Props {
   ariaLabel?: string;
   /** 입력값 아래에 '5억원'처럼 한글 단위 읽기를 표시 */
   reading?: boolean;
+  /** 화면 단위(1: 원, 1e6: 백만원). 값은 항상 원으로 저장 */
+  scale?: number;
 }
 
-export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLabel, reading = suffix === '원' }: Props) {
+export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLabel, scale = 1, reading = suffix === '원' || scale > 1 }: Props) {
+  const show = (v: number) => (scale === 1 ? won(v) : (v / scale).toLocaleString('ko-KR', { maximumFractionDigits: 1 }));
   const [draft, setDraft] = useState<string | null>(null);
   const onPaste = (e: ClipboardEvent<HTMLInputElement>) => {
     const text = e.clipboardData.getData('text');
@@ -34,12 +37,12 @@ export function MoneyInput({ id, value, onChange, onPasteColumn, suffix, ariaLab
         id={id}
         inputMode="numeric"
         aria-label={ariaLabel}
-        value={draft ?? won(value)}
-        onFocus={() => setDraft(value === 0 ? '' : won(value))}
+        value={draft ?? show(value)}
+        onFocus={() => setDraft(value === 0 ? '' : show(value))}
         onBlur={() => setDraft(null)}
         onChange={(e) => {
           setDraft(e.target.value);
-          onChange(parseWon(e.target.value));
+          onChange(Math.round(parseWon(e.target.value) * scale));
         }}
         onPaste={onPaste}
       />

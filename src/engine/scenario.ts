@@ -105,7 +105,7 @@ export function applyScenario(
       is.interestExpense += interest;
       pretaxChange(-interest);
     } else {
-      deferred.push(`신규 대출 ${lv.loanAmount.toLocaleString('ko-KR')}원은 내년 실행 — 올해 재무비율에 반영하지 않음`);
+      deferred.push(`신규 대출 ${Math.round(lv.loanAmount / 1e6).toLocaleString('ko-KR')}백만원은 내년 실행 — 올해 재무비율에 반영하지 않음`);
     }
   }
 

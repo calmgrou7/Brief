@@ -1,4 +1,4 @@
-import { formatRatio, formatTarget, type RatioRow, type Signal } from '../engine';
+import { RATIO_GUIDE, formatRatio, formatTarget, verdict, type Grade, type RatioRow, type Signal } from '../engine';
 
 const SIGNAL_TEXT: Record<Signal, string> = { good: '충족', caution: '주의', bad: '미달', na: '—' };
 // 색을 구분하기 어려운 경우를 위해 모양으로도 구분
@@ -26,12 +26,20 @@ export function RatioCards({ rows, from, to }: { rows: RatioRow[]; from: Col; to
               <SignalPill s={sig} />
             </div>
             <div className="rc-value">{formatRatio(r[to], r.unit)}</div>
+            <p className="rc-read">{RATIO_GUIDE[r.key].read(r[to])}</p>
             <div className="rc-meta">
               <span>목표 {formatTarget(r)}</span>
               <span>
                 {COL_LABEL[from]} {formatRatio(r[from], r.unit)}
               </span>
             </div>
+            <details className="rc-more">
+              <summary>이 지표는?</summary>
+              <p>
+                <strong>{RATIO_GUIDE[r.key].what}</strong> ({r.hint})
+              </p>
+              <p>{RATIO_GUIDE[r.key].why}</p>
+            </details>
           </div>
         );
       })}
@@ -41,3 +49,23 @@ export function RatioCards({ rows, from, to }: { rows: RatioRow[]; from: Col; to
 
 type Col = 'prior' | 'projected' | 'scenario';
 const COL_LABEL: Record<Col, string> = { prior: '전기 결산', projected: '연말 예상', scenario: '시나리오 적용' };
+
+const GRADE_TONE: Record<Grade, Signal> = { 양호: 'good', 보통: 'caution', 주의: 'caution', 위험: 'bad' };
+
+/** 지표 여러 개를 한 줄로 요약한 종합 판정 */
+export function Verdict({ rows, col, before }: { rows: RatioRow[]; col: Col; before?: Col }) {
+  const v = verdict(rows, col);
+  const b = before ? verdict(rows, before) : null;
+  return (
+    <div className={`verdict ${GRADE_TONE[v.grade]}`}>
+      <span className="verdict-grade">
+        종합 판정
+        <strong>
+          {b && b.grade !== v.grade && <>{b.grade} → </>}
+          {v.grade}
+        </strong>
+      </span>
+      <p>{v.line}</p>
+    </div>
+  );
+}

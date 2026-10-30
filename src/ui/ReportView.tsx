@@ -7,6 +7,7 @@ import {
   formatRatio,
   formatTarget,
   headline,
+  RATIO_GUIDE,
   profit,
   totals,
   type Analysis,
@@ -14,7 +15,7 @@ import {
 import type { CaseProps } from './App';
 import { inFrame } from './env';
 import { mil, won } from './format';
-import { SignalPill } from './parts';
+import { SignalPill, Verdict } from './parts';
 import type { Advisor } from './store';
 
 type Doc = 'ceo' | 'firm' | 'note';
@@ -194,6 +195,7 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
         <p className="doc-meta">
           대표이사 {company.ceo || '—'} · {company.industry || '업종 미입력'} · 진단 목적 {company.purposes.map((p) => PURPOSE_LABELS[p]).join(', ')}
         </p>
+        <Verdict rows={a.rows} col="scenario" before="projected" />
         <div className="doc-summary">
           <h2>대표님께 드리는 요약</h2>
           <ol>
@@ -285,6 +287,7 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
 
       <Page n={3} total={total} title={title}>
         <h2 className="doc-h2">3. 목적별 핵심 지표</h2>
+        <Verdict rows={a.rows} col="scenario" before="projected" />
         <table className="doc-table">
           <thead>
             <tr>
@@ -298,7 +301,10 @@ function CeoReport({ file, analyses, a, advisor, today }: { file: CaseProps['fil
           <tbody>
             {a.rows.map((r) => (
               <tr key={r.key}>
-                <th>{r.label}</th>
+                <th>
+                  {r.label}
+                  <span className="doc-read">{RATIO_GUIDE[r.key].read(r.scenario)}</span>
+                </th>
                 <td>{formatTarget(r)}</td>
                 <td>
                   {formatRatio(r.prior, r.unit)} <SignalPill s={r.priorSignal} />

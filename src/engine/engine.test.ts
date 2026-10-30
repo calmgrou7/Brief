@@ -182,3 +182,19 @@ describe('리포트 문장', () => {
     expect(consultingQuestions(a, sampleCompany).length).toBeGreaterThan(3);
   });
 });
+
+describe('지표 쉬운 설명과 종합 판정', async () => {
+  const { RATIO_GUIDE, verdict } = await import('./explain');
+  it('현재 값을 쉬운 말로', () => {
+    expect(RATIO_GUIDE.interestCoverage.read(2.58)).toBe('영업이익으로 이자를 2.58번 낼 수 있음');
+    expect(RATIO_GUIDE.interestCoverage.read(0.8)).toContain('이자도 다 못 내는');
+    expect(RATIO_GUIDE.debtRatio.read(2.423)).toBe('자기 돈 100원당 빚이 242원');
+    expect(RATIO_GUIDE.revenueGrowth.read(-0.026)).toBe('작년보다 매출 2.6% 감소');
+  });
+  it('샘플 기업 종합 판정 한 줄', () => {
+    const a = analyze(sampleStatements, sampleCompany, { method: 'simple', remainingRevenue: 0 }, emptyLevers());
+    const v = verdict(a.rows, 'projected');
+    expect(v.grade).toBe('위험');
+    expect(v.line).toBe('매출이 2.6% 줄었고 가지급금이 많습니다(자산의 10.4%). 미달 2개·주의 6개로, 결산 전 개선 계획이 꼭 필요합니다.');
+  });
+});
