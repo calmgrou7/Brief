@@ -33,3 +33,12 @@ npm run build    # 배포용 빌드(dist/)
 - 데이터는 브라우저(localStorage)에만 저장됩니다. 로그인·서버 저장은 다음 단계(Supabase)에서 추가합니다.
 - 법인세는 세무조정 없이 세전이익을 과세표준으로 본 추정치, 주식가치는 상증법 보충적 평가 약식입니다.
 - 목표 비율은 상담용 기본값이며 기관별 실제 심사 기준과 다를 수 있습니다.
+
+## 바탕화면 아이콘 패키지 (Windows)
+
+```bash
+npm run build && node scripts/build-artifact.mjs --standalone desktop/chaeum.html
+cd desktop && zip ../채움-통합대시보드-설치.zip chaeum.html chaeum.ico install.bat install.ps1 README.txt
+```
+
+`install.bat`을 실행하면 앱을 `%LOCALAPPDATA%\Chaeum`에 복사하고 바탕화면에 엣지·크롬 앱 창으로 여는 "채움 통합대시보드" 바로가기를 만듭니다.

@@ -9,6 +9,9 @@ const assets = readdirSync('dist/assets');
 const js = readFileSync(join('dist/assets', assets.find((f) => f.endsWith('.js'))), 'utf8').replace(/<\/script/gi, '<\\/script');
 const css = readFileSync(join('dist/assets', assets.find((f) => f.endsWith('.css'))), 'utf8');
 
+// 바탕화면 앱 창·브라우저 탭 아이콘
+const icon = readFileSync('desktop/chaeum.png').toString('base64');
+
 const body = `<title>채움 ver2.1</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>${css}</style>
@@ -17,6 +20,6 @@ const body = `<title>채움 ver2.1</title>
 `;
 writeFileSync(
   out,
-  standalone ? `<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n</head>\n<body>\n${body}</body>\n</html>\n` : body,
+  standalone ? `<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<link rel="icon" type="image/png" href="data:image/png;base64,${icon}">\n</head>\n<body>\n${body}</body>\n</html>\n` : body,
 );
 console.log(`wrote ${out}`);
