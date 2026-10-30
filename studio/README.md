@@ -43,3 +43,16 @@ python3 studio/make_video.py studio/examples/nowro.json studio/examples/venture.
 
 ## 폰트
 `fonts/`의 Pretendard (SIL Open Font License 1.1).
+
+## 모션 장면 (캐릭터 표정 + 애니메이션 그래픽)
+`make_video.py`보다 더 복잡한 움직임이 필요할 때 씁니다. HTML로 장면을 짜고, 브라우저로 한 프레임씩 찍어서 영상으로 만듭니다.
+
+```bash
+# 1) 캐릭터 PNG 한 장 → 눈 감은 프레임, 입 벌린 프레임 생성 (얼굴 좌표는 *.face.json)
+python3 studio/motion/char_frames.py studio/assets/bohumjigi_female.png studio/assets/bohumjigi_female.face.json
+# 2) 장면 녹화 (Playwright + ffmpeg 필요)
+node studio/motion/record.js studio/motion/scenes/bohumjigi_duplicate.html studio/output/motion_demo.mp4 10 30
+```
+- 캐릭터: 눈 깜빡임, 말할 때 입 움직임, 숨쉬듯 흔들림, 깜짝 점프, 끄덕임, 돋보기 반짝임
+- 그래픽: 카드 슬라이드·겹침, 도장 쾅, 숫자 카운트업, 동전 새어 나감, 체크 표시 그리기, 화면 흔들림
+- 장면 파일의 `window.seek(t)`가 t초의 화면을 정하므로 길이·타이밍은 숫자만 바꾸면 됩니다.
