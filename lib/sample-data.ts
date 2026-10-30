@@ -32,7 +32,7 @@ export const SAMPLE_CLIENTS: Client[] = [
     targetCpa: 30_000,
     targetRoas: 2.5,
     monthlyBudget: 6_000_000,
-    contract: { feeModel: "percent", feePercent: 12 },
+    contract: { feeModel: "percent", feePercent: 12, spendPaidBy: "agency" },
   },
 ];
 

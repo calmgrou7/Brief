@@ -21,6 +21,9 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
             <Link href="/" className="shrink-0 rounded-md px-2 py-1 font-medium text-ink hover:bg-surface-2">
               결정함
             </Link>
+            <Link href="/finance" className="shrink-0 rounded-md px-2 py-1 font-medium text-ink hover:bg-surface-2">
+              정산
+            </Link>
             {clients.map((c) => (
               <Link key={c.id} href={`/clients/${c.id}`} className="shrink-0 rounded-md px-2 py-1 text-ink-2 hover:bg-surface-2 hover:text-ink">
                 {c.name}

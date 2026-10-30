@@ -10,6 +10,11 @@ export interface Contract {
   feePercent?: number;
   feeFixed?: number;
   minFee?: number;
+  /**
+   * 광고비를 누가 메타에 내는가. client(기본): 고객 카드로 직접 결제 → 수수료만 청구.
+   * agency: 대행사가 먼저 결제 → 광고비까지 함께 청구.
+   */
+  spendPaidBy?: "client" | "agency";
 }
 
 export interface Client {
