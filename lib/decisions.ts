@@ -95,8 +95,8 @@ export function decisionsFor(input: ClientInput): Decision[] {
         title: `‘${a.name}’ 소재 끄기`,
         reason:
           a.kpis.cpa == null
-            ? `최근 30일 ${won(a.kpis.spend)}를 썼지만 ${conv}가 한 건도 없습니다.`
-            : `최근 30일 ${unit}가 ${won(a.kpis.cpa)}로 목표(${won(client.targetCpa)})의 ${(a.kpis.cpa / client.targetCpa).toFixed(1)}배입니다.`,
+            ? `최근 30일 ${won(a.kpis.spend)}을 썼지만 ${conv}가 한 건도 없습니다.`
+            : `최근 30일 ${unit}가 ${won(a.kpis.cpa)}으로 목표(${won(client.targetCpa)})의 ${(a.kpis.cpa / client.targetCpa).toFixed(1)}배입니다.`,
         evidence: [
           { label: "30일 광고비", value: won(a.kpis.spend) },
           { label: unit, value: a.kpis.cpa == null ? "전환 없음" : won(a.kpis.cpa), bad: true },
@@ -129,7 +129,7 @@ export function decisionsFor(input: ClientInput): Decision[] {
           clientId: client.id,
           clientName: client.name,
           title: `‘${a.name}’ 예산 ${pct(SCALE_STEP)} 늘리기`,
-          reason: `${unit}가 ${won(a.kpis.cpa)}로 목표보다 ${pct(1 - a.kpis.cpa / client.targetCpa)} 낮습니다. 같은 효율이 유지될 여지가 있습니다.`,
+          reason: `${unit}가 ${won(a.kpis.cpa)}으로 목표보다 ${pct(1 - a.kpis.cpa / client.targetCpa)} 낮습니다. 같은 효율이 유지될 여지가 있습니다.`,
           evidence: [
             { label: "30일 광고비", value: won(a.kpis.spend) },
             { label: unit, value: won(a.kpis.cpa) },
@@ -141,7 +141,7 @@ export function decisionsFor(input: ClientInput): Decision[] {
           impactLabel:
             client.objective === "purchase" ? `주 매출 +${short(extraRevenue)}` : `주 리드 +${Math.max(1, Math.round(extraConv))}건`,
           impactNote: `광고비 +${short(extraSpend)} 기준 예상치${feeGain > 0 ? ` · 내 수수료 +${short(feeGain)}` : ""}`,
-          action: `광고세트 일 예산을 ${won(dailySpend)} → ${won(dailySpend * (1 + SCALE_STEP))}로 올립니다.`,
+          action: `광고세트 일 예산을 ${won(dailySpend)} → ${won(dailySpend * (1 + SCALE_STEP))}으로 올립니다.`,
           trend: efficiencyTrend(a.adId),
         },
       });
@@ -197,7 +197,7 @@ export function decisionsFor(input: ClientInput): Decision[] {
         { label: "월말 예상", value: won(m.projectedSpend), bad: true },
         { label: "남은 일수", value: `${remaining}일` },
       ],
-      action: `고객 전체 일 예산을 ${won(currentDaily)} → ${won(neededDaily)}로 조정합니다.`,
+      action: `고객 전체 일 예산을 ${won(currentDaily)} → ${won(neededDaily)}으로 조정합니다.`,
     };
     const overspent = m.kpis.spend - client.monthlyBudget;
     if (m.pace === "over" && overspent >= 0) {
@@ -208,7 +208,7 @@ export function decisionsFor(input: ClientInput): Decision[] {
         id: `slow_budget:${client.id}:${mtd.since}`,
         type: "slow_budget",
         title: "월 예산 초과 — 고객과 합의하기",
-        reason: `이미 예산보다 ${won(overspent)} 더 썼고, 이대로면 남은 ${remaining}일 동안 ${won(more)}가 더 나갑니다.`,
+        reason: `이미 예산보다 ${won(overspent)} 더 썼고, 이대로면 남은 ${remaining}일 동안 ${won(more)}이 더 나갑니다.`,
         impactWon: more,
         impactLabel: `추가 초과 ${short(more)} 방지`,
         impactBasis: "이번 달 기준",
