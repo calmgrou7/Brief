@@ -62,6 +62,40 @@ export const updatePage = (token: string, pageId: string, properties: Json) =>
 export const trashPage = (token: string, pageId: string) =>
   call(token, 'PATCH', `/pages/${pageId}`, { in_trash: true });
 
+export const getDataSource = (token: string, dataSourceId: string) =>
+  call(token, 'GET', `/data_sources/${dataSourceId}`);
+
+/* ---------- 연결 점검: 노션 속성이 앱이 기대하는 이름·종류인지 ---------- */
+
+const NOTION_TYPE: Record<FieldMap[string][1], string> = {
+  title: 'title', text: 'rich_text', select: 'select', multi: 'multi_select', status: 'status',
+  date: 'date', range: 'date', number: 'number', checkbox: 'checkbox', phone: 'phone_number',
+  email: 'email', url: 'url', relation: 'relation', files: 'files', uid: 'unique_id', edited: 'last_edited_time',
+};
+
+export interface SchemaIssue { name: string; problem: 'missing' | 'type' | 'option'; detail: string }
+
+/**
+ * 노션에서 속성 이름을 바꾸거나 지우면 화면에 빈 값만 나와 알아채기 어렵다. 그 차이를 찾아낸다.
+ * statusOptions: 앱이 값을 써 넣는 상태 속성의 선택지(노션 API로는 새 선택지를 만들 수 없음)
+ */
+export function compareSchema(map: FieldMap, properties: Json, statusOptions: Record<string, readonly string[]> = {}): SchemaIssue[] {
+  const issues: SchemaIssue[] = [];
+  for (const [name, kind] of Object.values(map)) {
+    const p = properties?.[name];
+    if (!p) { issues.push({ name, problem: 'missing', detail: '속성이 없습니다' }); continue; }
+    const want = NOTION_TYPE[kind];
+    if (p.type !== want) { issues.push({ name, problem: 'type', detail: `종류가 ${p.type}입니다 (필요: ${want})` }); continue; }
+    const need = statusOptions[name];
+    if (need && p.type === 'status') {
+      const have = new Set((p.status?.options ?? []).map((o: Json) => o.name));
+      const lack = need.filter((o) => !have.has(o));
+      if (lack.length) issues.push({ name, problem: 'option', detail: `선택지 없음: ${lack.join(', ')}` });
+    }
+  }
+  return issues;
+}
+
 /* ---------- 읽기: 노션 속성 → 일반 값 ---------- */
 
 const plain = (rt: Json[] | undefined) => (rt ?? []).map((t) => t.plain_text ?? '').join('');

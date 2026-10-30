@@ -62,3 +62,21 @@ describe('값 → 노션', () => {
     expect(encode({ revenue: Number.NaN }, COMPANY)['최근매출(원)']).toEqual({ number: null });
   });
 });
+
+describe('연결 점검', () => {
+  it('이름이 바뀐 속성, 종류가 다른 속성, 없는 상태 선택지를 찾는다', async () => {
+    const { compareSchema } = await import('./notion');
+    const props = {
+      기업명: { type: 'title' },
+      관리상태: { type: 'status', status: { options: [{ name: '잠재' }, { name: '상담중' }] } },
+      '대표 휴대폰': { type: 'rich_text' },
+    };
+    const map = { name: ['기업명', 'title'], status: ['관리상태', 'status'], mobile: ['대표 휴대폰', 'phone'], ceo: ['대표자', 'text'] } as const;
+    const issues = compareSchema(map, props, { 관리상태: ['잠재', '상담중', '종료'] });
+    expect(issues).toEqual([
+      { name: '관리상태', problem: 'option', detail: '선택지 없음: 종료' },
+      { name: '대표 휴대폰', problem: 'type', detail: '종류가 rich_text입니다 (필요: phone_number)' },
+      { name: '대표자', problem: 'missing', detail: '속성이 없습니다' },
+    ]);
+  });
+});

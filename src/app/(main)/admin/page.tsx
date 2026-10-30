@@ -61,6 +61,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           <div><dt>캐시</dt><dd>1분 · 저장하면 즉시 갱신</dd></div>
           <div><dt>노션 프로젝트 홈</dt><dd><a href={NOTION_URLS.home} target="_blank" rel="noreferrer">열기</a></dd></div>
         </dl>
+        <Link href="/check" className="btn" style={{ marginTop: 14 }}>노션 연결 점검</Link>
       </section>
     </div>
   );

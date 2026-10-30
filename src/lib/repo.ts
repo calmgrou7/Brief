@@ -1,10 +1,10 @@
 // 데이터 저장소. NOTION_TOKEN이 있으면 노션, 없으면 메모리 속 예시 데이터(데모 모드).
 import 'server-only';
 import {
-  CERT, COMPANY, CONTACT, DATA_SOURCES, FINANCE, GOAL, INSURANCE, LINK, MATCH,
+  CERT, COMPANY, CONTACT, DATA_SOURCES, FINANCE, GOAL, INSURANCE, LINK, MATCH, STATUS,
   type Company, type Contact, type DashLink, type Dataset, type FieldMap,
 } from './schema';
-import { createPage, decode, encode, queryAll, trashPage, updatePage } from './notion';
+import { compareSchema, createPage, decode, encode, getDataSource, NotionError, queryAll, trashPage, updatePage, type SchemaIssue } from './notion';
 import { demoDataset } from './demo';
 import { isNewerContact } from './derive';
 
@@ -28,6 +28,35 @@ const DBS: Record<Exclude<keyof Dataset, 'loadedAt'>, [string, FieldMap]> = {
   matches: [DATA_SOURCES.matches, MATCH],
   links: [DATA_SOURCES.links, LINK],
 };
+
+const DB_LABELS: Record<keyof typeof DBS, string> = {
+  companies: '기업컨설팅관리대시보드', contacts: '접촉이력', certs: '인증·솔루션 적용현황', insurances: '기업보험 계약현황',
+  finances: '연도별 재무컨설팅', goals: '목표·과업', matches: '지원사업 AI 매칭', links: '연계 대시보드 링크',
+};
+
+export interface DbCheck { key: string; label: string; ok: boolean; error?: string; issues: SchemaIssue[] }
+
+/** 배포 직후 '노션이 제대로 붙었나' 확인: 8개 DB 접근 + 속성 이름·종류 */
+export async function checkConnection(): Promise<DbCheck[] | null> {
+  const t = token();
+  if (!t) return null;
+  const out: DbCheck[] = [];
+  for (const key of Object.keys(DBS) as (keyof typeof DBS)[]) {
+    const [ds, map] = DBS[key];
+    try {
+      const src = await getDataSource(t, ds);
+      const issues = compareSchema(map, src.properties, key === 'companies' ? { 관리상태: STATUS } : {});
+      out.push({ key, label: DB_LABELS[key], ok: issues.length === 0, issues });
+    } catch (e) {
+      const error = e instanceof NotionError
+        ? e.status === 401 ? '토큰이 올바르지 않습니다' : e.status === 404 ? '접근 권한 없음 — 노션에서 통합을 연결해 주세요' : `${e.status} ${e.message}`
+        : '노션 서버에 연결하지 못했습니다';
+      out.push({ key, label: DB_LABELS[key], ok: false, error, issues: [] });
+      if (e instanceof NotionError && e.status === 401) break; // 토큰이 틀리면 나머지도 같은 결과
+    }
+  }
+  return out;
+}
 
 async function loadFromNotion(t: string): Promise<Dataset> {
   const keys = Object.keys(DBS) as (keyof typeof DBS)[];
