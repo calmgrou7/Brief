@@ -16,7 +16,15 @@
 | `/clients/[id]` 고객 대시보드 (운영자용) | 이 고객의 결정, 기간 선택(7일/30일/이번 달), 직전 기간 대비 증감, 마케팅 퍼널, KPI, 일별 광고비·CPA 차트, 소재별 성과와 판정, **고객 리포트 링크 복사** |
 | `/r/[링크]` 고객 공유 리포트 | 고객사가 자기 성과만 보는 화면. 쉬운 말 요약, 퍼널, KPI, 차트, 소재별 성과, 용어 설명. 수수료·결정·판정·다른 고객 정보 없음. 서명된 링크라 추측·위조 불가, 90일 후 만료 |
 
-결정 승인은 지금은 기록만 남습니다(`.data/decisions.json`). 메타에 실제로 반영하는 것은 4단계 집행 에이전트에서 연결합니다.
+결정 승인은 지금은 기록만 남습니다. 메타에 실제로 반영하는 것은 4단계 집행 에이전트에서 연결합니다.
+
+## 저장소 (Supabase)
+
+`DATABASE_URL`이 있으면 Supabase(Postgres)에, 없으면 `.data/` 폴더의 파일에 저장합니다. 배포(Vercel 등)에서는 파일이 남지 않으므로 Supabase가 필요합니다.
+
+1. Supabase에서 새 프로젝트를 만듭니다 (리전: Seoul).
+2. SQL Editor에서 `supabase/migrations/` 안의 파일을 번호 순서대로 실행합니다.
+3. 대시보드 Connect > Transaction pooler 연결 문자열을 `DATABASE_URL`에 넣습니다.
 
 ## 실행
 
@@ -60,17 +68,19 @@ npm run build
 app/(owner)/         운영자 화면 (결정함, 고객 대시보드)
 app/r/[token]/       고객 공유 리포트
 app/login/           운영자 로그인
+supabase/migrations/ DB 테이블 정의
 components/          UI 조각, 차트, 숫자 표기
 lib/kpi.ts           KPI 계산 (순수 함수)
 lib/finance.ts       수수료·월말 예상·예산 페이스
 lib/summary.ts       고객 요약, 소재 판정
 lib/decisions.ts     오늘의 결정 생성과 돈 효과 계산
-lib/decision-store.ts 결정 처리 기록 (로컬 파일 → 2단계에서 Supabase)
+lib/decision-store.ts 결정 처리 기록 (Supabase 또는 로컬 파일)
 lib/performance.ts   기간별 성과 묶음 (운영자 페이지·고객 리포트 공용)
 lib/report.ts        고객 리포트 요약 문장
 lib/report-link.ts   고객 리포트 링크 서명·검증
 lib/session.ts       운영자 로그인 세션 서명·검증
 lib/auth.ts          로그인 확인·쿠키 (운영자 화면·서버 액션에서 호출)
+lib/db.ts            Supabase(Postgres) 연결 (없으면 로컬 파일)
 lib/data.ts          데이터 출처 선택 (샘플 / 메타)
 lib/meta/            Meta Graph API 호출과 응답 변환
 lib/sample-data.ts   샘플 데이터 생성기
