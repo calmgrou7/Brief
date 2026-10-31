@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useRef, useState } from 'react';
-import { logContact, type FormState } from '../../../actions';
+import { logContact, retryContactSummary, type FormState } from '../../../actions';
 import { keepForm } from '../../../ui/useKeepForm';
 import { METHODS } from '@/lib/schema';
 import { nowKST } from '@/lib/derive';
@@ -31,11 +31,14 @@ export function QuickContact({ companyId, companyName, now, autoOpen }: { compan
     return () => window.removeEventListener('chaeum:register', onReg);
   }, []);
   const [toast, setToast] = useState('');
+  const [warning, setWarning] = useState<{ message: string; key: number } | null>(null);
+  const savedCount = useRef(0);
   useEffect(() => {
     if (!state.ok) return;
     formRef.current?.reset();
     ref.current?.close();
     setToast(state.ok);
+    setWarning(state.warning ? { message: state.warning, key: ++savedCount.current } : null);
     const t = setTimeout(() => setToast(''), 3000);
     return () => clearTimeout(t);
   }, [state]);
@@ -43,6 +46,7 @@ export function QuickContact({ companyId, companyName, now, autoOpen }: { compan
   return (
     <>
       <button type="button" className="btn primary" onClick={open}><Icon name="note" />기록</button>
+      {warning && <SummaryRetry key={warning.key} companyId={companyId} warning={warning.message} />}
       {toast && <p className="toast" role="status">{toast}</p>}
       <dialog ref={ref} className="sheet" aria-labelledby="qc-title">
         <form ref={formRef} action={action} onSubmit={keepForm(action)} className="sheet-in">
@@ -84,5 +88,17 @@ export function QuickContact({ companyId, companyName, now, autoOpen }: { compan
         </form>
       </dialog>
     </>
+  );
+}
+
+function SummaryRetry({ companyId, warning }: { companyId: string; warning: string }) {
+  const [state, action, pending] = useActionState<FormState, FormData>(retryContactSummary, {});
+  return (
+    <form action={action} className="notice" role="status">
+      <input type="hidden" name="companyId" value={companyId} />
+      <p>{state.ok || warning}</p>
+      {state.error && <p role="alert">{state.error}</p>}
+      {!state.ok && <button className="btn sm" disabled={pending}>{pending ? '갱신 중…' : '최근 접촉 정보만 재시도'}</button>}
+    </form>
   );
 }

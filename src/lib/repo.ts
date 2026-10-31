@@ -6,7 +6,7 @@ import {
 } from './schema';
 import { compareSchema, createPage, decode, encode, getDataSource, NotionError, queryAll, trashPage, updatePage, type SchemaIssue } from './notion';
 import { demoDataset } from './demo';
-import { isNewerContact } from './derive';
+import { isNewerContact, lastTouch } from './derive';
 
 const TTL_MS = 60_000;
 
@@ -138,11 +138,28 @@ export async function addContact(input: ContactInput) {
   if (!t) {
     d.contacts.push({ ...input, id: newId(), url: '' });
     if (company && bump) Object.assign(company, bump);
-    return;
+    return { summaryPending: false };
   }
   await createPage(t, DATA_SOURCES.contacts, encode(input, CONTACT));
-  if (company && bump) await updatePage(t, company.id, encode(bump, COMPANY));
-  invalidate();
+  // The contact (including follow-up fields) has committed. A summary failure must
+  // never invite the caller to create that same contact again.
+  try {
+    if (company && bump) await updatePage(t, company.id, encode(bump, COMPANY));
+    return { summaryPending: false };
+  } catch {
+    return { summaryPending: true };
+  } finally {
+    invalidate();
+  }
+}
+
+/** Retry only the derived company summary, using the latest persisted records. */
+export async function syncContactSummary(companyId: string) {
+  const data = await getData(true);
+  const company = data.companies.find((c) => c.id === companyId);
+  if (!company) throw new Error('업체를 찾을 수 없습니다.');
+  const touch = lastTouch(company, data.contacts);
+  if (touch) await updateCompany(companyId, { lastContactDate: touch.date, lastContactMethod: touch.method });
 }
 
 export async function setFollowUpDone(contactId: string, done: boolean) {

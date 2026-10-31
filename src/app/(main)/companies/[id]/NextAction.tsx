@@ -1,8 +1,8 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { useActionState, useCallback, useEffect, useRef, useState } from 'react';
 import { saveNextAction, type FormState } from '../../../actions';
-import { addDays, dueText, fmtDate, weekday } from '@/lib/derive';
+import { addDays, dayKST, dueText, fmtDate, weekday } from '@/lib/derive';
 import { keepForm } from '../../../ui/useKeepForm';
 import { DoneButton } from '../../../ui/DoneButton';
 import { Icon } from '../../../ui/icons';
@@ -11,14 +11,17 @@ import { Icon } from '../../../ui/icons';
 export function NextAction({ companyId, text, date, today, autoOpen }: { companyId: string; text: string; date: string; today: string; autoOpen: boolean }) {
   const [editing, setEditing] = useState(autoOpen);
   const [state, action, pending] = useActionState<FormState, FormData>(saveNextAction, {});
-  const [due, setDue] = useState(date.slice(0, 10));
+  const [due, setDue] = useState(dayKST(date));
   const box = useRef<HTMLDivElement>(null);
 
+  const open = useCallback(() => { setDue(dayKST(date)); setEditing(true); }, [companyId, date]);
+  useEffect(() => { setDue(dayKST(date)); }, [companyId, date]);
+
   useEffect(() => {
-    const onReg = (e: Event) => { if ((e as CustomEvent).detail === 'next') { setEditing(true); box.current?.scrollIntoView({ block: 'center' }); } };
+    const onReg = (e: Event) => { if ((e as CustomEvent).detail === 'next') { open(); box.current?.scrollIntoView({ block: 'center' }); } };
     window.addEventListener('chaeum:register', onReg);
     return () => window.removeEventListener('chaeum:register', onReg);
-  }, []);
+  }, [open]);
   useEffect(() => { if (state.ok) setEditing(false); }, [state]);
   useEffect(() => {
     if (!autoOpen) return;
@@ -26,7 +29,7 @@ export function NextAction({ companyId, text, date, today, autoOpen }: { company
     const u = new URL(window.location.href); u.searchParams.delete('next'); window.history.replaceState(null, '', u);
   }, [autoOpen]);
 
-  const over = Boolean(date) && date.slice(0, 10) < today;
+  const over = Boolean(date) && dayKST(date) < today;
 
   if (editing) {
     return (
@@ -47,7 +50,7 @@ export function NextAction({ companyId, text, date, today, autoOpen }: { company
           {state.error && <p className="notice err" role="alert" style={{ margin: 0 }}>{state.error}</p>}
           <div className="row">
             <button className="btn primary" disabled={pending}>{pending ? '저장 중…' : '저장'}</button>
-            <button type="button" className="btn" onClick={() => setEditing(false)}>취소</button>
+            <button type="button" className="btn" onClick={() => { setDue(dayKST(date)); setEditing(false); }}>취소</button>
           </div>
         </form>
       </div>
@@ -64,7 +67,7 @@ export function NextAction({ companyId, text, date, today, autoOpen }: { company
       </div>
       <div className="row">
         {text && <DoneButton kind="action" companyId={companyId} title={text} />}
-        <button type="button" className="btn sm" onClick={() => setEditing(true)}><Icon name="edit" />{text ? '변경' : '정하기'}</button>
+        <button type="button" className="btn sm" onClick={open}><Icon name="edit" />{text ? '변경' : '정하기'}</button>
       </div>
     </div>
   );
