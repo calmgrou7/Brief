@@ -1,0 +1,7 @@
+{
+  "releases": [
+    { "projectName": "동네가게 예약", "version": "1.2.0", "status": "approved", "date": "2026-10-30" },
+    { "projectName": "동네가게 예약", "version": "1.2.1", "kind": "hotfix", "status": "requested",
+      "date": "2026-11-02", "server": "NCP Prod #1", "buildNo": "24", "note": "결제 오류 수정" }
+  ]
+}

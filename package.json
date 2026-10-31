@@ -1,0 +1,11 @@
+{
+  "name": "bridgenode-dashboard",
+  "private": true,
+  "description": "브릿지노드 앱개발 총괄 관리 대시보드",
+  "scripts": {
+    "test": "node tests/smoke.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}
