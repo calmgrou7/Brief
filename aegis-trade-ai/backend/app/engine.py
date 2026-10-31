@@ -7,9 +7,9 @@ from decimal import Decimal as D
 from pathlib import Path
 from typing import Any
 
-from .costs import DEFAULT_COSTS
+from .costs import DEFAULT_COSTS, Costs
 from .data import demo_candles, validate_candle
-from .risk import FEE, SLIPPAGE, size
+from .risk import size
 
 
 def initial() -> dict[str, Any]:
@@ -35,17 +35,28 @@ def initial() -> dict[str, Any]:
 
 
 class Engine:
-    def __init__(self, path: Path):
-        self.candles = demo_candles()
+    def __init__(
+        self, path: Path, *, candles: list[dict[str, str]] | None = None,
+        identity: str = "DEMO", start: int = 24, costs: Costs = DEFAULT_COSTS,
+    ):
+        self.candles = demo_candles() if candles is None else candles
+        self.source = "DEMO" if candles is None else "REPLAY"
+        self.costs = costs
+        if not 0 <= start < len(self.candles):
+            raise ValueError("INVALID_START")
         self.db = sqlite3.connect(path, check_same_thread=False)
         self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY, body TEXT)")
         self.db.execute("CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY, body TEXT)")
         row = self.db.execute("SELECT body FROM state WHERE id=1").fetchone()
         self.s: dict[str, Any] = json.loads(row[0]) if row else initial()
+        if row and self.s.get("identity", "DEMO") != identity:
+            self.db.close()
+            raise ValueError("SESSION_IDENTITY_MISMATCH")
         if not row:
+            self.s.update(identity=identity, cursor=start)
             self.s["day"] = self.now().astimezone(timezone(timedelta(hours=9))).date().isoformat()
-            self.save("INITIALIZED_DEMO")
+            self.save("INITIALIZED_" + self.source)
 
     def now(self) -> datetime:
         return datetime.fromisoformat(self.candles[self.s["cursor"]]["time"]) + timedelta(
@@ -89,7 +100,8 @@ class Engine:
         self.gate()
         if self.s["pending"] or self.s["last_buy_cursor"] == self.s["cursor"]:
             raise ValueError("REJECT_DUPLICATE_SIGNAL")
-        size(self.equity(), D(self.s["cash"]), self.price(), D(stop))
+        size(self.equity(), D(self.s["cash"]), self.price(), D(stop),
+             self.costs.fee, self.costs.slippage)
         self.s["pending"] = {"stop": stop, "signal_time": self.now().isoformat()}
         self.s["last_buy_cursor"] = self.s["cursor"]
         self.s["last_decision"] = "QUEUED_NEXT_OPEN"
@@ -98,9 +110,9 @@ class Engine:
         p = self.s["position"]
         if not p:
             raise ValueError("REJECT_NO_POSITION")
-        fill = reference * (1 - SLIPPAGE)
+        fill = reference * (1 - self.costs.slippage)
         gross = D(p["qty"]) * fill
-        fee = gross * FEE
+        fee = gross * self.costs.fee
         net_pnl = gross - fee - D(p["cost"])
         self.s["cash"] = str(D(self.s["cash"]) + gross - fee)
         self.s["trades"].append(
@@ -153,10 +165,11 @@ class Engine:
             try:
                 self.gate()
                 sized = size(
-                    self.equity(), D(self.s["cash"]), D(candle["open"]), D(pending["stop"])
+                    self.equity(), D(self.s["cash"]), D(candle["open"]), D(pending["stop"]),
+                    self.costs.fee, self.costs.slippage
                 )
                 gross = sized.qty * sized.entry_fill
-                fee = gross * FEE
+                fee = gross * self.costs.fee
                 self.s["cash"] = str(D(self.s["cash"]) - gross - fee)
                 self.s["position"] = dict(
                     qty=str(sized.qty),
@@ -226,10 +239,10 @@ class Engine:
             daily_pnl=str(equity - D(self.s["day_equity"])),
             price=str(self.price()),
             timestamp=self.now().isoformat(),
-            source="DEMO",
-            costs_checksum=DEFAULT_COSTS.checksum,
-            fee_rate=str(FEE),
-            slippage_rate=str(SLIPPAGE),
+            source=self.source,
+            costs_checksum=self.costs.checksum,
+            fee_rate=str(self.costs.fee),
+            slippage_rate=str(self.costs.slippage),
             candles=self.candles[: self.s["cursor"] + 1],
             audit=[
                 json.loads(r[0])
