@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from 'react';
 import { logContact, type FormState } from '../../../actions';
 import { keepForm } from '../../../ui/useKeepForm';
 import { METHODS } from '@/lib/schema';
+import { nowKST } from '@/lib/derive';
 import { Icon, METHOD_ICON } from '../../../ui/icons';
 
 /** 방문·통화 직후 3초 기록: 방법 고르고 한 줄 쓰고 저장 */
@@ -14,7 +15,8 @@ export function QuickContact({ companyId, companyName, now, autoOpen }: { compan
   const [stamp, setStamp] = useState(now);
 
   const open = () => {
-    setStamp(nowLocal());
+    // 서버는 이 값을 한국 시간(+09:00)으로 저장하므로 기기 시간대와 관계없이 한국 시간으로 채운다
+    setStamp(nowKST());
     ref.current?.showModal();
   };
   useEffect(() => {
@@ -83,10 +85,4 @@ export function QuickContact({ companyId, companyName, now, autoOpen }: { compan
       </dialog>
     </>
   );
-}
-
-function nowLocal() {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }

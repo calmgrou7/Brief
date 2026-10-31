@@ -148,3 +148,25 @@ describe('일정·단계·재무', () => {
     expect(yoy(86, 0)).toBeNull();
   });
 });
+
+import { instant, isNewerContact as newer, lastTouch as touch } from './derive';
+
+describe('접촉 시각 비교 (같은 날)', () => {
+  it('날짜만 있으면 한국 시간 0시, 시차 없는 값은 한국 시간', () => {
+    expect(instant('2026-10-30')).toBe(Date.parse('2026-10-29T15:00:00Z'));
+    expect(instant('2026-10-30T14:30')).toBe(Date.parse('2026-10-30T05:30:00Z'));
+    expect(instant('2026-10-30T05:30:00.000Z')).toBe(instant('2026-10-30T14:30:00+09:00'));
+  });
+  it('같은 날 더 이른 기록은 최근 접촉을 덮어쓰지 않는다', () => {
+    expect(newer('2026-10-30T09:00:00+09:00', '2026-10-30T15:00:00+09:00')).toBe(false);
+    expect(newer('2026-10-30T16:00:00+09:00', '2026-10-30T15:00:00+09:00')).toBe(true);
+    expect(newer('2026-10-30T09:00:00+09:00', '2026-10-30')).toBe(true);
+  });
+  it('같은 날 노션에 직접 넣은 더 늦은 접촉이 마스터 값을 이긴다', () => {
+    const d = demoDataset(TODAY);
+    const c = { ...d.companies[0], lastContactDate: '2026-10-30T10:00:00+09:00', lastContactMethod: '전화' };
+    const k = { ...d.contacts[0], companyIds: [c.id], date: '2026-10-30T15:00:00.000+09:00', method: '방문' };
+    expect(touch(c, [k])).toMatchObject({ method: '방문' });
+    expect(touch(c, [{ ...k, date: '2026-10-30T08:00:00.000+09:00' }])).toMatchObject({ method: '전화' });
+  });
+});

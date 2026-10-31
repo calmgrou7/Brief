@@ -25,9 +25,19 @@ export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(day(to)) - Date.parse(day(from))) / 86_400_000);
 }
 
+/** 비교용 시각(ms). 날짜만 있으면 한국 시간 그날 0시, 시차 표기가 없으면 한국 시간으로 본다 */
+export function instant(s: string): number {
+  if (!s) return Number.NaN;
+  if (s.length <= 10) return Date.parse(`${s}T00:00:00+09:00`);
+  return Date.parse(/(?:[zZ]|[+-]\d{2}:?\d{2})$/.test(s) ? s : `${s}+09:00`);
+}
+
+export const byNewest = (a: { date: string }, b: { date: string }) => (instant(b.date) || 0) - (instant(a.date) || 0);
+
+/** 같은 날이라도 시각까지 비교해, 더 늦은 기록만 최근 접촉으로 인정한다 */
 export function isNewerContact(date: string, last: string): boolean {
   if (!date) return false;
-  return !last || day(date) >= day(last);
+  return !last || instant(date) >= instant(last);
 }
 
 export function addDays(date: string, n: number): string {
@@ -50,7 +60,7 @@ export const smsHref = (s: string) => `sms:${s.replace(/[^\d+]/g, '')}`;
 export function contactsOf(data: Pick<Dataset, 'contacts'>, companyId: string): Contact[] {
   return data.contacts
     .filter((c) => c.companyIds.includes(companyId))
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort(byNewest);
 }
 
 export interface LastTouch { date: string; method: string }
@@ -65,7 +75,7 @@ export function lastTouch(company: Company, contacts: Contact[]): LastTouch | nu
     : null;
   for (const c of contacts) {
     if (!c.date || !c.companyIds.includes(company.id)) continue;
-    if (!best || day(c.date) > day(best.date)) best = { date: c.date, method: c.method };
+    if (!best || instant(c.date) > instant(best.date)) best = { date: c.date, method: c.method };
   }
   return best;
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getData } from '@/lib/repo';
-import { homeStats, INSURANCE_ALERT_DAYS, STALE_DAYS, tasks, todayKST, weekday } from '@/lib/derive';
+import { byNewest, homeStats, INSURANCE_ALERT_DAYS, STALE_DAYS, tasks, todayKST, weekday } from '@/lib/derive';
 import { Icon } from '../ui/icons';
 import { ActivityRow, EmptyState, MetricCard, TaskList } from '../ui/bits';
 
@@ -15,7 +15,7 @@ export default async function Home() {
   const names = new Map(data.companies.map((c) => [c.id, c.name]));
   const recent = [...data.contacts]
     .filter((c) => names.has(c.companyIds[0]) && c.date)
-    .sort((a, b) => b.date.localeCompare(a.date))
+    .sort(byNewest)
     .slice(0, 5);
   const priority = list.filter((t) => t.kind !== 'soon').slice(0, 5);
   const [, m, d] = today.split('-');

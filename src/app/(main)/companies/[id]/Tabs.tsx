@@ -1,11 +1,15 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 export interface TabDef { key: string; label: string; count?: number; content: ReactNode }
 
 export function Tabs({ tabs, initial }: { tabs: TabDef[]; initial: string }) {
   const [on, setOn] = useState(tabs.some((t) => t.key === initial) ? initial : tabs[0].key);
+  // 같은 업체 안에서 ?tab= 링크로 이동하면 컴포넌트가 그대로 남으므로 선택을 맞춰 준다
+  useEffect(() => {
+    if (tabs.some((t) => t.key === initial)) setOn(initial);
+  }, [initial]); // eslint-disable-line react-hooks/exhaustive-deps
   const pick = (k: string) => {
     setOn(k);
     // 새로고침·공유해도 같은 탭이 열리도록 주소만 바꾼다(페이지 이동 없음)
