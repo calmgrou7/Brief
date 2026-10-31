@@ -30,7 +30,10 @@
 - [ ] 최종 평가 구간을 튜닝에 사용하지 않음, `research_trials` 기록
 
 ## PR-05 Risk Gate
-- [ ] PRD §5.2 골든 케이스 G1~G5 테스트 존재·통과
+- [ ] PRD §5.2 골든 케이스 G1~G11 테스트 존재·통과 (특히 G6 슬리피지≠0, G7 갭 손절)
+- [ ] 슬리피지가 진입·청산에 각각 한 번씩만 적용됨 (중복 적용 없음)
+- [ ] 0 이하 입력은 나눗셈 전에 거절, 내림 후 사후 검증(현금·10% 상한·위험예산) 존재
+- [ ] Risk Gate·백테스터·PaperBroker가 같은 `config/costs.yaml` 객체를 사용, 비용 상수 하드코딩 없음
 - [ ] 거절 코드가 §5.3 enum과 일치
 - [ ] SELL은 일일손실·낙폭·연속손실 상태에서도 허용, EMERGENCY_STOP에선 차단
 - [ ] "당일" = KST 00:00, 낙폭 = 평가액 기준
@@ -40,6 +43,7 @@
 ## PR-06 PaperBroker·주문
 - [ ] 같은 봉 신호 2회 → 주문 1회 (유일키)
 - [ ] 호가 5초 초과 지연 시 거절
+- [ ] 호가창 VWAP 슬리피지 > s 이면 `REJECT_SLIPPAGE_EXCEEDED`, 실측 슬리피지 기록
 - [ ] 재기동 후 모드·포지션·손절가 복원
 - [ ] signal → risk_decision → order_intent → order → fill 연결 무결성
 

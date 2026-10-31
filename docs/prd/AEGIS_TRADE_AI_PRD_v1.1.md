@@ -17,7 +17,8 @@
 | # | 구분 | v1.0 문제 | v1.1 조치 |
 |---|---|---|---|
 | 1 | 리스크 | 1회 매수 10% 상한 + 단일 종목 + 추가매수 규정 없음 → **총 노출 20%는 도달 불가능한 숫자** | MVP는 **포지션 1개, 추가매수(피라미딩) 금지**로 명시. 총 노출 20%는 향후 다종목용 상한으로 보존 (§5) |
-| 2 | 리스크 | 포지션 크기 공식에 수수료·슬리피지 미반영 → 손절 시 실제 손실이 0.5% 초과 | 1단위당 위험 = 가격차 + 왕복 수수료 + 슬리피지로 수정, **골든 테스트 케이스** 추가 (§5.2) |
+| 2 | 리스크 | 포지션 크기 공식에 수수료·슬리피지 미반영 → 손절 시 실제 손실이 0.5% 초과 | 진입·청산 양쪽 슬리피지와 수수료를 반영한 공식, 사후 검증, **골든 테스트 G1~G11** (§5.2). r2에서 Codex 리뷰 지적(청산 슬리피지 누락)을 반영 |
+| 2b | 비용 | 수량 계산·백테스트·모의매매의 슬리피지 기본값이 서로 달랐음 (0.1% / 0.05%) | **공통 비용 설정 하나**(`config/costs.yaml`)를 세 모듈이 공유, PaperBroker는 허용 슬리피지 초과 시 주문 안 함 (§5.4) |
 | 3 | 리스크 | 연속 3회 손실 후 "일시 중지"의 해제 조건 없음, "당일" 기준 시각 없음, 낙폭 계산 기준 없음 | 해제 조건·KST 00:00 기준·평가손익 포함 여부 확정 (§5.1) |
 | 4 | 백테스트 | 신호 시점 vs 체결 시점, 봉 안에서 손절·익절 동시 도달 시 처리 미정의 → 백테스트가 낙관적으로 왜곡될 위험 | **다음 봉 시가 체결, 갭 반영, 동일 봉 충돌 시 손절 우선** 규칙 확정 (§11.2) |
 | 5 | 백테스트 | Buy & Hold(100% 투자)와 10% 노출 전략을 비교 → 의미 없는 비교 | **노출 동일화 벤치마크**(10% BTC 보유) 추가 (§11.3) |
@@ -178,38 +179,70 @@
 
 > 참고: 10% 포지션에서 BTC가 10% 움직이면 계좌는 약 1% 움직인다. 이 설정은 **수익 극대화가 아닌 시스템 검증용**이며, 일일 −2% 한도는 정상 상황에서 거의 발동되지 않는 안전망이다. 운영자는 이 점을 기대 수익률 판단에 반영한다.
 
-### 5.2 포지션 크기 계산 (확정 공식)
+### 5.2 포지션 크기 계산 (확정 공식, v1.1 r2)
+
+비용 모델은 §5.4의 **공통 비용 설정 하나**를 Risk Gate·백테스터·PaperBroker가 같이 쓴다. 진입·청산 양쪽에 같은 슬리피지 `s`, 체결대금 기준 수수료 `f`를 적용한다.
 
 ```
-equity          = cash + position_qty * mark_price          # Decimal
+# 입력: equity, cash, entry(슬리피지 적용 전 기준가), stop(손절 트리거가), f, s   — 전부 Decimal
+reject if equity <= 0 or cash <= 0 or entry <= 0 or stop <= 0   -> REJECT_INVALID_INPUT   (나눗셈 전에 검사)
+reject if stop >= entry                                         -> REJECT_INVALID_STOP
+
+entry_fill      = entry * (1 + s)          # 슬리피지는 여기서 한 번만 적용 (중복 적용 금지)
+stop_fill       = stop  * (1 - s)
+cost_per_unit   = entry_fill * (1 + f)     # 1 BTC 매수에 실제로 나가는 현금
+per_unit_risk   = cost_per_unit - stop_fill * (1 - f)
+
 risk_budget     = equity * 0.005
-fee_rate        = 설정값 (기본 0.0005)  [검증 필요: 업비트 KRW 마켓 실제 수수료]
-slippage_rate   = 설정값 (기본 0.001)   # 보수적 가정
-per_unit_risk   = (entry - stop) + entry*fee_rate + stop*fee_rate + entry*slippage_rate
 qty_by_risk     = risk_budget / per_unit_risk
-qty_by_cap      = (equity * 0.10) / entry
-qty_by_cash     = cash / (entry * (1 + fee_rate + slippage_rate))
-qty             = floor_to_8_decimals( min(qty_by_risk, qty_by_cap, qty_by_cash) )
-reject if stop >= entry                          -> REJECT_INVALID_STOP
-reject if qty * entry < 5000                     -> REJECT_MIN_ORDER
+qty_by_cap      = (equity * 0.10) / cost_per_unit     # 10% 상한 = 수수료 포함 실제 지출 기준
+qty_by_cash     = cash / cost_per_unit
+qty             = floor_to_8_decimals( min(qty_by_risk, qty_by_cap, qty_by_cash) )   # 내림
+
+reject if qty * entry_fill < 5000                               -> REJECT_MIN_ORDER
+# 사후 검증 (내림 후 최종 수량으로 다시 확인, 실패 시 REJECT_SIZING_INVARIANT + 경보)
+assert qty * cost_per_unit <= cash
+assert qty * cost_per_unit <= equity * 0.10
+assert qty * per_unit_risk <= risk_budget
 ```
 
-**골든 테스트 케이스** (fee 0.05%, slippage 0으로 고정해 계산, 구현은 이 값을 그대로 통과해야 함):
+- `entry` 기준가: 백테스트 = 봉 t+1 시가, PaperBroker = 판단 시점 최우선 매도호가(best ask).
+- 이 공식은 **가정한 비용 + 갭 없는 손절**에서 위험예산을 지키는 공식이다. 갭 하락·급락 시 실제 손실은 예산을 넘을 수 있다(G7).
+- `s=0`이면 v1.1 초판 공식과 같아진다. 단, 10% 상한 기준을 "수수료 포함 실지출"로 확정하면서 G1·G3 기대값이 0.00100000 → 0.00099950으로 바뀌었다.
 
-| # | equity | entry | stop | 기대 결과 |
-|---|---:|---:|---:|---|
-| G1 | 1,000,000 | 100,000,000 | 97,000,000 | qty_by_risk 0.00161368 > cap 0.001 → **qty 0.00100000** (100,000원) |
-| G2 | 1,000,000 | 100,000,000 | 90,000,000 | qty_by_risk 0.00049529 → **qty 0.00049529** (49,529원), 손절 시 손실 ≈ 4,999.95원 ≤ 5,000 |
-| G3 | 1,000,000 | 100,000,000 | 99,000,000 | qty_by_risk 0.00454752 > cap → **qty 0.00100000** |
-| G4 | 40,000 | 100,000,000 | 97,000,000 | cap = 4,000원 < 5,000 → **REJECT_MIN_ORDER** |
-| G5 | 1,000,000 | 100,000,000 | 100,000,000 | **REJECT_INVALID_STOP** |
+**골든 테스트 케이스** — 아래 값은 Decimal로 산술 검산한 값이다(구현 테스트 실행 결과 아님). 구현은 이 값을 그대로 내야 한다. f = 0.0005 공통.
+
+| # | 목적 | equity / cash | entry | stop | s | 기대 결과 |
+|---|---|---:|---:|---:|---:|---|
+| G1 | 상한(cap)이 제한 | 1,000,000 / 1,000,000 | 100,000,000 | 97,000,000 | 0 | **qty 0.00099950**, 지출 99,999.975원 |
+| G2 | 위험예산이 제한 (s=0 회귀) | 1,000,000 / 1,000,000 | 100,000,000 | 90,000,000 | 0 | **qty 0.00049529**, 손절 손실 4,999.95255원 |
+| G3 | 손절 촘촘 → cap 제한 | 1,000,000 / 1,000,000 | 100,000,000 | 99,000,000 | 0 | **qty 0.00099950** |
+| G4 | 최소주문 미달 | 40,000 / 40,000 | 100,000,000 | 97,000,000 | 0 | 0.00003998 × 1억 = 3,998원 → **REJECT_MIN_ORDER** |
+| G5 | 손절 ≥ 진입 | 1,000,000 / 1,000,000 | 100,000,000 | 100,000,000 | 0 | **REJECT_INVALID_STOP** |
+| G6 | **슬리피지 ≠ 0, 위험예산 제한** | 1,000,000 / 1,000,000 | 100,000,000 | 90,000,000 | 0.001 | per_unit_risk 10,285,005 → **qty 0.00048614**, 손절 손실 **4,999.95233070원** (초판 공식은 0.00049043 / 5,044.07500215원으로 예산 초과) |
+| G7 | 갭 손절 (예산 초과 가능 확인) | G6 포지션 | 100,000,000 | 90,000,000 | 0.001 | 봉 시가 85,000,000 → 손절 체결가 `min(90,000,000, 85,000,000)×0.999` = 84,915,000, 손실 **7,427.00749605원** (> 5,000, 정상 동작으로 기록) |
+| G8 | 현금이 제한 (함수 단위 테스트, MVP 실운영에선 발생 안 함) | 1,000,000 / 60,000 | 100,000,000 | 97,000,000 | 0.001 | **qty 0.00059910**, 지출 59,999.894955원 |
+| G9 | 최소주문 경계 (미달) | 50,000 / 50,000 | 100,000,000 | 97,000,000 | 0.001 | qty 0.00004992, 4,996.992원 → **REJECT_MIN_ORDER** |
+| G10 | 최소주문 경계 (통과) | 50,100 / 50,100 | 100,000,000 | 97,000,000 | 0.001 | **qty 0.00005002**, 체결대금 5,007.002원 |
+| G11 | 잘못된 입력 | 1,000,000 / 1,000,000 | 0 | 97,000,000 | 0.001 | **REJECT_INVALID_INPUT** (나눗셈 전 거절) |
 
 ### 5.3 Risk Gate 거절 코드 (enum 고정)
 
-`ACCEPT`, `REJECT_MODE_NOT_ALLOWED`, `REJECT_MARKET_NOT_ALLOWED`, `REJECT_POSITION_EXISTS`, `REJECT_NO_POSITION`(보유 없이 SELL), `REJECT_INVALID_STOP`, `REJECT_MIN_ORDER`, `REJECT_INSUFFICIENT_CASH`, `REJECT_DAILY_LOSS_LIMIT`, `REJECT_DRAWDOWN_LIMIT`, `REJECT_LOSS_STREAK`, `REJECT_STALE_DATA`, `REJECT_CANDLE_NOT_CLOSED`, `REJECT_DUPLICATE_SIGNAL`, `REJECT_RECONCILE_MISMATCH`, `REJECT_STRATEGY_NOT_APPROVED`, `REJECT_ORDERBOOK_STALE`.
+`ACCEPT`, `REJECT_INVALID_INPUT`, `REJECT_SIZING_INVARIANT`, `REJECT_SLIPPAGE_EXCEEDED`, `REJECT_MODE_NOT_ALLOWED`, `REJECT_MARKET_NOT_ALLOWED`, `REJECT_POSITION_EXISTS`, `REJECT_NO_POSITION`(보유 없이 SELL), `REJECT_INVALID_STOP`, `REJECT_MIN_ORDER`, `REJECT_INSUFFICIENT_CASH`, `REJECT_DAILY_LOSS_LIMIT`, `REJECT_DRAWDOWN_LIMIT`, `REJECT_LOSS_STREAK`, `REJECT_STALE_DATA`, `REJECT_CANDLE_NOT_CLOSED`, `REJECT_DUPLICATE_SIGNAL`, `REJECT_RECONCILE_MISMATCH`, `REJECT_STRATEGY_NOT_APPROVED`, `REJECT_ORDERBOOK_STALE`.
 
 - **SELL(청산)은 일일손실·낙폭·연속손실·SAFE_PAUSED 상태에서도 허용**한다(위험을 줄이는 방향). `EMERGENCY_STOP`에서는 자동 청산도 멈추고 운영자 명령만 받는다.
 - 리스크 설정은 `config/risk.yaml`에 두고 기동 시 체크섬을 `audit_events`에 기록한다. **런타임 변경은 한도를 조이는 방향만 허용**, 완화는 재기동 + 감사로그 필수.
+
+### 5.4 공통 비용 설정 (`config/costs.yaml`)
+
+| 시나리오 | 수수료 f | 슬리피지 s | 사용처 |
+|---|---:|---:|---|
+| `base` | 0.0005 `[검증 필요]` | 0.001 | **Risk Gate 수량 계산, PaperBroker 허용 한도, 백테스트 기본** |
+| `conservative` | 0.0005 | 0.002 | 백테스트 스트레스 (이 시나리오에서도 순손익 > 0이어야 선정) |
+
+- 세 모듈은 같은 설정 객체를 주입받는다. 모듈 안에 비용 상수를 하드코딩하지 않는다.
+- PaperBroker는 실제 호가창을 걸어 내려간 VWAP로 체결가를 계산한다. 기준가 대비 체결가 차이가 `s`를 넘으면 주문하지 않는다(`REJECT_SLIPPAGE_EXCEEDED`). 그래서 실제 체결 비용이 수량 계산 때 가정한 비용을 넘지 않는다.
+- 실측 슬리피지(VWAP vs 기준가)를 매 체결 기록하고 주간 리포트에 가정치와 비교한다. 7일 평균이 `s`의 80%를 넘으면 경보를 보내고 `s` 상향을 검토한다.
 
 ---
 
@@ -234,7 +267,7 @@ reject if qty * entry < 5000                     -> REJECT_MIN_ORDER
 
 ### 6.3 실시간 데이터
 - WebSocket `ticker`(또는 `trade`)로 현재가 수신 → 손절/추적손절 감시, 데이터 최신성 판정.
-- `orderbook`은 PaperBroker 체결 시뮬레이션에 사용. 마지막 호가 수신 5초 초과 시 `REJECT_ORDERBOOK_STALE`.
+- `orderbook`은 PaperBroker 체결 시뮬레이션에 사용(호가창 VWAP, §5.4). 마지막 호가 수신 5초 초과 시 `REJECT_ORDERBOOK_STALE`.
 - 재연결: 지수 백오프(1, 2, 4, … 최대 60초) + 지터. 재연결 성공 시 경보 해제 알림.
 
 ---
@@ -342,11 +375,13 @@ reject if qty * entry < 5000                     -> REJECT_MIN_ORDER
 - 데이터 분할: 시간순 **학습 60% / 검증 20% / 최종 평가 20%**. 최종 평가 구간은 파라미터 확정 전까지 한 번도 실행하지 않는다.
 
 ### 11.2 체결 시뮬레이션 규칙 (확정)
-- 신호는 봉 t 종가 확정 후 발생 → **봉 t+1 시가 + 슬리피지**로 체결.
-- 손절: 보유 중 봉의 저가 ≤ 손절가면 체결가 = `min(손절가, 해당 봉 시가) × (1 − slippage)` (갭 하락 반영).
+- 비용은 §5.4 공통 설정을 쓴다. 수수료는 매수·매도 체결대금 각각에 `f`를 부과한다.
+- 신호는 봉 t 종가 확정 후 발생 → **봉 t+1 시가 × (1 + s)**로 체결. 수량은 §5.2 공식에 `entry = 봉 t+1 시가`를 넣어 계산.
+- 손절: 보유 중 봉의 저가 ≤ 손절가면 체결가 = `min(손절가, 해당 봉 시가) × (1 − s)` (갭 하락 반영).
+- 그 외 청산(추세 이탈·시간 제한·익절)은 해당 신호 봉 다음 봉 시가 × (1 − s).
 - 동일 봉에서 손절과 익절이 모두 가능하면 **손절이 먼저 발생한 것으로 처리**(보수적).
 - 추적손절 갱신은 봉 마감 후에만 반영(같은 봉 고가로 끌어올린 뒤 같은 봉 저가로 청산하는 낙관적 처리 금지).
-- 비용 시나리오 2종: 기본(수수료 0.05%, 슬리피지 0.05%), 보수(수수료 0.05%, 슬리피지 0.2%). 보수 시나리오에서도 순손익이 음수면 탈락.
+- 비용 시나리오 2종은 §5.4의 `base`(s 0.1%)와 `conservative`(s 0.2%). 보수 시나리오에서도 순손익이 음수면 탈락.
 
 ### 11.3 벤치마크
 - 100% BTC 보유(참고용)
@@ -380,6 +415,8 @@ reject if qty * entry < 5000                     -> REJECT_MIN_ORDER
 | 갭 하락으로 손절가 이탈 | 손절가보다 낮게 체결, 손실 > 0.5% 가능함을 기록 | unit |
 | 일일 −2% / 낙폭 −8% / 연속 3패 | 각각 정해진 차단·해제 동작 | unit |
 | 호가 데이터 5초+ 지연 | `REJECT_ORDERBOOK_STALE` | unit |
+| 호가창 VWAP 슬리피지 > s | `REJECT_SLIPPAGE_EXCEEDED`, 실측 슬리피지 기록 | unit |
+| 수량 계산 사후 검증 실패 | `REJECT_SIZING_INVARIANT` + 경보 | unit |
 | `/stop` | 신규 주문·자동 청산 차단, 감시·기록 유지 | integration |
 | 비인가 chat_id 명령 | 무시 + 감사로그 | unit |
 | 비밀값 로그 출력 | 로그 포매터가 토큰류 마스킹 | unit |
