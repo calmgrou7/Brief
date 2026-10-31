@@ -1,0 +1,22 @@
+name: AEGIS PAPER checks
+on:
+  pull_request:
+    paths: ['aegis-trade-ai/**', '.github/workflows/aegis-paper.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: aegis-trade-ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: pip install uv==0.9.7
+      - run: make install lint test build

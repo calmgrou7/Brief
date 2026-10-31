@@ -1,0 +1,4 @@
+{
+  "base": {"fee": "0.0005", "slippage": "0.001"},
+  "conservative": {"fee": "0.0005", "slippage": "0.002"}
+}
