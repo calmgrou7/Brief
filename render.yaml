@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: bridgenode-dashboard
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: bridgenode-data
+      mountPath: /var/data/bridgenode
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATA_DIR
+        value: /var/data/bridgenode
+      # 관리자 비밀번호: Render 대시보드에서 직접 입력 (저장소에 커밋 금지)
+      - key: ADMIN_PASSWORD
+        sync: false

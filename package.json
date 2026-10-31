@@ -1,11 +1,30 @@
 {
   "name": "bridgenode-dashboard",
+  "version": "0.2.0",
   "private": true,
+  "type": "module",
   "description": "브릿지노드 앱개발 총괄 관리 대시보드",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "test": "node tests/smoke.js"
+    "dev": "node scripts/dev.mjs",
+    "build": "tsc --noEmit && vite build",
+    "start": "node --env-file-if-exists=.env server/index.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "db:backup": "node scripts/database-backup.mjs",
+    "ui:check": "node scripts/ui-check.mjs"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "playwright": "^1.47.0"
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "prettier": "3.9.9",
+    "typescript": "5.9.3",
+    "vite": "8.0.16"
   }
 }

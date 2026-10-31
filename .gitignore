@@ -1,4 +1,7 @@
 node_modules/
-test-results/
-*.png
+dist/
+.env
+.data/
+test-output/
+backups/
 bridgenode-dashboard-*.json
