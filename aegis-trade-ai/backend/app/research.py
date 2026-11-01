@@ -110,6 +110,7 @@ def stop_on_unhealthy_quote(engine: Engine, quote: dict[str, str], now: datetime
         if engine.s["mode"] == "PAPER":
             engine.mode("pause", "")
         engine.s["pending"] = None
+        engine.s["feed_status"] = "STALE_OR_ERROR"
         engine.s["last_decision"] = "REJECT_STALE_OR_ERROR_DATA"
         engine.save("PUBLIC_DATA_UNHEALTHY")
     return not healthy

@@ -65,3 +65,24 @@ UV_CACHE_DIR=/tmp/aegis-uv uv run python -m backend.app.research replay --synthe
 
 검수 후에도 이 PR은 운영자 병합 전 초안 상태를 유지합니다. 실거래 및 운영
 배포는 이번 공유 범위에 포함되지 않습니다.
+
+## 2026-11-01 로컬 후속 검수 — bounded PAPER 루프
+
+원격 기준은 `17408e8`이며 별도 로컬 `codex/aegis-bounded-paper-loop`에서 작업했습니다.
+[신규 실행 모델·검증·제약](BOUNDED_PAPER.md)을 먼저 읽어주세요. 기존 문서의
+“실시간 루프 미연결”은 10/31 버전 설명이며, 이번에는 명시적 시작/횟수·시간 상한의
+공개피드 PAPER 루프를 구현했습니다. **실제 feed 검증은 여전히 미수행**입니다.
+허용목록에 api.upbit.com이 없어 요청을 시도하지 않았고 우회하지 않았습니다.
+
+`make -C aegis-trade-ai lint test build`: **67 passed**, 타입/린트/빌드 통과.
+HTTP는 mock-only, fixture bounded-loop 및 네트워크 없는 STOP-file CLI smoke를 실행했습니다.
+기존 50개 회귀 테스트도 포함됩니다. 원격 게시/CI/Claude 검수는 아직 수행하지 않았습니다.
+
+추가 검수 포인트:
+- [ ] 오프라인 next-open과 실제로 관찰 가능한 다음 ticker 체결의 구분/승인 필요성
+- [ ] 실행 종료가 청산이 아님을 표시하고, 종료 후 손절 감시가 중단됨을 명시하는지
+- [ ] 첫 자료는 warmup만, 재시작 pending 취소/소급진입 방지/포지션 보존
+- [ ] 동일 완료봉/quote 중복, pending 60초 만료, stale/rate-limit/피드 실패의 안전 중단
+- [ ] 비용/현금/리스크 재검증과 실현·평가손익, 미커밋 interrupt의 체결 원자성
+- [ ] 단일 DB 파일 잠금 및 SIGINT/SIGTERM/STOP-file/시간예산 협력적 중단
+- [ ] in-flight timeout으로 종료가 늦어질 수 있는 한계와 실제 feed 미검증을 명확히 구분

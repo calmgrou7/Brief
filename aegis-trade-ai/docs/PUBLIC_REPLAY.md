@@ -1,5 +1,8 @@
 # Public data and offline PAPER research increment
 
+Historical scope: 2026-10-31. For the subsequent bounded public-feed PAPER CLI,
+see [BOUNDED_PAPER.md](BOUNDED_PAPER.md). Actual feed access remains unverified.
+
 This increment adds a public quotation adapter and deterministic offline replay.
 It does **not** enable live-paper execution or update the hosted static demo.
 There are no account credentials, account calls, real orders, or provisioned services.

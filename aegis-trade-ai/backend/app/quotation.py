@@ -25,12 +25,24 @@ class PublicQuotation:
         self.sleep = sleep
         self.delay = 1.0  # Conservative 1 req/sec, shared IP budget may be smaller.
         self.blocked = False
+        self.can_request: Callable[[], bool] | None = None
 
     def _get(self, endpoint: str, params: dict[str, str]) -> Any:
         if self.blocked:
             raise QuotationError("PUBLIC_API_BLOCKED_418")
         for attempt in range(3):
-            self.sleep(self.delay)
+            if self.can_request is None:
+                self.sleep(self.delay)
+            else:
+                wait_remaining = self.delay
+                while wait_remaining > 0:
+                    if not self.can_request():
+                        raise QuotationError("PUBLIC_REQUEST_CANCELLED")
+                    chunk = min(1.0, wait_remaining)
+                    self.sleep(chunk)
+                    wait_remaining -= chunk
+                if not self.can_request():
+                    raise QuotationError("PUBLIC_REQUEST_CANCELLED")
             try:
                 response = self.client.get(
                     "https://api.upbit.com/v1/" + endpoint, params=params,
