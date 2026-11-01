@@ -76,7 +76,7 @@ UV_CACHE_DIR=/tmp/aegis-uv uv run python -m backend.app.research replay --synthe
 
 `make -C aegis-trade-ai lint test build`: **67 passed**, 타입/린트/빌드 통과.
 HTTP는 mock-only, fixture bounded-loop 및 네트워크 없는 STOP-file CLI smoke를 실행했습니다.
-기존 50개 회귀 테스트도 포함됩니다. 원격 게시/CI/Claude 검수는 아직 수행하지 않았습니다.
+기존 50개 회귀 테스트도 포함됩니다. 2026-11-01 사용자 승인에 따라 기존 초안 PR #4에 공유합니다. 원격 CI 결과는 해당 커밋의 GitHub Actions에서 확인하며, Claude 검수 완료를 의미하지 않습니다.
 
 추가 검수 포인트:
 - [ ] 오프라인 next-open과 실제로 관찰 가능한 다음 ticker 체결의 구분/승인 필요성
@@ -86,3 +86,5 @@ HTTP는 mock-only, fixture bounded-loop 및 네트워크 없는 STOP-file CLI sm
 - [ ] 비용/현금/리스크 재검증과 실현·평가손익, 미커밋 interrupt의 체결 원자성
 - [ ] 단일 DB 파일 잠금 및 SIGINT/SIGTERM/STOP-file/시간예산 협력적 중단
 - [ ] in-flight timeout으로 종료가 늦어질 수 있는 한계와 실제 feed 미검증을 명확히 구분
+
+게시 범위: bounded PAPER 구현 `49093149b7b36b9b710fa1f189c76a82c9e7baff`와 본 검수자료. 운영 배포·PR 승인/병합·실주문은 포함하지 않습니다.
