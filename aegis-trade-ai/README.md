@@ -55,3 +55,10 @@ make run
 ## 2026-11-01 로컬 후속: 한정 실행 PAPER 루프
 
 [명시적 시작/종료 및 검증 한계](docs/BOUNDED_PAPER.md). 공개피드를 입력받는 별도 bounded CLI를 구현했고 mock 기반으로 검증했습니다. 실제 api.upbit.com 접속은 환경 허용목록 제한으로 미시도입니다. 위 10/31 상태 설명과 구분하며, 기존 UI·사이트는 변경하지 않았습니다.
+
+## 저장된 PAPER 상태 확인
+
+`uv run python -m backend.app.paper_status --db public-paper.sqlite3`로 네트워크 없이
+마지막 시세·출처·모의 거래/수수료/순손익·중단 사유를 확인합니다. JSON 출력은
+`--format json`을 추가하세요. [원본 DB 불변 조회 및 표시 의미](docs/PAPER_STATUS.md).
+저장된 PAPER 상태는 현재 실행 중임을 보장하지 않으며 종료 후 가격 감시는 중단됩니다.

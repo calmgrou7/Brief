@@ -214,6 +214,10 @@ def run(session: PaperSession, api: PublicQuotation, *, polls: int, seconds: flo
         raise ValueError("BOUNDED_RUN_REQUIRED")
     deadline = monotonic() + seconds
     reason = "POLL_LIMIT"
+    started = session.s["mode"] == "PAPER"
+    if started:
+        session.s["stop_reason"] = None
+        session.save("BOUNDED_RUN_STARTED")
     api.can_request = lambda: not stopped() and monotonic() < deadline
     try:
         for poll in range(polls):
@@ -231,8 +235,11 @@ def run(session: PaperSession, api: PublicQuotation, *, polls: int, seconds: flo
             if poll + 1 < polls:
                 sleep(max(0, min(interval, deadline - monotonic())))
     except (ValueError, httpx.HTTPError) as exc:
-        session.s["last_feed_error"] = str(exc)[:160]
-        session.pause("PUBLIC_FEED_ERROR")
+        if stopped() or monotonic() >= deadline:
+            session.pause("STOP_REQUESTED" if stopped() else "TIME_LIMIT")
+        else:
+            session.s["last_feed_error"] = str(exc)[:160]
+            session.pause("PUBLIC_FEED_ERROR")
     except KeyboardInterrupt:
         session.pause("INTERRUPTED")
     finally:
@@ -240,6 +247,11 @@ def run(session: PaperSession, api: PublicQuotation, *, polls: int, seconds: flo
             reason = ("STOP_REQUESTED" if stopped() else
                       "TIME_LIMIT" if monotonic() >= deadline else reason)
             session.pause(reason)
+        elif not session.s.get("stop_reason"):
+            session.s["stop_reason"] = ("EMERGENCY_STOP" if
+                                        session.s["mode"] == "EMERGENCY_STOP" else
+                                        "RISK_PAUSED" if started else "PAUSED_REASON_UNAVAILABLE")
+            session.save(session.s["stop_reason"])
     result = session.report()
     result["monitoring_status"] = "STOPPED"
     return result

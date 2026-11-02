@@ -88,3 +88,19 @@ HTTP는 mock-only, fixture bounded-loop 및 네트워크 없는 STOP-file CLI sm
 - [ ] in-flight timeout으로 종료가 늦어질 수 있는 한계와 실제 feed 미검증을 명확히 구분
 
 게시 범위: bounded PAPER 구현 `49093149b7b36b9b710fa1f189c76a82c9e7baff`와 본 검수자료. 운영 배포·PR 승인/병합·실주문은 포함하지 않습니다.
+
+## 2026-11-02 로컬 후속 — 읽기 전용 상태 보고
+
+[PAPER_STATUS.md](PAPER_STATUS.md) 참조. 기준 원격 `95ef38e`와 분리된
+`codex/aegis-status-report`에서 구현했으며 아직 원격 게시하지 않았습니다.
+중단 전 WIP의 67개 회귀 테스트만으로 완료 처리하지 않고, 신규 16개를 포함한
+**83 passed** 및 lint/type/build를 검증했습니다.
+
+집중 검수: source DB/WAL/SHM 불변 복사, 커밋 WAL 반영과 bounded 재시도,
+누락값/0·MOCK/PUBLIC/legacy 분리, 실현+미실현=평가손익 및 수수료 중복차감 방지,
+저장된 PAPER 모드를 프로세스 liveness로 오인하지 않는 표시, 비용/출처 mismatch,
+시간상한 요청 취소를 통신 장애로 잘못 표시하지 않는지 확인해주세요.
+
+api.upbit.com 접근은 현재 허용목록 미포함으로 **미시도**입니다. 실제 feed 검증이나
+Claude 검수 완료를 주장하지 않습니다. 게시할 경우 기존 초안 PR #4가 대상이며
+새 원격 게시/병합/배포는 이번 작업에서 수행하지 않습니다.
