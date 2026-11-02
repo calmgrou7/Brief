@@ -19,6 +19,7 @@ from .costs import load_costs
 from .data import validate_candle
 from .engine import Engine, initial
 from .quotation import PublicQuotation
+from .paper_status import report_state
 from .research import digest, exclusive, stop_on_unhealthy_quote
 from .risk import size
 from .strategy import Baseline
@@ -33,7 +34,10 @@ class PaperSession(Engine):
     the next bar interval. Never pretend an already elapsed opening price is available.
     """
 
-    def __init__(self, path: Path, clock: Callable[[], datetime], resume: bool = False):
+    def __init__(self, path: Path, clock: Callable[[], datetime], resume: bool = False,
+                 *, provenance: str = "PUBLIC_LIVE"):
+        if provenance not in {"PUBLIC_LIVE", "MOCK"}:
+            raise ValueError("INVALID_PROVENANCE")
         self.clock = clock
         self.costs = load_costs()
         self.strategy = Baseline()
@@ -47,13 +51,18 @@ class PaperSession(Engine):
         self.db.execute("CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY, body TEXT)")
         row = self.db.execute("SELECT body FROM state WHERE id=1").fetchone()
         self.s = json.loads(row[0]) if row else initial()
-        if row and self.s.get("identity") != identity:
+        if row and (self.s.get("identity") != identity or
+                    self.s.get("provenance", provenance) not in {provenance, "LEGACY_UNVERIFIED"}):
             self.db.close()
             raise ValueError("SESSION_IDENTITY_MISMATCH")
         if not row:
             self.s.update(identity=identity, cursor=0, watermark=None, mark_price="0",
                           fills=[], feed_status="UNKNOWN", last_quote_time=None,
-                          execution="BOUNDED_PUBLIC_PAPER", simulated=True)
+                          execution="BOUNDED_PUBLIC_PAPER", simulated=True, provenance=provenance)
+        self.s.setdefault("provenance", "LEGACY_UNVERIFIED")
+        self.s.setdefault("cost_model", dict(fee_rate=str(self.costs.fee),
+                                            slippage_rate=str(self.costs.slippage),
+                                            checksum=self.costs.checksum))
         self.bootstrapped = False
         self.s["pending"] = None  # Never execute an intent left across downtime.
         if resume and self.s["mode"] == "SAFE_PAUSED":
@@ -69,10 +78,16 @@ class PaperSession(Engine):
     def price(self) -> D:
         return D(self.s["mark_price"])
 
+    def save(self, event: str) -> None:
+        self.s["saved_at"] = self.now().isoformat()
+        super().save(event)
+
     def pause(self, reason: str) -> None:
         if self.s["mode"] == "PAPER":
             self.mode("pause", "")
-        self.s.update(pending=None, feed_status=reason, last_decision=reason)
+        self.s.update(pending=None, stop_reason=reason, last_decision=reason)
+        if reason in {"FEED_INVALID", "PUBLIC_FEED_ERROR"}:
+            self.s["feed_status"] = reason
         self.save(reason)
 
     def exit_position(self, reference: D, reason: str) -> None:
@@ -88,8 +103,10 @@ class PaperSession(Engine):
         before = copy.deepcopy(self.s)
         try:
             self._observe(dataset, quote)
-        except (ValueError, KeyError, TypeError, ArithmeticError):
+        except (ValueError, KeyError, TypeError, ArithmeticError) as exc:
             self.s = before
+            self.s["last_feed_error"] = (str(exc) if isinstance(exc, ValueError)
+                                          else type(exc).__name__)[:160]
             self.pause("FEED_INVALID")
         except BaseException:
             # A signal/crash between in-memory debit and position assignment must
@@ -101,6 +118,8 @@ class PaperSession(Engine):
     def _observe(self, dataset: dict[str, Any], quote: dict[str, str]) -> None:
         now = self.now()
         if stop_on_unhealthy_quote(self, quote, now):
+            self.s.update(stop_reason="STALE_OR_ERROR", last_feed_error="QUOTE_NOT_FRESH")
+            self.save("QUOTE_NOT_FRESH")
             return
         bars = dataset["candles"]
         if (dataset["source"] != "UPBIT_PUBLIC" or dataset["market"] != "KRW-BTC"
@@ -127,7 +146,8 @@ class PaperSession(Engine):
         newday = now.astimezone(timezone(timedelta(hours=9))).date().isoformat()
         if newday != self.s["day"]:
             self.s.update(day=newday, day_equity=str(self.equity()), daily_blocked=False)
-        self.s.update(mark_price=quote["price"], last_quote_time=quote["time"], feed_status="OK")
+        self.s.update(mark_price=quote["price"], last_quote_time=quote["time"],
+                      last_received_at=quote["received_at"], feed_status="OK", last_feed_error=None)
         self.refresh()
         # Current observed price protects restored positions before any new proposal.
         if (self.s["position"] and self.price() <= D(self.s["position"]["stop"])
@@ -181,11 +201,9 @@ class PaperSession(Engine):
         self.save("PUBLIC_PAPER_OBSERVATION")
 
     def report(self) -> dict[str, Any]:
-        return dict(source=self.source, execution="BOUNDED_PUBLIC_PAPER", simulated=True,
-                    actual_returns=False, state=self.s, marked_equity=str(self.equity()),
-                    marked_net_pnl=str(self.equity() - D("1000000")),
-                    realized_net_pnl=str(sum((D(t["net_pnl"]) for t in self.s["trades"]), D(0))),
-                    open_position_not_liquidated=bool(self.s["position"]))
+        report = report_state(self.s, self.now())
+        report["state"] = self.s  # Compatibility with the bounded run JSON response.
+        return report
 
 
 def run(session: PaperSession, api: PublicQuotation, *, polls: int, seconds: float,
@@ -195,6 +213,7 @@ def run(session: PaperSession, api: PublicQuotation, *, polls: int, seconds: flo
     if not 1 <= polls <= 360 or not 1 <= seconds <= 3600 or not 1 <= interval <= 60:
         raise ValueError("BOUNDED_RUN_REQUIRED")
     deadline = monotonic() + seconds
+    reason = "POLL_LIMIT"
     api.can_request = lambda: not stopped() and monotonic() < deadline
     try:
         for poll in range(polls):
@@ -211,14 +230,19 @@ def run(session: PaperSession, api: PublicQuotation, *, polls: int, seconds: flo
                 break
             if poll + 1 < polls:
                 sleep(max(0, min(interval, deadline - monotonic())))
-    except (ValueError, httpx.HTTPError):
+    except (ValueError, httpx.HTTPError) as exc:
+        session.s["last_feed_error"] = str(exc)[:160]
         session.pause("PUBLIC_FEED_ERROR")
     except KeyboardInterrupt:
         session.pause("INTERRUPTED")
     finally:
         if session.s["mode"] == "PAPER":
-            session.pause("BOUNDED_RUN_STOPPED")
-    return session.report()
+            reason = ("STOP_REQUESTED" if stopped() else
+                      "TIME_LIMIT" if monotonic() >= deadline else reason)
+            session.pause(reason)
+    result = session.report()
+    result["monitoring_status"] = "STOPPED"
+    return result
 
 
 def main() -> None:
