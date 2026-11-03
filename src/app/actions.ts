@@ -5,12 +5,12 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { COOKIE, MAX_AGE, passwordMatches, sign, verify } from '@/lib/session';
 import {
-  addContact, createCompany, deleteCompany, deleteLink, getData, saveLink, setFollowUpDone, updateCompany,
+  addContact, completeWork, createCompany, createWork, deleteCompany, deleteLink, getData, saveLink, setFollowUpDone, updateCompany,
   type CompanyInput,
 } from '@/lib/repo';
 import { NotionError } from '@/lib/notion';
 import { normalizeBizNo } from '@/lib/derive';
-import { INTERESTS, METHODS, STATUS, TASKS } from '@/lib/schema';
+import { INTERESTS, METHODS, STATUS, TASKS, WORK_AREAS } from '@/lib/schema';
 
 export interface FormState { error?: string; ok?: string }
 
@@ -155,12 +155,13 @@ export async function toggleFollowUp(f: FormData) {
 
 /* ---------- 할 일 ---------- */
 
-/** 할 일 완료: 후속조치는 '후속완료' 체크, 다음 액션은 비워서 새 다음 액션을 정할 수 있게 한다 */
+/** 할 일 완료: 업무는 '완료'+완료일, 후속조치는 '후속완료' 체크, 다음 액션은 비워서 새 다음 액션을 정할 수 있게 한다 */
 export async function completeTask(_: FormState, f: FormData): Promise<FormState> {
   await guard();
   const kind = str(f, 'kind');
   try {
-    if (kind === 'followup') await setFollowUpDone(str(f, 'contactId'), true);
+    if (kind === 'work') await completeWork(str(f, 'workId'));
+    else if (kind === 'followup') await setFollowUpDone(str(f, 'contactId'), true);
     else if (kind === 'action') await updateCompany(str(f, 'companyId'), { nextAction: '', nextActionDate: '' });
     else return { error: '완료할 수 없는 항목입니다.' };
   } catch (e) {
@@ -168,6 +169,25 @@ export async function completeTask(_: FormState, f: FormData): Promise<FormState
   }
   revalidatePath('/', 'layout');
   return { ok: '완료했습니다.' };
+}
+
+/** 업무 관리 DB에 업체 업무 추가. 업체는 업체명으로 적는다(노션 업무 DB가 텍스트 칸이라서) */
+export async function saveWork(_: FormState, f: FormData): Promise<FormState> {
+  await guard();
+  const title = str(f, 'title');
+  if (!title) return { error: '업무명을 입력해 주세요.' };
+  const due = str(f, 'due');
+  if (due && !/^\d{4}-\d{2}-\d{2}$/.test(due)) return { error: '날짜 형식이 올바르지 않습니다.' };
+  const area = str(f, 'area');
+  try {
+    const company = (await getData()).companies.find((c) => c.id === str(f, 'companyId'));
+    if (!company) return { error: '업체를 찾을 수 없습니다. 새로고침 후 다시 시도해 주세요.' };
+    await createWork({ title, org: company.name, due, area: (WORK_AREAS as readonly string[]).includes(area) ? area : '', memo: str(f, 'memo') });
+  } catch (e) {
+    return { error: friendly(e) };
+  }
+  revalidatePath('/', 'layout');
+  return { ok: '업무를 등록했습니다.' };
 }
 
 export async function saveNextAction(_: FormState, f: FormData): Promise<FormState> {

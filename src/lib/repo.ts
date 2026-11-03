@@ -1,12 +1,12 @@
 // 데이터 저장소. NOTION_TOKEN이 있으면 노션, 없으면 메모리 속 예시 데이터(데모 모드).
 import 'server-only';
 import {
-  CERT, COMPANY, CONTACT, DATA_SOURCES, FINANCE, GOAL, INSURANCE, LINK, MATCH, STATUS,
-  type Company, type Contact, type DashLink, type Dataset, type FieldMap,
+  CERT, COMPANY, CONTACT, DATA_SOURCES, FINANCE, GOAL, INSURANCE, LINK, MATCH, STATUS, WORK, WORK_STATUS,
+  type Company, type Contact, type DashLink, type Dataset, type FieldMap, type Work,
 } from './schema';
 import { compareSchema, createPage, decode, encode, getDataSource, NotionError, queryAll, trashPage, updatePage, type SchemaIssue } from './notion';
 import { demoDataset } from './demo';
-import { isNewerContact } from './derive';
+import { isNewerContact, todayKST } from './derive';
 
 const TTL_MS = 60_000;
 
@@ -27,16 +27,18 @@ const DBS: Record<Exclude<keyof Dataset, 'loadedAt'>, [string, FieldMap]> = {
   goals: [DATA_SOURCES.goals, GOAL],
   matches: [DATA_SOURCES.matches, MATCH],
   links: [DATA_SOURCES.links, LINK],
+  works: [DATA_SOURCES.works, WORK],
 };
 
 const DB_LABELS: Record<keyof typeof DBS, string> = {
   companies: '기업컨설팅관리대시보드', contacts: '접촉이력', certs: '인증·솔루션 적용현황', insurances: '기업보험 계약현황',
   finances: '연도별 재무컨설팅', goals: '목표·과업', matches: '지원사업 AI 매칭', links: '연계 대시보드 링크',
+  works: '채움파트너스 기업 컨설팅 · 업무 관리',
 };
 
 export interface DbCheck { key: string; label: string; ok: boolean; error?: string; issues: SchemaIssue[] }
 
-/** 배포 직후 '노션이 제대로 붙었나' 확인: 8개 DB 접근 + 속성 이름·종류 */
+/** 배포 직후 '노션이 제대로 붙었나' 확인: 9개 DB 접근 + 속성 이름·종류 */
 export async function checkConnection(): Promise<DbCheck[] | null> {
   const t = token();
   if (!t) return null;
@@ -45,11 +47,11 @@ export async function checkConnection(): Promise<DbCheck[] | null> {
     const [ds, map] = DBS[key];
     try {
       const src = await getDataSource(t, ds);
-      const issues = compareSchema(map, src.properties, key === 'companies' ? { 관리상태: STATUS } : {});
+      const issues = compareSchema(map, src.properties, key === 'companies' ? { 관리상태: STATUS } : key === 'works' ? { 진행상태: WORK_STATUS } : {});
       out.push({ key, label: DB_LABELS[key], ok: issues.length === 0, issues });
     } catch (e) {
       const error = e instanceof NotionError
-        ? e.status === 401 ? '토큰이 올바르지 않습니다' : e.status === 404 ? '접근 권한 없음 — 노션에서 통합을 연결해 주세요' : `${e.status} ${e.message}`
+        ? e.status === 401 ? '토큰이 올바르지 않습니다' : e.status === 404 ? '접근 권한 없음 — 노션 📁 채움파트너스 페이지에 통합을 연결해 주세요' : `${e.status} ${e.message}`
         : '노션 서버에 연결하지 못했습니다';
       out.push({ key, label: DB_LABELS[key], ok: false, error, issues: [] });
       if (e instanceof NotionError && e.status === 401) break; // 토큰이 틀리면 나머지도 같은 결과
@@ -153,6 +155,33 @@ export async function setFollowUpDone(contactId: string, done: boolean) {
     return;
   }
   await updatePage(t, contactId, encode({ followUpDone: done }, CONTACT));
+  invalidate();
+}
+
+export type WorkInput = Pick<Work, 'title' | 'org' | 'due' | 'area' | 'memo'>;
+
+/** 업무 관리 DB에 업무 1건 추가. 업체는 업체명(텍스트)으로 남긴다 */
+export async function createWork(input: WorkInput) {
+  const t = token();
+  const row = { ...input, status: '미착수' };
+  if (!t) {
+    (await getData()).works.push({ ...row, doneAt: '', id: newId(), url: '' });
+    return;
+  }
+  await createPage(t, DATA_SOURCES.works, encode(row, WORK));
+  invalidate();
+}
+
+/** 완료 처리: 진행상태 '완료' + 완료일 오늘 */
+export async function completeWork(id: string) {
+  const t = token();
+  const patch = { status: '완료', doneAt: todayKST() };
+  if (!t) {
+    const w = (await getData()).works.find((x) => x.id === id);
+    if (w) Object.assign(w, patch);
+    return;
+  }
+  await updatePage(t, id, encode(patch, WORK));
   invalidate();
 }
 

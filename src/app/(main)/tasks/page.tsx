@@ -35,7 +35,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
         <TaskList items={shown} today={today} emptyText={filter === 'all' ? '처리할 일이 없습니다' : `‘${label}’에 해당하는 일이 없습니다`} />
       </section>
       <p className="small muted" style={{ marginTop: 12 }}>
-        할 일은 업체의 다음 액션, 접촉 기록의 후속조치, {`30일 넘게 연락하지 않은 진행 업체`}, 90일 안의 보험 만기에서 자동으로 모입니다.
+        할 일은 노션 ‘업무 관리’의 미완료 업무(업체명으로 연결), 업체의 다음 액션, 접촉 기록의 후속조치, 30일 넘게 연락하지 않은 진행 업체, 90일 안의 보험 만기에서 자동으로 모입니다. 업무를 완료하면 노션에도 ‘완료’와 완료일이 기록됩니다.
         다음 액션을 완료하면 비워지므로 업체 화면에서 새 다음 액션을 정해 주세요.
       </p>
     </>

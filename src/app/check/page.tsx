@@ -13,7 +13,7 @@ export default async function Check() {
     <main className="main" style={{ margin: '0 auto', maxWidth: 960 }}>
     <div className="stack">
       <div className="page-head" style={{ marginBottom: 0 }}>
-        <div><h1>노션 연결 점검</h1><p>노션 데이터베이스 8개에 접근되는지, 속성 이름·종류가 맞는지 확인합니다.</p></div>
+        <div><h1>노션 연결 점검</h1><p>노션 데이터베이스 9개에 접근되는지, 속성 이름·종류가 맞는지 확인합니다.</p></div>
         <div className="row"><Link href="/" className="btn">대시보드로</Link><Link href="/check" className="btn primary">다시 점검</Link></div>
       </div>
       {result === null ? (

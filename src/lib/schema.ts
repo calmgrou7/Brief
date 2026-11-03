@@ -30,6 +30,7 @@ export const DATA_SOURCES = {
   goals: '6ebbe9ba-34d9-4379-8bd2-99b234a162f9',
   matches: '9de8f780-e820-4ce4-90e5-934630c1b707',
   links: 'c9f6d52c-e961-4c17-8f67-19201f64cec1',
+  works: '8ace215b-a0b9-4eac-81be-435c2b2c8dc2',
 } as const;
 
 /** 노션에서 직접 열어볼 때 쓰는 데이터베이스 주소 */
@@ -43,9 +44,13 @@ export const NOTION_URLS = {
   goals: 'https://app.notion.com/p/ffb4df8b007f4b5abea9ceac91381eea',
   matches: 'https://app.notion.com/p/17f5f642266142ae96e37e17a0921f62',
   links: 'https://app.notion.com/p/355cc4a16b58494bbe863b3555dc185d',
+  works: 'https://app.notion.com/p/5ffed7486f4441ecbc62d7b295dfb512',
 } as const;
 
 export const STATUS = ['잠재', '상담중', '계약·진행', '사후관리', '종료'] as const;
+/** 업무 관리 DB(채움파트너스 기업 컨설팅 · 업무 관리) */
+export const WORK_AREAS = ['사업계획', '보험·청구', '벤처·특허', '행정·서류', '노무·교육'] as const;
+export const WORK_STATUS = ['미착수', '진행중', '완료', '보류'] as const;
 export const ACTIVE_STATUS: readonly string[] = ['상담중', '계약·진행', '사후관리'];
 export const PRIORITY = ['A', 'B', 'C'] as const;
 export const ENTITY = ['법인', '개인'] as const;
@@ -196,6 +201,17 @@ export const LINK: FieldMap = {
   newTab: ['새 탭으로 열기', 'checkbox'],
 };
 
+/** 업체는 이름(텍스트)으로만 적혀 있어 앱에서 업체명으로 연결한다 */
+export const WORK: FieldMap = {
+  title: ['업무명', 'title'],
+  org: ['업체·기관', 'text'],
+  due: ['기한', 'date'],
+  area: ['분야', 'select'],
+  status: ['진행상태', 'status'],
+  memo: ['실행 메모', 'text'],
+  doneAt: ['완료일', 'date'],
+};
+
 export interface FileRef { name: string; url: string }
 export interface Range { start: string; end: string }
 
@@ -253,6 +269,10 @@ export interface DashLink extends Row {
   name: string; href: string; desc: string; order: number | null; newTab: boolean;
 }
 
+export interface Work extends Row {
+  title: string; org: string; due: string; area: string; status: string; memo: string; doneAt: string;
+}
+
 export interface Dataset {
   companies: Company[];
   contacts: Contact[];
@@ -262,5 +282,6 @@ export interface Dataset {
   goals: Goal[];
   matches: Match[];
   links: DashLink[];
+  works: Work[];
   loadedAt: string;
 }

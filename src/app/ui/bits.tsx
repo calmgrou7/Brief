@@ -39,22 +39,30 @@ export function MetricCard({ label, value, unit, note, href, alert }: { label: s
 
 /** 할 일 한 줄: 작업명 → 연결 업체 → 기한·상태, 오른쪽에 기록/완료 */
 export function TaskRow({ t, today, showCompany = true }: { t: Task; today: string; showCompany?: boolean }) {
-  const canDone = t.source === '다음 액션' || t.source === '후속조치';
+  const canDone = t.source === '업무' || t.source === '다음 액션' || t.source === '후속조치';
+  const doneKind = t.source === '업무' ? 'work' : t.source === '후속조치' ? 'followup' : 'action';
+  const href = t.href ?? `/companies/${t.companyId}${t.source === '보험 만기' ? '?tab=insurance' : t.source === '업무' ? '?tab=works' : ''}`;
+  const main = (
+    <>
+      <span className="task-title">{t.title}</span>
+      {showCompany && <span className="task-co">{t.companyName}{t.detail ? ` · ${t.detail}` : ''}</span>}
+      {!showCompany && t.detail && <span className="task-co">{t.detail}</span>}
+      <span className="task-meta">
+        <span className={`badge k-${t.kind}`}>{TASK_LABEL[t.kind]}</span>
+        {t.date && <span className="due">{dueText(t.date, today)}</span>}
+        {t.date && <span>{fmtDate(t.date)}</span>}
+        <span>· {t.source}</span>
+      </span>
+    </>
+  );
   return (
     <li className={`task k-${t.kind}`}>
-      <Link href={`/companies/${t.companyId}${t.source === '보험 만기' ? '?tab=insurance' : ''}`} className="task-main">
-        <span className="task-title">{t.title}</span>
-        {showCompany && <span className="task-co">{t.companyName}{t.detail ? ` · ${t.detail}` : ''}</span>}
-        <span className="task-meta">
-          <span className={`badge k-${t.kind}`}>{TASK_LABEL[t.kind]}</span>
-          {t.date && <span className="due">{dueText(t.date, today)}</span>}
-          {t.date && <span>{fmtDate(t.date)}</span>}
-          <span>· {t.source}</span>
-        </span>
-      </Link>
+      {t.href
+        ? <a href={href} target="_blank" rel="noreferrer" className="task-main">{main}</a>
+        : <Link href={href} className="task-main">{main}</Link>}
       <div className="task-acts">
-        <Link href={`/companies/${t.companyId}?log=1`} className="btn sm" aria-label={`${t.companyName} 접촉 기록`}><Icon name="note" />기록</Link>
-        {canDone && <DoneButton kind={t.source === '후속조치' ? 'followup' : 'action'} companyId={t.companyId} contactId={t.contactId} title={t.title} />}
+        {t.companyId && <Link href={`/companies/${t.companyId}?log=1`} className="btn sm" aria-label={`${t.companyName} 접촉 기록`}><Icon name="note" />기록</Link>}
+        {canDone && <DoneButton kind={doneKind} companyId={t.companyId} contactId={t.contactId} workId={t.workId} title={t.title} />}
       </div>
     </li>
   );

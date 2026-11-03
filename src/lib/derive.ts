@@ -1,5 +1,5 @@
 // 화면에 보여줄 값 계산(순수 함수). 노션/데모 어느 쪽 데이터든 같은 규칙.
-import { ACTIVE_STATUS, type Company, type Contact, type Dataset } from './schema';
+import { ACTIVE_STATUS, type Company, type Contact, type Dataset, type Work } from './schema';
 
 export const STALE_DAYS = 30;
 export const INSURANCE_ALERT_DAYS = 90;
@@ -225,7 +225,7 @@ export function fmtDate(s: string): string {
 
 export type TaskKind = 'over' | 'today' | 'stale' | 'ins' | 'soon';
 export const TASK_LABEL: Record<TaskKind, string> = { over: '지난 일', today: '오늘', stale: '연락 필요', ins: '보험 만기', soon: '예정' };
-export type TaskSource = '다음 액션' | '후속조치' | '연락 필요' | '보험 만기';
+export type TaskSource = '업무' | '다음 액션' | '후속조치' | '연락 필요' | '보험 만기';
 
 export interface Task {
   key: string;
@@ -237,18 +237,62 @@ export interface Task {
   date: string; // '' = 기한 없음
   detail: string;
   contactId?: string;
+  workId?: string;
+  /** 업체와 연결되지 않은 업무는 노션 원본으로 이동 */
+  href?: string;
 }
 
 const kindOf = (date: string, today: string): TaskKind =>
   !date ? 'soon' : day(date) < today ? 'over' : day(date) === today ? 'today' : 'soon';
 
+/* ---------- 업무 관리 DB ↔ 업체 연결 ---------- */
+
+/** 업체명 비교용: (주)·주식회사·[예시]·괄호·띄어쓰기 차이를 무시한다 */
+export function normName(s: string): string {
+  return s
+    .replace(/\[[^\]]*\]/g, '')
+    .replace(/\(주\)|㈜|주식회사|\(유\)|유한회사|\(사\)|사단법인/g, '')
+    .replace(/[\s()（）·.,-]/g, '')
+    .toLowerCase();
+}
+
+/** 업무의 '업체·기관' 글자로 업체를 찾는다. 같은 이름이 없으면 한쪽이 다른 쪽을 포함하는 업체가 하나뿐일 때만 연결 */
+export function matchCompany<T extends { id: string; name: string }>(org: string, companies: T[]): T | null {
+  const n = normName(org);
+  if (!n) return null;
+  const exact = companies.filter((c) => normName(c.name) === n);
+  if (exact.length === 1) return exact[0];
+  if (exact.length > 1) return null;
+  if (n.length < 2) return null;
+  const loose = companies.filter((c) => { const m = normName(c.name); return m.length >= 2 && (m.includes(n) || n.includes(m)); });
+  return loose.length === 1 ? loose[0] : null;
+}
+
+export const isOpenWork = (w: Work) => w.status !== '완료' && w.status !== '보류';
+
+export function worksOf(data: Pick<Dataset, 'works' | 'companies'>, companyId: string): Work[] {
+  return data.works
+    .filter((w) => matchCompany(w.org, data.companies)?.id === companyId)
+    .sort((a, b) => (a.due || '9999').localeCompare(b.due || '9999'));
+}
+
 /**
- * 할 일 = 업체의 다음 액션 + 미완료 후속조치 + 연락이 끊긴 진행 업체 + 90일 내 보험 만기.
- * 별도 할 일 DB 없이 노션에 이미 있는 값에서 계산한다.
+ * 할 일 = 업무 관리 DB의 미완료 업무 + 업체의 다음 액션 + 미완료 후속조치 + 연락이 끊긴 진행 업체 + 90일 내 보험 만기.
  */
-export function tasks(data: Pick<Dataset, 'companies' | 'contacts' | 'insurances'>, today: string): Task[] {
+export function tasks(data: Pick<Dataset, 'companies' | 'contacts' | 'insurances'> & Partial<Pick<Dataset, 'works'>>, today: string): Task[] {
   const live = new Map(data.companies.filter((c) => c.status !== '종료').map((c) => [c.id, c]));
   const out: Task[] = [];
+  for (const w of data.works ?? []) {
+    if (!isOpenWork(w)) continue;
+    const c = matchCompany(w.org, data.companies);
+    if (c && c.status === '종료') continue;
+    out.push({
+      key: `w-${w.id}`, kind: kindOf(w.due, today), source: '업무', title: w.title,
+      companyId: c?.id ?? '', companyName: c?.name ?? (w.org || '업체 미지정'),
+      date: w.due ? day(w.due) : '', detail: [w.area, w.status === '진행중' ? '진행중' : '', c ? '' : '업체 미연결'].filter(Boolean).join(' · '),
+      workId: w.id, href: c ? undefined : w.url || undefined,
+    });
+  }
   for (const c of live.values()) {
     if (c.nextAction || c.nextActionDate) {
       out.push({
@@ -314,10 +358,10 @@ export const stageIndex = (status: string) => (STAGES as readonly string[]).inde
 
 /* ---------- 일정 ---------- */
 
-export type EventType = '다음 액션' | '후속조치' | '보험 만기' | '인증 만료' | '공고 마감';
-export interface CalEvent { key: string; date: string; type: EventType; title: string; companyId: string; companyName: string; done: boolean }
+export type EventType = '업무' | '다음 액션' | '후속조치' | '보험 만기' | '인증 만료' | '공고 마감';
+export interface CalEvent { key: string; date: string; type: EventType; title: string; companyId: string; companyName: string; done: boolean; href?: string }
 
-export function calendarEvents(data: Pick<Dataset, 'companies' | 'contacts' | 'insurances' | 'certs' | 'matches'>): CalEvent[] {
+export function calendarEvents(data: Pick<Dataset, 'companies' | 'contacts' | 'insurances' | 'certs' | 'matches'> & Partial<Pick<Dataset, 'works'>>): CalEvent[] {
   const names = new Map(data.companies.map((c) => [c.id, c.name]));
   const out: CalEvent[] = [];
   const push = (key: string, date: string, type: EventType, title: string, companyId: string | undefined, done = false) => {
@@ -329,6 +373,11 @@ export function calendarEvents(data: Pick<Dataset, 'companies' | 'contacts' | 'i
   for (const i of data.insurances) if (!['해지', '실효'].includes(i.payStatus)) push(`i-${i.id}`, i.maturity, '보험 만기', `${i.product} 만기`, i.companyIds[0]);
   for (const t of data.certs) if (t.status !== '만료·탈락') push(`t-${t.id}`, t.expires, '인증 만료', `${t.name} 만료`, t.companyIds[0]);
   for (const m of data.matches) if (!['제외', '선정'].includes(m.status)) push(`m-${m.id}`, m.deadline, '공고 마감', `${m.title} 접수 마감`, m.companyIds[0]);
+  for (const w of data.works ?? []) {
+    if (!w.due || w.status === '보류') continue;
+    const c = matchCompany(w.org, data.companies);
+    out.push({ key: `w-${w.id}`, date: day(w.due), type: '업무', title: w.title, companyId: c?.id ?? '', companyName: c?.name ?? (w.org || '업체 미지정'), done: w.status === '완료', href: c ? undefined : w.url || undefined });
+  }
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
 

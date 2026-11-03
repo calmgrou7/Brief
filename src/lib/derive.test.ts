@@ -99,8 +99,8 @@ describe('할 일', () => {
     const ranks = list.map((t) => order.indexOf(t.kind));
     expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
   });
-  it('네 종류의 출처를 모두 모은다', () => {
-    expect(new Set(list.map((t) => t.source))).toEqual(new Set(['다음 액션', '후속조치', '연락 필요', '보험 만기']));
+  it('다섯 종류의 출처를 모두 모은다', () => {
+    expect(new Set(list.map((t) => t.source))).toEqual(new Set(['업무', '다음 액션', '후속조치', '연락 필요', '보험 만기']));
   });
   it('완료한 후속조치·종료 업체는 빠진다', () => {
     const d2 = demoDataset(TODAY);
@@ -136,7 +136,7 @@ describe('일정·단계·재무', () => {
     const ev = calendarEvents(demoDataset(TODAY));
     expect(ev.every((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date))).toBe(true);
     expect(ev.map((e) => e.date)).toEqual([...ev.map((e) => e.date)].sort());
-    expect(new Set(ev.map((e) => e.type))).toEqual(new Set(['다음 액션', '후속조치', '보험 만기', '인증 만료', '공고 마감']));
+    expect(new Set(ev.map((e) => e.type))).toEqual(new Set(['업무', '다음 액션', '후속조치', '보험 만기', '인증 만료', '공고 마감']));
   });
   it('진행 단계 위치', () => {
     expect(stageIndex('계약·진행')).toBe(2);
@@ -168,5 +168,40 @@ describe('접촉 시각 비교 (같은 날)', () => {
     const k = { ...d.contacts[0], companyIds: [c.id], date: '2026-10-30T15:00:00.000+09:00', method: '방문' };
     expect(touch(c, [k])).toMatchObject({ method: '방문' });
     expect(touch(c, [{ ...k, date: '2026-10-30T08:00:00.000+09:00' }])).toMatchObject({ method: '전화' });
+  });
+});
+
+import { matchCompany, normName, worksOf } from './derive';
+
+describe('업무 관리 DB ↔ 업체 연결', () => {
+  const cos = [
+    { id: '1', name: '[예시] 채움정밀(주)' }, { id: '2', name: '주식회사 해솔 푸드' },
+    { id: '3', name: '명진산업' }, { id: '4', name: '명진산업개발' },
+  ];
+  it('(주)·주식회사·[예시]·띄어쓰기는 무시한다', () => {
+    expect(normName('(주) 채움 정밀')).toBe(normName('주식회사 채움정밀'));
+    expect(matchCompany('채움정밀', cos)?.id).toBe('1');
+    expect(matchCompany('해솔푸드', cos)?.id).toBe('2');
+  });
+  it('정확히 같은 이름이 우선, 애매하면 연결하지 않는다', () => {
+    expect(matchCompany('명진산업', cos)?.id).toBe('3'); // '명진산업개발'도 포함하지만 정확히 같은 이름이 있음
+    expect(matchCompany('명진', cos)).toBeNull(); // 둘 다 포함 → 애매
+    expect(matchCompany('', cos)).toBeNull();
+    expect(matchCompany('없는회사', cos)).toBeNull();
+  });
+  it('업무는 할 일에 들어가고, 완료 업무는 빠진다', () => {
+    const data = demoDataset(TODAY);
+    const t = tasks(data, TODAY).filter((x) => x.source === '업무');
+    expect(t.map((x) => x.title)).not.toContain('연구소 인정서 사본 전달'); // 완료
+    const jeong = data.companies.find((c) => c.name.includes('채움정밀'))!;
+    expect(t.filter((x) => x.companyId === jeong.id).map((x) => x.title).sort())
+      .toEqual(['공장 화재보험 갱신 견적 비교', '이노비즈 신청서류 체크리스트 전달']);
+    expect(worksOf(data, jeong.id)).toHaveLength(3); // 완료 포함 업체별 전체
+  });
+  it('대시보드에 없는 업체의 업무도 할 일에 나오고, 노션 원본으로 연결된다', () => {
+    const data = demoDataset(TODAY);
+    data.works[5].url = 'https://notion.example/w6';
+    const un = tasks(data, TODAY).find((x) => x.title === '사업계획서 정리')!;
+    expect(un).toMatchObject({ companyId: '', companyName: '새살민협회', href: 'https://notion.example/w6', kind: 'today' });
   });
 });

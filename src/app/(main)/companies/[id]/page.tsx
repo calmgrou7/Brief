@@ -3,15 +3,16 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getData } from '@/lib/repo';
 import {
-  companyRows, contactsOf, fmtDate, nowKST, relDay, smsHref, tasks, telHref, todayKST, won, yoy,
+  companyRows, contactsOf, fmtDate, nowKST, relDay, smsHref, tasks, telHref, todayKST, won, worksOf, yoy,
 } from '@/lib/derive';
-import { NOTION_URLS, type Cert, type Dataset, type Finance, type FileRef, type Goal, type Insurance, type Match } from '@/lib/schema';
+import { NOTION_URLS, type Cert, type Dataset, type Finance, type FileRef, type Goal, type Insurance, type Match, type Work } from '@/lib/schema';
 import { Icon } from '../../../ui/icons';
 import { ActivityRow, CompanyProgress, EmptyState, MethodIcon, PhoneLink, PriorityBadge, StatusBadge, TaskList } from '../../../ui/bits';
 import { toggleFollowUp } from '../../../actions';
 import { Tabs } from './Tabs';
 import { QuickContact } from './QuickContact';
 import { NextAction } from './NextAction';
+import { WorkPanel } from './WorkPanel';
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>> };
 
@@ -38,7 +39,10 @@ export default async function CompanyPage({ params, searchParams }: Props) {
   const finances = of(data.finances, id).sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
   const goals = of(data.goals, id);
   const matches = of(data.matches, id).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  const myTasks = tasks({ companies: [c], contacts, insurances }, today).filter((t) => t.source !== '다음 액션');
+  // 업무 관리 DB의 업무는 업체명으로 연결되므로 전체 업체 기준으로 계산한 뒤 이 업체 것만 고른다
+  const myTasks = tasks(data, today).filter((t) => t.companyId === id && t.source !== '다음 액션');
+  const works = worksOf(data, id);
+  const openWorkTasks = myTasks.filter((t) => t.source === '업무');
   const files = [
     ...c.bizCert.map((f) => ({ ...f, from: '사업자등록증' })),
     ...certs.flatMap((t) => t.proof.map((f) => ({ ...f, from: `${t.name} 증빙` }))),
@@ -83,6 +87,13 @@ export default async function CompanyPage({ params, searchParams }: Props) {
         initial={sp.tab ?? 'overview'}
         tabs={[
           { key: 'overview', label: '개요', content: <Overview c={c} tasks={myTasks} contacts={contacts.slice(0, 3)} goals={goals} today={today} /> },
+          { key: 'works', label: '업무', count: openWorkTasks.length, content: (
+            <WorkPanel companyId={c.id} companyName={c.name} today={today} autoOpen={sp.work === '1'}>
+              <TaskList items={openWorkTasks} today={today} showCompany={false} emptyText="진행 중인 업무가 없습니다" />
+              <DoneWorks works={works.filter((w) => w.status === '완료' || w.status === '보류')} />
+              <p className="small muted">업무 원본: <a href={NOTION_URLS.works} target="_blank" rel="noreferrer">노션 ‘채움파트너스 기업 컨설팅 · 업무 관리’</a> · 업체·기관 칸의 업체명으로 연결됩니다.</p>
+            </WorkPanel>
+          ) },
           { key: 'contacts', label: '활동', count: contacts.length, content: <Timeline contacts={contacts} today={today} /> },
           { key: 'finance', label: '재무', count: finances.length, content: <Finances rows={finances} /> },
           { key: 'certs', label: '정책자금·인증', count: certs.length, content: <Certs rows={certs} /> },
@@ -160,6 +171,29 @@ function Overview({ c, tasks: items, contacts, goals, today }: {
         {c.note && <p className="prose small muted" style={{ marginTop: 12 }}>{c.note}</p>}
       </section>
     </div>
+  );
+}
+
+function DoneWorks({ works }: { works: Work[] }) {
+  if (!works.length) return null;
+  return (
+    <details className="more">
+      <summary>완료·보류 업무 {works.length}건 보기</summary>
+      <ul className="feed">
+        {works.map((w) => (
+          <li key={w.id}>
+            <div className="item">
+              <span className="method"><Icon name="check" /></span>
+              <span className="item-main">
+                <span className="item-title" style={{ display: 'block' }}>{w.title}</span>
+                <span className="item-sub" style={{ display: 'block' }}>{[w.area, w.status === '완료' && w.doneAt ? `완료 ${fmtDate(w.doneAt)}` : w.status].filter(Boolean).join(' · ')}</span>
+              </span>
+              <span className={`badge ${w.status === '완료' ? 'ok' : ''}`}>{w.status}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </details>
   );
 }
 

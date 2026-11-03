@@ -42,7 +42,7 @@ export default async function More() {
       <section className="card">
         <div className="card-head"><h2>설정 · 연결</h2></div>
         <ul className="menu-list">
-          <Item href="/check" icon="shield" tone="c4" title="노션 연결 점검" sub={isDemo() ? '데모 모드 · NOTION_TOKEN 설정 후 점검 가능' : '데이터베이스 8개 접근·속성 확인'} />
+          <Item href="/check" icon="shield" tone="c4" title="노션 연결 점검" sub={isDemo() ? '데모 모드 · NOTION_TOKEN 설정 후 점검 가능' : '데이터베이스 9개 접근·속성 확인'} />
           <Item href={NOTION_URLS.home} icon="notion" tone="c3" title="노션 프로젝트 홈" sub="원본 데이터베이스 열기" external />
           <li>
             <form action={logout}>

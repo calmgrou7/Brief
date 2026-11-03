@@ -120,6 +120,15 @@ export function demoDataset(today = todayKST()): Dataset {
       { id: id('l'), url: '', name: '기업컨설팅 웹앱 (채움 ver2.1)', href: 'https://example.com/chaeum', desc: '가결산 재무진단·리포트', order: 1, newTab: true },
       { id: id('l'), url: '', name: '위들리 대시보드', href: 'https://example.com/widly', desc: '정책자금 업체 관리 (데이터 공유 없음)', order: 2, newTab: true },
     ],
+    // 업무 관리 DB: 업체는 이름으로만 적혀 있다(앱이 업체명으로 연결)
+    works: [
+      { id: id('w'), url: '', title: '이노비즈 신청서류 체크리스트 전달', org: '채움정밀', due: d(1), area: '벤처·특허', status: '진행중', memo: '', doneAt: '' },
+      { id: id('w'), url: '', title: '공장 화재보험 갱신 견적 비교', org: '채움정밀(주)', due: d(9), area: '보험·청구', status: '미착수', memo: '', doneAt: '' },
+      { id: id('w'), url: '', title: '연구소 인정서 사본 전달', org: '채움정밀', due: d(-6), area: '행정·서류', status: '완료', memo: '', doneAt: d(-6) },
+      { id: id('w'), url: '', title: '스마트공장 신청서 초안 작성', org: '해솔푸드', due: d(0), area: '사업계획', status: '미착수', memo: '', doneAt: '' },
+      { id: id('w'), url: '', title: 'CEO 정기보험 비교 제안서 준비', org: '대한물류', due: d(4), area: '보험·청구', status: '미착수', memo: '', doneAt: '' },
+      { id: id('w'), url: '', title: '사업계획서 정리', org: '새살민협회', due: d(0), area: '사업계획', status: '미착수', memo: '', doneAt: '' },
+    ],
     loadedAt: new Date().toISOString(),
   };
 }

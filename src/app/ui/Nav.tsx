@@ -19,7 +19,7 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
 const isActive = (path: string, href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 const MORE_PATHS = ['/more', '/links', '/admin'];
 
-type Mode = 'contact' | 'next';
+type Mode = 'contact' | 'work';
 
 /** 화면 틀: 데스크톱 사이드바, 모바일 상단바·하단 탭. 등록 시트와 업체 검색을 함께 관리한다 */
 export function AppChrome({ companies, urgent, loadedAt, children }: {
@@ -69,7 +69,7 @@ export function AppChrome({ companies, urgent, loadedAt, children }: {
 
   const openSearch = () => { openDialog(searchRef.current); setTimeout(() => searchInput.current?.focus(), 30); };
   const openRegister = () => openDialog(registerRef.current);
-  const go = (mode: Mode, id: string) => router.push(`/companies/${id}?${mode === 'contact' ? 'log' : 'next'}=1`);
+  const go = (mode: Mode, id: string) => router.push(`/companies/${id}?${mode === 'contact' ? 'log' : 'work'}=1`);
   const pickMode = (m: Mode) => {
     // 업체 화면 안에서는 그 화면의 입력 창을 바로 연다
     if (currentCompany) { closeAll(); window.dispatchEvent(new CustomEvent('chaeum:register', { detail: m })); return; }
@@ -133,7 +133,7 @@ export function AppChrome({ companies, urgent, loadedAt, children }: {
       <dialog ref={registerRef} className="sheet" aria-labelledby="reg-title" onClick={(e) => { if (e.target === e.currentTarget) closeAll(); }}>
         <div className="sheet-in">
           <div className="sheet-head">
-            <h2 id="reg-title">{mode ? (mode === 'contact' ? '어느 업체와 접촉했나요?' : '어느 업체의 할 일인가요?') : '무엇을 등록할까요?'}</h2>
+            <h2 id="reg-title">{mode ? (mode === 'contact' ? '어느 업체와 접촉했나요?' : '어느 업체의 업무인가요?') : '무엇을 등록할까요?'}</h2>
             <button type="button" className="btn ghost sm" onClick={closeAll} aria-label="닫기"><Icon name="close" /></button>
           </div>
           {!mode ? (
@@ -144,8 +144,8 @@ export function AppChrome({ companies, urgent, loadedAt, children }: {
               <button type="button" className="pick" onClick={() => pickMode('contact')}>
                 <span className="mi qi c2"><Icon name="phone" /></span><span><b>접촉 기록</b><small>방문·전화·문자 내용 남기기</small></span>
               </button>
-              <button type="button" className="pick" onClick={() => pickMode('next')}>
-                <span className="mi qi c3"><Icon name="tasks" /></span><span><b>할 일 · 일정</b><small>업체의 다음 액션과 날짜 정하기 (일정에 표시)</small></span>
+              <button type="button" className="pick" onClick={() => pickMode('work')}>
+                <span className="mi qi c3"><Icon name="tasks" /></span><span><b>업무 등록</b><small>업체 업무와 기한을 노션 업무 관리에 추가 (할 일·일정에 표시)</small></span>
               </button>
             </div>
           ) : (

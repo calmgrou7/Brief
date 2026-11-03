@@ -7,7 +7,7 @@ import { EmptyState } from '../../ui/bits';
 
 export const metadata: Metadata = { title: '일정' };
 
-const TYPE_ICON = { '다음 액션': 'tasks', '후속조치': 'note', '보험 만기': 'shield', '인증 만료': 'check', '공고 마감': 'file' } as const;
+const TYPE_ICON = { '업무': 'tasks', '다음 액션': 'tasks', '후속조치': 'note', '보험 만기': 'shield', '인증 만료': 'check', '공고 마감': 'file' } as const;
 
 export default async function SchedulePage({ searchParams }: { searchParams: Promise<{ m?: string; d?: string }> }) {
   const sp = await searchParams;
@@ -27,7 +27,7 @@ export default async function SchedulePage({ searchParams }: { searchParams: Pro
   return (
     <>
       <div className="page-head">
-        <div><h1>일정</h1><p>다음 액션·후속조치·보험 만기·인증 만료·공고 마감을 날짜별로 봅니다.</p></div>
+        <div><h1>일정</h1><p>업무·다음 액션·후속조치·보험 만기·인증 만료·공고 마감을 날짜별로 봅니다.</p></div>
       </div>
       <div className="sched-grid">
         <section className="cal" aria-label={`${y}년 ${m}월 달력`}>
@@ -79,7 +79,7 @@ function EventList({ events, showDate, today }: { events: CalEvent[]; showDate?:
     <ul className="feed">
       {events.map((e) => (
         <li key={e.key}>
-          <Link href={`/companies/${e.companyId}${e.type === '다음 액션' ? '?next=1' : e.type === '보험 만기' ? '?tab=insurance' : e.type === '후속조치' ? '?tab=contacts' : e.type === '인증 만료' ? '?tab=certs' : '?tab=matches'}`} className="item">
+          <Link href={e.href ?? `/companies/${e.companyId}${e.type === '업무' ? '?tab=works' : e.type === '다음 액션' ? '?next=1' : e.type === '보험 만기' ? '?tab=insurance' : e.type === '후속조치' ? '?tab=contacts' : e.type === '인증 만료' ? '?tab=certs' : '?tab=matches'}`} className="item" {...(e.href ? { target: '_blank', rel: 'noreferrer' } : {})}>
             <span className="method"><Icon name={TYPE_ICON[e.type]} /></span>
             <span className="item-main">
               <span className="item-title" style={{ display: 'block', textDecoration: e.done ? 'line-through' : undefined }}>{e.title}</span>
