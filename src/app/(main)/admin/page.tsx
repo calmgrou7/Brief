@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getData, isDemo } from '@/lib/repo';
-import { companyRows, fmtDate, relDay, todayKST } from '@/lib/derive';
+import { companyRows, dayKST, fmtDate, relDay, todayKST } from '@/lib/derive';
 import { NOTION_URLS } from '@/lib/schema';
 import { StatusBadge } from '../../ui/bits';
 import { DeleteCompany } from './DeleteCompany';
@@ -38,7 +38,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                   <td>{c.ceo || '—'}</td>
                   <td>{c.source || '—'}</td>
                   <td>{c.touch ? relDay(c.touch.date, today) : '—'}</td>
-                  <td className="muted small">{fmtDate(c.updatedAt.slice(0, 10))}</td>
+                  <td className="muted small">{fmtDate(dayKST(c.updatedAt))}</td>
                   <td><div className="row" style={{ flexWrap: 'nowrap' }}><Link href={`/admin/${c.id}`} className="btn sm">수정</Link><DeleteCompany id={c.id} name={c.name} small /></div></td>
                 </tr>
               ))}

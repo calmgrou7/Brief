@@ -19,7 +19,13 @@ export function nowKST(now = new Date()): string {
   return `${v('year')}-${v('month')}-${v('day')}T${v('hour')}:${v('minute')}`;
 }
 
-const day = (s: string) => s.slice(0, 10);
+/** Date-only values are calendar dates; timestamps are interpreted in Korea. */
+export function dayKST(s: string): string {
+  if (s.length <= 10) return s;
+  const ms = instant(s);
+  return Number.isFinite(ms) ? todayKST(new Date(ms)) : '';
+}
+const day = dayKST;
 
 export function daysBetween(from: string, to: string): number {
   return Math.round((Date.parse(day(to)) - Date.parse(day(from))) / 86_400_000);
@@ -144,7 +150,7 @@ export function homeStats(data: Dataset, today: string): HomeStats {
   return {
     managed: rows.filter((c) => c.status !== '종료').length,
     inProgress: rows.filter((c) => c.status === '계약·진행').length,
-    contactsThisMonth: data.contacts.filter((k) => k.date.slice(0, 7) === month && live.has(k.companyIds[0])).length,
+    contactsThisMonth: data.contacts.filter((k) => day(k.date).slice(0, 7) === month && live.has(k.companyIds[0])).length,
     stale: rows.filter((c) => c.stale).length,
     insuranceDue: insuranceDue(data, today).length,
   };
@@ -189,8 +195,8 @@ export function sortRows(rows: CompanyRow[], key: SortKey): CompanyRow[] {
   const r = [...rows];
   const lastDate = (c: CompanyRow) => c.touch?.date ?? '';
   switch (key) {
-    case 'recent': return r.sort((a, b) => lastDate(b).localeCompare(lastDate(a)));
-    case 'stale': return r.sort((a, b) => lastDate(a).localeCompare(lastDate(b)));
+    case 'recent': return r.sort((a, b) => (instant(lastDate(b)) || 0) - (instant(lastDate(a)) || 0));
+    case 'stale': return r.sort((a, b) => (instant(lastDate(a)) || 0) - (instant(lastDate(b)) || 0));
     case 'name': return r.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
     case 'next':
       return r.sort((a, b) => (a.nextActionDate || '9999').localeCompare(b.nextActionDate || '9999'));
@@ -216,8 +222,9 @@ export function won(n: number | null | undefined): string {
 
 export function fmtDate(s: string): string {
   if (!s) return '—';
-  const [y, m, d] = s.slice(0, 10).split('-');
-  const t = s.length > 10 ? ` ${s.slice(11, 16)}` : '';
+  const local = s.length > 10 && Number.isFinite(instant(s)) ? nowKST(new Date(instant(s))) : s;
+  const [y, m, d] = local.slice(0, 10).split('-');
+  const t = local.length > 10 ? ` ${local.slice(11, 16)}` : '';
   return `${y}.${m}.${d}${t}`;
 }
 

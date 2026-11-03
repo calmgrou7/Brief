@@ -6,13 +6,13 @@ import { revalidatePath } from 'next/cache';
 import { COOKIE, MAX_AGE, passwordMatches, sign, verify } from '@/lib/session';
 import {
   addContact, completeWork, createCompany, createWork, deleteCompany, deleteLink, getData, saveLink, setFollowUpDone, updateCompany,
-  type CompanyInput,
+  syncContactSummary, type CompanyInput,
 } from '@/lib/repo';
 import { NotionError } from '@/lib/notion';
 import { normalizeBizNo } from '@/lib/derive';
 import { INTERESTS, METHODS, STATUS, TASKS, WORK_AREAS } from '@/lib/schema';
 
-export interface FormState { error?: string; ok?: string }
+export interface FormState { error?: string; ok?: string; warning?: string }
 
 async function guard() {
   // 미들웨어를 우회한 직접 호출에도 로그인 확인
@@ -103,7 +103,7 @@ export async function saveCompany(_: FormState, f: FormData): Promise<FormState>
   try {
     const { companies } = await getData();
     if (input.bizNo) {
-      const dup = companies.find((c) => c.bizNo === input.bizNo && c.id !== id);
+      const dup = companies.find((c) => normalizeBizNo(c.bizNo) === input.bizNo && c.id !== id);
       if (dup) return { error: `같은 사업자등록번호로 이미 등록된 업체가 있습니다: ${dup.name}` };
     }
     if (id) await updateCompany(id, input);
@@ -133,18 +133,23 @@ export async function logContact(_: FormState, f: FormData): Promise<FormState> 
   if (!when) return { error: '일시를 입력해 주세요.' };
   const content = str(f, 'content');
   const summary = str(f, 'summary') || content.split('\n')[0].slice(0, 60) || `${method} 접촉`;
+  let summaryPending = false;
   try {
-    await addContact({
+    const result = await addContact({
       summary, companyIds: [companyId], date: kstDate(when), method,
       direction: str(f, 'direction') || '발신', counterpart: str(f, 'counterpart'), content,
       detectedInterest: str(f, 'detectedInterest'), followUp: str(f, 'followUp'),
       followUpDue: str(f, 'followUpDue'), followUpDone: false,
     });
+    summaryPending = result.summaryPending;
   } catch (e) {
     return { error: friendly(e) };
   }
   revalidatePath('/', 'layout');
-  return { ok: `${method} 기록을 저장했습니다.` };
+  return {
+    ok: `${method} 기록을 저장했습니다.`,
+    ...(summaryPending ? { warning: '접촉 기록과 입력한 후속조치는 저장됐지만 업체의 최근 접촉일·방법 갱신은 실패했습니다. 기록을 다시 등록하지 말고 최근 접촉 정보만 재시도해 주세요.' } : {}),
+  };
 }
 
 export async function toggleFollowUp(f: FormData) {
@@ -233,4 +238,16 @@ export async function removeDashLink(f: FormData) {
   await guard();
   await deleteLink(str(f, 'id'));
   revalidatePath('/', 'layout');
+}
+
+/** A partial-save retry must never create another contact. */
+export async function retryContactSummary(_: FormState, f: FormData): Promise<FormState> {
+  await guard();
+  try {
+    await syncContactSummary(str(f, 'companyId'));
+  } catch (e) {
+    return { error: friendly(e) };
+  }
+  revalidatePath('/', 'layout');
+  return { ok: '최근 접촉 정보를 갱신했습니다.' };
 }
