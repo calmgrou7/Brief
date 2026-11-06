@@ -7,8 +7,11 @@ lint:
 	uv run mypy backend
 	uv run python scripts/check_forbidden.py
 	node --check backend/app/static/app.js
+	node --check report-viewer/report-core.js
+	node --check report-viewer/viewer.js
 test:
 	uv run pytest -q
+	node --test tests/test_report_viewer.cjs
 build:
 	uv run python -m compileall -q backend
 run:

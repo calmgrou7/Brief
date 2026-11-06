@@ -104,3 +104,14 @@ HTTP는 mock-only, fixture bounded-loop 및 네트워크 없는 STOP-file CLI sm
 api.upbit.com 접근은 현재 허용목록 미포함으로 **미시도**입니다. 실제 feed 검증이나
 Claude 검수 완료를 주장하지 않습니다. 게시할 경우 기존 초안 PR #4가 대상이며
 2026-11-02 후속 사용자 승인에 따라 코드·검수자료를 기존 초안 PR #4에 게시합니다. PR 승인/병합은 하지 않습니다. 배포는 별도 호스팅 검토 중이며 완료로 주장하지 않습니다.
+
+## 2026-11-06 보고서 웹뷰어 추가
+
+[REPORT_VIEWER.md](REPORT_VIEWER.md)와 `report-viewer/`를 추가했습니다.
+원본 Python 보고서 JSON을 브라우저에서만 읽으며, 예시는 Python fixture에서 생성한
+MOCK 자료입니다. 금액 문자열 보존·HTML 비실행·스키마/크기/건수·파일읽기 경합·
+시각 재평가·미수신과 0 구분을 검수해주세요. 기존 합성 DEMO와 실제 엔진은 변경하지
+않았습니다. Python 83개 회귀 + Node 10개 테스트를 실행했습니다.
+
+배포는 Sites helper 부재로 미완료이며 실제 브라우저 QA도 미수행입니다. 정적 뷰어
+검증을 실시간 엔진 운영이나 실제 feed 검증으로 표시하지 마세요.

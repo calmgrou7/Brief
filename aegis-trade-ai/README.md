@@ -62,3 +62,8 @@ make run
 마지막 시세·출처·모의 거래/수수료/순손익·중단 사유를 확인합니다. JSON 출력은
 `--format json`을 추가하세요. [원본 DB 불변 조회 및 표시 의미](docs/PAPER_STATUS.md).
 저장된 PAPER 상태는 현재 실행 중임을 보장하지 않으며 종료 후 가격 감시는 중단됩니다.
+
+## 브라우저에서 보고서 보기
+
+`report-viewer/index.html`에서 상태보고 JSON을 브라우저 안에서만 열 수 있습니다.
+실시간 연결/매매 실행/자동 업로드는 없습니다. [검증 및 배포 상태](docs/REPORT_VIEWER.md).
