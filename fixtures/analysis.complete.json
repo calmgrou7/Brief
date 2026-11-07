@@ -1,0 +1,307 @@
+{
+  "analysis_id": "fixture-complete",
+  "status": "complete",
+  "industry": "cafe",
+  "candidates": [
+    {
+      "key": "A",
+      "label": "후보 A (가상)",
+      "location": {
+        "lng": 129.0592,
+        "lat": 35.1578
+      },
+      "admin_dong": "가상동A"
+    },
+    {
+      "key": "B",
+      "label": "후보 B (가상)",
+      "location": {
+        "lng": 129.1186,
+        "lat": 35.1532
+      },
+      "admin_dong": "가상동B"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E_COMPETITORS_A",
+      "candidate": "A",
+      "metric": "competitor_count",
+      "value": 42,
+      "unit": "stores",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.0592,
+          "lat": 35.1578
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_TOTAL_A",
+      "candidate": "A",
+      "metric": "total_store_count",
+      "value": 610,
+      "unit": "stores",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.0592,
+          "lat": 35.1578
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_SHARE_A",
+      "candidate": "A",
+      "metric": "same_industry_share",
+      "value": 6.9,
+      "unit": "percent",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.0592,
+          "lat": 35.1578
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_NEAREST_A",
+      "candidate": "A",
+      "metric": "nearest_competitor_m",
+      "value": 35,
+      "unit": "m",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.0592,
+          "lat": 35.1578
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_POP_A",
+      "candidate": "A",
+      "metric": "dong_population",
+      "value": 18000,
+      "unit": "persons",
+      "scope": {
+        "area_type": "admin_dong",
+        "code": "F-0001",
+        "name": "가상동A",
+        "code_version": "fixture"
+      },
+      "source_id": "SGIS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_COMPETITORS_B",
+      "candidate": "B",
+      "metric": "competitor_count",
+      "value": 27,
+      "unit": "stores",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.1186,
+          "lat": 35.1532
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_TOTAL_B",
+      "candidate": "B",
+      "metric": "total_store_count",
+      "value": 300,
+      "unit": "stores",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.1186,
+          "lat": 35.1532
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_SHARE_B",
+      "candidate": "B",
+      "metric": "same_industry_share",
+      "value": 9,
+      "unit": "percent",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.1186,
+          "lat": 35.1532
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_NEAREST_B",
+      "candidate": "B",
+      "metric": "nearest_competitor_m",
+      "value": 60,
+      "unit": "m",
+      "scope": {
+        "area_type": "radius",
+        "radius_m": 500,
+        "center": {
+          "lng": 129.1186,
+          "lat": 35.1532
+        }
+      },
+      "source_id": "SEMAS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    },
+    {
+      "id": "E_POP_B",
+      "candidate": "B",
+      "metric": "dong_population",
+      "value": 21000,
+      "unit": "persons",
+      "scope": {
+        "area_type": "admin_dong",
+        "code": "F-0002",
+        "name": "가상동B",
+        "code_version": "fixture"
+      },
+      "source_id": "SGIS",
+      "status": "ok",
+      "source_period": "가상-2026Q3",
+      "fetched_at": "2026-11-07",
+      "snapshot_id": "fixture-1"
+    }
+  ],
+  "comparison": [
+    {
+      "metric": "competitor_count",
+      "a": 42,
+      "b": 27,
+      "diff": 15,
+      "relative_pct": 55.6,
+      "status": "ok"
+    },
+    {
+      "metric": "same_industry_share",
+      "a": 6.9,
+      "b": 9,
+      "diff": -2.1,
+      "relative_pct": -23.3,
+      "status": "ok"
+    },
+    {
+      "metric": "nearest_competitor_m",
+      "a": 35,
+      "b": 60,
+      "diff": -25,
+      "relative_pct": -41.7,
+      "status": "ok"
+    },
+    {
+      "metric": "dong_population",
+      "a": 18000,
+      "b": 21000,
+      "diff": -3000,
+      "relative_pct": -14.3,
+      "status": "ok"
+    }
+  ],
+  "limitations": [
+    "점포 수는 직선 반경 500m, 인구는 행정동 전체 기준입니다. 반경 내 인구가 아닙니다.",
+    "가상 데이터입니다. 실제 상권을 나타내지 않습니다."
+  ],
+  "ai_status": "ok",
+  "ai": {
+    "observations": [
+      {
+        "text": "후보 A의 직선 반경 안 등록 카페는 {{E_COMPETITORS_A}}입니다.",
+        "evidence_ids": [
+          "E_COMPETITORS_A"
+        ]
+      },
+      {
+        "text": "후보 B의 직선 반경 안 등록 카페는 {{E_COMPETITORS_B}}입니다.",
+        "evidence_ids": [
+          "E_COMPETITORS_B"
+        ]
+      }
+    ],
+    "interpretations": [
+      {
+        "text": "후보 A의 반경 안 등록 카페가 더 많습니다. 경쟁이 적다고 좋은 입지라는 뜻은 아니며, 수요가 적을 가능성도 있습니다.",
+        "evidence_ids": [
+          "E_COMPETITORS_A",
+          "E_COMPETITORS_B"
+        ]
+      }
+    ],
+    "field_checks": [
+      {
+        "text": "평일 점심(12~13시)과 주말 오후에 후보지 앞 보행 흐름을 각각 10분씩 세어 보세요.",
+        "kind": "checklist_template"
+      },
+      {
+        "text": "가장 가까운 경쟁 카페의 아메리카노 가격대와 대기줄을 확인해 보세요.",
+        "kind": "checklist_template"
+      },
+      {
+        "text": "주차·자전거 거치 공간과 언덕·횡단보도 등 접근 동선을 걸어서 확인해 보세요.",
+        "kind": "checklist_template"
+      }
+    ],
+    "limitations": [
+      "등록된 상가정보 기준이며 현장의 모든 점포를 반영하지 않을 수 있습니다.",
+      "점포 수만으로 수익성을 판단할 수 없습니다."
+    ]
+  },
+  "metric_version": "m1",
+  "is_fixture": true
+}

@@ -1,0 +1,11 @@
+{
+  "name": "sangkwon-first-step",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.18" },
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "fixtures": "node fixtures/build.ts",
+    "probe:d1": "node scripts/d1-probe.ts"
+  }
+}

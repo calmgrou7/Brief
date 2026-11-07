@@ -1,0 +1,9 @@
+{
+  "error": "OUTSIDE_COVERAGE",
+  "message": "현재 부산진구·수영구·해운대구만 지원합니다.",
+  "supported": [
+    "부산진구",
+    "수영구",
+    "해운대구"
+  ]
+}
