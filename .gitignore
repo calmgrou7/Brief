@@ -2,3 +2,7 @@ node_modules/
 data/probe/
 .env
 .env.*
+*.ait
+dist/
+!.env.example
+!.env.frontend.example

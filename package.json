@@ -1,11 +1,36 @@
 {
   "name": "sangkwon-first-step",
   "private": true,
+  "version": "0.1.0",
   "type": "module",
-  "engines": { "node": ">=22.18" },
+  "engines": {
+    "node": ">=22.18"
+  },
   "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && ait build",
+    "build:web": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "deploy": "ait deploy",
     "test": "node --test test/*.test.ts",
     "fixtures": "node fixtures/build.ts",
-    "probe:d1": "node scripts/d1-probe.ts"
+    "probe:d1": "node scripts/d1-probe.ts",
+    "dev:api": "node --env-file-if-exists=.env --watch server/index.ts",
+    "start": "node --env-file-if-exists=.env server/index.ts",
+    "check:live": "node --env-file-if-exists=.env scripts/check-live.ts"
+  },
+  "dependencies": {
+    "@apps-in-toss/web-framework": "3.9.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@apps-in-toss/devtools": "3.9.0",
+    "@types/node": "22.15.21",
+    "@types/react": "18.3.23",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "4.7.0",
+    "typescript": "5.9.3",
+    "vite": "6.4.5"
   }
 }
