@@ -1,0 +1,5 @@
+# FACE:D AI 스튜디오 백엔드
+# 토스 미니앱 클라이언트는 Supabase JWT를 보내지 않으므로 JWT 검증을 끈다.
+# 대신 함수 안에서 Origin 허용 목록 + 요청 한도로 보호한다.
+[functions.ai-edit]
+verify_jwt = false
