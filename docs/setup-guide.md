@@ -39,7 +39,7 @@
 [console.anthropic.com](https://console.anthropic.com) → API Keys 발급 → ②-6 의 `ANTHROPIC_API_KEY` 로 등록.
 월 사용 한도(Limits)를 걸어 두면 비용 폭주를 막을 수 있습니다.
 
-## ④ RevenueCat (구독)
+## ④ RevenueCat (구독) — 자세한 단계는 [`billing-guide.md`](billing-guide.md)
 1. 프로젝트 생성 → Google Play 앱 추가 (패키지명 동일), Play Console 서비스 계정 JSON 연결
 2. Play Console → 수익 창출 → 구독: 상품 `doit_premium`, 기본 요금제 `monthly`(4,900원) · `yearly`(39,000원), 신규 7일 무료체험 오퍼
 3. RevenueCat: Entitlement **`premium`** 생성 → 두 상품 연결 → Offering(default)에 패키지 2개
