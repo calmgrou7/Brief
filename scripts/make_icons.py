@@ -1,8 +1,8 @@
 """DOIT 로고·아이콘·스토어 그래픽 생성기.  python3 scripts/make_icons.py
 
-로고 심벌: 대문자 D 안에 체크 표시
-  - 밝은 바탕(홈페이지·앱 안): 잉크(검정) D + 라임 체크
-  - 어두운 바탕(앱 아이콘·스토어): 흰색 D + 잉크 체크 (위 심벌의 색 반전)
+로고 심벌: 대문자 D 안에 체크 표시 — 항상 잉크(검정) D + 라임 체크
+  - 앱 아이콘·스토어 아이콘: 라임 바탕 위에 심벌
+  - 홈페이지·앱 안: 밝은 바탕 위에 심벌
 """
 import math
 from pathlib import Path
@@ -59,19 +59,19 @@ def save(im, path):
 
 
 # ── 앱 아이콘 ──────────────────────────────────────────────
-save(icon(1024, INK, WHITE, INK, 0.58), IMG / "icon.png")
+save(icon(1024, LIME, INK, LIME, 0.58), IMG / "icon.png")
 # Android 적응형 아이콘: 바깥쪽은 기기별 모양(원·물방울 등)으로 잘리므로 가운데 안전영역(약 60%) 안에
-save(icon(1024, None, WHITE, INK, 0.46), IMG / "android-icon-foreground.png")
-save(Image.new("RGBA", (1024, 1024), INK), IMG / "android-icon-background.png")
+save(icon(1024, None, INK, LIME, 0.46), IMG / "android-icon-foreground.png")
+save(Image.new("RGBA", (1024, 1024), LIME), IMG / "android-icon-background.png")
 # 테마 아이콘(Android 13+): 단색 실루엣 — 체크는 투명하게 뚫음
 save(icon(1024, None, WHITE, CLEAR, 0.46), IMG / "android-icon-monochrome.png")
-# 스플래시(잉크 배경 위) / 웹 파비콘
-save(icon(512, None, WHITE, INK, 0.9), IMG / "splash-icon.png")
-save(icon(96, INK, WHITE, INK, 0.6, rounded=True), IMG / "favicon.png")
-# 앱 안 로고(밝은 배경용): 잉크 D + 라임 체크
+# 스플래시(라임 배경 위) / 웹 파비콘
+save(icon(512, None, INK, LIME, 0.9), IMG / "splash-icon.png")
+save(icon(96, LIME, INK, LIME, 0.6, rounded=True), IMG / "favicon.png")
+# 앱 안 로고(밝은 배경용)
 save(icon(256, None, INK, LIME, 0.98), IMG / "logo-mark.png")
 # Play 스토어 고해상도 아이콘 512 (Play가 모서리를 자동으로 둥글게 → 꽉 찬 사각형)
-save(icon(512, INK, WHITE, INK, 0.58), STORE / "play-icon-512.png")
+save(icon(512, LIME, INK, LIME, 0.58), STORE / "play-icon-512.png")
 
 
 # ── Play 스토어 그래픽 이미지 1024x500 ─────────────────────
@@ -86,9 +86,11 @@ def font(size, bold=True):
 W, H = 1024, 500
 g = Image.new("RGBA", (W * SS, H * SS), INK)
 d = ImageDraw.Draw(g)
-lh = 124 * SS
-d_mark(d, (90 * SS) + lh * 0.43, 180 * SS, lh, WHITE, INK)
-d.text((90 * SS + lh * 0.86 + 32 * SS, 180 * SS), "DOIT", font=font(96 * SS), fill=WHITE, anchor="lm")
+tile = 132 * SS
+tx, ty = 90 * SS, 180 * SS - tile / 2
+d.rounded_rectangle((tx, ty, tx + tile, ty + tile), radius=int(tile * 0.24), fill=LIME)
+d_mark(d, tx + tile / 2, ty + tile / 2, tile * 0.58, INK, LIME)
+d.text((tx + tile + 30 * SS, 180 * SS), "DOIT", font=font(96 * SS), fill=WHITE, anchor="lm")
 d.text((90 * SS, 330 * SS), "생각은 그만, 오늘 할 일부터.", font=font(46 * SS), fill=WHITE, anchor="ls")
 d.text((90 * SS, 400 * SS), "목표를 AI가 쪼개고, 매일 3개만 실행하는 앱", font=font(28 * SS, bold=False), fill=(255, 255, 255, 170), anchor="ls")
 save(g.resize((W, H), Image.LANCZOS).convert("RGB"), STORE / "play-feature-graphic-1024x500.png")
