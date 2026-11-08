@@ -15,7 +15,7 @@
     "collect": "node --disable-warning=ExperimentalWarning scripts/weekly-notify.js --collect-only",
     "weekly": "node --disable-warning=ExperimentalWarning scripts/weekly-notify.js",
     "purge": "node --disable-warning=ExperimentalWarning scripts/purge-expired.js",
-    "test": "node --disable-warning=ExperimentalWarning --test test/"
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
   },
   "dependencies": {
     "dotenv": "^18.0.9",

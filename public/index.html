@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>(가칭)기업정책지원사업</title>
+  <meta name="description" content="3분 기업상태 진단으로 우리 회사에 맞는 정책자금을 찾고, 정책지원마스터의 도움을 받으세요.">
+  <meta name="theme-color" content="#1d4ed8">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a href="#home" class="brand"><img src="/icon.svg" alt="" width="28" height="28"><span>(가칭)기업정책지원사업</span></a>
+  <button id="installBtn" class="chip" hidden>앱 설치</button>
+</header>
+
+<main id="app">
+  <!-- 홈 -->
+  <section id="view-home" class="view">
+    <div class="hero">
+      <p class="eyebrow">정책자금 맞춤 진단</p>
+      <h1>대표님 회사에 맞는<br>정책자금, 3분이면 찾습니다</h1>
+      <p class="muted">업력·업종·규모·자금용도를 체크하면 신청 가능성이 높은 정책자금과 진행 중인 공고를 바로 보여드립니다.</p>
+      <a href="#diagnosis" class="btn primary block">무료 기업상태 진단 시작</a>
+    </div>
+    <div class="cards3">
+      <a href="#diagnosis" class="feature"><b>① 기업상태 체크</b><span>12개 문항으로 자격 판단</span></a>
+      <a href="#apply" class="feature"><b>② 전문가 도움 신청</b><span>정책지원마스터 1:1 상담</span></a>
+      <a href="#alerts" class="feature"><b>③ 주간 알림</b><span>새 공고를 매주 알려드려요</span></a>
+    </div>
+    <div class="card">
+      <div class="row-between"><h2>진행 중인 정책자금 공고</h2><a href="#programs" class="link">전체보기</a></div>
+      <ul id="homePrograms" class="program-list"></ul>
+    </div>
+  </section>
+
+  <!-- 진단 -->
+  <section id="view-diagnosis" class="view" hidden>
+    <div class="progress"><div id="progressBar"></div></div>
+    <form id="diagForm" class="card" novalidate>
+      <div class="step" data-step="0">
+        <h2>사업자 기본 정보</h2>
+        <label class="q">사업자 유형</label>
+        <div class="seg" data-name="bizType">
+          <button type="button" value="individual">개인사업자</button>
+          <button type="button" value="corporation">법인</button>
+          <button type="button" value="preparing">예비창업</button>
+        </div>
+        <label class="q" for="industry">업종</label>
+        <select id="industry" name="industry" required></select>
+        <label class="q" for="region">사업장 소재지</label>
+        <select id="region" name="region" required></select>
+      </div>
+
+      <div class="step" data-step="1" hidden>
+        <h2>규모와 업력</h2>
+        <label class="q" for="years">업력 (사업자등록 후 경과 연수)</label>
+        <select id="years" name="years">
+          <option value="0">1년 미만</option><option value="1">1~2년</option><option value="2.5">2~3년</option>
+          <option value="5">3~7년</option><option value="8">7년 이상</option>
+        </select>
+        <label class="q" for="employees">상시근로자 수 (대표 제외)</label>
+        <input id="employees" name="employees" type="number" inputmode="numeric" min="0" value="0">
+        <label class="q" for="sales">최근 1년 매출</label>
+        <select id="sales" name="sales">
+          <option value="u1">1억 미만</option><option value="1to5">1~5억</option><option value="5to10">5~10억</option>
+          <option value="10to50">10~50억</option><option value="o50">50억 이상</option>
+        </select>
+      </div>
+
+      <div class="step" data-step="2" hidden>
+        <h2>대표자 · 기업 특성</h2>
+        <label class="q">대표자 연령</label>
+        <div class="seg" data-name="ceoAge">
+          <button type="button" value="u39">만 39세 이하</button>
+          <button type="button" value="40to59">40~59세</button>
+          <button type="button" value="o60">60세 이상</button>
+        </div>
+        <label class="q">해당 사항 (복수 선택)</label>
+        <div class="checks">
+          <label><input type="checkbox" name="womenCeo"> 여성 대표</label>
+          <label><input type="checkbox" name="exporting"> 수출 중이거나 수출 예정</label>
+          <label><input type="checkbox" name="salesDrop"> 최근 매출 감소·경영 애로</label>
+          <label><input type="checkbox" name="closedBefore"> 과거 폐업 이력</label>
+        </div>
+        <label class="q">보유 인증·기술 (복수 선택)</label>
+        <div class="checks" data-multi="certs">
+          <label><input type="checkbox" value="patent"> 특허·실용신안</label>
+          <label><input type="checkbox" value="venture"> 벤처기업</label>
+          <label><input type="checkbox" value="innobiz"> 이노비즈</label>
+          <label><input type="checkbox" value="mainbiz"> 메인비즈</label>
+          <label><input type="checkbox" value="lab"> 기업부설연구소</label>
+        </div>
+      </div>
+
+      <div class="step" data-step="3" hidden>
+        <h2>자금 필요 · 신용 상태</h2>
+        <label class="q">자금 용도</label>
+        <div class="seg" data-name="fundUse">
+          <button type="button" value="operating">운전자금</button>
+          <button type="button" value="facility">시설자금</button>
+          <button type="button" value="both">둘 다</button>
+        </div>
+        <label class="q" for="amount">필요 금액 (만원)</label>
+        <input id="amount" name="amount" type="number" inputmode="numeric" min="0" step="500" placeholder="예: 5000">
+        <label class="q">대표자 신용 상태</label>
+        <div class="seg" data-name="credit">
+          <button type="button" value="good">양호</button>
+          <button type="button" value="normal">보통</button>
+          <button type="button" value="caution">낮음/모름</button>
+        </div>
+        <label class="q">제한 사항 확인</label>
+        <div class="checks">
+          <label><input type="checkbox" name="taxArrears"> 국세·지방세 체납 있음</label>
+          <label><input type="checkbox" name="loanOverdue"> 금융기관 연체 중</label>
+          <label><input type="checkbox" name="usingPolicyFund"> 이미 정책자금 이용 중</label>
+        </div>
+      </div>
+
+      <p id="diagError" class="error" role="alert"></p>
+      <div class="actions">
+        <button type="button" id="prevBtn" class="btn ghost">이전</button>
+        <button type="button" id="nextBtn" class="btn primary">다음</button>
+      </div>
+    </form>
+    <p class="fine">진단 응답은 이름·연락처 없이 익명으로 처리됩니다.</p>
+  </section>
+
+  <!-- 결과 -->
+  <section id="view-result" class="view" hidden>
+    <div class="card">
+      <p class="eyebrow">진단 결과</p>
+      <h2 id="resultTitle"></h2>
+      <div id="resultFlags"></div>
+    </div>
+    <div id="resultFunds"></div>
+    <div class="card">
+      <h2>우리 지역 진행 중 공고</h2>
+      <ul id="resultPrograms" class="program-list"></ul>
+    </div>
+    <div class="cta-box">
+      <b>직접 준비하기 어려우신가요?</b>
+      <p>서류 준비부터 사업계획서, 보증·대출 연계까지 정책지원마스터가 도와드립니다.</p>
+      <a href="#apply" class="btn primary block">정책지원마스터 도움 신청</a>
+      <a href="#alerts" class="btn ghost block">새 공고 주간 알림 받기</a>
+    </div>
+  </section>
+
+  <!-- 상담 신청 (DB 수집) -->
+  <section id="view-apply" class="view" hidden>
+    <form id="applyForm" class="card" novalidate>
+      <p class="eyebrow">정책지원마스터 도움 신청</p>
+      <h2>어떤 도움이 필요하신가요?</h2>
+      <div class="checks" id="helpTypes"></div>
+
+      <div id="fundPick" hidden>
+        <label class="q">관심 자금 (진단 결과)</label>
+        <div class="checks" id="desiredFunds"></div>
+      </div>
+
+      <label class="q" for="name">성함 *</label>
+      <input id="name" name="name" autocomplete="name" required maxlength="30">
+      <label class="q" for="phone">휴대폰 번호 *</label>
+      <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="010-0000-0000" required>
+      <label class="q" for="companyName">상호(회사명) *</label>
+      <input id="companyName" name="companyName" autocomplete="organization" required maxlength="60">
+      <div class="grid2">
+        <div><label class="q" for="bizNo">사업자등록번호</label><input id="bizNo" name="bizNo" inputmode="numeric" placeholder="선택"></div>
+        <div><label class="q" for="applyRegion">지역</label><select id="applyRegion" name="region"></select></div>
+      </div>
+      <div class="grid2">
+        <div><label class="q" for="desiredAmount">희망 금액(만원)</label><input id="desiredAmount" name="desiredAmount" type="number" inputmode="numeric" min="0"></div>
+        <div><label class="q" for="contactTime">연락 희망 시간</label>
+          <select id="contactTime" name="contactTime"><option>언제든</option><option>오전 (9~12시)</option><option>오후 (13~18시)</option><option>저녁 (18시 이후)</option></select></div>
+      </div>
+      <label class="q" for="email">이메일</label>
+      <input id="email" name="email" type="email" autocomplete="email" placeholder="선택">
+      <label class="q" for="message">문의 내용</label>
+      <textarea id="message" name="message" rows="3" maxlength="1000" placeholder="현재 상황이나 궁금한 점을 적어주세요 (선택)"></textarea>
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <div class="consent">
+        <label class="all"><input type="checkbox" id="agreeAll"> <b>전체 동의</b></label>
+        <div class="consent-item">
+          <label><input type="checkbox" name="privacy_required" class="agree"> [필수] 개인정보 수집·이용 동의</label>
+          <button type="button" class="link" data-toggle="c1">보기</button>
+        </div>
+        <div id="c1" class="consent-detail" hidden>
+          <table>
+            <tr><th>수집 항목</th><td>성함, 휴대폰번호, 상호, (선택) 이메일·사업자등록번호·지역·희망금액·문의내용, 기업진단 응답</td></tr>
+            <tr><th>이용 목적</th><td>정책자금 상담 신청 접수, 상담 연락 및 맞춤 자금 안내</td></tr>
+            <tr><th>보유 기간</th><td><b>수집일로부터 3년</b> 또는 동의 철회 시 즉시 파기</td></tr>
+          </table>
+          <p>동의를 거부할 권리가 있으며, 거부 시 상담 신청이 불가합니다.</p>
+        </div>
+        <div class="consent-item">
+          <label><input type="checkbox" name="third_party" class="agree"> [선택] 개인정보 제3자 제공 동의</label>
+          <button type="button" class="link" data-toggle="c2">보기</button>
+        </div>
+        <div id="c2" class="consent-detail" hidden>
+          <table>
+            <tr><th>제공받는 자</th><td>신청 자금 관련 협력 기관(보증기관·금융기관·제휴 전문가) — 신청 진행 시 개별 고지</td></tr>
+            <tr><th>제공 항목</th><td>성함, 연락처, 상호, 기업진단 응답</td></tr>
+            <tr><th>목적 / 기간</th><td>자금 신청 연계 / 목적 달성 시까지</td></tr>
+          </table>
+          <p>미동의 시에도 상담은 가능하며, 기관 연계 단계에서 다시 동의를 받습니다.</p>
+        </div>
+        <div class="consent-item">
+          <label><input type="checkbox" name="marketing" class="agree"> [선택] 정책자금 소식·혜택 수신 (문자·이메일)</label>
+        </div>
+        <a href="/privacy" class="link small" target="_blank">개인정보처리방침 전문</a>
+      </div>
+
+      <p id="applyError" class="error" role="alert"></p>
+      <button type="submit" class="btn primary block" id="applyBtn">상담 신청하기</button>
+      <p class="fine">정책자금은 기관 심사로 결정되며, 승인 여부를 보장하지 않습니다. 정부기관을 사칭하거나 승인을 조건으로 과도한 수수료를 요구하지 않습니다.</p>
+    </form>
+  </section>
+
+  <!-- 신청 완료 -->
+  <section id="view-done" class="view" hidden>
+    <div class="card center">
+      <div class="big-check">✓</div>
+      <h2>상담 신청이 접수되었습니다</h2>
+      <p class="muted" id="doneMsg">영업일 기준 1일 이내에 정책지원마스터가 연락드리겠습니다.</p>
+      <a href="#alerts" class="btn primary block">새 공고 주간 알림 받기</a>
+      <a href="#home" class="btn ghost block">홈으로</a>
+    </div>
+  </section>
+
+  <!-- 알림 설정 -->
+  <section id="view-alerts" class="view" hidden>
+    <div class="card">
+      <p class="eyebrow">주간 정책자금 알림</p>
+      <h2>새 공고가 나오면 매주 알려드려요</h2>
+      <p class="muted">매주 월요일 오전, 관심 지역·분야에 맞는 새 정책자금 공고를 푸시로 보내드립니다.</p>
+      <label class="q">관심 지역 (복수 선택)</label>
+      <div class="chips" id="alertRegions"></div>
+      <label class="q">관심 분야</label>
+      <div class="chips" id="alertCats"></div>
+      <p id="alertStatus" class="note"></p>
+      <button id="subBtn" class="btn primary block">알림 받기</button>
+      <button id="unsubBtn" class="btn ghost block" hidden>알림 끄기</button>
+      <p class="fine" id="iosHint" hidden>아이폰은 Safari 공유 버튼 → <b>홈 화면에 추가</b> 후 앱에서 알림을 켤 수 있습니다 (iOS 16.4 이상).</p>
+    </div>
+  </section>
+
+  <!-- 공고 목록 -->
+  <section id="view-programs" class="view" hidden>
+    <div class="card">
+      <h2>진행 중인 정책자금 공고</h2>
+      <select id="programRegion"><option value="">전체 지역</option></select>
+      <ul id="allPrograms" class="program-list"></ul>
+    </div>
+  </section>
+</main>
+
+<nav class="tabbar">
+  <a href="#home" data-tab="home">홈</a>
+  <a href="#diagnosis" data-tab="diagnosis">진단</a>
+  <a href="#apply" data-tab="apply">상담신청</a>
+  <a href="#alerts" data-tab="alerts">알림</a>
+</nav>
+
+<script src="/app.js" type="module"></script>
+</body>
+</html>

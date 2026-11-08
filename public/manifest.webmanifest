@@ -1,0 +1,16 @@
+{
+  "name": "(가칭)기업정책지원사업",
+  "short_name": "정책지원사업",
+  "description": "기업상태 진단 · 맞춤 정책자금 매칭 · 전문가 상담 · 주간 알림",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#1d4ed8",
+  "lang": "ko",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

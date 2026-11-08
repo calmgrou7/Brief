@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>신청 관리 | 정책지원마스터</title>
+<link rel="icon" href="/icon.svg">
+<style>
+  :root { --bg:#f4f6fb; --card:#fff; --text:#111827; --muted:#6b7280; --line:#e5e7eb; --primary:#1d4ed8; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b1020; --card:#141a2e; --text:#e5e7eb; --muted:#9ca3af; --line:#263049; --primary:#4f7cff; } }
+  * { box-sizing:border-box } body { margin:0; font-family:-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:var(--bg); color:var(--text); }
+  header { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:var(--card); border-bottom:1px solid var(--line); gap:8px; flex-wrap:wrap }
+  main { max-width:1200px; margin:0 auto; padding:16px; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; }
+  .stat b { font-size:24px; display:block } .stat small { color:var(--muted) }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; margin:16px 0; align-items:center }
+  input, select, textarea, button { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text) }
+  button.primary { background:var(--primary); color:#fff; border:0; cursor:pointer } button { cursor:pointer }
+  .tbl { overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:12px }
+  table { width:100%; border-collapse:collapse; font-size:14px; min-width:820px }
+  th, td { padding:10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top }
+  th { color:var(--muted); font-weight:600; font-size:12px } tr:hover td { background:color-mix(in srgb,var(--primary) 5%,transparent) }
+  .st { font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; background:#e8efff; color:#1d4ed8 }
+  .st.new { background:#fee2e2; color:#b91c1c } .st.done { background:#d1fae5; color:#047857 } .st.dropped { background:#e5e7eb; color:#6b7280 }
+  dialog { border:0; border-radius:14px; padding:20px; width:min(640px,94vw); background:var(--card); color:var(--text) }
+  dialog::backdrop { background:rgba(0,0,0,.4) } dl { display:grid; grid-template-columns:110px 1fr; gap:6px 10px; font-size:14px } dt { color:var(--muted) }
+  #login { max-width:360px; margin:15vh auto; background:var(--card); padding:24px; border-radius:14px; border:1px solid var(--line) }
+  #login input { width:100%; margin:10px 0 }
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <h2>정책지원마스터 관리자</h2>
+  <input id="token" type="password" placeholder="ADMIN_TOKEN" autocomplete="current-password">
+  <button class="primary" id="loginBtn" style="width:100%">로그인</button>
+  <p id="loginErr" style="color:#dc2626"></p>
+</div>
+<div id="dash" hidden>
+  <header>
+    <b>상담 신청 관리</b>
+    <div class="bar" style="margin:0">
+      <button id="collectBtn">공고 수집</button>
+      <button id="weeklyBtn">주간 알림 지금 발송</button>
+      <button id="csvBtn" class="primary">엑셀(CSV) 다운로드</button>
+      <button id="logoutBtn">로그아웃</button>
+    </div>
+  </header>
+  <main>
+    <div class="stats" id="stats"></div>
+    <div class="bar">
+      <select id="fStatus"><option value="">전체 상태</option></select>
+      <input id="fQ" placeholder="이름·상호·연락처 검색">
+      <span id="msg" style="color:var(--muted);font-size:14px"></span>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>#</th><th>신청일</th><th>상태</th><th>상호 / 성함</th><th>연락처</th><th>지역</th><th>도움 항목</th><th>희망금액</th><th>연락희망</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </main>
+</div>
+<dialog id="detail"><div id="detailBody"></div>
+  <label style="display:block;margin-top:12px">상태 <select id="dStatus"></select></label>
+  <textarea id="dMemo" rows="3" style="width:100%;margin-top:8px" placeholder="상담 메모"></textarea>
+  <div class="bar" style="justify-content:flex-end"><button id="dClose">닫기</button><button class="primary" id="dSave">저장</button></div>
+</dialog>
+<script type="module">
+const $ = (s) => document.querySelector(s);
+const esc = (s = '') => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const STATUS = { new:'신규', contacted:'연락완료', in_progress:'진행중', done:'완료', dropped:'보류/종료' };
+const IND = { manufacturing:'제조', it:'IT·지식서비스', wholesale:'도소매', service:'서비스', food:'음식·숙박', construction:'건설', transport:'운수', realestate:'부동산', etc:'기타' };
+const SALES = { u1:'1억 미만', '1to5':'1~5억', '5to10':'5~10억', '10to50':'10~50억', o50:'50억 이상' };
+const CREDIT = { good:'양호', normal:'보통', caution:'낮음/모름' };
+const HELP = { fund_recommend:'자금추천', documents:'서류', business_plan:'사업계획서', guarantee:'보증·대출', certification:'인증', etc:'기타' };
+let token = sessionStorage.getItem('adminToken') || '';
+let current = null;
+const phone = (p='') => p.replace(/^(\d{3})(\d{3,4})(\d{4})$/, '$1-$2-$3');
+
+async function api(path, opts = {}) {
+  const r = await fetch('/api/admin' + path, { ...opts, headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' }, body: opts.body && JSON.stringify(opts.body) });
+  if (r.status === 401 || r.status === 503) { const e = await r.json(); showLogin(e.error); throw new Error(e.error); }
+  return r.json();
+}
+function showLogin(err = '') { $('#login').hidden = false; $('#dash').hidden = true; $('#loginErr').textContent = err; }
+$('#loginBtn').onclick = async () => { token = $('#token').value.trim(); sessionStorage.setItem('adminToken', token); start(); };
+$('#token').onkeydown = (e) => e.key === 'Enter' && $('#loginBtn').click();
+$('#logoutBtn').onclick = () => { sessionStorage.removeItem('adminToken'); token = ''; showLogin(); };
+
+for (const [k, v] of Object.entries(STATUS)) { $('#fStatus').add(new Option(v, k)); $('#dStatus').add(new Option(v, k)); }
+$('#fStatus').onchange = load; let t; $('#fQ').oninput = () => { clearTimeout(t); t = setTimeout(load, 300); };
+
+async function loadStats() {
+  const s = await api('/stats');
+  $('#stats').innerHTML = [
+    ['신규(미처리) 신청', s.newLeads], ['최근 7일 신청', s.leads7d], ['누적 신청', s.leads],
+    ['최근 7일 진단', s.diagnoses7d], ['진단→신청 전환율', s.diagnoses ? Math.round(s.leads / s.diagnoses * 100) + '%' : '-'],
+    ['알림 구독자', s.subscribers], ['수집 공고', s.programs],
+  ].map(([l, v]) => `<div class="stat"><small>${l}</small><b>${v}</b></div>`).join('');
+}
+async function load() {
+  const q = new URLSearchParams({ status: $('#fStatus').value, q: $('#fQ').value });
+  const rows = await api('/leads?' + q);
+  $('#rows').innerHTML = rows.map((r) => `<tr data-id="${r.id}" style="cursor:pointer">
+    <td>${r.id}</td><td>${esc(r.created_at.slice(0, 16))}</td><td><span class="st ${r.status}">${STATUS[r.status]}</span></td>
+    <td><b>${esc(r.company_name)}</b><br>${esc(r.name)}</td><td>${phone(r.phone)}</td><td>${esc(r.region || '')}</td>
+    <td>${r.help_types.map((h) => HELP[h] || h).join(', ')}</td><td>${r.desired_amount ? r.desired_amount.toLocaleString() + '만' : ''}</td><td>${esc(r.contact_time || '')}</td></tr>`).join('')
+    || '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">신청 내역이 없습니다</td></tr>';
+  document.querySelectorAll('#rows tr[data-id]').forEach((tr) => tr.onclick = () => openDetail(tr.dataset.id));
+}
+async function openDetail(id) {
+  const d = await api('/leads/' + id); current = d;
+  const a = d.diagnosis?.answers; const funds = d.diagnosis?.result?.funds || [];
+  $('#detailBody').innerHTML = `<h3>#${d.id} ${esc(d.company_name)} · ${esc(d.name)}</h3><dl>
+    <dt>연락처</dt><dd><a href="tel:${d.phone}">${phone(d.phone)}</a> ${d.email ? '· ' + esc(d.email) : ''}</dd>
+    <dt>사업자번호</dt><dd>${esc(d.biz_no || '-')}</dd><dt>지역</dt><dd>${esc(d.region || '-')}</dd>
+    <dt>도움 항목</dt><dd>${d.help_types.map((h) => HELP[h] || h).join(', ')}</dd>
+    <dt>관심 자금</dt><dd>${esc(d.desired_funds.join(', ') || '-')}</dd>
+    <dt>희망 금액</dt><dd>${d.desired_amount ? d.desired_amount.toLocaleString() + '만원' : '-'}</dd>
+    <dt>연락 희망</dt><dd>${esc(d.contact_time || '-')}</dd><dt>문의</dt><dd>${esc(d.message || '-')}</dd>
+    <dt>유입</dt><dd>${esc(d.source || '-')}</dd>
+    ${a ? `<dt>진단 요약</dt><dd>업력 ${a.years}년 · 직원 ${a.employees}명 · ${esc(IND[a.industry] || a.industry)} · 매출 ${esc(SALES[a.sales] || a.sales)} · 신용 ${esc(CREDIT[a.credit] || a.credit)}${a.taxArrears ? ' · <b style="color:#dc2626">체납</b>' : ''}${a.loanOverdue ? ' · <b style="color:#dc2626">연체</b>' : ''}</dd>
+    <dt>추천 자금</dt><dd>${funds.slice(0, 5).map((f) => `${esc(f.name)} (${f.score})`).join('<br>')}</dd>` : ''}
+    <dt>동의</dt><dd>${d.consents.map((c) => `${c.consent_type}: ${c.agreed ? '동의' : '미동의'}`).join(' / ')} <small>(${esc(d.consents[0]?.policy_version || '')})</small></dd>
+    <dt>파기 예정일</dt><dd>${esc(d.retention_until)}</dd></dl>`;
+  $('#dStatus').value = d.status; $('#dMemo').value = d.admin_memo || '';
+  $('#detail').showModal();
+}
+$('#dClose').onclick = () => $('#detail').close();
+$('#dSave').onclick = async () => {
+  await api('/leads/' + current.id, { method: 'PATCH', body: { status: $('#dStatus').value, admin_memo: $('#dMemo').value } });
+  $('#detail').close(); load(); loadStats();
+};
+$('#csvBtn').onclick = async () => {
+  const r = await fetch('/api/admin/leads.csv', { headers: { authorization: 'Bearer ' + token } });
+  const url = URL.createObjectURL(await r.blob()); const a = document.createElement('a');
+  a.href = url; a.download = `상담신청-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); URL.revokeObjectURL(url);
+};
+$('#collectBtn').onclick = async () => { const r = await api('/collect', { method: 'POST' }); $('#msg').textContent = `신규 공고 ${r.collected}건 수집`; loadStats(); };
+$('#weeklyBtn').onclick = async () => {
+  if (!confirm('구독자에게 주간 알림을 지금 발송할까요?')) return;
+  const r = await api('/weekly', { method: 'POST' });
+  $('#msg').textContent = `수집 ${r.collected} · 발송 ${r.sent} · 실패 ${r.failed} · 만료 ${r.expired}${r.note ? ' — ' + r.note : ''}`;
+};
+async function start() {
+  if (!token) return showLogin();
+  try { await loadStats(); $('#login').hidden = true; $('#dash').hidden = false; load(); setInterval(() => { loadStats(); }, 60000); } catch {}
+}
+start();
+</script>
+</body>
+</html>
