@@ -1,0 +1,39 @@
+# Render 원클릭 배포 설정 (Dashboard > New > Blueprint 에서 이 저장소 선택)
+services:
+  - type: web
+    name: policy-fund-app
+    runtime: node
+    plan: starter          # 영구 디스크는 유료 플랜 필요 (무료 플랜은 재시작 시 DB 삭제됨)
+    region: singapore      # 한국과 가장 가까운 리전
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/config
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DB_PATH
+        value: /var/data/app.db
+      - key: ADMIN_TOKEN
+        generateValue: true   # 자동 생성 → Render 대시보드 Environment 에서 확인
+      - key: APP_NAME
+        value: (가칭)기업정책지원사업
+      - key: OPERATOR_NAME
+        value: 정책지원마스터
+      - key: OPERATOR_PHONE
+        sync: false
+      - key: OPERATOR_EMAIL
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+      - key: BIZINFO_API_KEY
+        sync: false
+      - key: LEAD_WEBHOOK_URL
+        sync: false

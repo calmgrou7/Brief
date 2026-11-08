@@ -10,7 +10,7 @@ import { getDb, json, parseJson } from './db.js';
 import { diagnose, validateAnswers, programMatches } from './matcher.js';
 import { INDUSTRIES, REGIONS } from './catalog.js';
 import { listOpenPrograms, collectPrograms, CATEGORY_CODES } from './bizinfo.js';
-import { validateLead, createLead, notifyWebhook, leadRow, HELP_TYPES, STATUSES, POLICY_VERSION, fmtPhone } from './leads.js';
+import { validateLead, createLead, notifyWebhook, leadRow, HELP_TYPES, STATUSES, POLICY_VERSION, fmtPhone, purgeExpired } from './leads.js';
 import { saveSubscription, removeSubscription, runWeekly, sendTest, pushEnabled } from './push.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -206,6 +206,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (process.env.ENABLE_CRON !== 'false') {
     cron.schedule(process.env.WEEKLY_CRON || '0 9 * * 1', async () => {
       try { console.log('[weekly]', await runWeekly()); } catch (e) { console.error('[weekly] 실패', e); }
+    }, { timezone: 'Asia/Seoul' });
+    // 매일 03:00 보유기간 지난 개인정보 자동 파기
+    cron.schedule('0 3 * * *', () => {
+      const n = purgeExpired();
+      if (n) console.log(`[purge] 보유기간 만료 신청 ${n}건 파기`);
     }, { timezone: 'Asia/Seoul' });
   }
 }
