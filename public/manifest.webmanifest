@@ -1,0 +1,9 @@
+{
+  "name": "수학의 신 · God of Math",
+  "short_name": "수학의 신",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c2e25",
+  "theme_color": "#123f33",
+  "icons": [{ "src": "logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
