@@ -1,0 +1,12 @@
+# Supabase CLI 설정 (필요한 부분만). 전체 옵션은 `supabase init`으로 생성되는 파일 참고.
+project_id = "doit"
+
+[functions.ai-breakdown]
+verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true
+
+# RevenueCat 서버가 호출 → Supabase JWT 대신 공유 비밀키(Authorization 헤더)로 검증
+[functions.revenuecat-webhook]
+verify_jwt = false
