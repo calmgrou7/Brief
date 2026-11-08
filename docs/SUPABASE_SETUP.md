@@ -1,11 +1,11 @@
-# Supabase 서버 연결 가이드 (bridgenode07@gmail.com 계정)
+# Supabase 서버 연결 가이드 (chaeumpartners07@gmail.com 계정 · 프로젝트 bridgenode)
 
 코드는 이미 서버 연동이 끝난 상태입니다. 아래 순서대로 하면 실제 회원가입·랭킹·서버 채점이 켜집니다.
 **소요 시간: 약 10분**
 
 ## 1. 프로젝트 만들기
-1. https://supabase.com 에 **bridgenode07@gmail.com** 으로 로그인
-2. **New project** → 이름 `math-god`, Region **Northeast Asia (Seoul)**, DB 비밀번호는 비밀번호 관리자에 저장
+1. https://supabase.com 에 **chaeumpartners07@gmail.com** 으로 로그인
+2. **New project** → 이름 `bridgenode`, Region **Northeast Asia (Seoul)**, DB 비밀번호는 비밀번호 관리자에 저장
 3. 무료 플랜은 *실행 중인 프로젝트 2개까지* 무료입니다. 이 계정에서 처음 만드는 프로젝트라면 비용이 들지 않습니다.
 
 ## 2. 데이터베이스 만들기 (SQL 2개 실행)
@@ -18,7 +18,7 @@ Supabase 대시보드 → **SQL Editor** → New query 에서 순서대로 붙�
 ## 3. 로그인 설정
 **Authentication → Sign In / Providers → Email**
 - *Confirm email* 켜기 권장 (가짜 계정으로 랭킹 오염 방지). 가입 시 확인 메일이 발송되고, 링크를 누른 뒤 로그인합니다.
-- **Authentication → URL Configuration → Site URL** 에 배포 주소(예: `https://math-god.vercel.app`)를 넣으세요. 확인 메일 링크가 이 주소로 돌아옵니다.
+- **Authentication → URL Configuration → Site URL** 에 배포 주소(예: `https://bridgenode.vercel.app`)를 넣으세요. 확인 메일 링크가 이 주소로 돌아옵니다.
 
 ## 4. 앱에 키 넣기
 **Project Settings → API** 에서 두 값을 복사해 프로젝트 루트에 `.env.local` 파일을 만듭니다:
