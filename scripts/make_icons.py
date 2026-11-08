@@ -1,90 +1,99 @@
-"""DOIT 아이콘·스토어 그래픽 생성기.  python3 scripts/make_icons.py
-브랜드: 잉크(#0E0E10) 바탕 + 라임(#C6FF3D) 체크 표시"""
+"""DOIT 로고·아이콘·스토어 그래픽 생성기.  python3 scripts/make_icons.py
+
+로고 심벌: 대문자 D 안에 체크 표시
+  - 어두운 바탕 → 라임 D + 잉크(바탕색) 체크
+  - 밝은 바탕   → 잉크 D + 라임 체크
+"""
+import math
 from pathlib import Path
+
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 IMG = ROOT / "app/assets/images"
 STORE = ROOT / "store"
-INK, LIME, WHITE = (14, 14, 16, 255), (198, 255, 61, 255), (255, 255, 255, 255)
+INK, LIME, WHITE, CLEAR = (14, 14, 16, 255), (198, 255, 61, 255), (255, 255, 255, 255), (0, 0, 0, 0)
 SS = 4  # 슈퍼샘플링 배율 (가장자리 부드럽게)
 
+# D 비율 (높이 h 기준): 직선부 0.36h + 반원(반지름 0.5h) → 폭 0.86h
+STRAIGHT, CORNER = 0.36, 0.08
 
-def check(draw, box, color, width):
-    """box=(x0,y0,x1,y1) 안에 체크 표시"""
-    x0, y0, x1, y1 = box
-    w, h = x1 - x0, y1 - y0
-    pts = [(x0 + w * 0.08, y0 + h * 0.55), (x0 + w * 0.38, y0 + h * 0.84), (x0 + w * 0.94, y0 + h * 0.18)]
-    draw.line(pts, fill=color, width=width, joint="curve")
-    r = width / 2
+
+def d_mark(draw, cx, cy, h, d_color, check_color):
+    """중심 (cx, cy), 높이 h 인 D 심벌을 그린다. check_color=CLEAR 면 체크 모양으로 투명하게 뚫는다."""
+    r = h / 2
+    w = h * STRAIGHT + r
+    x0, y0, y1 = cx - w / 2, cy - h / 2, cy + h / 2
+    xs = x0 + h * STRAIGHT  # 직선부 끝 = 반원 중심 x
+    # 왼쪽(모서리 둥근 사각형) + 오른쪽(반원)
+    draw.rounded_rectangle((x0, y0, xs + 1, y1), radius=h * CORNER, fill=d_color, corners=(True, False, False, True))
+    draw.pieslice((xs - r, y0, xs + r, y1), start=-90, end=90, fill=d_color)
+    # 체크: D 안쪽, 시각적 중심(살짝 왼쪽)에 배치
+    bw, bh = w * 0.58, h * 0.40
+    bx, by = x0 + w * 0.19, cy - bh * 0.52
+    pts = [(bx, by + bh * 0.55), (bx + bw * 0.36, by + bh * 0.92), (bx + bw, by + bh * 0.05)]
+    lw = h * 0.12
+    draw.line(pts, fill=check_color, width=int(lw), joint="curve")
     for x, y in (pts[0], pts[-1]):
-        draw.ellipse((x - r, y - r, x + r, y + r), fill=color)
+        draw.ellipse((x - lw / 2, y - lw / 2, x + lw / 2, y + lw / 2), fill=check_color)
 
 
-def canvas(size, bg=(0, 0, 0, 0)):
-    im = Image.new("RGBA", (size * SS, size * SS), bg)
-    return im, ImageDraw.Draw(im)
+def icon(size, bg, d_color, check_color, scale, rounded=False):
+    """정사각 아이콘. scale = 캔버스 대비 D 높이 비율"""
+    S = size * SS
+    im = Image.new("RGBA", (S, S), CLEAR)
+    dr = ImageDraw.Draw(im)
+    if bg:
+        if rounded:
+            dr.rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=bg)
+        else:
+            dr.rectangle((0, 0, S, S), fill=bg)
+    d_mark(dr, S / 2, S / 2, S * scale, d_color, check_color)
+    return im.resize((size, size), Image.LANCZOS)
 
 
-def save(im, size, path):
+def save(im, path):
     path.parent.mkdir(parents=True, exist_ok=True)
-    im.resize((size, size), Image.LANCZOS).save(path)
+    im.save(path)
     print("wrote", path.relative_to(ROOT))
 
 
-def mark(size, bg, fg, rounded, scale):
-    """아이콘: 배경(둥근 사각형 or 꽉 참) + 가운데 체크. scale=체크가 차지하는 비율"""
-    im, d = canvas(size)
-    S = size * SS
-    if bg:
-        if rounded:
-            d.rounded_rectangle((0, 0, S - 1, S - 1), radius=int(S * 0.22), fill=bg)
-        else:
-            d.rectangle((0, 0, S, S), fill=bg)
-    m = S * (1 - scale) / 2
-    check(d, (m, m, S - m, S - m), fg, int(S * scale * 0.16))
-    return im
+# ── 앱 아이콘 ──────────────────────────────────────────────
+save(icon(1024, INK, LIME, INK, 0.58), IMG / "icon.png")
+# Android 적응형 아이콘: 바깥쪽은 기기별 모양(원·물방울 등)으로 잘리므로 가운데 안전영역(약 60%) 안에
+save(icon(1024, None, LIME, INK, 0.46), IMG / "android-icon-foreground.png")
+save(Image.new("RGBA", (1024, 1024), INK), IMG / "android-icon-background.png")
+# 테마 아이콘(Android 13+): 단색 실루엣 — 체크는 투명하게 뚫음
+save(icon(1024, None, WHITE, CLEAR, 0.46), IMG / "android-icon-monochrome.png")
+# 스플래시(잉크 배경 위) / 웹 파비콘
+save(icon(512, None, LIME, INK, 0.9), IMG / "splash-icon.png")
+save(icon(96, INK, LIME, INK, 0.6, rounded=True), IMG / "favicon.png")
+# 앱 안 로고(밝은 배경용): 잉크 D + 라임 체크
+save(icon(256, None, INK, LIME, 0.98), IMG / "logo-mark.png")
+# Play 스토어 고해상도 아이콘 512 (Play가 모서리를 자동으로 둥글게 → 꽉 찬 사각형)
+save(icon(512, INK, LIME, INK, 0.58), STORE / "play-icon-512.png")
 
 
-# 앱 아이콘 (Play 런처 레거시·Expo 기본)
-save(mark(1024, INK, LIME, False, 0.56), 1024, IMG / "icon.png")
-# Android 적응형 아이콘: 바깥 1/3은 기기 모양에 따라 잘리므로 체크는 가운데 안전영역(약 60%) 안에
-save(mark(1024, None, LIME, False, 0.40), 1024, IMG / "android-icon-foreground.png")
-bg, _ = canvas(1024, INK)
-save(bg, 1024, IMG / "android-icon-background.png")
-save(mark(1024, None, WHITE, False, 0.40), 1024, IMG / "android-icon-monochrome.png")
-# 스플래시(잉크 배경 위에 표시) / 웹 파비콘
-save(mark(512, None, LIME, False, 0.9), 512, IMG / "splash-icon.png")
-save(mark(96, INK, LIME, True, 0.56), 96, IMG / "favicon.png")
-# Play 스토어 등록용 고해상도 아이콘 512x512 (Play가 모서리를 자동으로 둥글게 처리 → 꽉 찬 사각형)
-save(mark(512, INK, LIME, False, 0.56), 512, STORE / "play-icon-512.png")
-
-
-# Play 스토어 그래픽 이미지 1024x500
+# ── Play 스토어 그래픽 이미지 1024x500 ─────────────────────
 def font(size, bold=True):
-    for p in [
+    candidates = [
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Black.ttc" if bold else "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
         "/usr/share/fonts/truetype/noto/NotoSansKR-Bold.ttf",
-        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",  # 한글 지원 대체 글꼴
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    ]:
+    ]
+    for p in candidates:
         if Path(p).exists():
             return ImageFont.truetype(p, size)
     return ImageFont.load_default()
 
 
 W, H = 1024, 500
-fg = Image.new("RGBA", (W * SS, H * SS), INK)
-d = ImageDraw.Draw(fg)
-# 왼쪽 로고
-lx, ly, ls = 90 * SS, 120 * SS, 120 * SS
-d.rounded_rectangle((lx, ly, lx + ls, ly + ls), radius=int(ls * 0.26), fill=LIME)
-pad = ls * 0.22
-check(d, (lx + pad, ly + pad, lx + ls - pad, ly + ls - pad), INK, int(ls * 0.12))
-d.text((lx + ls + 34 * SS, ly + ls / 2), "DOIT", font=font(96 * SS), fill=WHITE, anchor="lm")
-# 카피
-d.text((90 * SS, 320 * SS), "생각은 그만, 오늘 할 일부터.", font=font(46 * SS), fill=WHITE, anchor="ls")
-d.text((90 * SS, 392 * SS), "목표를 AI가 쪼개고, 매일 3개만 실행하는 앱", font=font(28 * SS, bold=False), fill=(255, 255, 255, 170), anchor="ls")
-fg.resize((W, H), Image.LANCZOS).convert("RGB").save(STORE / "play-feature-graphic-1024x500.png")
-print("wrote store/play-feature-graphic-1024x500.png")
+g = Image.new("RGBA", (W * SS, H * SS), INK)
+d = ImageDraw.Draw(g)
+lh = 124 * SS
+d_mark(d, (90 * SS) + lh * 0.43, 180 * SS, lh, LIME, INK)
+d.text((90 * SS + lh * 0.86 + 32 * SS, 180 * SS), "DOIT", font=font(96 * SS), fill=WHITE, anchor="lm")
+d.text((90 * SS, 330 * SS), "생각은 그만, 오늘 할 일부터.", font=font(46 * SS), fill=WHITE, anchor="ls")
+d.text((90 * SS, 400 * SS), "목표를 AI가 쪼개고, 매일 3개만 실행하는 앱", font=font(28 * SS, bold=False), fill=(255, 255, 255, 170), anchor="ls")
+save(g.resize((W, H), Image.LANCZOS).convert("RGB"), STORE / "play-feature-graphic-1024x500.png")

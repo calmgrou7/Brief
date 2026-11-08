@@ -2,7 +2,7 @@ import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 
 import { Body, Button, Screen } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
@@ -46,9 +46,7 @@ export default function Welcome() {
   return (
     <Screen edges={['top', 'bottom']}>
       <View style={styles.logoRow}>
-        <View style={styles.logoMark}>
-          <Text style={styles.logoCheck}>✓</Text>
-        </View>
+        <Image source={require('@/assets/images/logo-mark.png')} style={styles.logoMark} accessibilityIgnoresInvertColors />
         <Text style={styles.logoText}>DOIT</Text>
       </View>
 
@@ -82,8 +80,7 @@ export default function Welcome() {
 
 const styles = StyleSheet.create({
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: S.md },
-  logoMark: { width: 34, height: 34, borderRadius: 10, backgroundColor: C.ink, alignItems: 'center', justifyContent: 'center' },
-  logoCheck: { color: C.lime, fontSize: 20, fontWeight: '900' },
+  logoMark: { width: 36, height: 36 },
   logoText: { fontSize: 24, fontWeight: '900', color: C.ink, letterSpacing: -1 },
   hero: { fontSize: 40, lineHeight: 50, fontWeight: '900', color: C.ink, letterSpacing: -1.5, marginTop: S.lg },
   hl: { backgroundColor: C.lime },

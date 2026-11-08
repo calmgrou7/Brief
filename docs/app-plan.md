@@ -175,7 +175,7 @@ RevenueCat SDK ──▶ RevenueCat 서버 ──웹훅──▶ Supabase (구�
 | 실제 기기 테스트 · 결제 테스트 | ⬜ 계정·키 연결 후 진행 | — |
 | 리마인드 알림 (무료: 아침 9시 / 프리미엄: 시간 선택 + 저녁 알림) | ✅ | `app/src/lib/reminders.ts` |
 | 주간 실행 리포트 (무료: 요약·요일별 / 프리미엄: 실행률·집중시간·골든타임·목표 순위) | ✅ | `app/src/app/(app)/report.tsx` |
-| 앱 아이콘 · 스플래시 · Play 스토어 아이콘/그래픽 | ✅ | `app/assets/images/`, `store/` |
+| 로고 심벌(대문자 D + 체크) · 앱 아이콘 · 스플래시 · Play 스토어 아이콘/그래픽 · 홈페이지 로고 | ✅ | `scripts/make_icons.py`, `app/assets/images/`, `store/` |
 | 홈 화면 위젯 · 반복 업무 템플릿 · 카카오 로그인 | ⬜ 다음 단계 | — |
 
 연결·배포 절차는 [`docs/setup-guide.md`](setup-guide.md) 참고.

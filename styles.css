@@ -52,11 +52,12 @@ p { margin: 0; }
 
 /* Logo */
 .logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; letter-spacing: -0.04em; text-decoration: none; }
-.logo__mark { width: 32px; height: 32px; border-radius: 10px; background: var(--ink); display: grid; place-items: center; }
-.logo__mark svg { width: 20px; height: 20px; }
-.logo__mark path { fill: none; stroke: var(--lime); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.logo__mark { width: 32px; height: 32px; display: grid; place-items: center; }
+.logo__mark svg { width: 100%; height: 100%; }
+.logo__mark .d { fill: var(--ink); }
+.logo__mark .ck { fill: none; stroke: var(--lime); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .logo--sm { font-size: 18px; }
-.logo--sm .logo__mark { width: 26px; height: 26px; border-radius: 8px; }
+.logo--sm .logo__mark { width: 26px; height: 26px; }
 
 /* Nav */
 .nav { position: sticky; top: 0; z-index: 50; background: rgba(246, 245, 240, .85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: box-shadow .2s; }
