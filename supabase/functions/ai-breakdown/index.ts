@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
 
   // 무료 한도 확인
   const month = kstMonth();
-  const { data: premium } = await admin.rpc('is_premium', { p_user: user.id });
+  const { data: premium } = await admin.rpc('user_is_premium', { p_user: user.id });
   let used = 0;
   if (!premium) {
     const { data: usage } = await admin.from('ai_usage').select('count').eq('user_id', user.id).eq('month', month).maybeSingle();

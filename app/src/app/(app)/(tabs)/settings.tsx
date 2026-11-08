@@ -2,6 +2,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { Alert, View } from 'react-native';
 
+import { ReminderCard } from '@/components/reminder-card';
 import { Body, Button, Card, H1, H2, Screen } from '@/components/ui';
 import { S } from '@/constants/theme';
 import { deleteMyAccount } from '@/lib/api';
@@ -75,6 +76,8 @@ export default function Settings() {
           </>
         )}
       </Card>
+
+      <ReminderCard />
 
       <Card>
         <H2>약관 및 정책</H2>

@@ -12,23 +12,28 @@
 4. 앱 만들기 → 이름 `DOIT`, 앱/무료(인앱 구독 포함)
    - ⚠️ 패키지명은 `app/app.json` 의 `com.chaeumpartners.doit` — **한 번 올리면 영원히 못 바꿉니다.** 바꾸려면 지금 바꾸세요.
 
-## ② Supabase (로그인 · DB · 서버 함수)
-1. 새 프로젝트 생성 — 리전은 **Northeast Asia (Seoul)** 권장
-2. **DB 스키마 적용**: SQL Editor에 `supabase/migrations/20261108000000_init.sql` 붙여넣고 실행
-   (또는 Supabase CLI: `supabase link` → `supabase db push`)
-3. **이메일 로그인 6자리 코드 설정**: Authentication → Emails → Templates → *Magic Link* 본문에 `{{ .Token }}` 이 들어가게 수정
+## ② Supabase (로그인 · DB · 서버 함수) — ✅ 대부분 완료
+프로젝트 **`doit`** (서울 리전, 무료 플랜) · `https://ibewzhlaoieuqiagqygf.supabase.co`
+
+| 항목 | 상태 |
+| --- | --- |
+| DB 스키마·보안정책·주간리포트 함수 (`supabase/migrations/` 2개) | ✅ 적용됨, 보안 점검 통과 |
+| 서버 함수 `ai-breakdown` · `delete-account` · `revenuecat-webhook` | ✅ 배포됨 |
+| 앱 연결값 (`app/eas.json`, `app/.env`) | ✅ 입력됨 |
+
+**대표님이 대시보드에서 해 주실 것** ([Supabase 대시보드](https://supabase.com/dashboard/project/ibewzhlaoieuqiagqygf))
+1. **이메일 6자리 코드**: Authentication → Emails → Templates → *Magic Link* 본문에 `{{ .Token }}` 포함
    (예: `DOIT 인증 코드: {{ .Token }}`)
-4. **구글 로그인**: Google Cloud Console에서 OAuth 클라이언트(웹 애플리케이션) 생성 → 승인된 리디렉션 URI에
-   `https://<프로젝트ID>.supabase.co/auth/v1/callback` 추가 → 받은 Client ID/Secret을 Supabase Authentication → Providers → Google에 입력
-5. Authentication → URL Configuration → Redirect URLs 에 `doit://auth-callback` 추가
-6. **서버 함수 배포** (Supabase CLI):
-   ```
-   supabase secrets set ANTHROPIC_API_KEY=... REVENUECAT_WEBHOOK_SECRET=<임의의 긴 문자열>
-   supabase functions deploy ai-breakdown
-   supabase functions deploy delete-account
-   supabase functions deploy revenuecat-webhook --no-verify-jwt
-   ```
-   - AI 모델 기본값은 Claude Opus 5.5. 비용을 낮추려면 `supabase secrets set DOIT_AI_MODEL=claude-haiku-5-5`
+2. **구글 로그인**: Google Cloud Console에서 OAuth 클라이언트(웹 애플리케이션) 생성 → 승인된 리디렉션 URI에
+   `https://ibewzhlaoieuqiagqygf.supabase.co/auth/v1/callback` 추가 → Client ID/Secret을 Authentication → Providers → Google에 입력
+3. Authentication → URL Configuration → Redirect URLs 에 `doit://auth-callback` 추가
+4. **서버 비밀값**: Edge Functions → Secrets 에 추가
+   - `ANTHROPIC_API_KEY` — ③에서 발급
+   - `REVENUECAT_WEBHOOK_SECRET` — 임의의 긴 문자열 (④-5에서 같은 값 입력)
+   - (선택) `DOIT_AI_MODEL=claude-haiku-5-5` — AI 비용 절감
+   비밀값을 넣기 전까지 AI 쪼개기는 오류, 결제 웹훅은 모든 요청을 거절합니다(안전한 기본값).
+
+> ⚠️ 무료 플랜은 1주일간 접속이 없으면 프로젝트가 일시정지됩니다. 출시 시점엔 Pro($25/월) 전환을 권장합니다.
 
 ## ③ Claude API 키
 [console.anthropic.com](https://console.anthropic.com) → API Keys 발급 → ②-6 의 `ANTHROPIC_API_KEY` 로 등록.
@@ -44,7 +49,8 @@
 6. API keys → **Google Play public key** (`goog_...`) 복사
 
 ## ⑤ 앱 환경변수
-`app/.env.example` 을 `app/.env` 로 복사 후 값 입력 (Supabase URL·publishable key, RevenueCat 키, 홈페이지 주소).
+Supabase·홈페이지 값은 이미 `app/eas.json` 에 들어 있습니다. RevenueCat 키(`goog_...`)를 받으면
+`app/eas.json` 의 세 빌드 프로필 `env` 에 `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` 로 추가하세요 (로컬 개발은 `app/.env`).
 
 ## ⑥ 빌드 → 테스트 → 출시 (EAS, 맥·안드로이드 스튜디오 불필요)
 ```
@@ -61,7 +67,6 @@ npx eas-cli@latest submit --platform android                        # Play 내�
 
 ## 출시 전 빈칸 채우기 체크리스트
 - [ ] `privacy.html` · `terms.html` · `delete-account.html` 의 노란색 `[사업자명]` 등 빈칸
-- [ ] `privacy.html` 의 Supabase 서버 리전
 - [ ] 통신판매업 신고번호 (필요 여부 세무사 확인)
-- [ ] 앱 아이콘·스플래시 이미지 교체 (`app/assets/images/`) — 현재 Expo 기본 이미지
+- [x] 앱 아이콘·스플래시·스토어 아이콘(512)·그래픽 이미지(1024×500) — `scripts/make_icons.py` 로 생성, `store/` 폴더
 - [ ] Play 스토어 등록정보: 스크린샷, 설명, 데이터 보안 설문, 콘텐츠 등급, 심사용 테스트 계정

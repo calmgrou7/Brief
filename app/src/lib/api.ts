@@ -104,6 +104,24 @@ export async function getStreak(): Promise<number> {
   return (data as number) ?? 0;
 }
 
+export type WeeklyReport = {
+  days: { date: string; done: number }[];
+  done_total: number;
+  prev_done_total: number;
+  focus_planned: number;
+  focus_done: number;
+  minutes_done: number;
+  best_hour: number | null;
+  top_goals: { title: string; done: number }[];
+};
+
+/** 최근 7일 실행 리포트 (서버 함수, RLS 적용) */
+export async function getWeeklyReport(): Promise<WeeklyReport> {
+  const { data, error } = await supabase.rpc('weekly_report', { tz_today: today() });
+  raise(error);
+  return data as WeeklyReport;
+}
+
 // ── AI 목표 쪼개기 ───────────────────
 export async function breakdownGoal(goalId: string): Promise<{ created: number; remaining: number | null }> {
   const { data, error } = await supabase.functions.invoke('ai-breakdown', { body: { goal_id: goalId } });

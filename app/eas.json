@@ -7,15 +7,36 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "android": { "buildType": "apk" }
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ibewzhlaoieuqiagqygf.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_XQjGBNuBEbVsl_p-Vh8VCw_Ngm86X_H",
+        "EXPO_PUBLIC_SITE_URL": "https://calmgrou7.github.io/Brief"
+      }
     },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk" }
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ibewzhlaoieuqiagqygf.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_XQjGBNuBEbVsl_p-Vh8VCw_Ngm86X_H",
+        "EXPO_PUBLIC_SITE_URL": "https://calmgrou7.github.io/Brief"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "android": { "buildType": "app-bundle" }
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ibewzhlaoieuqiagqygf.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_XQjGBNuBEbVsl_p-Vh8VCw_Ngm86X_H",
+        "EXPO_PUBLIC_SITE_URL": "https://calmgrou7.github.io/Brief"
+      }
     }
   },
   "submit": {

@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TaskRow } from '@/components/task-row';
@@ -81,6 +81,15 @@ export default function Today() {
             {doneCount === items.length ? <Text style={styles.cheer}>🎉 오늘 할 일 끝! 내일도 이어가요.</Text> : null}
           </>
         )}
+
+        <Pressable onPress={() => router.push('/(app)/report')} style={styles.reportLink}>
+          <Text style={{ fontSize: 22 }}>📊</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontWeight: '800', fontSize: 15, color: C.ink }}>이번 주 실행 리포트</Text>
+            <Body muted style={{ fontSize: 13 }}>얼마나 해냈는지 한눈에 보기</Body>
+          </View>
+          <Text style={{ fontSize: 20, color: C.muted }}>›</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -93,5 +102,6 @@ const styles = StyleSheet.create({
   progress: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: S.sm },
   bar: { flex: 1, height: 8, borderRadius: 99, backgroundColor: '#EEEDE7', overflow: 'hidden' },
   fill: { height: '100%', backgroundColor: C.ink, borderRadius: 99 },
+  reportLink: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: C.white, borderWidth: 1, borderColor: C.line, borderRadius: 16, padding: S.md, marginTop: S.md },
   cheer: { fontSize: 16, fontWeight: '800', color: C.ok, textAlign: 'center', marginTop: S.sm },
 });
