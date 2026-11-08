@@ -1,5 +1,13 @@
 # 동네전문가 — Supabase 백엔드
 
+| 항목 | 값 |
+|---|---|
+| 조직 | bridgenode (Free) |
+| 프로젝트 | `dongne-expert` · ref `ltnwbinctflmczqnhuii` · 서울(ap-northeast-2) |
+| API URL | https://ltnwbinctflmczqnhuii.supabase.co |
+| 앱용 공개키 | `.env.example` 참고 (publishable key) |
+| DB 상태 | 마이그레이션 5개 적용 완료 (2026-11-08), 보안·성능 점검 반영 |
+
 ```
 supabase/
 ├── migrations/
@@ -38,13 +46,13 @@ supabase/
 | 서비스 | 할 일 | 얻는 값 |
 |---|---|---|
 | PortOne (V2) | 가입 → PG사 연동(토스페이먼츠 등) → 콘솔 `결제연동 > 연동 관리` | **API Secret**, Store ID, Channel Key |
-| PortOne 웹훅 | `결제연동 > 웹훅` URL: `https://<project-ref>.supabase.co/functions/v1/portone-webhook`, 버전 V2 | **Webhook Secret** (`whsec_...`) |
+| PortOne 웹훅 | `결제연동 > 웹훅` URL: `https://ltnwbinctflmczqnhuii.supabase.co/functions/v1/portone-webhook`, 버전 V2 | **Webhook Secret** (`whsec_...`) |
 | Firebase | 프로젝트 생성 → Android/iOS 앱 등록 → `프로젝트 설정 > 서비스 계정 > 새 비공개 키` | **서비스계정 JSON** |
 | iOS 푸시 | Apple Developer 에서 APNs 키 발급 → Firebase `Cloud Messaging` 에 업로드 | — |
 
 ### 2. DB 마이그레이션
 ```bash
-supabase link --project-ref <project-ref>
+supabase link --project-ref ltnwbinctflmczqnhuii
 ```
 ```bash
 supabase db push
