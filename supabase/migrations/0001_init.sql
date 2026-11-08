@@ -441,7 +441,9 @@ begin
 end $$;
 
 -- ═══════════ 함수 실행 권한 ═══════════
-revoke execute on all functions in schema public from public, anon;
+-- Supabase 기본 권한은 authenticated 에도 모든 함수 실행을 허용하므로 함께 회수
+-- (finalize_duel·bump_streak 같은 내부 함수 직접 호출 차단)
+revoke execute on all functions in schema public from public, anon, authenticated;
 grant execute on function
   public.submit_answer(text, text), public.reveal_explanation(text),
   public.start_duel(), public.duel_answer(uuid, text),
