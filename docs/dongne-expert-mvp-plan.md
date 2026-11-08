@@ -398,6 +398,7 @@ MVP 이후 **같은 플랫폼 구조(선결제·레벨·페널티)를 그대로 
 |---|---|---|
 | Supabase DB 스키마 + RLS + 매칭/정산/페널티/레벨 함수 | `supabase/migrations/20261108000000_init_schema.sql` | ✅ 로컬 Postgres 16에서 시나리오 15개 검증 |
 | 수수료 시뮬레이션 (월 콜수별·수수료율 민감도·12개월 계획) | `docs/fee-simulation.xlsx` | ✅ |
+| 결제·환불·콜 푸시 Edge Function (PortOne V2 + FCM) | `supabase/functions/`, 설정 가이드 `supabase/README.md` | ✅ 단위 테스트 15개 + DB 함수 검증 |
 | 화면별 와이어프레임 (Figma) | — | 예정 |
 | 약관·환불정책 초안 | — | 예정 |
 
@@ -407,7 +408,7 @@ MVP 이후 **같은 플랫폼 구조(선결제·레벨·페널티)를 그대로 
 - **정산 자동 생성**: 고객 완료확인 시 레벨·새싹 할인을 반영한 수수료로 `settlements` 생성
 - **🚦 레벨/🔴 페널티 자동화**: `recompute_expert_levels()`(매일), 페널티 등록 시 경고/정지/퇴출 자동 판정
 - **1인 운영 자동화**: `process_matching_queue()`(1분마다 반경 확대 + 10분 미매칭 자동환불 요청), 설정값은 `app_settings`에서 수정
-- **Edge Function 담당**(다음 단계): PG 결제 검증→`confirm_payment`, `payments.status='refund_requested'` 환불 실행, FCM 콜 푸시, 정산 지급
+- **Edge Function**: PG 결제 검증(`payment-confirm`·`portone-webhook`), 환불 실행(`process-refunds`), FCM 콜 푸시(`matching-tick`), 상태 알림(`request-notify`) — 정산 지급(지급대행)은 다음 단계
 
 #### 수수료 시뮬레이션 기본 가정 결과 (출장비 평균 20,200원 · 실효 수수료율 36.5% · 대표 인건비 300만원 포함)
 | 월 요청 수 | 총매출 | 월 영업이익 |

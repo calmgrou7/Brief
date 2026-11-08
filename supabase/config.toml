@@ -1,0 +1,15 @@
+# Supabase CLI 설정 (supabase functions deploy 시 사용)
+[functions.payment-confirm]
+verify_jwt = true            # 고객 로그인 JWT 필수
+
+[functions.portone-webhook]
+verify_jwt = false           # PortOne 서명(PORTONE_WEBHOOK_SECRET)으로 검증
+
+[functions.matching-tick]
+verify_jwt = false           # x-cron-secret 으로 검증
+
+[functions.process-refunds]
+verify_jwt = false           # x-cron-secret 으로 검증
+
+[functions.request-notify]
+verify_jwt = false           # x-webhook-secret 으로 검증
