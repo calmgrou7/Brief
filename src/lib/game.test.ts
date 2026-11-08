@@ -47,7 +47,7 @@ describe('problem bank', () => {
     const ids = new Set(PROBLEMS.map((p) => p.id));
     expect(ids.size).toBe(PROBLEMS.length);
     for (const p of PROBLEMS) {
-      expect(p.statement.ko && p.statement.en && p.explanation.ko && p.explanation.en).toBeTruthy();
+      expect(p.statement.ko && p.statement.en && p.explanation?.ko && p.explanation?.en).toBeTruthy();
       if (p.answer.kind === 'choice') {
         expect(p.answer.correct).toBeLessThan(p.answer.options.length);
         expect(grade(p.answer, p.answer.correct)).toBe(true);

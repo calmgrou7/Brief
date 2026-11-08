@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../state';
-import { allProblems, findProblem } from '../lib/store';
-import { grade } from '../lib/game';
-import { recordAttempt, revealExplanation, type AttemptResult } from '../lib/actions';
+import { api, type SubmitResult } from '../lib/api';
+import type { Bilingual } from '../types';
 import { AnswerInput } from '../components/AnswerInput';
 import { MathText } from '../components/MathText';
 import { TierBadge } from '../components/ui';
@@ -12,29 +11,55 @@ import { Icon } from '../components/Icon';
 export function ProblemPage() {
   const { id = '' } = useParams();
   const nav = useNavigate();
-  const { t, f, lang, user, setUser } = useApp();
-  const problem = findProblem(id);
-  const [result, setResult] = useState<AttemptResult | null>(null);
+  const { t, f, lang, user, refresh, problems } = useApp();
+  const problem = problems.find((p) => p.id === id) ?? null;
+  const [result, setResult] = useState<SubmitResult | null>(null);
   const [showHint, setShowHint] = useState(false);
-  const [reveal, setReveal] = useState(false);
+  const [explanation, setExplanation] = useState<Bilingual | undefined>();
   const [attemptKey, setAttemptKey] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
-  if (!problem || !user) return <p className="pad">404</p>;
-  const alreadySolved = !!user.solved[problem.id] && !result?.firstSolve;
-  const solvedNow = result?.correct;
+  const alreadySolved = !!(user && problem && user.solved[problem.id]) && !result?.firstSolve;
+  const solvedNow = !!result?.correct;
 
-  const onSubmit = (input: string | number) => {
-    const r = recordAttempt(user.id, problem, grade(problem.answer, input));
-    if (!r) return;
-    setResult(r);
-    setUser(r.user);
-    if (!r.correct) setAttemptKey((k) => k + 1);
+  // 문제 전환 시 상태 초기화 + 이미 푼 문제는 해설을 바로 보여줌 (서버 모드에선 패널티 없음)
+  useEffect(() => {
+    setResult(null); setShowHint(false); setExplanation(undefined); setError('');
+    if (problem && user?.solved[problem.id]) {
+      api.reveal(problem).then(setExplanation).catch(() => {});
+    }
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!user) return null;
+  if (!problem) return <p className="pad muted">{problems.length ? '404' : t.common.loading}</p>;
+
+  const onSubmit = async (input: string | number) => {
+    setBusy(true); setError('');
+    try {
+      const r = await api.submit(problem, input);
+      setResult(r);
+      if (r.explanation) setExplanation(r.explanation);
+      if (!r.correct) setAttemptKey((k) => k + 1);
+      await refresh();
+    } catch {
+      setError(t.common.error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onReveal = async () => {
+    try {
+      setExplanation(await api.reveal(problem));
+      await refresh();
+    } catch {
+      setError(t.common.error);
+    }
   };
 
   const goNext = () => {
-    const list = allProblems();
-    const next = list.find((p) => !user.solved[p.id] && p.id !== problem.id) ?? list[(list.indexOf(problem) + 1) % list.length];
-    setResult(null); setShowHint(false); setReveal(false);
+    const next = problems.find((p) => !user.solved[p.id] && p.id !== problem.id) ?? problems[(problems.indexOf(problem) + 1) % problems.length];
     nav(`/practice/${next.id}`);
   };
 
@@ -54,9 +79,10 @@ export function ProblemPage() {
         {alreadySolved && <p className="notice">{t.practice.alreadySolved}</p>}
 
         {!solvedNow && (
-          <AnswerInput key={`${problem.id}-${attemptKey}`} problem={problem} submitLabel={t.practice.submit} onSubmit={onSubmit} />
+          <AnswerInput key={`${problem.id}-${attemptKey}`} problem={problem} submitLabel={t.practice.submit} onSubmit={onSubmit} disabled={busy} />
         )}
 
+        {error && <p className="error">{error}</p>}
         {result && (
           <div className={`feedback ${result.correct ? 'good' : 'bad'}`} role="status">
             <Icon name={result.correct ? 'check' : 'x'} />
@@ -72,16 +98,16 @@ export function ProblemPage() {
           {problem.hint && !solvedNow && (
             <button className="btn ghost" onClick={() => setShowHint((s) => !s)}><Icon name="bulb" size={18} /> {t.practice.showHint}</button>
           )}
-          {!solvedNow && !reveal && (
-            <button className="btn ghost" onClick={() => { const u = revealExplanation(user.id, problem); if (u) setUser(u); setReveal(true); }}>{t.practice.reveal}</button>
+          {!solvedNow && !explanation && (
+            <button className="btn ghost" onClick={onReveal}>{t.practice.reveal}</button>
           )}
           {solvedNow && <button className="btn primary" onClick={goNext}>{t.practice.next} <Icon name="arrow" size={18} /></button>}
         </div>
         {showHint && problem.hint && <div className="hint"><b>{t.practice.hint}</b> <MathText text={problem.hint[lang]} /></div>}
-        {(solvedNow || reveal || alreadySolved) && (
+        {explanation && (
           <div className="explain">
             <h3>{t.practice.explanation}</h3>
-            <MathText text={problem.explanation[lang]} />
+            <MathText text={explanation[lang]} />
           </div>
         )}
       </article>

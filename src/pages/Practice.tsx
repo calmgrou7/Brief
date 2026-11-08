@@ -1,6 +1,5 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../state';
-import { allProblems } from '../lib/store';
 import { TIERS, type Tier } from '../types';
 import { TierBadge } from '../components/ui';
 import { MathText } from '../components/MathText';
@@ -9,10 +8,9 @@ import { Icon } from '../components/Icon';
 type Filter = Tier | 'community' | 'all';
 
 export function Practice() {
-  const { t, lang, user } = useApp();
+  const { t, lang, user, problems } = useApp();
   const [params, setParams] = useSearchParams();
   const filter = (params.get('tier') as Filter) || 'all';
-  const problems = allProblems();
   const list = problems.filter((p) =>
     filter === 'all' ? true : filter === 'community' ? !!p.authorId : p.tier === filter && !p.authorId);
   const tabs: Filter[] = ['all', ...TIERS, 'community'];

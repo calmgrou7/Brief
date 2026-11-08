@@ -64,7 +64,7 @@
 | 영역 | MVP (현재) | 운영 단계 |
 |---|---|---|
 | 프런트 | React 18 + TypeScript + Vite, PWA 매니페스트 | 동일 + Capacitor로 iOS/Android 앱 출시 |
-| 데이터 | `src/lib/store.ts` (localStorage) | Supabase (`supabase/schema.sql`) — 같은 함수 시그니처로 교체 |
+| 데이터 | `src/lib/api/local.ts` (localStorage) | `src/lib/api/supabase.ts` + `supabase/migrations/` — 환경변수로 자동 전환 |
 | 인증 | SHA-256 + salt 로컬 계정 | Supabase Auth (이메일, Google, Apple, 카카오) |
 | 채점 | 클라이언트 | **서버 함수 `submit_answer`** — 정답이 클라이언트로 노출되지 않음 |
 | 대결 | 레이팅 기반 AI 상대 | Supabase Realtime 채널로 실시간 1:1 매칭 |
@@ -90,7 +90,8 @@
 | 단계 | 기간 | 내용 |
 |---|---|---|
 | **M0 (완료)** | — | 웹 MVP: 5단계 40문항, 레벨·레이팅·대결·랭킹·출제/심사, 한/영 |
-| M1 | 2–3주 | Supabase 연동(인증·서버 채점·실시간 랭킹), 문항 200개로 확장 |
+| **M1 (코드 완료)** | — | Supabase 연동: 이메일 인증, 서버 채점(정답 비공개), 서버 기준 대결 타이머, 공유 랭킹, 출제·심사 서버 함수. 프로젝트 생성·키 등록만 남음 → `docs/SUPABASE_SETUP.md` |
+| M1.5 | 2주 | 문항 200개로 확장 |
 | M2 | 2주 | 실시간 1:1 대결, 친구 초대 링크, 학교/학과 리그 |
 | M3 | 2주 | AI 1차 검수 파이프라인, 시즌제, 푸시 알림 |
 | M4 | 2주 | Capacitor 앱 패키징 → 앱스토어/플레이스토어, 결제(프리미엄) |

@@ -11,7 +11,8 @@ import { Lab } from './pages/Lab';
 import { Profile } from './pages/Profile';
 
 function Routed() {
-  const { user } = useApp();
+  const { user, ready, t } = useApp();
+  if (!ready) return <div className="splash"><img src="./logo.svg" width={72} height={72} alt="" className="logo" /><p className="muted">{t.common.loading}</p></div>;
   if (!user) return <Auth />;
   return (
     <Routes>

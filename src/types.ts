@@ -24,8 +24,10 @@ export interface Problem {
   /** Elo 방식의 문제 난이도 */
   rating: number;
   statement: Bilingual;
+  /** 서버 모드에서는 정답 값이 비워진 채(유형·보기만) 내려옵니다 */
   answer: Answer;
-  explanation: Bilingual;
+  /** 서버 모드에서는 정답/해설 보기 후에 받아옵니다 */
+  explanation?: Bilingual;
   hint?: Bilingual;
   /** 커뮤니티 출제 문제일 때 출제자 */
   authorId?: string;
@@ -38,8 +40,9 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  passHash: string;
-  salt: string;
+  /** 로컬 모드 전용 */
+  passHash?: string;
+  salt?: string;
   createdAt: number;
   xp: number;
   rating: number;
@@ -55,10 +58,12 @@ export interface User {
 
 export type ReviewStatus = 'pending' | 'approved' | 'rejected';
 
+export interface Vote { approve: boolean; comment: string; at: number }
+
 export interface CommunityProblem extends Problem {
   status: ReviewStatus;
   createdAt: number;
-  votes: Record<string, { approve: boolean; comment: string; at: number }>;
+  votes: Record<string, Vote>;
 }
 
 export interface DuelRecord {

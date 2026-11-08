@@ -1,14 +1,13 @@
 import { useApp } from '../state';
-import { signOut, allProblems, updateUser } from '../lib/store';
+import { api } from '../lib/api';
 import { levelProgress } from '../lib/game';
 import { Bar, Stat, TierBadge, Titles } from '../components/ui';
 import { TIERS } from '../types';
 
 export function Profile() {
-  const { t, lang, setLang, user, setUser } = useApp();
+  const { t, lang, setLang, user, setUser, refresh, problems } = useApp();
   if (!user) return null;
   const prog = levelProgress(user.xp);
-  const problems = allProblems();
   const accuracy = user.totalAttempts ? Math.round((user.totalCorrect / user.totalAttempts) * 100) : 0;
 
   return (
@@ -57,12 +56,12 @@ export function Profile() {
         </div>
       </section>
 
-      {import.meta.env.DEV && (
-        <button className="btn ghost" onClick={() => { const u = updateUser(user.id, (x) => ({ ...x, xp: x.xp + 1000 })); if (u) setUser(u); }}>
+      {import.meta.env.DEV && api.devBoost && (
+        <button className="btn ghost" onClick={async () => { await api.devBoost?.(1000); await refresh(); }}>
           {t.profile.demoBoost}
         </button>
       )}
-      <button className="btn danger" onClick={() => { signOut(); setUser(null); }}>{t.auth.logout}</button>
+      <button className="btn danger" onClick={async () => { await api.signOut(); setUser(null); }}>{t.auth.logout}</button>
     </div>
   );
 }

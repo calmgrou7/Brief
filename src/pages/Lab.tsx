@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
-import { useApp } from '../state';
-import { listCommunity, submitCommunity, voteCommunity } from '../lib/store';
-import { COMPOSER_LEVEL, RESEARCHER_APPROVALS, REVIEW_THRESHOLD, levelFromXp, parseNumber, xpForLevel } from '../lib/game';
+import { useApp, useAsync } from '../state';
+import { api } from '../lib/api';
+import { COMPOSER_LEVEL, RESEARCHER_APPROVALS, levelFromXp, parseNumber, xpForLevel } from '../lib/game';
 import { TIERS, TOPICS, type Answer, type CommunityProblem, type Tier, type Topic } from '../types';
 import { MathText } from '../components/MathText';
 import { Bar, TierBadge } from '../components/ui';
@@ -12,9 +12,11 @@ type Tab = 'create' | 'review' | 'mine';
 export function Lab() {
   const { t, f, user } = useApp();
   const [tab, setTab] = useState<Tab>('create');
-  const [, force] = useState(0);
+  const level = user ? levelFromXp(user.xp) : 0;
+  const unlocked = level >= COMPOSER_LEVEL;
+  const queue = useAsync(() => (unlocked ? api.reviewQueue() : Promise.resolve([])), [unlocked, tab]);
+  const mineQ = useAsync(() => (unlocked ? api.myProblems() : Promise.resolve([])), [unlocked, tab]);
   if (!user) return null;
-  const level = levelFromXp(user.xp);
 
   if (level < COMPOSER_LEVEL) {
     const need = xpForLevel(COMPOSER_LEVEL);
@@ -32,9 +34,9 @@ export function Lab() {
     );
   }
 
-  const community = listCommunity();
-  const pending = community.filter((p) => p.status === 'pending' && p.authorId !== user.id && !p.votes[user.id]);
-  const mine = community.filter((p) => p.authorId === user.id);
+  const pending = queue.data ?? [];
+  const mine = mineQ.data ?? [];
+  const loadingList = tab === 'review' ? !queue.data : tab === 'mine' ? !mineQ.data : false;
 
   return (
     <div className="stack narrow">
@@ -48,20 +50,21 @@ export function Lab() {
         <button className={tab === 'mine' ? 'on' : ''} onClick={() => setTab('mine')}>{t.lab.mine}</button>
       </div>
       {tab === 'create' && <Composer onDone={() => setTab('mine')} />}
+      {loadingList && <p className="muted center pad">{t.common.loading}</p>}
       {tab === 'review' && (
-        pending.length === 0 ? <p className="muted center pad">{t.lab.noPending}</p>
-          : pending.map((p) => <ReviewCard key={p.id} p={p} onVoted={() => force((x) => x + 1)} />)
+        queue.data && (pending.length === 0 ? <p className="muted center pad">{t.lab.noPending}</p>
+          : pending.map((p) => <ReviewCard key={p.id} p={p} onVoted={queue.reload} />))
       )}
       {tab === 'mine' && (
-        mine.length === 0 ? <p className="muted center pad">{t.lab.noMine}</p>
-          : mine.map((p) => <MineCard key={p.id} p={p} />)
+        mineQ.data && (mine.length === 0 ? <p className="muted center pad">{t.lab.noMine}</p>
+          : mine.map((p) => <MineCard key={p.id} p={p} />))
       )}
     </div>
   );
 }
 
 function Composer({ onDone }: { onDone: () => void }) {
-  const { t, lang, user } = useApp();
+  const { t, lang } = useApp();
   const [tier, setTier] = useState<Tier>('undergrad');
   const [topic, setTopic] = useState<Topic>('analysis');
   const [stKo, setStKo] = useState('');
@@ -75,6 +78,7 @@ function Composer({ onDone }: { onDone: () => void }) {
   const [correct, setCorrect] = useState(1);
   const [error, setError] = useState('');
   const [ok, setOk] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const buildAnswer = (): Answer | null => {
     if (kind === 'numeric') {
@@ -92,17 +96,24 @@ function Composer({ onDone }: { onDone: () => void }) {
     return opts.length >= 2 && correct >= 1 && correct <= opts.length ? { kind, options: opts, correct: correct - 1 } : null;
   };
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     const answer = buildAnswer();
-    if (!user || !answer || !stKo.trim() || !stEn.trim() || !exKo.trim() || !source.trim()) return setError(t.lab.required);
-    submitCommunity({
-      tier, topic, source: source.trim(), answer, authorId: user.id, authorName: user.username,
-      statement: { ko: stKo.trim(), en: stEn.trim() },
-      explanation: { ko: exKo.trim(), en: (exEn || exKo).trim() },
-    });
-    setError(''); setOk(true);
-    window.setTimeout(onDone, 900);
+    if (!answer || !stKo.trim() || !stEn.trim() || !exKo.trim() || !source.trim()) return setError(t.lab.required);
+    setBusy(true); setError('');
+    try {
+      await api.submitProblem({
+        tier, topic, source: source.trim(), answer,
+        statement: { ko: stKo.trim(), en: stEn.trim() },
+        explanation: { ko: exKo.trim(), en: (exEn || exKo).trim() },
+      });
+      setOk(true);
+      window.setTimeout(onDone, 900);
+    } catch {
+      setError(t.common.error);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const preview = lang === 'ko' ? stKo : stEn;
@@ -153,26 +164,30 @@ function Composer({ onDone }: { onDone: () => void }) {
 
       {error && <p className="error">{error}</p>}
       {ok && <p className="ok">{t.lab.submitted}</p>}
-      <button className="btn primary block">{t.lab.submit}</button>
+      <button className="btn primary block" disabled={busy}>{t.lab.submit}</button>
     </form>
   );
 }
 
 function ReviewCard({ p, onVoted }: { p: CommunityProblem; onVoted: () => void }) {
-  const { t, lang, user } = useApp();
+  const { t, lang, reloadProblems } = useApp();
   const [comment, setComment] = useState('');
-  const vote = (approve: boolean) => { if (user && voteCommunity(p.id, user.id, approve, comment)) onVoted(); };
+  const [busy, setBusy] = useState(false);
+  const vote = async (approve: boolean) => {
+    setBusy(true);
+    try { await api.vote(p.id, approve, comment); await reloadProblems(); onVoted(); } finally { setBusy(false); }
+  };
   return (
     <article className="card review">
       <div className="row gap wrap"><TierBadge tier={p.tier} /><span className="muted small">{t.topics[p.topic]} · {t.practice.by} {p.authorName}</span></div>
       <MathText className="statement" text={p.statement[lang]} />
       <AnswerSummary p={p} />
-      <div className="explain"><h3>{t.practice.explanation}</h3><MathText text={p.explanation[lang]} /></div>
+      {p.explanation && <div className="explain"><h3>{t.practice.explanation}</h3><MathText text={p.explanation[lang]} /></div>}
       <p className="source"><span>{t.practice.source}</span> <MathText text={p.source} /></p>
       <input className="input" value={comment} onChange={(e) => setComment(e.target.value)} placeholder={t.lab.comment} />
       <div className="row gap">
-        <button className="btn primary" onClick={() => vote(true)}><Icon name="check" size={18} /> {t.lab.approve}</button>
-        <button className="btn ghost" onClick={() => vote(false)}><Icon name="x" size={18} /> {t.lab.reject}</button>
+        <button className="btn primary" disabled={busy} onClick={() => vote(true)}><Icon name="check" size={18} /> {t.lab.approve}</button>
+        <button className="btn ghost" disabled={busy} onClick={() => vote(false)}><Icon name="x" size={18} /> {t.lab.reject}</button>
       </div>
     </article>
   );
@@ -189,7 +204,7 @@ function MineCard({ p }: { p: CommunityProblem }) {
         <span className={`status status-${p.status}`}>{t.lab[p.status]}</span>
       </div>
       <MathText className="statement" text={p.statement[lang]} />
-      <p className="muted small">{net}/{REVIEW_THRESHOLD} {t.lab.votes}</p>
+      <p className="muted small">{net >= 0 ? '+' : ''}{net} {t.lab.votes}</p>
       {votes.filter((v) => v.comment).map((v, i) => <p key={i} className="small quote">“{v.comment}”</p>)}
     </article>
   );

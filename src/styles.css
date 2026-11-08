@@ -372,3 +372,6 @@ textarea.input { resize: vertical; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+.splash { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.splash .logo { border-radius: 20px; animation: pulse 1.2s ease-in-out infinite; }

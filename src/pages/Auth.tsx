@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useApp } from '../state';
-import { signIn, signUp } from '../lib/store';
+import { api } from '../lib/api';
 import { Logo } from '../components/Logo';
 import { Icon } from '../components/Icon';
 import { LangToggle } from '../components/Layout';
@@ -14,14 +14,22 @@ export function Auth() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [info, setInfo] = useState('');
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfo('');
     if (mode === 'signup' && (username.trim().length < 2 || password.length < 6)) return setError(t.auth.errShort);
     setBusy(true);
     try {
-      setUser(mode === 'signup' ? await signUp(username, email, password) : await signIn(email, password));
+      if (mode === 'signup') {
+        const r = await api.signUp(username, email, password);
+        if ('user' in r) setUser(r.user);
+        else { setInfo(t.auth.checkEmail); setMode('login'); }
+      } else {
+        setUser(await api.signIn(email, password));
+      }
     } catch (err) {
       setError((err as Error).message === 'exists' ? t.auth.errExists : t.auth.errInvalid);
     } finally {
@@ -72,8 +80,9 @@ export function Auth() {
             <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} required /></label>
           {error && <p className="error">{error}</p>}
+          {info && <p className="ok small">{info}</p>}
           <button className="btn primary block" disabled={busy}>{mode === 'signup' ? t.landing.start : t.auth.login}</button>
-          <p className="muted small">{t.auth.localNote}</p>
+          {api.mode === 'local' && <p className="muted small">{t.auth.localNote}</p>}
         </form>
       </div>
     </div>

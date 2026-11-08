@@ -1,7 +1,7 @@
 /*
  * 데이터 계층 (로컬 모드).
- * 모든 화면은 이 모듈의 함수만 사용하므로, 운영 단계에서는 같은 시그니처로
- * Supabase 구현(supabase/schema.sql 참고)으로 교체하면 됩니다.
+ * 로컬(데모) 모드 저장소. 화면은 src/lib/api 를 통해서만 접근하며,
+ * 서버 모드는 src/lib/api/supabase.ts 가 담당합니다.
  */
 import type { CommunityProblem, DuelRecord, Problem, User } from '../types';
 import { PROBLEMS } from '../data/problems';
@@ -72,7 +72,7 @@ export async function signUp(username: string, email: string, password: string):
 
 export async function signIn(email: string, password: string): Promise<User> {
   const u = listUsers().find((x) => x.email === email.trim().toLowerCase());
-  if (!u || (await hash(password, u.salt)) !== u.passHash) throw new Error('invalid');
+  if (!u || !u.salt || (await hash(password, u.salt)) !== u.passHash) throw new Error('invalid');
   write(K.session, u.id);
   return u;
 }

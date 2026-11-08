@@ -25,7 +25,9 @@ const ko = {
     errExists: '이미 사용 중인 이메일 또는 닉네임입니다.', errInvalid: '이메일 또는 비밀번호가 올바르지 않습니다.',
     errShort: '닉네임 2자 이상, 비밀번호 6자 이상 입력해 주세요.',
     localNote: '현재 데모(로컬 저장) 모드입니다. 데이터는 이 브라우저에만 저장됩니다.',
+    checkEmail: '확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 로그인해 주세요.',
   },
+  common: { loading: '불러오는 중…', error: '문제가 생겼습니다. 잠시 후 다시 시도해 주세요.', retry: '다시 시도' },
   landing: {
     f1t: '5단계 난이도', f1d: '중등부터 실제 연구자들이 다루는 정리까지, 근거가 되는 책·이론과 함께.',
     f2t: '레이팅 대결', f2d: 'Elo 레이팅으로 실력이 숫자로. 수학과 친구와 겨루고 등수를 올리세요.',
@@ -95,7 +97,9 @@ const en: Dict = {
     errExists: 'That email or username is already taken.', errInvalid: 'Incorrect email or password.',
     errShort: 'Username needs 2+ characters and password 6+.',
     localNote: 'Demo (local storage) mode. Data stays in this browser only.',
+    checkEmail: 'We sent you a confirmation email. Click the link, then log in.',
   },
+  common: { loading: 'Loading…', error: 'Something went wrong. Please try again.', retry: 'Retry' },
   landing: {
     f1t: 'Five tiers', f1d: 'From middle school to theorems real researchers use — each tied to its book or theory.',
     f2t: 'Rated duels', f2d: 'Elo rating turns skill into a number. Challenge classmates and climb the board.',

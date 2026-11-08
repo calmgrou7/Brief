@@ -1,17 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useApp } from '../state';
 import { COMPOSER_LEVEL, dayKey, levelProgress } from '../lib/game';
-import { allProblems } from '../lib/store';
 import { Bar, Stat, TierBadge, Titles } from '../components/ui';
 import { MathText } from '../components/MathText';
 import { Icon } from '../components/Icon';
 import { TIERS } from '../types';
 
 export function Home() {
-  const { t, f, user, lang } = useApp();
+  const { t, f, user, lang, problems } = useApp();
   if (!user) return null;
   const prog = levelProgress(user.xp);
-  const problems = allProblems();
   const solvedCount = Object.keys(user.solved).length;
   const accuracy = user.totalAttempts ? Math.round((user.totalCorrect / user.totalAttempts) * 100) : 0;
 
