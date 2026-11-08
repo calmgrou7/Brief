@@ -1,0 +1,26 @@
+{
+  "name": "policy-fund-support-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "(가칭)기업정책지원사업 — 기업상태 진단 · 정책자금 매칭 · 전문가 상담 신청(DB 수집) · 주간 정책자금 알림 MVP",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server/index.js",
+    "vapid": "node scripts/gen-vapid.js",
+    "collect": "node --disable-warning=ExperimentalWarning scripts/weekly-notify.js --collect-only",
+    "weekly": "node --disable-warning=ExperimentalWarning scripts/weekly-notify.js",
+    "purge": "node --disable-warning=ExperimentalWarning scripts/purge-expired.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "express": "^4.22.3",
+    "node-cron": "^4.6.0",
+    "web-push": "^4.0.0"
+  }
+}

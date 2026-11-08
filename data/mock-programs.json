@@ -1,0 +1,74 @@
+[
+  {
+    "pblancId": "MOCK_0001",
+    "pblancNm": "[전국] 2027년 소상공인 정책자금(직접대출) 1차 신청 안내",
+    "jrsdInsttNm": "중소벤처기업부",
+    "excInsttNm": "소상공인시장진흥공단",
+    "pldirSportRealmLclasCodeNm": "금융",
+    "hashtags": "소상공인,정책자금,융자",
+    "bsnsSumryCn": "<p>소상공인 경영안정 및 성장 지원을 위한 저금리 정책자금 융자</p>",
+    "reqstBeginEndDe": "20261116 ~ 20271231",
+    "pblancUrl": "https://ols.semas.or.kr",
+    "creatPnttm": "2026-11-05 10:00:00"
+  },
+  {
+    "pblancId": "MOCK_0002",
+    "pblancNm": "[전국] 2027년 중소기업 정책자금 융자계획 공고",
+    "jrsdInsttNm": "중소벤처기업부",
+    "excInsttNm": "중소벤처기업진흥공단",
+    "pldirSportRealmLclasCodeNm": "금융",
+    "hashtags": "중소기업,정책자금,창업,시설자금",
+    "bsnsSumryCn": "혁신창업사업화, 신시장진출, 신성장기반, 긴급경영안정 자금 등",
+    "reqstBeginEndDe": "20270102 ~ 20271231",
+    "pblancUrl": "https://www.kosmes.or.kr",
+    "creatPnttm": "2026-11-04 09:00:00"
+  },
+  {
+    "pblancId": "MOCK_0003",
+    "pblancNm": "[경기] 2027년 경기도 중소기업육성자금(이차보전) 지원 공고",
+    "jrsdInsttNm": "경기도",
+    "excInsttNm": "경기신용보증재단",
+    "pldirSportRealmLclasCodeNm": "금융",
+    "hashtags": "경기,이차보전,육성자금",
+    "bsnsSumryCn": "도내 중소기업 운전·시설자금 대출 이자 일부 보전",
+    "reqstBeginEndDe": "20261110 ~ 20261231",
+    "pblancUrl": "https://www.gcgf.or.kr",
+    "creatPnttm": "2026-11-03 14:00:00"
+  },
+  {
+    "pblancId": "MOCK_0004",
+    "pblancNm": "[서울] 서울시 소상공인 특별보증 및 이차보전 지원",
+    "jrsdInsttNm": "서울특별시",
+    "excInsttNm": "서울신용보증재단",
+    "pldirSportRealmLclasCodeNm": "금융",
+    "hashtags": "서울,소상공인,보증",
+    "bsnsSumryCn": "서울 소재 소상공인 대상 특별보증 및 대출이자 지원",
+    "reqstBeginEndDe": "20261101 ~ 20261215",
+    "pblancUrl": "https://www.seoulshinbo.co.kr",
+    "creatPnttm": "2026-11-02 10:00:00"
+  },
+  {
+    "pblancId": "MOCK_0005",
+    "pblancNm": "[부산] 부산광역시 중소기업 경영안정자금 지원계획",
+    "jrsdInsttNm": "부산광역시",
+    "excInsttNm": "부산경제진흥원",
+    "pldirSportRealmLclasCodeNm": "금융",
+    "hashtags": "부산,경영안정자금",
+    "bsnsSumryCn": "부산 소재 중소기업 경영안정자금 융자 추천 및 이자차액 보전",
+    "reqstBeginEndDe": "20261112 ~ 20261130",
+    "pblancUrl": "https://www.bepa.kr",
+    "creatPnttm": "2026-11-06 11:00:00"
+  },
+  {
+    "pblancId": "MOCK_0006",
+    "pblancNm": "[전국] 기술보증기금 창업기업 특례보증 프로그램",
+    "jrsdInsttNm": "금융위원회",
+    "excInsttNm": "기술보증기금",
+    "pldirSportRealmLclasCodeNm": "금융",
+    "hashtags": "기술,창업,보증",
+    "bsnsSumryCn": "창업 7년 이내 기술기업 대상 보증비율·보증료 우대",
+    "reqstBeginEndDe": "20261101 ~ 20271031",
+    "pblancUrl": "https://www.kibo.or.kr",
+    "creatPnttm": "2026-11-01 09:00:00"
+  }
+]
