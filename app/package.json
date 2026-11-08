@@ -42,7 +42,6 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    
     "web": "expo start --web",
     "lint": "expo lint"
   },
