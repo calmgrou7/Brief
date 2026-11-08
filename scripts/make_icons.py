@@ -75,17 +75,12 @@ save(icon(512, INK, LIME, INK, 0.58), STORE / "play-icon-512.png")
 
 
 # ── Play 스토어 그래픽 이미지 1024x500 ─────────────────────
+FONTS = Path(__file__).resolve().parent / "fonts"  # Pretendard (SIL OFL, Pretendard-LICENSE.txt)
+
+
 def font(size, bold=True):
-    candidates = [
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Black.ttc" if bold else "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/noto/NotoSansKR-Bold.ttf",
-        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",  # 한글 지원 대체 글꼴
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    ]
-    for p in candidates:
-        if Path(p).exists():
-            return ImageFont.truetype(p, size)
-    return ImageFont.load_default()
+    """브랜드 글꼴 Pretendard: 제목은 Bold, 보조 문구는 Medium"""
+    return ImageFont.truetype(str(FONTS / ("Pretendard-Bold.otf" if bold else "Pretendard-Medium.otf")), size)
 
 
 W, H = 1024, 500
