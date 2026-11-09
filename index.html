@@ -76,7 +76,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 :root[data-theme="dark"] .act svg{color:var(--brass)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .act svg{color:var(--brass)}}
 .act:active{transform:translateY(1px)}
-.numline{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.nums{margin-top:14px;display:grid;grid-template-columns:auto auto auto;justify-content:center;align-items:center;gap:8px 12px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.nums .numline{display:contents}
+.nums .numline[hidden]{display:none!important}
+.numline{display:flex;align-items:center;justify-content:center;gap:10px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.numline > :first-child{min-width:0}
 .numline b{color:var(--fg);font-weight:600;user-select:all;letter-spacing:.02em}
 .mini{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:3px 10px;font-size:12px;cursor:pointer}
 
@@ -191,9 +195,10 @@ window.CARD = {
   title:   "보험·재무 컨설턴트",
   company: "",                         // 소속 (예: "○○보험대리점")
   regNo:   "",                         // 보험설계사 등록번호
-  phone:   "010-0000-0000",            // ★ 실제 번호로 변경
+  phone:   "010-8950-6400",            // 휴대폰
+  phone2:  "0504-006-6400",            // 대표번호 (비우면 표시 안 함)
   kakao:   "",                         // 카카오톡 오픈채팅/채널 링크 (https://open.kakao.com/...)
-  email:   "",
+  email:   "niea7@naver.com",
   blog:    "",                         // 블로그·유튜브 등 링크
   photo:   "profile.jpg",              // 같은 폴더에 얼굴 사진을 이 이름으로 넣으세요
   shareUrl:"",                         // 명함 공개 주소 (QR코드에 사용). 비우면 현재 주소
@@ -232,7 +237,11 @@ window.CARD = {
     <a class="act" id="aKakao" href="#consult" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg>카카오톡</a>
     <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg>연락처 저장</button>
   </nav>
-  <div class="numline">상담 전화 <b id="phoneTxt">010-0000-0000</b> <button class="mini" type="button" id="copyPhone">복사</button></div>
+  <div class="nums">
+    <div class="numline">휴대폰 <b id="phoneTxt">010-8950-6400</b> <button class="mini" type="button" id="copyPhone">복사</button></div>
+    <div class="numline" id="phone2Row">대표번호 <b id="phone2Txt">0504-006-6400</b> <button class="mini" type="button" id="copyPhone2">복사</button></div>
+    <div class="numline" id="emailRow">이메일 <b id="emailTxt">niea7@naver.com</b> <button class="mini" type="button" id="copyEmail">복사</button></div>
+  </div>
 
   <section id="services" aria-labelledby="h-svc">
     <p class="eyebrow">SERVICES</p>
@@ -430,9 +439,11 @@ window.CARD = {
   $("nick").textContent = $("fNick").textContent = C.nick;
   $("nameLine").textContent = [C.name, C.title].filter(Boolean).join(" · ");
   $("phoneTxt").textContent = C.phone;
+  if (C.phone2) $("phone2Txt").textContent = C.phone2; else $("phone2Row").hidden = true;
+  if (C.email) $("emailTxt").textContent = C.email; else $("emailRow").hidden = true;
   if (C.company) $("fCompany").textContent = " · " + C.company;
   if (C.regNo) { $("fReg").textContent = "보험설계사 등록번호 " + C.regNo; $("fReg").hidden = false; }
-  const etc = [C.email, C.blog].filter(Boolean);
+  const etc = [C.blog].filter(Boolean);
   if (etc.length) { $("fEtc").textContent = etc.join(" · "); $("fEtc").hidden = false; }
 
   // 사진: 파일이 있으면 표시, 없으면 자리표시
@@ -460,6 +471,8 @@ window.CARD = {
     ta.remove();
   }
   $("copyPhone").onclick = () => copy(C.phone, "전화번호를 복사했어요");
+  $("copyPhone2").onclick = () => copy(C.phone2, "대표번호를 복사했어요");
+  $("copyEmail").onclick = () => copy(C.email, "이메일을 복사했어요");
   $("copyLink").onclick = () => copy(pageUrl, "명함 링크를 복사했어요");
   $("shareBtn").onclick = async () => {
     const data = { title: C.brand + " · " + C.nick, text: "보험금 청구 · 보험 재설계 · 재무 컨설팅 상담", url: pageUrl };
@@ -470,9 +483,9 @@ window.CARD = {
   // 연락처 저장 (vCard)
   $("aSave").onclick = () => {
     const fn = C.name ? C.name + " (" + C.nick + ")" : C.nick;
-    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(C.company||C.brand),"TITLE:"+C.title,"TEL;TYPE=CELL:"+C.phone,
+    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(C.company||C.brand),"TITLE:"+C.title,"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=WORK:"+C.phone2:"",
       C.email?"EMAIL:"+C.email:"", "URL:"+pageUrl, "NOTE:보험금 청구 · 보험 재설계 상담 · 재무 컨설팅","END:VCARD"].filter(Boolean).join("\r\n");
-    if (window.self !== window.top) { copy(fn+"\n"+C.phone+"\n"+pageUrl, "연락처를 복사했어요. 주소록에 붙여 넣으세요"); return; }
+    if (window.self !== window.top) { copy([fn,C.phone,C.phone2,C.email,pageUrl].filter(Boolean).join("\n"), "연락처를 복사했어요. 주소록에 붙여 넣으세요"); return; }
     try {
       const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
       a.download=C.nick+".vcf"; document.body.appendChild(a); a.click(); a.remove();
