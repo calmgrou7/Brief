@@ -2,7 +2,7 @@
   "name": "policy-fund-support-app",
   "version": "0.1.0",
   "private": true,
-  "description": "기업지원사업 — 기업상태 진단 · 정책자금 매칭 · 전문가 상담 신청(DB 수집) · 주간 정책자금 알림 MVP",
+  "description": "채움 기업지원사업 — 기업상태 진단 · 정책자금 매칭 · 전문가 상담 신청(DB 수집) · 주간 정책자금 알림 MVP",
   "type": "module",
   "main": "server/index.js",
   "engines": {

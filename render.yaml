@@ -20,7 +20,7 @@ services:
       - key: ADMIN_TOKEN
         generateValue: true   # 자동 생성 → Render 대시보드 Environment 에서 확인
       - key: APP_NAME
-        value: 기업지원사업
+        value: 채움 기업지원사업
       - key: OPERATOR_NAME
         value: 정책지원마스터
       - key: OPERATOR_PHONE

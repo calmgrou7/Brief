@@ -1,5 +1,5 @@
 // 서비스워커: 오프라인 셸 캐시 + 푸시 알림 수신
-const CACHE = 'policyfund-v2';
+const CACHE = 'policyfund-v3';
 const SHELL = ['/', '/styles.css', '/app.js', '/icon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))); self.skipWaiting(); });

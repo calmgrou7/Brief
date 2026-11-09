@@ -1,4 +1,4 @@
-# 구글플레이 출시 가이드 — 기업지원사업
+# 구글플레이 출시 가이드 — 채움 기업지원사업
 
 웹앱(PWA)을 **TWA(Trusted Web Activity)** 로 감싸 안드로이드 앱으로 등록합니다.
 앱 안의 화면은 Render에 배포된 웹앱 그대로 사용하므로, **웹을 고치면 앱도 자동으로 바뀝니다** (재심사 불필요).
@@ -42,8 +42,8 @@
 | 항목 | 입력값 |
 |---|---|
 | Package ID | `kr.chaeum.policyfund` (한 번 정하면 변경 불가 — 회사 도메인 역순 권장) |
-| App name | 기업지원사업 |
-| Launcher name | 기업지원사업 (12자 이내) |
+| App name | 채움 기업지원사업 |
+| Launcher name | 채움 기업지원사업 (12자 이내) |
 | Signing key | **Create new** (기본값) |
 
 5. **Download** → zip 파일 안에:

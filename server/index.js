@@ -55,7 +55,7 @@ export function createApp() {
   // ── 공개 API ──────────────────────────────────────────────
   app.get('/api/config', (req, res) => {
     res.json({
-      appName: process.env.APP_NAME || '기업지원사업',
+      appName: process.env.APP_NAME || '채움 기업지원사업',
       vapidPublicKey: pushEnabled() ? process.env.VAPID_PUBLIC_KEY : null,
       regions: REGIONS,
       industries: INDUSTRIES,
