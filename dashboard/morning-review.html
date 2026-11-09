@@ -1,0 +1,278 @@
+<meta name="dash-one-writer">
+<style>
+  .mb { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-xl); }
+  .mb h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .mb h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .mb p { margin: 0; line-height: 1.6; }
+  .mb-muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .mb-head { display: grid; gap: var(--cds-gap-sm); }
+  .mb-lede { font-size: var(--cds-font-size-body); max-width: 62ch; }
+  .mb-lede b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.35em; font-variant-numeric: tabular-nums; }
+  .mb-section { display: grid; gap: var(--cds-gap-md); min-width: 0; }
+
+  .mb-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--cds-gap-sm); list-style: none; padding: 0; margin: 0; counter-reset: st; }
+  .mb-steps li { counter-increment: st; border-top: 2px solid var(--color-border-line); padding-top: var(--cds-pad-sm); display: grid; gap: 4px; }
+  .mb-steps li::before { content: counter(st); font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); color: var(--color-fg-muted); }
+  .mb-steps strong { font-weight: var(--cds-font-weight-medium); }
+
+  .mb-mapwrap { overflow-x: auto; }
+  .mb-map { width: 100%; min-width: 520px; border-collapse: separate; border-spacing: 6px; table-layout: fixed; }
+  .mb-map th { font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); text-align: left; padding: 0 4px; }
+  .mb-map thead th { padding-bottom: 2px; }
+  .mb-map tbody th { width: 64px; vertical-align: top; padding-top: 10px; }
+  .mb-map td { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px; vertical-align: top; height: 64px; }
+  .mb-field { display: inline-flex; align-items: center; gap: 6px; }
+  .mb-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+  .mb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mb-chip { font-size: var(--cds-font-size-caption); line-height: 1.3; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--color-border-line); background: var(--color-bg); }
+  .mb-chip.is-sharp { border-color: currentColor; font-weight: var(--cds-font-weight-medium); }
+  .mb-chip.is-done { opacity: .5; text-decoration: line-through; }
+  .mb-empty { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .mb-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); }
+
+  .mb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--cds-gap-md); }
+  .mb-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .mb-card-top { display: flex; justify-content: space-between; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .mb-promise { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.3rem; line-height: 1.4; text-wrap: balance; }
+  .mb-who { font-size: var(--cds-font-size-body); }
+  .mb-who::before { content: "누구에게 · "; color: var(--color-fg-muted); }
+  .mb-why { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.5; }
+  .mb-meter { display: flex; gap: 3px; }
+  .mb-meter i { flex: 1; height: 4px; border-radius: 2px; background: var(--color-border-line); }
+  .mb-meter i.on { background: var(--color-ok); }
+  .mb-links { display: flex; gap: var(--cds-gap-md); flex-wrap: wrap; font-size: var(--cds-font-size-caption); }
+  .mb-links a { color: var(--color-fg); }
+  .mb-pill { font-size: var(--cds-font-size-caption); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--color-border-line); white-space: nowrap; }
+  .mb-pill[data-s="상승"], .mb-pill[data-s="급상승"] { color: var(--color-ok); border-color: currentColor; }
+  .mb-pill[data-s="하락"] { color: var(--color-bad); border-color: currentColor; }
+  .mb-pill[data-st="진행"] { color: var(--color-ok); border-color: currentColor; }
+  .mb-pill[data-st="검토 중"], .mb-pill[data-st="소싱 확인"] { color: var(--color-warn); border-color: currentColor; }
+
+  .mb-todo { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--cds-gap-sm); }
+  .mb-todo li { display: grid; gap: 2px; padding: var(--cds-pad-sm) 0; border-bottom: 1px solid var(--color-border-line); }
+  .mb-todo .mb-q { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+
+  .mb-tablewrap { overflow-x: auto; }
+  .mb-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); min-width: 560px; }
+  .mb-table th, .mb-table td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .mb-table th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .mb-table td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  .mb-table th.num { text-align: right; }
+  .mb [data-dash-source-state=refreshing] { opacity: .5; }
+  .mb details summary { cursor: pointer; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+</style>
+
+<div class="mb" lang="ko">
+  <header class="mb-head" id="top">
+    <h1>아침 검수 보드</h1>
+    <p class="mb-lede" data-read lang="ko">검수할 신호 <b data-draw="pending" data-source="summary" data-field="pending" data-row="0" class="dash-skeleton">—</b>건 중 상승 신호는 <b data-draw="rising" data-source="summary" data-field="rising" data-row="0" class="dash-skeleton">—</b>건이고, 브랜드 한 줄까지 다듬은 아이디어는 <b data-draw="drafted" data-source="summary" data-field="drafted" data-row="0" class="dash-skeleton">—</b>건입니다.</p>
+    <p class="mb-muted">운동 · 실버세대 · 건강 분야 신호를 Notion의 「트렌드 브레인스토밍」에서 열 때마다 새로 불러옵니다.</p>
+  </header>
+
+  <section class="mb-section" id="routine">
+    <h2>아침 10분 루틴</h2>
+    <ol class="mb-steps">
+      <li><strong>신호 훑기</strong><span class="mb-muted">지도에서 상승 칸부터 봅니다. 하락 칸은 피할 곳을 알려줍니다.</span></li>
+      <li><strong>한 사람으로 좁히기</strong><span class="mb-muted">「60대」가 아니라 「무릎 때문에 헬스장이 겁나는 60대 초반」처럼 순간까지 적습니다.</span></li>
+      <li><strong>한 문장으로 약속하기</strong><span class="mb-muted">그 사람에게 건넬 브랜드 한 줄을 씁니다. 길면 아직 뾰족하지 않은 것입니다.</span></li>
+      <li><strong>결정하고 체크</strong><span class="mb-muted">Notion에서 상태를 바꾸고 「아침 검수」를 체크하면 이 보드에서 흐려집니다.</span></li>
+    </ol>
+  </section>
+
+  <section class="mb-section" id="map">
+    <h2>신호 지도</h2>
+    <p class="mb-muted">굵은 테두리는 브랜드 한 줄까지 다듬은 키워드, 줄 그은 키워드는 검수를 마친 것입니다.</p>
+    <div class="mb-mapwrap">
+      <table class="mb-map" data-source="signals">
+        <thead>
+          <tr><th></th><th><span class="mb-field"><i class="mb-dot" data-draw="dot" data-f="운동"></i>운동</span></th><th><span class="mb-field"><i class="mb-dot" data-draw="dot" data-f="실버세대"></i>실버세대</span></th><th><span class="mb-field"><i class="mb-dot" data-draw="dot" data-f="건강"></i>건강</span></th></tr>
+        </thead>
+        <tbody>
+          <tr><th>급상승</th><td data-draw="cell" data-f="운동" data-s="급상승"></td><td data-draw="cell" data-f="실버세대" data-s="급상승"></td><td data-draw="cell" data-f="건강" data-s="급상승"></td></tr>
+          <tr><th>상승</th><td data-draw="cell" data-f="운동" data-s="상승"></td><td data-draw="cell" data-f="실버세대" data-s="상승"></td><td data-draw="cell" data-f="건강" data-s="상승"></td></tr>
+          <tr><th>유지</th><td data-draw="cell" data-f="운동" data-s="유지"></td><td data-draw="cell" data-f="실버세대" data-s="유지"></td><td data-draw="cell" data-f="건강" data-s="유지"></td></tr>
+          <tr><th>하락</th><td data-draw="cell" data-f="운동" data-s="하락"></td><td data-draw="cell" data-f="실버세대" data-s="하락"></td><td data-draw="cell" data-f="건강" data-s="하락"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mb-section" id="sharp">
+    <h2>뾰족하게 다듬은 아이디어</h2>
+    <p class="mb-muted">막대 네 칸은 타깃 고객, 브랜드 한 줄, 근거, 수치가 채워졌는지를 뜻합니다. 네 칸이 다 차면 소싱을 확인할 차례입니다.</p>
+    <div class="mb-cards" data-draw="cards" data-source="signals sharpness"></div>
+  </section>
+
+  <section class="mb-section" id="todo">
+    <h2>아직 다듬지 않은 신호</h2>
+    <p class="mb-muted">각 신호 아래 질문에 답해서 Notion의 타깃 고객과 브랜드 한 줄 칸을 채워보세요.</p>
+    <ul class="mb-todo" data-draw="todo" data-source="signals"></ul>
+  </section>
+
+  <section class="mb-section" id="all">
+    <h2>전체 신호</h2>
+    <div class="mb-tablewrap">
+      <table class="mb-table" data-source="signals" data-row-key="키워드">
+        <thead><tr><th data-field="키워드">키워드</th><th data-field="분야">분야</th><th data-field="신호">신호</th><th class="num" data-field="변화율">전년 대비</th><th data-field="상태">상태</th><th data-field="기록일">기록일</th></tr></thead>
+        <tbody data-draw="rows"></tbody>
+      </table>
+    </div>
+    <details>
+      <summary>수치와 출처에 대해</summary>
+      <p class="mb-muted">「전년 대비」는 기사나 리포트가 밝힌 검색량 변화를 옮긴 값이고, 비어 있으면 원문에 수치가 없다는 뜻입니다. 타깃 고객과 브랜드 한 줄은 Claude가 쓴 초안이니 검수하면서 고쳐 쓰세요.</p>
+    </details>
+  </section>
+</div>
+
+<script>
+  window.MB = {
+    fields: ['운동', '실버세대', '건강'],
+    done: (r) => r['아침 검수'] === '__YES__',
+    has: (v) => v !== null && v !== undefined && String(v).trim() !== '',
+    enc: (v) => encodeURIComponent(String(v)),
+    safeUrl: (u) => (typeof u === 'string' && /^https:\/\//.test(u)) ? u : null,
+    color: (f) => { const i = window.MB.fields.indexOf(f); return dash.colors[i < 0 ? 0 : i]; },
+    pct: (v) => (v === null || v === undefined || v === '') ? '' : (v > 0 ? '+' : '') + Math.round(Number(v) * 1000) / 10 + '%',
+  };
+
+  dash.calc('summary', {
+    title: '검수 현황',
+    description: '검수 대기, 상승 신호, 브랜드 한 줄까지 쓴 아이디어의 수.',
+    inputs: ['signals'],
+    fn: (signals) => {
+      const open = signals.filter((r) => r['아침 검수'] !== '__YES__');
+      return [{
+        pending: open.length,
+        rising: open.filter((r) => r['신호'] === '상승' || r['신호'] === '급상승').length,
+        drafted: signals.filter((r) => r['브랜드 한 줄'] && String(r['브랜드 한 줄']).trim() !== '').length,
+      }];
+    },
+  });
+
+  dash.calc('sharpness', {
+    title: '다듬기 정도',
+    description: '키워드마다 타깃 고객, 브랜드 한 줄, 근거, 수치 네 칸 중 채워진 칸 수.',
+    inputs: ['signals'],
+    fn: (signals) => signals.map((r) => ({
+      키워드: r['키워드'],
+      점수: ['타깃 고객', '브랜드 한 줄', '근거', '변화율']
+        .filter((k) => r[k] !== null && r[k] !== undefined && String(r[k]).trim() !== '').length,
+    })),
+  });
+</script>
+
+<script>
+  ['pending', 'rising', 'drafted'].forEach((k) => {
+    dash.draw(k, (el) => {
+      const s = dash.data('summary');
+      if (s.status === 'loading') return;
+      el.classList.remove('dash-skeleton');
+      const row = Array.isArray(s.data) ? s.data[0] : null;
+      el.textContent = row ? String(row[k]) : '—';
+    });
+  });
+
+  dash.draw('dot', (el) => { el.style.background = MB.color(el.dataset.f); });
+
+  dash.draw('cell', (el) => {
+    const d = dash.data('signals');
+    el.replaceChildren();
+    if (d.status !== 'ok') { el.textContent = ''; return; }
+    const rows = d.data.filter((r) => r['분야'] === el.dataset.f && r['신호'] === el.dataset.s);
+    if (!rows.length) { const e = document.createElement('span'); e.className = 'mb-empty'; e.textContent = '·'; el.append(e); return; }
+    const wrap = document.createElement('div'); wrap.className = 'mb-chips';
+    rows.forEach((r) => {
+      const c = document.createElement('span');
+      c.className = 'mb-chip' + (MB.has(r['브랜드 한 줄']) ? ' is-sharp' : '') + (MB.done(r) ? ' is-done' : '');
+      c.style.color = MB.has(r['브랜드 한 줄']) ? MB.color(r['분야']) : '';
+      c.textContent = r['키워드'];
+      c.dataset.source = 'signals'; c.dataset.field = '키워드'; c.dataset.where = '키워드=' + MB.enc(r['키워드']);
+      wrap.append(c);
+    });
+    el.append(wrap);
+  });
+
+  dash.draw('cards', (el) => {
+    const d = dash.data('signals');
+    const sh = dash.data('sharpness');
+    el.replaceChildren();
+    if (d.status !== 'ok') { const p = document.createElement('p'); p.className = 'mb-empty'; p.textContent = d.status === 'error' ? '불러오지 못했습니다' : '—'; el.append(p); return; }
+    const score = new Map((Array.isArray(sh.data) ? sh.data : []).map((r) => [r['키워드'], r['점수']]));
+    const order = { '급상승': 0, '상승': 1, '유지': 2, '하락': 3 };
+    const rows = d.data.filter((r) => MB.has(r['브랜드 한 줄']))
+      .sort((a, b) => (MB.done(a) - MB.done(b)) || ((order[a['신호']] ?? 9) - (order[b['신호']] ?? 9)));
+    if (!rows.length) { const p = document.createElement('p'); p.className = 'mb-empty'; p.textContent = '아직 브랜드 한 줄을 쓴 신호가 없습니다.'; el.append(p); return; }
+    rows.forEach((r) => {
+      const w = '키워드=' + MB.enc(r['키워드']);
+      const card = document.createElement('article'); card.className = 'mb-card';
+      if (MB.done(r)) card.style.opacity = '.6';
+      const top = document.createElement('div'); top.className = 'mb-card-top';
+      const f = document.createElement('span'); f.className = 'mb-field mb-muted';
+      const dot = document.createElement('i'); dot.className = 'mb-dot'; dot.style.background = MB.color(r['분야']);
+      const kw = document.createElement('span'); kw.textContent = r['키워드']; kw.dataset.source = 'signals'; kw.dataset.field = '키워드'; kw.dataset.where = w;
+      f.append(dot, kw);
+      const pills = document.createElement('span'); pills.style.display = 'flex'; pills.style.gap = '4px';
+      const ps = document.createElement('span'); ps.className = 'mb-pill'; ps.dataset.s = r['신호'] || ''; ps.textContent = (r['신호'] || '') + (MB.pct(r['변화율']) ? ' ' + MB.pct(r['변화율']) : '');
+      ps.dataset.source = 'signals'; ps.dataset.field = '신호'; ps.dataset.where = w;
+      const pt = document.createElement('span'); pt.className = 'mb-pill'; pt.dataset.st = r['상태'] || ''; pt.textContent = r['상태'] || '';
+      pt.dataset.source = 'signals'; pt.dataset.field = '상태'; pt.dataset.where = w;
+      pills.append(ps, pt);
+      top.append(f, pills);
+      const promise = document.createElement('p'); promise.className = 'mb-promise'; promise.textContent = r['브랜드 한 줄'];
+      promise.dataset.source = 'signals'; promise.dataset.field = '브랜드 한 줄'; promise.dataset.where = w;
+      const who = document.createElement('p'); who.className = 'mb-who'; who.textContent = r['타깃 고객'] || '아직 비어 있음';
+      who.dataset.source = 'signals'; who.dataset.field = '타깃 고객'; who.dataset.where = w;
+      const why = document.createElement('p'); why.className = 'mb-why'; why.textContent = r['근거'] || '';
+      why.dataset.source = 'signals'; why.dataset.field = '근거'; why.dataset.where = w;
+      const meter = document.createElement('div'); meter.className = 'mb-meter'; meter.setAttribute('role', 'img');
+      const n = score.get(r['키워드']) ?? 0;
+      meter.setAttribute('aria-label', '다듬기 ' + n + '/4'); meter.title = '다듬기 ' + n + '/4';
+      meter.dataset.source = 'sharpness'; meter.dataset.field = '점수'; meter.dataset.where = w;
+      for (let i = 0; i < 4; i++) { const b = document.createElement('i'); if (i < n) b.className = 'on'; meter.append(b); }
+      const links = document.createElement('div'); links.className = 'mb-links';
+      const src = MB.safeUrl(r['링크']);
+      if (src) { const a = document.createElement('a'); a.href = src; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '근거 원문 ↗'; links.append(a); }
+      const np = MB.safeUrl(r['url']);
+      if (np) { const a = document.createElement('a'); a.href = np; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Notion에서 다듬기 ↗'; links.append(a); }
+      card.append(top, promise, who, meter, why, links);
+      el.append(card);
+    });
+  });
+
+  dash.draw('todo', (el) => {
+    const d = dash.data('signals');
+    el.replaceChildren();
+    if (d.status !== 'ok') return;
+    const rows = d.data.filter((r) => !MB.has(r['브랜드 한 줄']) && r['신호'] !== '하락' && !MB.done(r));
+    if (!rows.length) { const li = document.createElement('li'); li.className = 'mb-empty'; li.textContent = '모든 신호를 다듬었습니다.'; el.append(li); return; }
+    rows.forEach((r) => {
+      const li = document.createElement('li');
+      const t = document.createElement('span'); t.className = 'mb-field';
+      const dot = document.createElement('i'); dot.className = 'mb-dot'; dot.style.background = MB.color(r['분야']);
+      const kw = document.createElement('strong'); kw.textContent = r['키워드']; kw.dataset.source = 'signals'; kw.dataset.field = '키워드'; kw.dataset.where = '키워드=' + MB.enc(r['키워드']);
+      t.append(dot, kw);
+      const idea = document.createElement('span'); idea.textContent = r['아이디어'] || '';
+      idea.dataset.source = 'signals'; idea.dataset.field = '아이디어'; idea.dataset.where = '키워드=' + MB.enc(r['키워드']);
+      const q = document.createElement('span'); q.className = 'mb-q';
+      q.textContent = '이 제품을 가장 절실하게 찾는 한 사람은 누구이고, 그 사람은 언제 이 불편을 느끼나요?';
+      li.append(t, idea, q);
+      const np = MB.safeUrl(r['url']);
+      if (np) { const a = document.createElement('a'); a.href = np; a.target = '_blank'; a.rel = 'noopener'; a.className = 'mb-muted'; a.style.color = 'var(--color-fg)'; a.textContent = 'Notion에서 채우기 ↗'; li.append(a); }
+      el.append(li);
+    });
+  });
+
+  dash.draw('rows', (el) => {
+    const d = dash.data('signals');
+    el.replaceChildren();
+    if (d.status !== 'ok') return;
+    d.data.forEach((r) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = MB.enc(r['키워드']);
+      if (MB.done(r)) tr.style.opacity = '.55';
+      const cells = [r['키워드'], r['분야'], r['신호'], MB.pct(r['변화율']), r['상태'], r['기록일']];
+      cells.forEach((v, i) => { const td = document.createElement('td'); if (i === 3) td.className = 'num'; td.textContent = v ?? ''; tr.append(td); });
+      el.append(tr);
+    });
+  });
+</script>
