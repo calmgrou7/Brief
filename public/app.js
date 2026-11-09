@@ -1,4 +1,4 @@
-// (가칭)기업정책지원사업 — 프론트엔드 (빌드 없는 바닐라 JS PWA)
+// 기업지원사업 — 프론트엔드 (빌드 없는 바닐라 JS PWA)
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const store = {
