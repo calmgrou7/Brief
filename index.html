@@ -206,7 +206,7 @@ window.CARD = {
   company: "",                         // 소속 (예: "○○보험대리점")
   regNo:   "",                         // 보험설계사 등록번호
   phone:   "010-8950-6400",            // 휴대폰
-  phone2:  "0504-006-6400",            // 대표번호 (비우면 표시 안 함)
+  phone2:  "0504-006-6400",            // 팩스 (비우면 표시 안 함)
   kakao:   "https://open.kakao.com/o/suQkQBlh",                         // 카카오톡 오픈채팅/채널 링크 (https://open.kakao.com/...)
   email:   "niea7@naver.com",
   blog:    "",                         // 블로그·유튜브 등 링크
@@ -250,7 +250,7 @@ window.CARD = {
   </nav>
   <div class="nums">
     <div class="numline">휴대폰 <b id="phoneTxt">010-8950-6400</b> <button class="mini" type="button" id="copyPhone">복사</button></div>
-    <div class="numline" id="phone2Row">대표번호 <b id="phone2Txt">0504-006-6400</b> <button class="mini" type="button" id="copyPhone2">복사</button></div>
+    <div class="numline" id="phone2Row">팩스 <b id="phone2Txt">0504-006-6400</b> <button class="mini" type="button" id="copyPhone2">복사</button></div>
     <div class="numline" id="emailRow">이메일 <b id="emailTxt">niea7@naver.com</b> <button class="mini" type="button" id="copyEmail">복사</button></div>
   </div>
 
@@ -495,7 +495,7 @@ window.CARD = {
     ta.remove();
   }
   $("copyPhone").onclick = () => copy(C.phone, "전화번호를 복사했어요");
-  $("copyPhone2").onclick = () => copy(C.phone2, "대표번호를 복사했어요");
+  $("copyPhone2").onclick = () => copy(C.phone2, "팩스번호를 복사했어요");
   $("copyEmail").onclick = () => copy(C.email, "이메일을 복사했어요");
   $("copyLink").onclick = () => copy(pageUrl, "명함 링크를 복사했어요");
   $("shareBtn").onclick = async () => {
@@ -507,9 +507,9 @@ window.CARD = {
   // 연락처 저장 (vCard)
   $("aSave").onclick = () => {
     const fn = C.name ? C.name + " (" + C.nick + ")" : C.nick;
-    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(C.company||C.brand),"TITLE:"+C.title,"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=WORK:"+C.phone2:"",
+    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(C.company||C.brand),"TITLE:"+C.title,"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=FAX:"+C.phone2:"",
       C.email?"EMAIL:"+C.email:"", "URL:"+pageUrl, "NOTE:보험금 청구 · 보험 재설계 상담 · 재무 컨설팅","END:VCARD"].filter(Boolean).join("\r\n");
-    if (window.self !== window.top) { copy([fn,C.phone,C.phone2,C.email,pageUrl].filter(Boolean).join("\n"), "연락처를 복사했어요. 주소록에 붙여 넣으세요"); return; }
+    if (window.self !== window.top) { copy([fn,C.phone,C.phone2?"팩스 "+C.phone2:"",C.email,pageUrl].filter(Boolean).join("\n"), "연락처를 복사했어요. 주소록에 붙여 넣으세요"); return; }
     try {
       const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
       a.download=C.nick+".vcf"; document.body.appendChild(a); a.click(); a.remove();
