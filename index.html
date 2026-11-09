@@ -61,6 +61,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .hero{background:var(--ink);color:var(--on-ink);position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;inset:auto -20% -60px -20%;height:120px;background:var(--paper);border-radius:50% 50% 0 0}
 .hero .wrap{padding-block:28px 72px;position:relative;z-index:1;display:grid;gap:18px;justify-items:center;text-align:center}
+.lang{position:absolute;top:14px;right:max(16px, env(safe-area-inset-right, 0px));z-index:3;border:1px solid rgb(255 255 255/.35);background:rgb(255 255 255/.08);color:var(--on-ink);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;letter-spacing:.04em;cursor:pointer}
+.lang:hover{background:rgb(255 255 255/.16)}
 .brand{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:600}
 .brand svg{width:18px;height:18px}
 .photo{width:168px;height:168px;border-radius:50%;padding:4px;background:conic-gradient(var(--brass),#e9d7a6,var(--brass));box-shadow:0 10px 30px rgb(0 0 0/.25)}
@@ -207,6 +209,12 @@ window.CARD = {
   nick:    "보험지기",
   name:    "",                         // 실명 (예: "홍길동")  비워두면 표시 안 함
   title:   "보험·재무 컨설턴트",
+  // 영문 표기
+  brandEn: "Wise Insurance Life",
+  nickEn:  "Bohumjigi",
+  nameEn:  "",                         // 영문 실명 (예: "Gildong Hong")
+  titleEn: "Insurance & Financial Consultant",
+  companyEn: "",
   company: "",                         // 소속 (예: "○○보험대리점")
   regNo:   "",                         // 보험설계사 등록번호
   phone:   "010-8950-6400",            // 휴대폰
@@ -223,6 +231,9 @@ window.CARD = {
   partnerCats: ["병원","세무사","노무사","골프회원권","공인중개사","변리사","감정평가사","식당","학원","제조업","쇼핑몰","기타 전문가"],
   // 등록된 파트너. mode: "direct" = 연락처 공개 / "via" = 보험지기 통해 연결
   // 예) { cat:"세무사", name:"○○세무회계", person:"김○○ 세무사", desc:"법인·개인사업자 기장, 절세 상담", phone:"02-000-0000", url:"", mode:"direct" },
+  // 분야 영문 이름
+  partnerCatsEn: {"병원":"Hospital & Clinic","세무사":"Tax Accountant","노무사":"Labor Attorney","골프회원권":"Golf Membership","공인중개사":"Real Estate Agent","변리사":"Patent Attorney","감정평가사":"Appraiser","식당":"Restaurant","학원":"Academy","제조업":"Manufacturing","쇼핑몰":"Online Store","기타 전문가":"Other Experts","기타":"Other"},
+  // 파트너마다 nameEn, personEn, descEn 을 넣으면 영문 화면에 표시됩니다
   partners: [
   ]
 };
@@ -231,107 +242,108 @@ window.CARD = {
 
 <header class="hero">
   <div class="wrap">
+    <button class="lang" id="langBtn" type="button" aria-label="Switch language">EN</button>
     <div class="brand">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
       <span id="brand">지혜로운 보험생활</span>
     </div>
     <div class="photo">
-      <img id="photo" alt="보험지기 프로필 사진" hidden>
+      <img id="photo" alt="보험지기 프로필 사진" data-en-alt="Bohumjigi profile photo" hidden>
       <div class="ph" id="photoPh"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><br>사진 영역<br>profile.jpg</div></div>
     </div>
-    <p class="slogan">내 보험, 제대로 알고 제대로 받으세요</p>
+    <p class="slogan" data-en="Know your coverage. Get what you&#x27;re owed.">내 보험, 제대로 알고 제대로 받으세요</p>
     <h1 class="name"><span id="nick">보험지기</span><small id="nameLine">보험·재무 컨설턴트</small></h1>
-    <div class="tags"><span>#보험금청구</span><span>#보험재설계</span><span>#재무컨설팅</span><span>#보장분석</span></div>
+    <div class="tags"><span data-en="#InsuranceClaims">#보험금청구</span><span data-en="#PolicyReview">#보험재설계</span><span data-en="#FinancialPlanning">#재무컨설팅</span><span data-en="#CoverageAnalysis">#보장분석</span></div>
   </div>
 </header>
 
 <main class="wrap">
-  <nav class="actions" aria-label="연락하기">
-    <a class="act" id="aCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg>전화</a>
-    <a class="act" id="aSms" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.6A8 8 0 1121 12z"/></svg>문자</a>
-    <a class="act" id="aKakao" href="#consult" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg>카카오톡</a>
-    <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg>연락처 저장</button>
+  <nav class="actions" aria-label="연락하기" data-en-aria="Contact">
+    <a class="act" id="aCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span data-en="Call">전화</span></a>
+    <a class="act" id="aSms" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.6A8 8 0 1121 12z"/></svg><span data-en="Text">문자</span></a>
+    <a class="act" id="aKakao" href="#consult" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg><span data-en="KakaoTalk">카카오톡</span></a>
+    <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg><span data-en="Save contact">연락처 저장</span></button>
   </nav>
   <div class="nums">
-    <div class="numline">휴대폰 <b id="phoneTxt">010-8950-6400</b> <button class="mini" type="button" id="copyPhone">복사</button></div>
-    <div class="numline" id="phone2Row">팩스 <b id="phone2Txt">0504-006-6400</b> <button class="mini" type="button" id="copyPhone2">복사</button></div>
-    <div class="numline" id="emailRow">이메일 <b id="emailTxt">niea7@naver.com</b> <button class="mini" type="button" id="copyEmail">복사</button></div>
+    <div class="numline"><span data-en="Mobile">휴대폰</span> <b id="phoneTxt">010-8950-6400</b> <button class="mini" type="button" id="copyPhone" data-en="Copy">복사</button></div>
+    <div class="numline" id="phone2Row"><span data-en="Fax">팩스</span> <b id="phone2Txt">0504-006-6400</b> <button class="mini" type="button" id="copyPhone2" data-en="Copy">복사</button></div>
+    <div class="numline" id="emailRow"><span data-en="Email">이메일</span> <b id="emailTxt">niea7@naver.com</b> <button class="mini" type="button" id="copyEmail" data-en="Copy">복사</button></div>
   </div>
 
   <section id="services" aria-labelledby="h-svc">
     <p class="eyebrow">SERVICES</p>
-    <h2 id="h-svc">이런 일을 도와드립니다</h2>
-    <p class="lead">궁금한 항목을 눌러 자세히 보세요. 상담은 부담 없이 시작하셔도 됩니다.</p>
+    <h2 id="h-svc" data-en="How I can help">이런 일을 도와드립니다</h2>
+    <p class="lead" data-en="Tap a service for details. Feel free to reach out anytime, with no pressure.">궁금한 항목을 눌러 자세히 보세요. 상담은 부담 없이 시작하셔도 됩니다.</p>
     <div class="svc">
 
       <details class="s" open>
         <summary>
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/></svg></span>
-          <span><h3>보험금 청구</h3><span class="sub">놓친 보험금, 어려운 서류까지 함께</span></span>
+          <span><h3 data-en="Insurance Claims">보험금 청구</h3><span class="sub" data-en="Unclaimed benefits and tricky paperwork, handled together">놓친 보험금, 어려운 서류까지 함께</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </summary>
         <div class="body">
-          <p class="who">이런 분께</p>
+          <p class="who" data-en="Who it&#x27;s for">이런 분께</p>
           <ul>
-            <li>입원·수술·통원 후 무엇을 청구할 수 있는지 모르는 분</li>
-            <li>진단서, 진료비 세부내역서 등 필요 서류가 헷갈리는 분</li>
-            <li>지난 3년 안에 병원 다녀온 기록이 있는데 청구를 안 하신 분</li>
-            <li>보험금이 삭감·부지급되어 이유가 궁금한 분</li>
+            <li data-en="Not sure what you can claim after a hospital stay, surgery, or outpatient visit">입원·수술·통원 후 무엇을 청구할 수 있는지 모르는 분</li>
+            <li data-en="Confused by documents like medical certificates and itemized bills">진단서, 진료비 세부내역서 등 필요 서류가 헷갈리는 분</li>
+            <li data-en="Visited a hospital in the past 3 years but never filed a claim">지난 3년 안에 병원 다녀온 기록이 있는데 청구를 안 하신 분</li>
+            <li data-en="Had a claim reduced or denied and want to know why">보험금이 삭감·부지급되어 이유가 궁금한 분</li>
           </ul>
-          <button class="cta" type="button" data-topic="보험금 청구">보험금 청구 상담 신청</button>
+          <button class="cta" type="button" data-topic="보험금 청구" data-en="Request claim help">보험금 청구 상담 신청</button>
         </div>
       </details>
 
       <details class="s">
         <summary>
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0113.7-5.7L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 01-13.7 5.7L4 16"/><path d="M4 21v-5h5"/></svg></span>
-          <span><h3>보험 재설계 상담</h3><span class="sub">중복은 줄이고, 빈 곳은 채우고</span></span>
+          <span><h3 data-en="Policy Review &amp; Redesign">보험 재설계 상담</h3><span class="sub" data-en="Cut the overlaps, fill the gaps">중복은 줄이고, 빈 곳은 채우고</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </summary>
         <div class="body">
-          <p class="who">이런 분께</p>
+          <p class="who" data-en="Who it&#x27;s for">이런 분께</p>
           <ul>
-            <li>매달 보험료는 많이 내는데 보장 내용을 잘 모르는 분</li>
-            <li>실손·암·뇌·심장 보장이 충분한지 점검하고 싶은 분</li>
-            <li>갱신형 보험료 인상이 걱정되는 분</li>
-            <li>결혼·출산·은퇴 등 생활이 바뀌어 보장을 다시 맞추고 싶은 분</li>
+            <li data-en="Paying high premiums without knowing what you&#x27;re covered for">매달 보험료는 많이 내는데 보장 내용을 잘 모르는 분</li>
+            <li data-en="Want to check that your medical, cancer, stroke, and heart coverage is enough">실손·암·뇌·심장 보장이 충분한지 점검하고 싶은 분</li>
+            <li data-en="Worried about rising premiums on renewable policies">갱신형 보험료 인상이 걱정되는 분</li>
+            <li data-en="Going through marriage, a new baby, or retirement and need coverage to match">결혼·출산·은퇴 등 생활이 바뀌어 보장을 다시 맞추고 싶은 분</li>
           </ul>
-          <p class="fine">기존 계약 해지는 손해가 생길 수 있어, 유지·감액·추가 중 유리한 방법을 먼저 비교해 드립니다.</p>
-          <button class="cta" type="button" data-topic="보험 재설계">재설계 상담 신청</button>
+          <p class="fine" data-en="Cancelling an existing policy can cost you, so I first compare keeping, reducing, or adding coverage to find what works best.">기존 계약 해지는 손해가 생길 수 있어, 유지·감액·추가 중 유리한 방법을 먼저 비교해 드립니다.</p>
+          <button class="cta" type="button" data-topic="보험 재설계" data-en="Request a policy review">재설계 상담 신청</button>
         </div>
       </details>
 
       <details class="s">
         <summary>
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
-          <span><h3>재무 컨설팅</h3><span class="sub">현금흐름부터 노후 준비까지</span></span>
+          <span><h3 data-en="Financial Consulting">재무 컨설팅</h3><span class="sub" data-en="From cash flow to retirement">현금흐름부터 노후 준비까지</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </summary>
         <div class="body">
-          <p class="who">이런 분께</p>
+          <p class="who" data-en="Who it&#x27;s for">이런 분께</p>
           <ul>
-            <li>월급이 들어와도 어디로 새는지 모르는 분</li>
-            <li>내 집 마련·자녀 교육·노후 자금 계획을 세우고 싶은 분</li>
-            <li>연금·저축·투자 비중을 어떻게 나눌지 고민인 분</li>
-            <li>1인 사업자·프리랜서로 소득이 일정하지 않은 분</li>
+            <li data-en="Not sure where your paycheck goes each month">월급이 들어와도 어디로 새는지 모르는 분</li>
+            <li data-en="Planning for a home, your children&#x27;s education, or retirement">내 집 마련·자녀 교육·노후 자금 계획을 세우고 싶은 분</li>
+            <li data-en="Deciding how to split money between pensions, savings, and investments">연금·저축·투자 비중을 어떻게 나눌지 고민인 분</li>
+            <li data-en="Self-employed or freelancing with an irregular income">1인 사업자·프리랜서로 소득이 일정하지 않은 분</li>
           </ul>
-          <button class="cta" type="button" data-topic="재무 컨설팅">재무 컨설팅 신청</button>
+          <button class="cta" type="button" data-topic="재무 컨설팅" data-en="Request financial consulting">재무 컨설팅 신청</button>
         </div>
       </details>
 
       <details class="s">
         <summary>
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><circle cx="11.5" cy="11.5" r="2.8"/><path d="M13.6 13.6L16 16"/></svg></span>
-          <span><h3>무료 보장 분석</h3><span class="sub">가입한 보험을 한 장으로 정리</span></span>
+          <span><h3 data-en="Free Coverage Analysis">무료 보장 분석</h3><span class="sub" data-en="All your policies on one page">가입한 보험을 한 장으로 정리</span></span>
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
         </summary>
         <div class="body">
           <ul>
-            <li>여러 회사에 흩어진 보험을 한 번에 정리해 드립니다</li>
-            <li>진단비·수술비·입원비·실손 보장을 표로 비교합니다</li>
-            <li>가족 전체 보장도 함께 점검할 수 있습니다</li>
+            <li data-en="Policies spread across several insurers, organized in one place">여러 회사에 흩어진 보험을 한 번에 정리해 드립니다</li>
+            <li data-en="Diagnosis, surgery, hospitalization, and medical expense cover compared side by side">진단비·수술비·입원비·실손 보장을 표로 비교합니다</li>
+            <li data-en="Your whole family&#x27;s coverage can be reviewed together">가족 전체 보장도 함께 점검할 수 있습니다</li>
           </ul>
-          <button class="cta" type="button" data-topic="보장 분석">보장 분석 신청</button>
+          <button class="cta" type="button" data-topic="보장 분석" data-en="Request coverage analysis">보장 분석 신청</button>
         </div>
       </details>
     </div>
@@ -339,105 +351,105 @@ window.CARD = {
 
   <section id="claim-check" aria-labelledby="h-claim">
     <p class="eyebrow">CLAIM CHECK</p>
-    <h2 id="h-claim">내 보험금, 아직 청구할 수 있을까?</h2>
-    <p class="lead">보험금 청구권은 사고(진료)일로부터 3년이 지나면 소멸시효가 완성됩니다. 날짜를 넣어 남은 기간을 확인해 보세요.</p>
+    <h2 id="h-claim" data-en="Can I still file my claim?">내 보험금, 아직 청구할 수 있을까?</h2>
+    <p class="lead" data-en="In Korea, the right to claim insurance benefits expires 3 years after the incident or treatment date. Enter a date to see how much time is left.">보험금 청구권은 사고(진료)일로부터 3년이 지나면 소멸시효가 완성됩니다. 날짜를 넣어 남은 기간을 확인해 보세요.</p>
     <div class="tool">
-      <label for="cDate">진료·사고 날짜
+      <label for="cDate"><span data-en="Treatment or incident date">진료·사고 날짜</span>
         <input type="date" id="cDate">
       </label>
       <div class="result" id="cRes" aria-live="polite"></div>
-      <p class="fine">상법 제662조 기준 일반적인 안내이며, 실제 기산일과 지급 여부는 약관과 사안에 따라 달라질 수 있습니다.</p>
+      <p class="fine" data-en="General guidance based on Article 662 of the Korean Commercial Act. The actual start date and payout depend on your policy terms and circumstances.">상법 제662조 기준 일반적인 안내이며, 실제 기산일과 지급 여부는 약관과 사안에 따라 달라질 수 있습니다.</p>
     </div>
   </section>
 
   <section aria-labelledby="h-steps">
     <p class="eyebrow">HOW IT WORKS</p>
-    <h2 id="h-steps">상담은 이렇게 진행됩니다</h2>
+    <h2 id="h-steps" data-en="How a consultation works">상담은 이렇게 진행됩니다</h2>
     <ol class="steps">
-      <li><div><b>문의</b><span>전화·문자·카카오톡 또는 아래 신청서로 편하게 연락 주세요.</span></div></li>
-      <li><div><b>보장 분석</b><span>가입 내역과 진료 기록을 확인해 현재 상태를 정리합니다.</span></div></li>
-      <li><div><b>맞춤 제안</b><span>청구 가능 항목, 재설계 방향, 재무 계획을 쉬운 말로 설명드립니다.</span></div></li>
-      <li><div><b>꾸준한 관리</b><span>청구 진행 상황과 갱신 시점을 계속 챙겨 드립니다.</span></div></li>
+      <li><div><b data-en="Get in touch">문의</b><span data-en="Call, text, message on KakaoTalk, or use the form below.">전화·문자·카카오톡 또는 아래 신청서로 편하게 연락 주세요.</span></div></li>
+      <li><div><b data-en="Coverage Analysis">보장 분석</b><span data-en="I review your policies and medical records to see where you stand.">가입 내역과 진료 기록을 확인해 현재 상태를 정리합니다.</span></div></li>
+      <li><div><b data-en="Tailored advice">맞춤 제안</b><span data-en="Claimable items, policy changes, and financial plans explained in plain language.">청구 가능 항목, 재설계 방향, 재무 계획을 쉬운 말로 설명드립니다.</span></div></li>
+      <li><div><b data-en="Ongoing care">꾸준한 관리</b><span data-en="I keep track of claim progress and renewal dates for you.">청구 진행 상황과 갱신 시점을 계속 챙겨 드립니다.</span></div></li>
     </ol>
   </section>
 
   <section id="consult" aria-labelledby="h-form">
     <p class="eyebrow">CONSULTATION</p>
-    <h2 id="h-form">상담 신청</h2>
-    <p class="lead">작성하시면 보낼 문자 내용이 만들어집니다. 그대로 보내거나 복사해서 카카오톡에 붙여 넣으세요.</p>
+    <h2 id="h-form" data-en="Request a consultation">상담 신청</h2>
+    <p class="lead" data-en="Choose the quickest way for you. The form below creates a message you can text or paste into KakaoTalk.">작성하시면 보낼 문자 내용이 만들어집니다. 그대로 보내거나 복사해서 카카오톡에 붙여 넣으세요.</p>
     <div class="quick" id="quick">
       <a class="qk form-link" id="qForm" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v18H7z"/><path d="M10 8h4M10 12h4M10 16h2"/></svg>
-        <span><b>온라인 상담 신청서</b><small>구글 폼 · 1분이면 작성 완료</small></span>
+        <span><b data-en="Online consultation form">온라인 상담 신청서</b><small data-en="Google Form · takes about a minute">구글 폼 · 1분이면 작성 완료</small></span>
       </a>
       <a class="qk kakao-link" id="qKakao" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg>
-        <span><b>카카오톡 오픈채팅</b><small>사진·서류도 바로 보낼 수 있어요</small></span>
+        <span><b data-en="KakaoTalk Open Chat">카카오톡 오픈채팅</b><small data-en="Send photos and documents right away">사진·서류도 바로 보낼 수 있어요</small></span>
       </a>
     </div>
-    <p class="or">또는 아래에 적어서 문자로 보내기</p>
+    <p class="or" data-en="Or write below and send it as a text message">또는 아래에 적어서 문자로 보내기</p>
     <form class="form" id="form" novalidate>
       <div class="row2">
-        <label for="fName">성함<input id="fName" required autocomplete="name" placeholder="홍길동"></label>
-        <label for="fPhone">연락처<input id="fPhone" type="tel" autocomplete="tel" placeholder="010-1234-5678"></label>
+        <label for="fName"><span data-en="Name">성함</span><input id="fName" required autocomplete="name" placeholder="홍길동" data-en-ph="Jane Kim"></label>
+        <label for="fPhone"><span data-en="Phone">연락처</span><input id="fPhone" type="tel" autocomplete="tel" placeholder="010-1234-5678"></label>
       </div>
-      <label for="fTopic">상담 주제
+      <label for="fTopic"><span data-en="Topic">상담 주제</span>
         <select id="fTopic">
-          <option>보험금 청구</option><option>보험 재설계</option><option>재무 컨설팅</option><option>보장 분석</option><option>파트너 연결</option><option>기타</option>
+          <option value="보험금 청구" data-en="Insurance Claims">보험금 청구</option><option value="보험 재설계" data-en="Policy Review">보험 재설계</option><option value="재무 컨설팅" data-en="Financial Consulting">재무 컨설팅</option><option value="보장 분석" data-en="Coverage Analysis">보장 분석</option><option value="파트너 연결" data-en="Partner Referral">파트너 연결</option><option value="기타" data-en="Other">기타</option>
         </select>
       </label>
-      <label for="fTime">통화 편한 시간
-        <select id="fTime"><option>언제든 괜찮아요</option><option>오전 (9~12시)</option><option>오후 (12~18시)</option><option>저녁 (18시 이후)</option></select>
+      <label for="fTime"><span data-en="Best time to call">통화 편한 시간</span>
+        <select id="fTime"><option data-en="Anytime">언제든 괜찮아요</option><option data-en="Morning (9am–12pm)">오전 (9~12시)</option><option data-en="Afternoon (12–6pm)">오후 (12~18시)</option><option data-en="Evening (after 6pm)">저녁 (18시 이후)</option></select>
       </label>
-      <label for="fMsg">간단한 내용 (선택)<textarea id="fMsg" placeholder="예) 지난달 무릎 수술했는데 청구 가능한지 궁금해요"></textarea></label>
-      <button class="submit" type="submit">신청 문자 만들기</button>
+      <label for="fMsg"><span data-en="Message (optional)">간단한 내용 (선택)</span><textarea id="fMsg" placeholder="예) 지난달 무릎 수술했는데 청구 가능한지 궁금해요" data-en-ph="e.g. I had knee surgery last month. Can I still claim?"></textarea></label>
+      <button class="submit" type="submit" data-en="Create request message">신청 문자 만들기</button>
       <div class="out" id="out" hidden>
         <pre id="outTxt"></pre>
-        <div class="btns"><a id="outSms" href="#">문자로 보내기</a><button type="button" id="outCopy">내용 복사</button></div>
+        <div class="btns"><a id="outSms" href="#" data-en="Send as text">문자로 보내기</a><button type="button" id="outCopy" data-en="Copy text">내용 복사</button></div>
       </div>
     </form>
   </section>
 
   <section aria-labelledby="h-share">
     <p class="eyebrow">SHARE</p>
-    <h2 id="h-share">명함 공유하기</h2>
+    <h2 id="h-share" data-en="Share this card">명함 공유하기</h2>
     <div class="share">
-      <div id="qr" aria-label="명함 QR코드"></div>
+      <div id="qr" aria-label="명함 QR코드" data-en-aria="QR code for this card"></div>
       <div>
-        <p>QR코드를 보여주거나 링크를 보내 주세요. 주변에 도움이 필요한 분께 전해 주시면 감사하겠습니다.</p>
-        <div class="btns"><button class="mini" type="button" id="shareBtn">공유하기</button><button class="mini" type="button" id="copyLink">링크 복사</button></div>
+        <p data-en="Show the QR code or send the link. I&#x27;d be grateful if you pass it on to anyone who could use some help.">QR코드를 보여주거나 링크를 보내 주세요. 주변에 도움이 필요한 분께 전해 주시면 감사하겠습니다.</p>
+        <div class="btns"><button class="mini" type="button" id="shareBtn" data-en="Share">공유하기</button><button class="mini" type="button" id="copyLink" data-en="Copy link">링크 복사</button></div>
       </div>
     </div>
   </section>
 
   <section id="partners" aria-labelledby="h-partners">
     <p class="eyebrow">MOU PARTNERS</p>
-    <h2 id="h-partners">함께하는 협약 기관·전문가</h2>
-    <p class="lead">보험지기와 업무협약(MOU)을 맺은 대표님들입니다. 필요한 분야를 말씀해 주시면 믿을 수 있는 분께 직접 연결해 드립니다.</p>
-    <div class="pchips" id="pChips" role="group" aria-label="분야 선택"></div>
+    <h2 id="h-partners" data-en="MOU Partners &amp; Experts">함께하는 협약 기관·전문가</h2>
+    <p class="lead" data-en="Business owners who have signed a partnership agreement (MOU) with Bohumjigi. Tell me what you need and I&#x27;ll connect you with someone I trust.">보험지기와 업무협약(MOU)을 맺은 대표님들입니다. 필요한 분야를 말씀해 주시면 믿을 수 있는 분께 직접 연결해 드립니다.</p>
+    <div class="pchips" id="pChips" role="group" aria-label="분야 선택" data-en-aria="Choose a field"></div>
     <div class="pgrid" id="pGrid"></div>
-    <p class="pnote">'연결 요청'을 누르면 상담 신청서로 이동합니다. 연락처가 공개되지 않은 파트너는 보험지기가 먼저 확인한 뒤 연결해 드립니다.</p>
+    <p class="pnote" data-en="&#x27;Request intro&#x27; takes you to the consultation form. For partners without public contact details, I check with them first and then make the introduction.">'연결 요청'을 누르면 상담 신청서로 이동합니다. 연락처가 공개되지 않은 파트너는 보험지기가 먼저 확인한 뒤 연결해 드립니다.</p>
 
     <details class="reg" id="regBox">
-      <summary>파트너 등록 신청 <span>대표님용 · 검토 후 게재</span></summary>
+      <summary><b data-en="Apply as a partner">파트너 등록 신청</b> <span data-en="For business owners · listed after review">대표님용 · 검토 후 게재</span></summary>
       <form class="form" id="rForm" novalidate>
         <div class="row2">
-          <label for="rBiz">상호<input id="rBiz" placeholder="○○세무회계"></label>
-          <label for="rName">대표자 성함·직함<input id="rName" placeholder="김○○ 세무사"></label>
+          <label for="rBiz"><span data-en="Business name">상호</span><input id="rBiz" placeholder="○○세무회계" data-en-ph="ABC Tax Office"></label>
+          <label for="rName"><span data-en="Owner name &amp; title">대표자 성함·직함</span><input id="rName" placeholder="김○○ 세무사" data-en-ph="Jin Kim, Tax Accountant"></label>
         </div>
         <div class="row2">
-          <label for="rCat">분야<select id="rCat"></select></label>
-          <label for="rPhone">연락처<input id="rPhone" type="tel" placeholder="010-1234-5678"></label>
+          <label for="rCat"><span data-en="Field">분야</span><select id="rCat"></select></label>
+          <label for="rPhone"><span data-en="Phone">연락처</span><input id="rPhone" type="tel" placeholder="010-1234-5678"></label>
         </div>
-        <label for="rDesc">한 줄 소개<input id="rDesc" placeholder="예) 개인사업자 기장·종합소득세 신고 전문"></label>
-        <label for="rMode">연락처 공개 방식
-          <select id="rMode"><option value="direct">명함에 연락처 공개</option><option value="via">보험지기 통해서만 연결</option></select>
+        <label for="rDesc"><span data-en="One-line intro">한 줄 소개</span><input id="rDesc" placeholder="예) 개인사업자 기장·종합소득세 신고 전문" data-en-ph="e.g. Bookkeeping and tax filing for sole proprietors"></label>
+        <label for="rMode"><span data-en="Contact visibility">연락처 공개 방식</span>
+          <select id="rMode"><option value="direct" data-en="Show my contact on the card">명함에 연락처 공개</option><option value="via" data-en="Introductions through Bohumjigi only">보험지기 통해서만 연결</option></select>
         </label>
-        <label for="rUrl">홈페이지·블로그 (선택)<input id="rUrl" type="url" placeholder="https://"></label>
-        <button class="submit" type="submit">등록 신청 문자 만들기</button>
+        <label for="rUrl"><span data-en="Website or blog (optional)">홈페이지·블로그 (선택)</span><input id="rUrl" type="url" placeholder="https://"></label>
+        <button class="submit" type="submit" data-en="Create application message">등록 신청 문자 만들기</button>
         <div class="out" id="rOut" hidden>
           <pre id="rOutTxt"></pre>
-          <div class="btns"><a id="rSms" href="#">문자로 보내기</a><button type="button" id="rCopy">내용 복사</button></div>
+          <div class="btns"><a id="rSms" href="#" data-en="Send as text">문자로 보내기</a><button type="button" id="rCopy" data-en="Copy text">내용 복사</button></div>
         </div>
       </form>
     </details>
@@ -447,7 +459,7 @@ window.CARD = {
     <p><b id="fBrand">지혜로운 보험생활</b> · <span id="fNick">보험지기</span><span id="fCompany"></span></p>
     <p id="fReg" hidden></p>
     <p id="fEtc" hidden></p>
-    <p>이 명함은 상담 안내용입니다. 보험 계약 시 상품설명서와 약관을 반드시 확인하시기 바랍니다. 기존 계약을 해지하고 새 계약을 맺으면 보험료 인상, 보장 제한 등 불이익이 생길 수 있습니다.</p>
+    <p data-en="This card is for consultation information only. Always read the product summary and policy terms before signing. Replacing an existing policy with a new one may lead to higher premiums or limited coverage.">이 명함은 상담 안내용입니다. 보험 계약 시 상품설명서와 약관을 반드시 확인하시기 바랍니다. 기존 계약을 해지하고 새 계약을 맺으면 보험료 인상, 보장 제한 등 불이익이 생길 수 있습니다.</p>
   </footer>
 </main>
 
@@ -458,21 +470,37 @@ window.CARD = {
 (function(){
   const C = window.CARD, $ = id => document.getElementById(id);
   const digits = C.phone.replace(/\D/g,"");
-  const pageUrl = C.shareUrl || location.href.split("#")[0];
+  const baseUrl = C.shareUrl || location.href.split("#")[0];
+  const h0 = (location.hash || "").slice(1);
+  let LANG = h0 === "en" ? "en" : h0 === "ko" ? "ko" : ((navigator.language || "ko").toLowerCase().startsWith("ko") ? "ko" : "en");
+  const T = (ko, en) => LANG === "en" ? en : ko;
+  const linkUrl = () => baseUrl + (LANG === "en" ? "#en" : "");
+  const brand = () => T(C.brand, C.brandEn || C.brand);
+  const nick = () => T(C.nick, C.nickEn || C.nick);
+  const catName = c => T(c, (C.partnerCatsEn || {})[c] || c);
 
-  // 기본 정보 채우기
-  $("brand").textContent = $("fBrand").textContent = C.brand;
-  $("nick").textContent = $("fNick").textContent = C.nick;
-  $("nameLine").textContent = [C.name, C.title].filter(Boolean).join(" · ");
+  // 원문(한국어) 저장
+  document.querySelectorAll("[data-en]").forEach(e => e.dataset.ko = e.textContent);
+  document.querySelectorAll("[data-en-ph]").forEach(e => e.dataset.koPh = e.placeholder);
+  document.querySelectorAll("[data-en-aria]").forEach(e => e.dataset.koAria = e.getAttribute("aria-label"));
+  document.querySelectorAll("[data-en-alt]").forEach(e => e.dataset.koAlt = e.alt);
+
+  function fillInfo(){
+    $("brand").textContent = $("fBrand").textContent = brand();
+    $("nick").textContent = $("fNick").textContent = nick();
+    $("nameLine").textContent = [T(C.name, C.nameEn || C.name), T(C.title, C.titleEn)].filter(Boolean).join(" · ");
+    const comp = T(C.company, C.companyEn || C.company);
+    $("fCompany").textContent = comp ? " · " + comp : "";
+    if (C.regNo) { $("fReg").textContent = T("보험설계사 등록번호 ", "Insurance agent reg. no. ") + C.regNo; $("fReg").hidden = false; }
+    document.title = T("보험지기 모바일 명함", "Bohumjigi · Digital Business Card");
+  }
   $("phoneTxt").textContent = C.phone;
   if (C.phone2) $("phone2Txt").textContent = C.phone2; else $("phone2Row").hidden = true;
   if (C.email) $("emailTxt").textContent = C.email; else $("emailRow").hidden = true;
-  if (C.company) $("fCompany").textContent = " · " + C.company;
-  if (C.regNo) { $("fReg").textContent = "보험설계사 등록번호 " + C.regNo; $("fReg").hidden = false; }
   const etc = [C.blog].filter(Boolean);
   if (etc.length) { $("fEtc").textContent = etc.join(" · "); $("fEtc").hidden = false; }
 
-  // 사진: 파일이 있으면 표시, 없으면 자리표시
+  // 사진
   const img = $("photo");
   img.onload = () => { img.hidden = false; $("photoPh").hidden = true; };
   img.src = C.photo;
@@ -488,98 +516,100 @@ window.CARD = {
   // 토스트 & 복사
   let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),1800); }
   function copy(text, done){
-    const ok = () => toast(done || "복사했어요");
+    const ok = () => toast(done || T("복사했어요","Copied"));
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, () => fallback(text, ok));
     else fallback(text, ok);
   }
   function fallback(text, ok){
     const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
     document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); ok(); } catch(e){ toast("길게 눌러 직접 복사해 주세요"); }
+    try { document.execCommand("copy"); ok(); } catch(e){ toast(T("길게 눌러 직접 복사해 주세요","Press and hold to copy")); }
     ta.remove();
   }
-  $("copyPhone").onclick = () => copy(C.phone, "전화번호를 복사했어요");
-  $("copyPhone2").onclick = () => copy(C.phone2, "팩스번호를 복사했어요");
-  $("copyEmail").onclick = () => copy(C.email, "이메일을 복사했어요");
-  $("copyLink").onclick = () => copy(pageUrl, "명함 링크를 복사했어요");
+  $("copyPhone").onclick = () => copy(C.phone, T("전화번호를 복사했어요","Phone number copied"));
+  $("copyPhone2").onclick = () => copy(C.phone2, T("팩스번호를 복사했어요","Fax number copied"));
+  $("copyEmail").onclick = () => copy(C.email, T("이메일을 복사했어요","Email copied"));
+  $("copyLink").onclick = () => copy(linkUrl(), T("명함 링크를 복사했어요","Card link copied"));
   $("shareBtn").onclick = async () => {
-    const data = { title: C.brand + " · " + C.nick, text: "보험금 청구 · 보험 재설계 · 재무 컨설팅 상담", url: pageUrl };
+    const data = { title: brand() + " · " + nick(), text: T("보험금 청구 · 보험 재설계 · 재무 컨설팅 상담","Insurance claims · Policy review · Financial consulting"), url: linkUrl() };
     if (navigator.share) { try { await navigator.share(data); return; } catch(e){ if (e.name === "AbortError") return; } }
-    copy(pageUrl, "공유가 안 되는 환경이라 링크를 복사했어요");
+    copy(linkUrl(), T("공유가 안 되는 환경이라 링크를 복사했어요","Sharing isn't available here, so the link was copied"));
   };
 
   // 연락처 저장 (vCard)
   $("aSave").onclick = () => {
-    const fn = C.name ? C.name + " (" + C.nick + ")" : C.nick;
-    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(C.company||C.brand),"TITLE:"+C.title,"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=FAX:"+C.phone2:"",
-      C.email?"EMAIL:"+C.email:"", "URL:"+pageUrl, "NOTE:보험금 청구 · 보험 재설계 상담 · 재무 컨설팅","END:VCARD"].filter(Boolean).join("\r\n");
-    if (window.self !== window.top) { copy([fn,C.phone,C.phone2?"팩스 "+C.phone2:"",C.email,pageUrl].filter(Boolean).join("\n"), "연락처를 복사했어요. 주소록에 붙여 넣으세요"); return; }
+    const nm = T(C.name, C.nameEn || C.name);
+    const fn = nm ? nm + " (" + nick() + ")" : nick();
+    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(T(C.company, C.companyEn || C.company)||brand()),"TITLE:"+T(C.title,C.titleEn),"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=FAX:"+C.phone2:"",
+      C.email?"EMAIL:"+C.email:"", "URL:"+linkUrl(), "NOTE:"+T("보험금 청구 · 보험 재설계 상담 · 재무 컨설팅","Insurance claims · Policy review · Financial consulting"),"END:VCARD"].filter(Boolean).join("\r\n");
+    if (window.self !== window.top) { copy([fn,C.phone,C.phone2?T("팩스 ","Fax ")+C.phone2:"",C.email,linkUrl()].filter(Boolean).join("\n"), T("연락처를 복사했어요. 주소록에 붙여 넣으세요","Contact copied. Paste it into your contacts")); return; }
     try {
       const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
-      a.download=C.nick+".vcf"; document.body.appendChild(a); a.click(); a.remove();
-      toast("연락처 파일을 열면 저장됩니다");
-    } catch(e){ copy(fn+" "+C.phone, "연락처를 복사했어요"); }
+      a.download=(C.nickEn||"contact")+".vcf"; document.body.appendChild(a); a.click(); a.remove();
+      toast(T("연락처 파일을 열면 저장됩니다","Open the downloaded file to save the contact"));
+    } catch(e){ copy(fn+" "+C.phone, T("연락처를 복사했어요","Contact copied")); }
   };
 
-  // 업무 카드 → 상담 신청서로
-  document.querySelectorAll(".cta[data-topic]").forEach(b => b.onclick = () => {
-    $("fTopic").value = b.dataset.topic; $("consult").scrollIntoView({behavior:"smooth"}); setTimeout(()=>$("fName").focus({preventScroll:true}), 400);
-  });
+  // 업무 카드 → 상담 신청서
+  const goForm = () => { $("consult").scrollIntoView({behavior:"smooth"}); setTimeout(()=>$("fName").focus({preventScroll:true}), 400); };
+  document.querySelectorAll(".cta[data-topic]").forEach(b => b.onclick = () => { $("fTopic").value = b.dataset.topic; goForm(); });
 
   // 청구 기한 계산기
   const DAY = 864e5;
   function claim(){
     const r = $("cRes"), v = $("cDate").value;
-    if (!v) { r.className="result"; r.innerHTML='<p>날짜를 선택하면 남은 청구 기간이 표시됩니다.</p>'; return; }
+    if (!v) { r.className="result"; r.innerHTML='<p>'+T("날짜를 선택하면 남은 청구 기간이 표시됩니다.","Pick a date to see the time left to claim.")+'</p>'; return; }
     const d = new Date(v+"T00:00:00"), end = new Date(d); end.setFullYear(end.getFullYear()+3);
     const today = new Date(); today.setHours(0,0,0,0);
     const left = Math.round((end - today)/DAY), total = Math.round((end - d)/DAY);
     const pct = Math.max(0, Math.min(100, (left/total)*100));
-    const endStr = end.toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"});
+    const endStr = end.toLocaleDateString(T("ko-KR","en-US"),{year:"numeric",month:"long",day:"numeric"});
     let cls, big, msg;
-    if (d > today) { cls="ok"; big="날짜를 확인해 주세요"; msg="오늘 이후 날짜는 계산할 수 없습니다."; }
-    else if (left <= 0) { cls="bad"; big="청구 기간 경과"; msg=endStr+"에 기간이 끝났습니다. 다른 진료 건이 남아 있을 수 있으니 상담으로 확인해 보세요."; }
-    else if (left <= 180) { cls="warn"; big="D-"+left; msg=endStr+"까지 청구 가능합니다. 기간이 얼마 남지 않았어요. 서두르세요."; }
-    else { cls="ok"; big="D-"+left; msg=endStr+"까지 청구 가능합니다."; }
+    if (d > today) { cls="ok"; big=T("날짜를 확인해 주세요","Check the date"); msg=T("오늘 이후 날짜는 계산할 수 없습니다.","Future dates can't be calculated."); }
+    else if (left <= 0) { cls="bad"; big=T("청구 기간 경과","Claim period ended"); msg=T(endStr+"에 기간이 끝났습니다. 다른 진료 건이 남아 있을 수 있으니 상담으로 확인해 보세요.","The period ended on "+endStr+". Other treatments may still be claimable, so ask me to check."); }
+    else if (left <= 180) { cls="warn"; big=T("D-"+left, left+" days left"); msg=T(endStr+"까지 청구 가능합니다. 기간이 얼마 남지 않았어요. 서두르세요.","You can claim until "+endStr+". Time is running out, so act soon."); }
+    else { cls="ok"; big=T("D-"+left, left+" days left"); msg=T(endStr+"까지 청구 가능합니다.","You can claim until "+endStr+"."); }
     r.className = "result " + cls;
     r.innerHTML = '<div class="big">'+big+'</div>'+(d<=today?'<div class="bar"><i style="width:'+pct+'%"></i></div>':'')+'<p>'+msg+'</p>';
   }
   $("cDate").max = new Date().toISOString().slice(0,10);
   const sample = new Date(); sample.setMonth(sample.getMonth()-30);
   $("cDate").value = sample.toISOString().slice(0,10);
-  $("cDate").oninput = claim; claim();
+  $("cDate").oninput = claim;
 
-  // 상담 신청 문자 만들기
+  // 상담 신청 문자
+  const selText = id => $(id).selectedOptions[0].textContent;
   $("form").onsubmit = e => {
     e.preventDefault();
     const name = $("fName").value.trim();
-    if (!name) { $("fName").focus(); toast("성함을 적어 주세요"); return; }
-    const lines = ["[상담 신청] " + C.nick + "님께", "성함: "+name];
-    if ($("fPhone").value.trim()) lines.push("연락처: "+$("fPhone").value.trim());
-    lines.push("주제: "+$("fTopic").value, "통화 시간: "+$("fTime").value);
-    if ($("fMsg").value.trim()) lines.push("내용: "+$("fMsg").value.trim());
+    if (!name) { $("fName").focus(); toast(T("성함을 적어 주세요","Please enter your name")); return; }
+    const lines = [T("[상담 신청] "+C.nick+"님께","[Consultation request] To "+nick()), T("성함: ","Name: ")+name];
+    if ($("fPhone").value.trim()) lines.push(T("연락처: ","Phone: ")+$("fPhone").value.trim());
+    lines.push(T("주제: ","Topic: ")+selText("fTopic"), T("통화 시간: ","Best time: ")+selText("fTime"));
+    if ($("fMsg").value.trim()) lines.push(T("내용: ","Message: ")+$("fMsg").value.trim());
     const txt = lines.join("\n");
     $("outTxt").textContent = txt;
     $("outSms").href = "sms:" + digits + "?body=" + encodeURIComponent(txt);
     $("out").hidden = false;
-    $("outCopy").onclick = () => copy(txt, "신청 내용을 복사했어요");
+    $("outCopy").onclick = () => copy(txt, T("신청 내용을 복사했어요","Request copied"));
   };
 
   // ── MOU 파트너 ──
   const P = C.partners || [], cats = C.partnerCats.slice();
   P.forEach(p => { if (!cats.includes(p.cat)) cats.push(p.cat); });
-  let curCat = "전체";
+  let curCat = "*";
   const el = (t, cls, txt) => { const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
   function askConnect(cat, who){
     $("fTopic").value = "파트너 연결";
-    $("fMsg").value = (who ? who + " (" + cat + ")" : cat + " 분야") + " 연결을 원합니다. ";
-    $("consult").scrollIntoView({behavior:"smooth"}); setTimeout(()=>$("fName").focus({preventScroll:true}), 400);
+    $("fMsg").value = who ? T(who+" ("+catName(cat)+") 연결을 원합니다. ", "I'd like an introduction to "+who+" ("+catName(cat)+"). ")
+                          : T(catName(cat)+" 분야 연결을 원합니다. ", "I'd like an introduction to a "+catName(cat).toLowerCase()+". ");
+    goForm();
   }
   function renderChips(){
     const box = $("pChips"); box.textContent = "";
-    ["전체"].concat(cats).forEach(c => {
-      const n = c==="전체" ? P.length : P.filter(p=>p.cat===c).length;
-      const b = el("button"); b.type="button"; b.textContent=c;
+    ["*"].concat(cats).forEach(c => {
+      const n = c==="*" ? P.length : P.filter(p=>p.cat===c).length;
+      const b = el("button"); b.type="button"; b.textContent = c==="*" ? T("전체","All") : catName(c);
       if (n) b.appendChild(el("em", null, n));
       b.setAttribute("aria-pressed", c===curCat);
       b.onclick = () => { curCat=c; renderChips(); renderGrid(); };
@@ -588,54 +618,81 @@ window.CARD = {
   }
   function renderGrid(){
     const g = $("pGrid"); g.textContent = "";
-    (curCat==="전체" ? cats : [curCat]).forEach(c => {
+    (curCat==="*" ? cats : [curCat]).forEach(c => {
       const list = P.filter(p=>p.cat===c);
       if (!list.length) {
-        const d = el("div","pc empty"); d.appendChild(el("div","cat",c));
-        d.appendChild(el("div","pn","협약 파트너 모집 중"));
-        const pb = el("div","pb"), b = el("button",null,"연결 요청"); b.type="button"; b.onclick=()=>askConnect(c);
+        const d = el("div","pc empty"); d.appendChild(el("div","cat",catName(c)));
+        d.appendChild(el("div","pn",T("협약 파트너 모집 중","Partner wanted")));
+        const pb = el("div","pb"), b = el("button",null,T("연결 요청","Request intro")); b.type="button"; b.onclick=()=>askConnect(c);
         pb.appendChild(b); d.appendChild(pb); g.appendChild(d); return;
       }
       list.forEach(p => {
-        const d = el("div","pc has"), ct = el("div","cat",c); ct.appendChild(el("span","mou","MOU")); d.appendChild(ct);
-        d.appendChild(el("div","pn",p.name));
-        if (p.person) d.appendChild(el("div","pp",p.person));
-        if (p.desc) d.appendChild(el("div","pd",p.desc));
+        const pName = T(p.name, p.nameEn || p.name), pPerson = T(p.person, p.personEn || p.person), pDesc = T(p.desc, p.descEn || p.desc);
+        const d = el("div","pc has"), ct = el("div","cat",catName(c)); ct.appendChild(el("span","mou","MOU")); d.appendChild(ct);
+        d.appendChild(el("div","pn",pName));
+        if (pPerson) d.appendChild(el("div","pp",pPerson));
+        if (pDesc) d.appendChild(el("div","pd",pDesc));
         const pb = el("div","pb");
         if (p.mode !== "via" && p.phone) {
           d.appendChild(el("div","tel",p.phone));
-          const a = el("a","pri","전화"); a.href="tel:"+p.phone.replace(/\D/g,""); pb.appendChild(a);
-          const cp = el("button",null,"번호 복사"); cp.type="button"; cp.onclick=()=>copy(p.phone,"번호를 복사했어요"); pb.appendChild(cp);
+          const a = el("a","pri",T("전화","Call")); a.href="tel:"+p.phone.replace(/\D/g,""); pb.appendChild(a);
+          const cp = el("button",null,T("번호 복사","Copy number")); cp.type="button"; cp.onclick=()=>copy(p.phone,T("번호를 복사했어요","Number copied")); pb.appendChild(cp);
         }
-        const b = el("button", p.mode==="via"||!p.phone ? "pri" : null, "보험지기 통해 연결"); b.type="button"; b.onclick=()=>askConnect(c, p.name); pb.appendChild(b);
-        if (p.url && /^https?:\/\//.test(p.url)) { const a = el("a",null,"홈페이지"); a.href=p.url; a.target="_blank"; a.rel="noopener"; pb.appendChild(a); }
+        const b = el("button", p.mode==="via"||!p.phone ? "pri" : null, T("보험지기 통해 연결","Intro via Bohumjigi")); b.type="button"; b.onclick=()=>askConnect(c, pName); pb.appendChild(b);
+        if (p.url && /^https?:\/\//.test(p.url)) { const a = el("a",null,T("홈페이지","Website")); a.href=p.url; a.target="_blank"; a.rel="noopener"; pb.appendChild(a); }
         d.appendChild(pb); g.appendChild(d);
       });
     });
   }
-  renderChips(); renderGrid();
-  cats.filter(c=>c!=="기타 전문가").concat("기타").forEach(c => { const o=el("option",null,c); $("rCat").appendChild(o); });
+  function renderRegCats(){
+    const sel = $("rCat"), cur = sel.value; sel.textContent = "";
+    cats.filter(c=>c!=="기타 전문가").concat("기타").forEach(c => { const o=el("option",null,catName(c)); o.value=c; sel.appendChild(o); });
+    if (cur) sel.value = cur;
+  }
 
   $("rForm").onsubmit = e => {
     e.preventDefault();
     const biz=$("rBiz").value.trim(), nm=$("rName").value.trim(), ph=$("rPhone").value.trim();
-    if (!biz) { $("rBiz").focus(); toast("상호를 적어 주세요"); return; }
-    if (!ph) { $("rPhone").focus(); toast("연락처를 적어 주세요"); return; }
-    const lines = ["[MOU 파트너 등록 신청] " + C.nick + "님께", "상호: "+biz];
-    if (nm) lines.push("대표: "+nm);
-    lines.push("분야: "+$("rCat").value, "연락처: "+ph, "공개 방식: "+$("rMode").selectedOptions[0].textContent);
-    if ($("rDesc").value.trim()) lines.push("소개: "+$("rDesc").value.trim());
-    if ($("rUrl").value.trim()) lines.push("홈페이지: "+$("rUrl").value.trim());
+    if (!biz) { $("rBiz").focus(); toast(T("상호를 적어 주세요","Please enter your business name")); return; }
+    if (!ph) { $("rPhone").focus(); toast(T("연락처를 적어 주세요","Please enter a phone number")); return; }
+    const lines = [T("[MOU 파트너 등록 신청] "+C.nick+"님께","[MOU partner application] To "+nick()), T("상호: ","Business: ")+biz];
+    if (nm) lines.push(T("대표: ","Owner: ")+nm);
+    lines.push(T("분야: ","Field: ")+selText("rCat"), T("연락처: ","Phone: ")+ph, T("공개 방식: ","Visibility: ")+selText("rMode"));
+    if ($("rDesc").value.trim()) lines.push(T("소개: ","Intro: ")+$("rDesc").value.trim());
+    if ($("rUrl").value.trim()) lines.push(T("홈페이지: ","Website: ")+$("rUrl").value.trim());
     const txt = lines.join("\n");
     $("rOutTxt").textContent = txt;
     $("rSms").href = "sms:" + digits + "?body=" + encodeURIComponent(txt);
     $("rOut").hidden = false;
-    $("rCopy").onclick = () => copy(txt, "신청 내용을 복사했어요");
+    $("rCopy").onclick = () => copy(txt, T("신청 내용을 복사했어요","Application copied"));
   };
 
   // QR 코드
-  try { new QRCode($("qr"), { text: pageUrl, width: 200, height: 200, colorDark:"#10302d", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
-  catch(e){ $("qr").textContent = "QR"; }
+  function renderQR(){
+    $("qr").textContent = "";
+    try { new QRCode($("qr"), { text: linkUrl(), width: 200, height: 200, colorDark:"#10302d", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
+    catch(e){ $("qr").textContent = "QR"; }
+  }
+
+  // 언어 적용
+  function applyLang(){
+    const en = LANG === "en";
+    document.documentElement.lang = LANG;
+    document.querySelectorAll("[data-en]").forEach(e => e.textContent = en ? e.dataset.en : e.dataset.ko);
+    document.querySelectorAll("[data-en-ph]").forEach(e => e.placeholder = en ? e.dataset.enPh : e.dataset.koPh);
+    document.querySelectorAll("[data-en-aria]").forEach(e => e.setAttribute("aria-label", en ? e.dataset.enAria : e.dataset.koAria));
+    document.querySelectorAll("[data-en-alt]").forEach(e => e.alt = en ? e.dataset.enAlt : e.dataset.koAlt);
+    $("langBtn").textContent = en ? "한국어" : "EN";
+    $("langBtn").setAttribute("aria-label", en ? "한국어로 보기" : "View in English");
+    fillInfo(); claim(); renderChips(); renderGrid(); renderRegCats(); renderQR();
+    $("out").hidden = true; $("rOut").hidden = true;
+  }
+  $("langBtn").onclick = () => {
+    LANG = LANG === "en" ? "ko" : "en";
+    try { history.replaceState(null, "", location.pathname + location.search + "#" + LANG); } catch(e){}
+    applyLang();
+  };
+  applyLang();
 })();
 </script>
 </body>

@@ -30,3 +30,9 @@
 - `mode:"direct"` 연락처 공개 / `mode:"via"` 보험지기를 통해서만 연결
 - 분야는 `CARD.partnerCats`에서 추가·삭제
 - 대표님들이 명함의 '파트너 등록 신청'에서 보낸 문자 내용을 Claude에게 붙여 넣으면 목록에 반영해 줍니다.
+
+## 영문(English) 버전
+- 상단 오른쪽 `EN / 한국어` 버튼으로 언어를 바꿉니다.
+- 휴대폰 언어가 한국어가 아니면 처음부터 영어로 보입니다.
+- 외국인 고객에게는 주소 끝에 `#en`을 붙여 보내면 영어로 열립니다. 예) `https://calmgrou7.github.io/Brief/#en`
+- 영문 이름·소속은 `CARD.nameEn`, `CARD.companyEn`, 파트너는 `nameEn`, `personEn`, `descEn`에 넣습니다.
