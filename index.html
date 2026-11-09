@@ -145,6 +145,33 @@ details[open] .chev{transform:rotate(180deg)}
 .share .btns{display:flex;flex-wrap:wrap;gap:8px}
 @media (max-width:360px){.share{grid-template-columns:1fr;justify-items:center;text-align:center}.share .btns{justify-content:center}.s .body{padding-left:16px}}
 
+/* MOU 파트너 */
+.pchips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
+.pchips::-webkit-scrollbar{display:none}
+.pchips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
+.pchips button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.pchips em{font-style:normal;opacity:.65;margin-left:3px;font-variant-numeric:tabular-nums}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:5px;align-content:start;min-width:0}
+.pc.has{grid-column:1/-1}
+.pc .cat{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--brass);font-weight:600;letter-spacing:.04em}
+.pc .mou{font-size:10px;border:1px solid var(--brass);border-radius:4px;padding:0 4px;letter-spacing:.06em}
+.pc .pn{font-weight:600;font-size:15px;line-height:1.35}
+.pc .pp{font-size:13px;color:var(--muted)}
+.pc .pd{font-size:13px}
+.pc.empty .pn{font-size:13px;font-weight:500;color:var(--muted)}
+.pc .pb{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pc .pb a,.pc .pb button{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:5px 10px;font-size:12.5px;text-decoration:none;cursor:pointer}
+.pc .pb .pri{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.pc .tel{font-variant-numeric:tabular-nums;font-size:13px;user-select:all}
+.pnote{font-size:12.5px;color:var(--muted);margin:12px 0 0}
+details.reg{margin-top:14px;background:var(--card);border:1px dashed var(--brass);border-radius:16px}
+details.reg summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details.reg summary::-webkit-details-marker{display:none}
+details.reg summary span{font-weight:400;font-size:12.5px;color:var(--muted)}
+details.reg .form{border:0;border-top:1px solid var(--line);border-radius:0 0 16px 16px}
+@media (max-width:340px){.pgrid{grid-template-columns:1fr}}
+
 footer{padding-block:28px 40px;font-size:11.5px;color:var(--muted);display:grid;gap:6px;border-top:1px solid var(--line);margin-top:30px}
 footer p{margin:0}
 
@@ -169,7 +196,15 @@ window.CARD = {
   email:   "",
   blog:    "",                         // 블로그·유튜브 등 링크
   photo:   "profile.jpg",              // 같은 폴더에 얼굴 사진을 이 이름으로 넣으세요
-  shareUrl:""                          // 명함 공개 주소 (QR코드에 사용). 비우면 현재 주소
+  shareUrl:"",                         // 명함 공개 주소 (QR코드에 사용). 비우면 현재 주소
+
+  // ── MOU 협약 파트너 ──────────────────────────────
+  // 분야 목록 (순서대로 표시). 새 분야는 여기에 추가하세요.
+  partnerCats: ["병원","세무사","노무사","골프회원권","공인중개사","변리사","감정평가사","식당","학원","제조업","쇼핑몰","기타 전문가"],
+  // 등록된 파트너. mode: "direct" = 연락처 공개 / "via" = 보험지기 통해 연결
+  // 예) { cat:"세무사", name:"○○세무회계", person:"김○○ 세무사", desc:"법인·개인사업자 기장, 절세 상담", phone:"02-000-0000", url:"", mode:"direct" },
+  partners: [
+  ]
 };
 </script>
 <!-- ▲▲▲ ─────────────────────────────── ▲▲▲ -->
@@ -313,7 +348,7 @@ window.CARD = {
       </div>
       <label for="fTopic">상담 주제
         <select id="fTopic">
-          <option>보험금 청구</option><option>보험 재설계</option><option>재무 컨설팅</option><option>보장 분석</option><option>기타</option>
+          <option>보험금 청구</option><option>보험 재설계</option><option>재무 컨설팅</option><option>보장 분석</option><option>파트너 연결</option><option>기타</option>
         </select>
       </label>
       <label for="fTime">통화 편한 시간
@@ -338,6 +373,39 @@ window.CARD = {
         <div class="btns"><button class="mini" type="button" id="shareBtn">공유하기</button><button class="mini" type="button" id="copyLink">링크 복사</button></div>
       </div>
     </div>
+  </section>
+
+  <section id="partners" aria-labelledby="h-partners">
+    <p class="eyebrow">MOU PARTNERS</p>
+    <h2 id="h-partners">함께하는 협약 기관·전문가</h2>
+    <p class="lead">보험지기와 업무협약(MOU)을 맺은 대표님들입니다. 필요한 분야를 말씀해 주시면 믿을 수 있는 분께 직접 연결해 드립니다.</p>
+    <div class="pchips" id="pChips" role="group" aria-label="분야 선택"></div>
+    <div class="pgrid" id="pGrid"></div>
+    <p class="pnote">'연결 요청'을 누르면 상담 신청서로 이동합니다. 연락처가 공개되지 않은 파트너는 보험지기가 먼저 확인한 뒤 연결해 드립니다.</p>
+
+    <details class="reg" id="regBox">
+      <summary>파트너 등록 신청 <span>대표님용 · 검토 후 게재</span></summary>
+      <form class="form" id="rForm" novalidate>
+        <div class="row2">
+          <label for="rBiz">상호<input id="rBiz" placeholder="○○세무회계"></label>
+          <label for="rName">대표자 성함·직함<input id="rName" placeholder="김○○ 세무사"></label>
+        </div>
+        <div class="row2">
+          <label for="rCat">분야<select id="rCat"></select></label>
+          <label for="rPhone">연락처<input id="rPhone" type="tel" placeholder="010-1234-5678"></label>
+        </div>
+        <label for="rDesc">한 줄 소개<input id="rDesc" placeholder="예) 개인사업자 기장·종합소득세 신고 전문"></label>
+        <label for="rMode">연락처 공개 방식
+          <select id="rMode"><option value="direct">명함에 연락처 공개</option><option value="via">보험지기 통해서만 연결</option></select>
+        </label>
+        <label for="rUrl">홈페이지·블로그 (선택)<input id="rUrl" type="url" placeholder="https://"></label>
+        <button class="submit" type="submit">등록 신청 문자 만들기</button>
+        <div class="out" id="rOut" hidden>
+          <pre id="rOutTxt"></pre>
+          <div class="btns"><a id="rSms" href="#">문자로 보내기</a><button type="button" id="rCopy">내용 복사</button></div>
+        </div>
+      </form>
+    </details>
   </section>
 
   <footer>
@@ -454,6 +522,74 @@ window.CARD = {
     $("outSms").href = "sms:" + digits + "?body=" + encodeURIComponent(txt);
     $("out").hidden = false;
     $("outCopy").onclick = () => copy(txt, "신청 내용을 복사했어요");
+  };
+
+  // ── MOU 파트너 ──
+  const P = C.partners || [], cats = C.partnerCats.slice();
+  P.forEach(p => { if (!cats.includes(p.cat)) cats.push(p.cat); });
+  let curCat = "전체";
+  const el = (t, cls, txt) => { const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
+  function askConnect(cat, who){
+    $("fTopic").value = "파트너 연결";
+    $("fMsg").value = (who ? who + " (" + cat + ")" : cat + " 분야") + " 연결을 원합니다. ";
+    $("consult").scrollIntoView({behavior:"smooth"}); setTimeout(()=>$("fName").focus({preventScroll:true}), 400);
+  }
+  function renderChips(){
+    const box = $("pChips"); box.textContent = "";
+    ["전체"].concat(cats).forEach(c => {
+      const n = c==="전체" ? P.length : P.filter(p=>p.cat===c).length;
+      const b = el("button"); b.type="button"; b.textContent=c;
+      if (n) b.appendChild(el("em", null, n));
+      b.setAttribute("aria-pressed", c===curCat);
+      b.onclick = () => { curCat=c; renderChips(); renderGrid(); };
+      box.appendChild(b);
+    });
+  }
+  function renderGrid(){
+    const g = $("pGrid"); g.textContent = "";
+    (curCat==="전체" ? cats : [curCat]).forEach(c => {
+      const list = P.filter(p=>p.cat===c);
+      if (!list.length) {
+        const d = el("div","pc empty"); d.appendChild(el("div","cat",c));
+        d.appendChild(el("div","pn","협약 파트너 모집 중"));
+        const pb = el("div","pb"), b = el("button",null,"연결 요청"); b.type="button"; b.onclick=()=>askConnect(c);
+        pb.appendChild(b); d.appendChild(pb); g.appendChild(d); return;
+      }
+      list.forEach(p => {
+        const d = el("div","pc has"), ct = el("div","cat",c); ct.appendChild(el("span","mou","MOU")); d.appendChild(ct);
+        d.appendChild(el("div","pn",p.name));
+        if (p.person) d.appendChild(el("div","pp",p.person));
+        if (p.desc) d.appendChild(el("div","pd",p.desc));
+        const pb = el("div","pb");
+        if (p.mode !== "via" && p.phone) {
+          d.appendChild(el("div","tel",p.phone));
+          const a = el("a","pri","전화"); a.href="tel:"+p.phone.replace(/\D/g,""); pb.appendChild(a);
+          const cp = el("button",null,"번호 복사"); cp.type="button"; cp.onclick=()=>copy(p.phone,"번호를 복사했어요"); pb.appendChild(cp);
+        }
+        const b = el("button", p.mode==="via"||!p.phone ? "pri" : null, "보험지기 통해 연결"); b.type="button"; b.onclick=()=>askConnect(c, p.name); pb.appendChild(b);
+        if (p.url && /^https?:\/\//.test(p.url)) { const a = el("a",null,"홈페이지"); a.href=p.url; a.target="_blank"; a.rel="noopener"; pb.appendChild(a); }
+        d.appendChild(pb); g.appendChild(d);
+      });
+    });
+  }
+  renderChips(); renderGrid();
+  cats.filter(c=>c!=="기타 전문가").concat("기타").forEach(c => { const o=el("option",null,c); $("rCat").appendChild(o); });
+
+  $("rForm").onsubmit = e => {
+    e.preventDefault();
+    const biz=$("rBiz").value.trim(), nm=$("rName").value.trim(), ph=$("rPhone").value.trim();
+    if (!biz) { $("rBiz").focus(); toast("상호를 적어 주세요"); return; }
+    if (!ph) { $("rPhone").focus(); toast("연락처를 적어 주세요"); return; }
+    const lines = ["[MOU 파트너 등록 신청] " + C.nick + "님께", "상호: "+biz];
+    if (nm) lines.push("대표: "+nm);
+    lines.push("분야: "+$("rCat").value, "연락처: "+ph, "공개 방식: "+$("rMode").selectedOptions[0].textContent);
+    if ($("rDesc").value.trim()) lines.push("소개: "+$("rDesc").value.trim());
+    if ($("rUrl").value.trim()) lines.push("홈페이지: "+$("rUrl").value.trim());
+    const txt = lines.join("\n");
+    $("rOutTxt").textContent = txt;
+    $("rSms").href = "sms:" + digits + "?body=" + encodeURIComponent(txt);
+    $("rOut").hidden = false;
+    $("rCopy").onclick = () => copy(txt, "신청 내용을 복사했어요");
   };
 
   // QR 코드
