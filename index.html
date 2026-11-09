@@ -20,7 +20,7 @@
 /* Layout: 고정 상단바 → 소개(텍스트+세로 사진) → 숫자 띠 → '이런 고민에' 서비스 카드 → 셀프 진단 카드 → 파트너 → 짙은 상록색 문의 구역. 단일 컬럼, 최대 520px. */
 :root{
   --ink:#10302d;  --ink-2:#1d4a45; --ink-3:#173d39;
-  --brass:#b8913f;
+  --brass:#b8913f; --brass-ink:#7d5f1f;
   --paper:#f6f7f4; --card:#ffffff; --fg:#17201e; --muted:#5b6a66; --line:#dfe5e1;
   --on-ink:#f1f5f3; --chip:#e9efec; --mint:#2f7a5a; --mint-soft:#e3f1ea;
   --display:"Gowun Batang","Nanum Myeongjo","AppleMyungjo",serif;
@@ -29,13 +29,13 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ink:#0b211f; --ink-2:#163a36; --ink-3:#12302c; --brass:#d4b066;
+    --ink:#0b211f; --ink-2:#163a36; --ink-3:#12302c; --brass:#d4b066; --brass-ink:#d4b066;
     --paper:#0f1615; --card:#17201e; --fg:#e6ecea; --muted:#9aaba6; --line:#2a3633;
     --on-ink:#eef3f1; --chip:#1f2b29; --mint:#2e7656; --mint-soft:#15302a; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --ink:#0b211f; --ink-2:#163a36; --ink-3:#12302c; --brass:#d4b066;
+  --ink:#0b211f; --ink-2:#163a36; --ink-3:#12302c; --brass:#d4b066; --brass-ink:#d4b066;
   --paper:#0f1615; --card:#17201e; --fg:#e6ecea; --muted:#9aaba6; --line:#2a3633;
   --on-ink:#eef3f1; --chip:#1f2b29; --mint:#2e7656; --mint-soft:#15302a; color-scheme:dark;
 }
@@ -48,171 +48,172 @@ img{max-width:100%}
 a{color:inherit}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
-.wrap{max-width:520px;margin:0 auto;padding-left:max(18px, env(safe-area-inset-left, 0px));padding-right:max(18px, env(safe-area-inset-right, 0px))}
+.wrap{max-width:520px;margin:0 auto;padding-left:max(20px, env(safe-area-inset-left, 0px));padding-right:max(20px, env(safe-area-inset-right, 0px))}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:11px 20px;font-weight:600;font-size:14.5px;text-decoration:none;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--on-ink);line-height:1.3}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:12px 20px;font-weight:600;font-size:14.5px;text-decoration:none;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--on-ink);line-height:1.3}
 .btn.line{background:transparent;color:var(--fg);border-color:var(--fg)}
 .btn.brass{background:var(--brass);border-color:var(--brass);color:#1a1405}
 :root[data-theme="dark"] .btn:not(.line):not(.brass){background:var(--brass);border-color:var(--brass);color:#1a1405}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn:not(.line):not(.brass){background:var(--brass);border-color:var(--brass);color:#1a1405}}
 
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:10px;padding-block:12px}
+.top .wrap{display:flex;align-items:center;gap:12px;padding-block:12px}
 .top .who{display:flex;align-items:baseline;gap:8px;min-width:0;flex:1}
-.top .who b{font-size:18px;font-weight:700;white-space:nowrap}
-.top .who span{font-size:10.5px;letter-spacing:.2em;color:var(--brass);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lang{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.top .who b{font-size:18px;font-weight:600;white-space:nowrap}
+.top .who span{font-size:12px;letter-spacing:.01em;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lang{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
 .top .btn{padding:8px 16px;font-size:13.5px}
 
-.hero{padding-block:26px 8px}
-.hero-grid{display:grid;grid-template-columns:1fr 128px;gap:14px;align-items:end;border-bottom:1px solid var(--line)}
-.hero-grid > div{min-width:0;padding-bottom:22px}
-.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--brass);font-weight:700;margin:0 0 10px}
-.headline{font-size:clamp(23px,6.8vw,30px);line-height:1.4;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
-.headline em{font-style:normal;color:var(--brass)}
-.hero-photo{border-radius:18px 18px 0 0;overflow:hidden;aspect-ratio:4/5;max-width:100%;background:var(--ink-2)}
+.hero{padding-block:28px 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 128px;gap:16px;align-items:end;border-bottom:1px solid var(--line)}
+.hero-grid > div{min-width:0;padding-bottom:24px}
+.eyebrow{font-size:13px;letter-spacing:.01em;color:var(--muted);font-weight:600;margin:0 0 12px}
+.headline{font-size:clamp(23px,6.8vw,30px);line-height:1.4;font-weight:600;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.headline em{font-style:normal;color:var(--brass-ink)}
+.hero-photo{border-radius:16px 18px 0 0;overflow:hidden;aspect-ratio:4/5;max-width:100%;background:var(--ink-2)}
 .hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.idline{margin:18px 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
-.idline .nick{font-size:13px;font-weight:700;color:var(--brass);letter-spacing:.06em}
-.idline .nm{font-family:var(--display);font-size:24px;font-weight:700}
+.idline{margin:20px 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.idline .nick{font-size:13px;font-weight:500;color:var(--muted)}
+.idline .nm{font-family:var(--display);font-size:24px;font-weight:600}
 .idline .tt{font-size:14px;color:var(--muted);font-weight:500}
 .intro{margin:12px 0 0;font-size:15px}
 .creds{margin:16px 0 0;padding:2px 0 2px 16px;border-left:3px solid var(--brass);list-style:none;display:grid;gap:4px;font-size:14px;font-weight:600}
 .hero-cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .hero-cta .btn{flex:1 1 140px}
-.selfcheck{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border:1.5px solid var(--mint);background:var(--mint-soft);border-radius:999px;text-decoration:none;font-size:13.5px}
+.selfcheck{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border:1.5px solid var(--mint);background:var(--mint-soft);border-radius:12px;text-decoration:none;font-size:13.5px}
 .selfcheck b{color:var(--mint)}
 :root[data-theme="dark"] .selfcheck b{color:#7fd3a8}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .selfcheck b{color:#7fd3a8}}
 .selfcheck svg{width:16px;height:16px;flex:none}
 
-.actions{margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.act{display:grid;justify-items:center;gap:5px;padding:12px 4px 10px;background:var(--card);border:1px solid var(--line);border-radius:14px;text-decoration:none;font-size:12.5px;font-weight:500;cursor:pointer}
-.act svg{width:22px;height:22px;color:var(--ink-2)}
+.actions{margin-top:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.act{display:grid;justify-items:center;gap:4px;padding:12px 4px;background:var(--card);border:1px solid var(--line);border-radius:12px;text-decoration:none;font-size:12.5px;font-weight:500;cursor:pointer}
+.act svg{width:20px;height:20px;color:var(--ink-2)}
 :root[data-theme="dark"] .act svg{color:var(--brass)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .act svg{color:var(--brass)}}
 
 .stats{background:var(--ink);color:var(--on-ink);margin-top:28px}
 .stats .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-block:24px}
-.stat b{display:block;font-family:var(--display);font-size:clamp(22px,6.4vw,28px);color:var(--brass);line-height:1.2;font-variant-numeric:tabular-nums}
+.stat b{display:block;font-family:var(--display);font-size:clamp(22px,6.4vw,28px);color:var(--on-ink);line-height:1.2;font-variant-numeric:tabular-nums}
 .stat span{font-size:12.5px;opacity:.85;line-height:1.4;display:block;margin-top:4px}
 
 section{padding-block:36px 4px}
-.sec-label{font-size:12px;letter-spacing:.14em;color:var(--brass);font-weight:700;margin:0 0 6px}
-h2{font-size:22px;line-height:1.4;margin:0 0 8px;font-weight:700;text-wrap:balance}
-.lead{color:var(--muted);margin:0 0 18px;font-size:14.5px}
+.sec-label{font-size:13px;letter-spacing:.01em;color:var(--muted);font-weight:600;margin:0 0 8px}
+h2{font-size:22px;line-height:1.4;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{color:var(--muted);margin:0 0 20px;font-size:14.5px}
 
-.pain-list{display:grid;gap:14px}
-.pain{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
-.pain-head{background:var(--ink);color:var(--on-ink);padding:14px 20px}
-.pain-head small{display:block;font-size:12px;color:var(--brass);font-weight:700;letter-spacing:.04em}
-.pain-head p{margin:2px 0 0;font-size:16px;font-weight:700;line-height:1.45}
-.pain-body{padding:16px 20px 20px;display:grid;gap:10px}
-.pain-body .aud{font-size:12.5px;font-weight:700;color:var(--brass);letter-spacing:.03em;margin:0}
-.pain-body h3{margin:-6px 0 0;font-size:21px;font-family:var(--display)}
-.pain-body ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14.5px}
-.pain-body li::marker{color:var(--brass)}
-.pain-body .fmt{border-top:1px solid var(--line);padding-top:10px;font-size:13.5px;font-weight:600;margin:0}
+.pain-list{display:grid;gap:16px}
+.pain{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+.pain-head{background:var(--ink);color:var(--on-ink);padding:16px 20px}
+.pain-head small{display:block;font-size:12px;color:var(--on-ink);opacity:.7;font-weight:500}
+.pain-head p{margin:2px 0 0;font-size:16px;font-weight:600;line-height:1.45}
+.pain-body{padding:16px 20px 20px;display:grid;gap:12px}
+.pain-body .aud{font-size:13px;font-weight:500;color:var(--muted);margin:0}
+.pain-body h3{margin:-8px 0 0;font-size:21px;font-family:var(--display)}
+.pain-body ul{margin:0;padding-left:20px;display:grid;gap:3px;font-size:14.5px}
+.pain-body li::marker{color:var(--muted)}
+.pain-body .fmt{border-top:1px solid var(--line);padding-top:12px;font-size:13.5px;font-weight:600;margin:0}
 .pain-body .btn{justify-self:start;margin-top:4px}
 
 .diag{display:grid;gap:12px}
-.dcard{border-radius:18px;padding:22px 20px;display:grid;gap:12px}
+.dcard{border-radius:16px;padding:24px 20px;display:grid;gap:12px}
 .dcard.green{background:var(--mint);color:#fff}
 .dcard.navy{background:var(--ink);color:var(--on-ink)}
-.dcard small{font-size:12px;font-weight:700;letter-spacing:.04em;opacity:.9}
-.dcard.navy small{color:var(--brass);opacity:1}
+.dcard small{font-size:12px;font-weight:500;opacity:.8}
+.dcard.navy small{opacity:.7}
 .dcard h3{margin:-4px 0 0;font-size:20px;line-height:1.4}
 .dcard p{margin:0;font-size:14px;opacity:.92}
-.dcard label{display:grid;gap:6px;font-size:13px;font-weight:600}
-.dcard input[type=date]{width:100%;border:0;border-radius:12px;padding:11px 12px;background:#fff;color:#17201e;color-scheme:light}
-.result{border-radius:14px;padding:14px;background:rgb(255 255 255/.14);display:grid;gap:5px}
-.result .big{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.dcard label{display:grid;gap:8px;font-size:13px;font-weight:600}
+.dcard input[type=date]{width:100%;border:0;border-radius:12px;padding:12px 12px;background:#fff;color:#17201e;color-scheme:light}
+.result{border-radius:14px;padding:16px;background:rgb(255 255 255/.14);display:grid;gap:4px}
+.result .big{font-family:var(--display);font-size:32px;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums}
 .result.warn{background:rgb(255 214 140/.25)} .result.bad{background:rgb(0 0 0/.2)}
 .result p{font-size:13px}
 .bar{height:6px;border-radius:99px;background:rgb(255 255 255/.25);overflow:hidden}
 .bar i{display:block;height:100%;background:#fff}
 .dcard .fine{font-size:11.5px;opacity:.8;margin:0}
 .nsteps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:n}
-.nsteps li{display:flex;align-items:center;gap:10px;font-size:14px;counter-increment:n}
-.nsteps li::before{content:counter(n);width:24px;height:24px;border-radius:50%;background:var(--brass);color:#1a1405;font-weight:700;font-size:12.5px;display:grid;place-items:center;flex:none}
+.nsteps li{display:flex;align-items:center;gap:12px;font-size:14px;counter-increment:n}
+.nsteps li::before{content:counter(n);width:24px;height:24px;border-radius:50%;background:var(--brass);color:#1a1405;font-weight:600;font-size:12.5px;display:grid;place-items:center;flex:none}
 
-.quotes{display:grid;gap:10px}
-.quote{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px 18px}
-.quote q{display:block;font-weight:700;font-size:15.5px;line-height:1.5}
+.quotes{display:grid;gap:12px}
+.quote{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:16px 20px}
+.quote q{display:block;font-weight:600;font-size:15.5px;line-height:1.5}
 .quote span{display:block;font-size:13px;color:var(--muted);margin-top:4px}
 
-.steps4{display:grid;grid-template-columns:1fr 1fr;gap:10px;list-style:none;margin:0;padding:0;counter-reset:s}
-.steps4 li{background:var(--card);color:var(--fg);border-radius:14px;padding:14px;counter-increment:s;display:grid;gap:2px;align-content:start}
-.steps4 li::before{content:counter(s);font-family:var(--display);font-weight:700;color:var(--brass);font-size:20px;line-height:1}
+.steps4{display:grid;grid-template-columns:1fr 1fr;gap:12px;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps4 li{background:var(--card);color:var(--fg);border-radius:14px;padding:16px;counter-increment:s;display:grid;gap:2px;align-content:start}
+.steps4 li::before{content:counter(s);font-family:var(--display);font-weight:600;color:var(--muted);font-size:20px;line-height:1}
 .steps4 b{font-size:15px}
 .steps4 span{font-size:12.5px;color:var(--muted);line-height:1.5}
 
-.pchips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
+.pchips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;scrollbar-width:none}
 .pchips::-webkit-scrollbar{display:none}
-.pchips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
+.pchips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
 .pchips button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .pchips em{font-style:normal;opacity:.65;margin-left:3px;font-variant-numeric:tabular-nums}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:4px;align-content:start;min-width:0}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;display:grid;gap:4px;align-content:start;min-width:0}
 .pc.has{grid-column:1/-1}
-.pc .cat{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700}
-.pc .mou{font-size:10px;border:1px solid var(--brass);color:var(--brass);border-radius:4px;padding:0 4px;letter-spacing:.06em}
+.pc .cat{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.pc .mou{font-size:11px;border:1px solid var(--line);color:var(--muted);border-radius:4px;padding:0 4px;letter-spacing:.06em}
 .pc .pn{font-weight:600;font-size:15px;line-height:1.35}
 .pc .pp{font-size:13px;color:var(--muted)}
 .pc .pd{font-size:13px}
 .pc.empty .pn{font-size:12.5px;font-weight:500;color:var(--muted)}
-.pc .pb{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.pc .pb a,.pc .pb button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 11px;font-size:12.5px;text-decoration:none;cursor:pointer}
+.pc .pb{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pc .pb a,.pc .pb button{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:4px 12px;font-size:12.5px;text-decoration:none;cursor:pointer}
 .pc .pb .pri{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .pc .tel{font-variant-numeric:tabular-nums;font-size:13px;user-select:all}
 .pnote{font-size:12.5px;color:var(--muted);margin:12px 0 0}
-details.reg{margin-top:14px;background:var(--card);border:1px dashed var(--brass);border-radius:16px}
-details.reg summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+details.reg{margin-top:16px;background:var(--card);border:1px dashed var(--brass);border-radius:16px}
+details.reg summary{cursor:pointer;padding:16px 20px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 details.reg summary::-webkit-details-marker{display:none}
 details.reg summary span{font-weight:400;font-size:12.5px;color:var(--muted)}
 
-.form{display:grid;gap:10px;padding:0 18px 18px}
-.form label{display:grid;gap:6px;font-size:13px;color:var(--muted)}
-.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:11px 12px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form{display:grid;gap:12px;padding:0 20px 20px}
+.form label{display:grid;gap:8px;font-size:13px;color:var(--muted)}
+.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:12px 12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form textarea{min-height:84px;resize:vertical}
-.submit{border:0;background:var(--brass);color:#1a1405;font-weight:700;border-radius:12px;padding:13px;cursor:pointer;font-size:15px}
-.out{display:grid;gap:8px;padding:14px;border-radius:12px;background:var(--chip)}
+.submit{border:0;background:var(--brass);color:#1a1405;font-weight:600;border-radius:12px;padding:12px;cursor:pointer;font-size:15px}
+.out{display:grid;gap:8px;padding:16px;border-radius:12px;background:var(--chip)}
 .out pre{margin:0;white-space:pre-wrap;font:13.5px/1.6 var(--body);user-select:all;color:var(--fg)}
 .out .btns{display:flex;flex-wrap:wrap;gap:8px}
-.out .btns a,.out .btns button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;font-size:13px;text-decoration:none;cursor:pointer;color:var(--fg)}
+.out .btns a,.out .btns button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;font-size:13px;text-decoration:none;cursor:pointer;color:var(--fg)}
 
 .contact{background:var(--ink);color:var(--on-ink);margin-top:40px}
 .contact .wrap{padding-block:36px 40px}
 .contact h2{font-size:23px}
+.contact .sec-label{color:var(--on-ink);opacity:.7}
 .contact .lead{color:var(--on-ink);opacity:.8}
-.cgroup{display:grid;gap:6px;margin-top:22px}
-.cgroup > small{font-size:12px;color:var(--brass);font-weight:700;letter-spacing:.06em}
+.cgroup{display:grid;gap:8px;margin-top:24px}
+.cgroup > small{font-size:12px;color:var(--on-ink);opacity:.7;font-weight:500}
 .cgroup .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgb(255 255 255/.55);border-radius:999px;padding:10px 18px;font-weight:700;font-size:15px;text-decoration:none;font-variant-numeric:tabular-nums;color:var(--on-ink)}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgb(255 255 255/.55);border-radius:12px;padding:12px 20px;font-weight:600;font-size:15px;text-decoration:none;font-variant-numeric:tabular-nums;color:var(--on-ink)}
 .pill svg{width:16px;height:16px}
-.mini{border:1px solid rgb(255 255 255/.35);background:transparent;color:var(--on-ink);border-radius:8px;padding:5px 10px;font-size:12.5px;cursor:pointer}
-.refcard{margin-top:28px;background:var(--card);color:var(--fg);border-radius:18px;padding:20px;display:grid;gap:12px}
+.mini{border:1px solid rgb(255 255 255/.35);background:transparent;color:var(--on-ink);border-radius:8px;padding:4px 12px;font-size:12.5px;cursor:pointer}
+.refcard{margin-top:28px;background:var(--card);color:var(--fg);border-radius:16px;padding:20px;display:grid;gap:12px}
 .refcard h3{margin:0;font-size:16px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
-.refcard h3 span{font-size:12.5px;color:var(--brass);font-weight:700}
+.refcard h3 span{font-size:13px;color:var(--muted);font-weight:500}
 .refcard p{margin:0;font-size:14.5px;line-height:1.75}
 .refcard .btn{justify-self:start}
-details.sms{margin-top:14px;background:var(--card);color:var(--fg);border-radius:18px}
-details.sms summary{cursor:pointer;padding:16px 20px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:8px}
+details.sms{margin-top:16px;background:var(--card);color:var(--fg);border-radius:16px}
+details.sms summary{cursor:pointer;padding:16px 20px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:8px}
 details.sms summary::-webkit-details-marker{display:none}
-details.sms summary::after{content:"+";color:var(--brass);font-size:18px;line-height:1}
+details.sms summary::after{content:"+";color:var(--muted);font-size:18px;line-height:1}
 details.sms[open] summary::after{content:"−"}
-.share{margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--ink-3);border:1px solid rgb(255 255 255/.12);border-radius:18px;padding:16px}
-#qr{width:108px;height:108px;background:#fff;border-radius:10px;padding:7px;display:grid;place-items:center;color:#10302d;font-size:12px}
+.share{margin-top:16px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--ink-3);border:1px solid rgb(255 255 255/.12);border-radius:16px;padding:16px}
+#qr{width:108px;height:108px;background:#fff;border-radius:10px;padding:8px;display:grid;place-items:center;color:#10302d;font-size:12px}
 #qr img,#qr canvas{width:100%!important;height:100%!important}
-.share p{margin:0 0 10px;font-size:13.5px;opacity:.85}
+.share p{margin:0 0 12px;font-size:13.5px;opacity:.85}
 .share .row{display:flex;flex-wrap:wrap;gap:8px}
 
 footer{background:var(--ink);color:var(--on-ink);border-top:1px solid rgb(255 255 255/.12)}
-footer .wrap{padding-block:20px calc(28px + env(safe-area-inset-bottom,0px));display:grid;gap:6px;font-size:11.5px;opacity:.75}
+footer .wrap{padding-block:20px calc(28px + env(safe-area-inset-bottom,0px));display:grid;gap:8px;font-size:11.5px;opacity:.75}
 footer p{margin:0}
 
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--fg);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;max-width:calc(100% - 32px);text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--fg);color:var(--paper);padding:12px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1}
 @media (max-width:360px){.hero-grid{grid-template-columns:1fr 100px}.share{grid-template-columns:1fr;justify-items:center;text-align:center}.pgrid{grid-template-columns:1fr}.top .who span{display:none}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
@@ -274,7 +275,7 @@ window.CARD = {
 
 <header class="top">
   <div class="wrap">
-    <div class="who"><b id="topName">이헌영</b><span id="topNick">BOHUMJIGI</span></div>
+    <div class="who"><b id="topName">이헌영</b><span id="topNick">Bohumjigi</span></div>
     <button class="lang" id="langBtn" type="button">EN</button>
     <a class="btn" href="#contact" data-en="Contact">상담 문의</a>
   </div>
@@ -285,8 +286,8 @@ window.CARD = {
     <div class="wrap">
       <div class="hero-grid">
         <div>
-          <p class="eyebrow" data-en="CLAIMS · POLICY REVIEW · FINANCES">보험금 청구 · 보험 재설계 · 재무</p>
-          <h1 class="headline" id="headline" data-en-html="Find the <em>benefits</em> you missed. Stop wasted <em>premiums</em>. Plan your family's <em>future</em>."><em>놓친 보험금</em>은 찾고<br><em>새는 보험료</em>는 막고<br>가족의 <em>미래</em>를 설계합니다.</h1>
+          <p class="eyebrow" data-en="Claims · Policy review · Finances">보험금 청구 · 보험 재설계 · 재무</p>
+          <h1 class="headline" id="headline" data-en-html="Find the <em>benefits</em> you missed, stop wasted <em>premiums</em>, plan your family's <em>future</em>"><em>놓친 보험금</em>은 찾고<br><em>새는 보험료</em>는 막고<br>가족의 <em>미래</em>를 설계합니다</h1>
         </div>
         <div class="hero-photo"><img id="photo" alt="이헌영 지점장 프로필 사진" data-en-alt="Profile photo of Heon-young Lee"></div>
       </div>
@@ -297,13 +298,13 @@ window.CARD = {
         <a class="btn" href="#contact" data-en="Request a consultation">상담 신청하기</a>
         <a class="btn line" href="#services" data-en="See services">상담 분야 보기</a>
       </div>
-      <a class="selfcheck" href="#diag"><span><span data-en="Visited a hospital?">병원 다녀오셨나요?</span> <b data-en="1-minute claim deadline check">1분 청구 기한 확인</b></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="selfcheck" href="#diag"><span><span data-en="Visited a hospital?">병원 다녀오셨나요?</span> <b data-en="1-minute claim deadline check">1분 청구 기한 확인</b></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
 
       <nav class="actions" aria-label="연락하기" data-en-aria="Contact">
-        <a class="act" id="aCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span data-en="Call">전화</span></a>
-        <a class="act" id="aSms" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.6A8 8 0 1121 12z"/></svg><span data-en="Text">문자</span></a>
+        <a class="act" id="aCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span data-en="Call">전화</span></a>
+        <a class="act" id="aSms" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.6A8 8 0 1121 12z"/></svg><span data-en="Text">문자</span></a>
         <a class="act" id="aKakao" href="#contact" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg><span data-en="KakaoTalk">카카오톡</span></a>
-        <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg><span data-en="Save contact">연락처 저장</span></button>
+        <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg><span data-en="Save contact">연락처 저장</span></button>
       </nav>
     </div>
   </section>
@@ -312,7 +313,7 @@ window.CARD = {
 
   <section id="services" aria-labelledby="h-svc">
     <div class="wrap">
-      <p class="sec-label" data-en="SERVICES">상담 분야</p>
+      <p class="sec-label" data-en="Services">상담 분야</p>
       <h2 id="h-svc" data-en="It starts with your real concern">고객님의 고민에서 상담을 시작합니다</h2>
       <p class="lead" data-en="I first listen to your situation, then look at your policies and household finances together. Consultations are available by phone, KakaoTalk, or in person.">먼저 지금 상황을 듣고, 가입한 보험과 가정의 돈 흐름을 함께 봅니다. 전화 · 카카오톡 · 방문 상담 모두 가능합니다.</p>
       <div class="pain-list">
@@ -382,7 +383,7 @@ window.CARD = {
 
   <section id="diag" aria-labelledby="h-diag">
     <div class="wrap">
-      <p class="sec-label" data-en="SELF CHECK">셀프 진단</p>
+      <p class="sec-label" data-en="Self check">셀프 진단</p>
       <h2 id="h-diag" data-en="Check it yourself first">먼저 가볍게 확인해 보세요</h2>
       <div class="diag">
         <div class="dcard green">
@@ -409,7 +410,7 @@ window.CARD = {
 
   <section id="reviews" aria-labelledby="h-rev" hidden>
     <div class="wrap">
-      <p class="sec-label" data-en="CLIENT VOICES">고객의 말</p>
+      <p class="sec-label" data-en="Client voices">고객의 말</p>
       <h2 id="h-rev" data-en="What clients said after consulting">상담 후 남겨 주신 말</h2>
       <div class="quotes" id="quotes"></div>
     </div>
@@ -417,7 +418,7 @@ window.CARD = {
 
   <section id="partners" aria-labelledby="h-partners">
     <div class="wrap">
-      <p class="sec-label" data-en="MOU PARTNERS">MOU 협약 파트너</p>
+      <p class="sec-label" data-en="MOU partners">MOU 협약 파트너</p>
       <h2 id="h-partners" data-en="Trusted experts, one call away">믿을 수 있는 전문가를 연결해 드립니다</h2>
       <p class="lead" data-en="Business owners who have signed a partnership agreement (MOU) with me. Tell me what you need and I'll introduce you to someone I trust.">업무협약(MOU)을 맺은 대표님들입니다. 필요한 분야를 말씀해 주시면 믿을 수 있는 분께 직접 연결해 드립니다.</p>
       <div class="pchips" id="pChips" role="group" aria-label="분야 선택" data-en-aria="Choose a field"></div>
@@ -451,7 +452,7 @@ window.CARD = {
 
   <section class="contact" id="contact" aria-labelledby="h-contact">
     <div class="wrap">
-      <p class="sec-label" data-en="CONSULTATION">상담 문의</p>
+      <p class="sec-label" data-en="Consultation">상담 문의</p>
       <h2 id="h-contact" data-en="Let's sort out your insurance worries together">보험 고민, 상담 전에 함께 정리합니다</h2>
       <p class="lead" data-en="Leave your name, phone, and what you'd like to discuss. I'll get back to you directly after checking.">성함과 연락처, 궁금한 내용만 남겨 주세요. 확인 후 직접 연락드립니다.</p>
       <a class="btn brass" id="qForm" href="#" target="_blank" rel="noopener" data-en="Fill in the consultation form ↗">상담 신청서 작성하기 ↗</a>
@@ -463,10 +464,10 @@ window.CARD = {
         <li><b data-en="Ongoing care">꾸준한 관리</b><span data-en="Claim progress and renewals">청구 진행 · 갱신 시점 관리</span></li>
       </ol>
 
-      <div class="cgroup"><small data-en="MOBILE">휴대폰</small><div class="row"><a class="pill" id="pCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span id="phoneTxt">010-8950-6400</span></a><button class="mini" type="button" id="copyPhone" data-en="Copy">복사</button></div></div>
-      <div class="cgroup" id="phone2Row"><small data-en="FAX">팩스</small><div class="row"><span class="pill" id="phone2Txt">0504-006-6400</span><button class="mini" type="button" id="copyPhone2" data-en="Copy">복사</button></div></div>
-      <div class="cgroup" id="emailRow"><small data-en="EMAIL">이메일</small><div class="row"><span class="pill" id="emailTxt" style="user-select:all">niea7@naver.com</span><button class="mini" type="button" id="copyEmail" data-en="Copy">복사</button></div></div>
-      <div class="cgroup" id="kakaoRow"><small data-en="KAKAOTALK">카카오톡</small><div class="row"><a class="pill" id="qKakao" href="#" target="_blank" rel="noopener" data-en="Open chat ↗">오픈채팅 열기 ↗</a></div></div>
+      <div class="cgroup"><small data-en="Mobile">휴대폰</small><div class="row"><a class="pill" id="pCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span id="phoneTxt">010-8950-6400</span></a><button class="mini" type="button" id="copyPhone" data-en="Copy">복사</button></div></div>
+      <div class="cgroup" id="phone2Row"><small data-en="Fax">팩스</small><div class="row"><span class="pill" id="phone2Txt">0504-006-6400</span><button class="mini" type="button" id="copyPhone2" data-en="Copy">복사</button></div></div>
+      <div class="cgroup" id="emailRow"><small data-en="Email">이메일</small><div class="row"><span class="pill" id="emailTxt" style="user-select:all">niea7@naver.com</span><button class="mini" type="button" id="copyEmail" data-en="Copy">복사</button></div></div>
+      <div class="cgroup" id="kakaoRow"><small data-en="KakaoTalk">카카오톡</small><div class="row"><a class="pill" id="qKakao" href="#" target="_blank" rel="noopener" data-en="Open chat ↗">오픈채팅 열기 ↗</a></div></div>
 
       <div class="refcard">
         <h3><b data-en="Referral message">소개 문구</b> <span data-en="Send it to friends as is">지인에게 그대로 보내세요</span></h3>
@@ -552,7 +553,7 @@ window.CARD = {
 
   function fillInfo(){
     $("topName").textContent = nameT() || nick();
-    $("topNick").textContent = (C.nickEn || "").toUpperCase();
+    $("topNick").textContent = C.nickEn || "";
     $("nick").textContent = nick();
     $("nameBig").textContent = nameT() || nick();
     $("nick").hidden = !nameT();
