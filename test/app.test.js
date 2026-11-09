@@ -67,3 +67,11 @@ test('관리자 API는 토큰 필요, CSV는 BOM 포함', async () => {
   assert.deepEqual([...buf.subarray(0, 3)], [0xef, 0xbb, 0xbf]); // UTF-8 BOM → 엑셀 한글 깨짐 방지
   assert.ok(buf.toString('utf8').includes('홍길동'));
 });
+
+test('assetlinks.json: 환경변수 없으면 404, 있으면 JSON 제공', async () => {
+  assert.equal((await fetch(`${base}/.well-known/assetlinks.json`)).status, 404);
+  process.env.ASSETLINKS_JSON = '[{"relation":["delegate_permission/common.handle_all_urls"],"target":{"namespace":"android_app","package_name":"kr.test","sha256_cert_fingerprints":["AA"]}}]';
+  const j = await (await fetch(`${base}/.well-known/assetlinks.json`)).json();
+  assert.equal(j[0].target.package_name, 'kr.test');
+  delete process.env.ASSETLINKS_JSON;
+});

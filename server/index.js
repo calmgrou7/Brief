@@ -44,6 +44,12 @@ export function createApp() {
   const app = express();
   app.set('trust proxy', 1);
   app.use(express.json({ limit: '100kb' }));
+  // 구글플레이(TWA) 앱-도메인 연결: PWABuilder 가 준 assetlinks.json 내용을 ASSETLINKS_JSON 환경변수에 넣으면 됨
+  app.get('/.well-known/assetlinks.json', (req, res) => {
+    const raw = process.env.ASSETLINKS_JSON;
+    if (!raw) return res.status(404).json([]);
+    try { res.type('application/json').send(JSON.stringify(JSON.parse(raw))); } catch { res.status(500).json({ error: 'ASSETLINKS_JSON 형식 오류' }); }
+  });
   app.use(express.static(path.join(__dirname, '../public'), { extensions: ['html'] }));
 
   // ── 공개 API ──────────────────────────────────────────────

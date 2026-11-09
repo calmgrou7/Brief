@@ -37,3 +37,5 @@ services:
         sync: false
       - key: LEAD_WEBHOOK_URL
         sync: false
+      - key: ASSETLINKS_JSON     # 구글플레이 등록 시 PWABuilder 가 준 assetlinks.json 내용 붙여넣기
+        sync: false

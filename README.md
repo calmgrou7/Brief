@@ -85,7 +85,7 @@ npm start
 ## 5. 배포 (권장)
 
 - **Render / Railway / Fly.io**: Node 서버 1개 + 영구 디스크(`DB_PATH`)를 연결합니다. 웹푸시와 PWA 설치는 **HTTPS가 필수**인데, 이 서비스들은 기본으로 제공합니다.
-- 앱스토어 등록이 필요해지면 같은 웹앱을 **TWA(안드로이드)** 또는 Capacitor로 감싸면 됩니다. 이때 푸시는 FCM으로 교체합니다.
+- **구글플레이 출시**: [docs/google-play.md](docs/google-play.md) 단계별 가이드 참고 (TWA 방식, 웹 수정 시 앱 자동 반영)
 
 ## 6. 운영 전 체크리스트 (중요)
 
