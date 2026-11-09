@@ -71,6 +71,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .photo .ph svg{width:56px;height:56px;margin-bottom:4px;opacity:.8}
 .slogan{font-family:var(--display);font-size:15px;opacity:.9;margin:0}
 .name{font-family:var(--display);font-weight:700;font-size:34px;line-height:1.15;margin:0;text-wrap:balance}
+.name .nickline{display:block;font-size:16px;font-weight:700;color:var(--brass);letter-spacing:.06em;margin-bottom:6px}
+.name .nickline[hidden]{display:none}
 .name small{display:block;font-family:var(--body);font-size:14px;font-weight:500;letter-spacing:.02em;opacity:.8;margin-top:6px}
 .tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .tags span{font-size:12px;padding:4px 10px;border:1px solid rgb(255 255 255/.25);border-radius:999px}
@@ -207,13 +209,13 @@ footer p{margin:0}
 window.CARD = {
   brand:   "지혜로운 보험생활",
   nick:    "보험지기",
-  name:    "",                         // 실명 (예: "홍길동")  비워두면 표시 안 함
-  title:   "보험·재무 컨설턴트",
+  name:    "이헌영",                   // 실명 (예: "홍길동")  비워두면 표시 안 함
+  title:   "지점장",                   // 직함
   // 영문 표기
   brandEn: "Wise Insurance Life",
   nickEn:  "Bohumjigi",
-  nameEn:  "",                         // 영문 실명 (예: "Gildong Hong")
-  titleEn: "Insurance & Financial Consultant",
+  nameEn:  "Heon-young Lee",                         // 영문 실명 (예: "Gildong Hong")
+  titleEn: "Branch Manager",
   companyEn: "",
   company: "",                         // 소속 (예: "○○보험대리점")
   regNo:   "",                         // 보험설계사 등록번호
@@ -252,7 +254,7 @@ window.CARD = {
       <div class="ph" id="photoPh"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><br>사진 영역<br>profile.jpg</div></div>
     </div>
     <p class="slogan" data-en="Know your coverage. Get what you&#x27;re owed.">내 보험, 제대로 알고 제대로 받으세요</p>
-    <h1 class="name"><span id="nick">보험지기</span><small id="nameLine">보험·재무 컨설턴트</small></h1>
+    <h1 class="name"><span class="nickline" id="nick">보험지기</span><span id="nameBig"></span><small id="nameLine">지점장</small></h1>
     <div class="tags"><span data-en="#InsuranceClaims">#보험금청구</span><span data-en="#PolicyReview">#보험재설계</span><span data-en="#FinancialPlanning">#재무컨설팅</span><span data-en="#CoverageAnalysis">#보장분석</span></div>
   </div>
 </header>
@@ -488,7 +490,10 @@ window.CARD = {
   function fillInfo(){
     $("brand").textContent = $("fBrand").textContent = brand();
     $("nick").textContent = $("fNick").textContent = nick();
-    $("nameLine").textContent = [T(C.name, C.nameEn || C.name), T(C.title, C.titleEn)].filter(Boolean).join(" · ");
+    const nm = T(C.name, C.nameEn || C.name);
+    if (nm) { $("nameBig").textContent = nm; $("nick").hidden = false; }
+    else { $("nameBig").textContent = nick(); $("nick").hidden = true; }
+    $("nameLine").textContent = T(C.title, C.titleEn);
     const comp = T(C.company, C.companyEn || C.company);
     $("fCompany").textContent = comp ? " · " + comp : "";
     if (C.regNo) { $("fReg").textContent = T("보험설계사 등록번호 ", "Insurance agent reg. no. ") + C.regNo; $("fReg").hidden = false; }
