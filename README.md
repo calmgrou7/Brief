@@ -36,3 +36,8 @@
 - 휴대폰 언어가 한국어가 아니면 처음부터 영어로 보입니다.
 - 외국인 고객에게는 주소 끝에 `#en`을 붙여 보내면 영어로 열립니다. 예) `https://calmgrou7.github.io/Brief/#en`
 - 영문 이름·소속은 `CARD.nameEn`, `CARD.companyEn`, 파트너는 `nameEn`, `personEn`, `descEn`에 넣습니다.
+
+## 구성 (v2)
+상단바 → 소개(헤드라인·사진·약력) → 숫자 띠 → '이런 고민에' 상담 분야 카드 → 셀프 진단(청구 기한·보장 분석) → 고객 후기 → MOU 파트너 → 상담 문의(신청서·연락처·소개 문구·문자 신청·QR)
+- 약력: `CARD.credentials`, 숫자 띠: `CARD.stats`, 고객 후기: `CARD.reviews` (비어 있으면 숨김)
+- 소개 사진: `profile-hero.jpg` (세로 4:5), 카톡 미리보기: `profile.jpg` (정사각형)

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>보험지기 모바일 명함</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="지혜로운 보험생활 보험지기 — 보험금 청구, 보험 재설계 상담, 재무 컨설팅">
-<meta property="og:title" content="지혜로운 보험생활 · 보험지기">
+<meta name="description" content="지혜로운 보험생활 이헌영 지점장 — 보험금 청구, 보험 재설계 상담, 재무 컨설팅">
+<meta property="og:title" content="지혜로운 보험생활 · 이헌영 지점장">
 <meta property="og:description" content="보험금 청구 · 보험 재설계 상담 · 재무 컨설팅. 내 보험, 제대로 알고 제대로 받으세요.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://calmgrou7.github.io/Brief/">
@@ -15,191 +15,207 @@
 <meta property="og:image:height" content="640">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: 한 장의 세로 명함. 상단은 짙은 상록색 '보증서' 밴드(사진·이름), 아래는 업무 카드와 상담 도구가 이어지는 단일 컬럼(최대 480px). */
+/* Layout: 고정 상단바 → 소개(텍스트+세로 사진) → 숫자 띠 → '이런 고민에' 서비스 카드 → 셀프 진단 카드 → 파트너 → 짙은 상록색 문의 구역. 단일 컬럼, 최대 520px. */
 :root{
-  --ink:#10302d;        /* 상록 잉크: 신뢰 */
-  --ink-2:#1d4a45;
-  --brass:#b8913f;      /* 황동: 지혜·보증 */
-  --paper:#f4f6f4;
-  --card:#ffffff;
-  --fg:#18211f;
-  --muted:#5b6a66;
-  --line:#dde4e1;
-  --on-ink:#f1f5f3;
-  --chip:#e8efec;
-  --ok:#2f7a4f; --warn:#a8641a; --bad:#a23a32;
-  --display:"Gowun Batang", "Nanum Myeongjo", "AppleMyungjo", serif;
-  --body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --ink:#10302d;  --ink-2:#1d4a45; --ink-3:#173d39;
+  --brass:#b8913f;
+  --paper:#f6f7f4; --card:#ffffff; --fg:#17201e; --muted:#5b6a66; --line:#dfe5e1;
+  --on-ink:#f1f5f3; --chip:#e9efec; --mint:#2f7a5a; --mint-soft:#e3f1ea;
+  --display:"Gowun Batang","Nanum Myeongjo","AppleMyungjo",serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --ink:#0c2421; --ink-2:#163a36; --brass:#d4b066; --paper:#0f1615; --card:#17201e;
-    --fg:#e6ecea; --muted:#9aaba6; --line:#2a3633; --on-ink:#eef3f1; --chip:#1f2b29;
-    --ok:#6cc391; --warn:#e0a258; --bad:#ec8a80; color-scheme:dark;
+    --ink:#0b211f; --ink-2:#163a36; --ink-3:#12302c; --brass:#d4b066;
+    --paper:#0f1615; --card:#17201e; --fg:#e6ecea; --muted:#9aaba6; --line:#2a3633;
+    --on-ink:#eef3f1; --chip:#1f2b29; --mint:#2e7656; --mint-soft:#15302a; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --ink:#0c2421; --ink-2:#163a36; --brass:#d4b066; --paper:#0f1615; --card:#17201e;
-  --fg:#e6ecea; --muted:#9aaba6; --line:#2a3633; --on-ink:#eef3f1; --chip:#1f2b29;
-  --ok:#6cc391; --warn:#e0a258; --bad:#ec8a80; color-scheme:dark;
+  --ink:#0b211f; --ink-2:#163a36; --ink-3:#12302c; --brass:#d4b066;
+  --paper:#0f1615; --card:#17201e; --fg:#e6ecea; --muted:#9aaba6; --line:#2a3633;
+  --on-ink:#eef3f1; --chip:#1f2b29; --mint:#2e7656; --mint-soft:#15302a; color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--fg);font:15px/1.65 var(--body);word-break:keep-all}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:72px}
+body{margin:0;background:var(--paper);color:var(--fg);font:15px/1.7 var(--body);word-break:keep-all}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--card)}
 img{max-width:100%}
 [hidden]{display:none!important}
 a{color:inherit}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.wrap{max-width:520px;margin:0 auto;padding-left:max(18px, env(safe-area-inset-left, 0px));padding-right:max(18px, env(safe-area-inset-right, 0px))}
 
-.wrap{max-width:480px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:11px 20px;font-weight:600;font-size:14.5px;text-decoration:none;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--on-ink);line-height:1.3}
+.btn.line{background:transparent;color:var(--fg);border-color:var(--fg)}
+.btn.brass{background:var(--brass);border-color:var(--brass);color:#1a1405}
+:root[data-theme="dark"] .btn:not(.line):not(.brass){background:var(--brass);border-color:var(--brass);color:#1a1405}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn:not(.line):not(.brass){background:var(--brass);border-color:var(--brass);color:#1a1405}}
 
-/* ── 상단 밴드 ── */
-.hero{background:var(--ink);color:var(--on-ink);position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;inset:auto -20% -60px -20%;height:120px;background:var(--paper);border-radius:50% 50% 0 0}
-.hero .wrap{padding-block:28px 72px;position:relative;z-index:1;display:grid;gap:18px;justify-items:center;text-align:center}
-.lang{position:absolute;top:14px;right:max(16px, env(safe-area-inset-right, 0px));z-index:3;border:1px solid rgb(255 255 255/.35);background:rgb(255 255 255/.08);color:var(--on-ink);border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;letter-spacing:.04em;cursor:pointer}
-.lang:hover{background:rgb(255 255 255/.16)}
-.brand{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.18em;color:var(--brass);font-weight:600}
-.brand svg{width:18px;height:18px}
-.photo{width:168px;height:168px;border-radius:50%;padding:4px;background:conic-gradient(var(--brass),#e9d7a6,var(--brass));box-shadow:0 10px 30px rgb(0 0 0/.25)}
-.photo img,.photo .ph{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;background:var(--ink-2)}
-.photo .ph{display:grid;place-items:center;color:var(--on-ink);font-size:12px;opacity:.85;text-align:center;line-height:1.4}
-.photo .ph svg{width:56px;height:56px;margin-bottom:4px;opacity:.8}
-.slogan{font-family:var(--display);font-size:15px;opacity:.9;margin:0}
-.name{font-family:var(--display);font-weight:700;font-size:34px;line-height:1.15;margin:0;text-wrap:balance}
-.name .nickline{display:block;font-size:16px;font-weight:700;color:var(--brass);letter-spacing:.06em;margin-bottom:6px}
-.name .nickline[hidden]{display:none}
-.name small{display:block;font-family:var(--body);font-size:14px;font-weight:500;letter-spacing:.02em;opacity:.8;margin-top:6px}
-.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
-.tags span{font-size:12px;padding:4px 10px;border:1px solid rgb(255 255 255/.25);border-radius:999px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:10px;padding-block:12px}
+.top .who{display:flex;align-items:baseline;gap:8px;min-width:0;flex:1}
+.top .who b{font-size:18px;font-weight:700;white-space:nowrap}
+.top .who span{font-size:10.5px;letter-spacing:.2em;color:var(--brass);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lang{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.top .btn{padding:8px 16px;font-size:13.5px}
 
-/* ── 연락 버튼 ── */
-.actions{margin-top:-52px;position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.act{display:grid;justify-items:center;gap:6px;padding:14px 4px 12px;background:var(--card);border:1px solid var(--line);border-radius:14px;text-decoration:none;font-size:12.5px;font-weight:500;cursor:pointer;box-shadow:0 6px 18px rgb(16 48 45/.08)}
-.act svg{width:24px;height:24px;color:var(--ink-2)}
+.hero{padding-block:26px 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 128px;gap:14px;align-items:end;border-bottom:1px solid var(--line)}
+.hero-grid > div{min-width:0;padding-bottom:22px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--brass);font-weight:700;margin:0 0 10px}
+.headline{font-size:clamp(23px,6.8vw,30px);line-height:1.4;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.01em}
+.headline em{font-style:normal;color:var(--brass)}
+.hero-photo{border-radius:18px 18px 0 0;overflow:hidden;aspect-ratio:4/5;max-width:100%;background:var(--ink-2)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.idline{margin:18px 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.idline .nick{font-size:13px;font-weight:700;color:var(--brass);letter-spacing:.06em}
+.idline .nm{font-family:var(--display);font-size:24px;font-weight:700}
+.idline .tt{font-size:14px;color:var(--muted);font-weight:500}
+.intro{margin:12px 0 0;font-size:15px}
+.creds{margin:16px 0 0;padding:2px 0 2px 16px;border-left:3px solid var(--brass);list-style:none;display:grid;gap:4px;font-size:14px;font-weight:600}
+.hero-cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.hero-cta .btn{flex:1 1 140px}
+.selfcheck{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border:1.5px solid var(--mint);background:var(--mint-soft);border-radius:999px;text-decoration:none;font-size:13.5px}
+.selfcheck b{color:var(--mint)}
+:root[data-theme="dark"] .selfcheck b{color:#7fd3a8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .selfcheck b{color:#7fd3a8}}
+.selfcheck svg{width:16px;height:16px;flex:none}
+
+.actions{margin-top:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.act{display:grid;justify-items:center;gap:5px;padding:12px 4px 10px;background:var(--card);border:1px solid var(--line);border-radius:14px;text-decoration:none;font-size:12.5px;font-weight:500;cursor:pointer}
+.act svg{width:22px;height:22px;color:var(--ink-2)}
 :root[data-theme="dark"] .act svg{color:var(--brass)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .act svg{color:var(--brass)}}
-.act:active{transform:translateY(1px)}
-.nums{margin-top:14px;display:grid;grid-template-columns:auto auto auto;justify-content:center;align-items:center;gap:8px 12px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
-.nums .numline{display:contents}
-.nums .numline[hidden]{display:none!important}
-.numline{display:flex;align-items:center;justify-content:center;gap:10px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
-.numline > :first-child{min-width:0}
-.numline b{color:var(--fg);font-weight:600;user-select:all;letter-spacing:.02em}
-.mini{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:3px 10px;font-size:12px;cursor:pointer}
 
-/* ── 섹션 ── */
-section{padding-block:30px 6px}
-.eyebrow{font-size:11.5px;letter-spacing:.2em;color:var(--brass);font-weight:600;margin:0 0 6px}
-h2{font-family:var(--display);font-size:23px;line-height:1.3;margin:0 0 6px;text-wrap:balance}
-.lead{color:var(--muted);margin:0 0 16px;font-size:14px}
+.stats{background:var(--ink);color:var(--on-ink);margin-top:28px}
+.stats .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding-block:24px}
+.stat b{display:block;font-family:var(--display);font-size:clamp(22px,6.4vw,28px);color:var(--brass);line-height:1.2;font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;opacity:.85;line-height:1.4;display:block;margin-top:4px}
 
-/* 업무 카드 */
-.svc{display:grid;gap:10px}
-details.s{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-details.s summary{list-style:none;display:grid;grid-template-columns:44px 1fr 18px;gap:12px;align-items:center;padding:16px;cursor:pointer}
-details.s summary::-webkit-details-marker{display:none}
-.ic{width:44px;height:44px;border-radius:12px;background:var(--chip);display:grid;place-items:center;color:var(--ink-2)}
-.ic svg{width:24px;height:24px}
-:root[data-theme="dark"] .ic{color:var(--brass)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ic{color:var(--brass)}}
-.s h3{margin:0;font-size:16.5px;font-weight:600;line-height:1.35}
-.s .sub{display:block;font-size:13px;color:var(--muted);font-weight:400}
-.chev{width:18px;height:18px;transition:transform .2s;color:var(--muted)}
-details[open] .chev{transform:rotate(180deg)}
-.s .body{padding:0 16px 16px 72px;display:grid;gap:12px;min-width:0}
-.s ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
-.s .who{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;margin:0}
-.cta{justify-self:start;border:0;background:var(--ink);color:var(--on-ink);border-radius:10px;padding:9px 14px;font-size:13.5px;font-weight:500;cursor:pointer}
-:root[data-theme="dark"] .cta{background:var(--brass);color:#1a1405}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cta{background:var(--brass);color:#1a1405}}
+section{padding-block:36px 4px}
+.sec-label{font-size:12px;letter-spacing:.14em;color:var(--brass);font-weight:700;margin:0 0 6px}
+h2{font-size:22px;line-height:1.4;margin:0 0 8px;font-weight:700;text-wrap:balance}
+.lead{color:var(--muted);margin:0 0 18px;font-size:14.5px}
 
-/* 청구 기한 계산기 */
-.tool{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:12px}
-.tool label{font-size:13px;color:var(--muted);display:grid;gap:6px}
-.tool input,.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:11px 12px}
-.result{border-radius:12px;padding:14px;background:var(--chip);display:grid;gap:4px}
-.result .big{font-family:var(--display);font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
-.result.ok .big{color:var(--ok)} .result.warn .big{color:var(--warn)} .result.bad .big{color:var(--bad)}
-.result p{margin:0;font-size:13px;color:var(--muted)}
-.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
-.bar i{display:block;height:100%;background:currentColor}
-.fine{font-size:12px;color:var(--muted);margin:0}
+.pain-list{display:grid;gap:14px}
+.pain{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+.pain-head{background:var(--ink);color:var(--on-ink);padding:14px 20px}
+.pain-head small{display:block;font-size:12px;color:var(--brass);font-weight:700;letter-spacing:.04em}
+.pain-head p{margin:2px 0 0;font-size:16px;font-weight:700;line-height:1.45}
+.pain-body{padding:16px 20px 20px;display:grid;gap:10px}
+.pain-body .aud{font-size:12.5px;font-weight:700;color:var(--brass);letter-spacing:.03em;margin:0}
+.pain-body h3{margin:-6px 0 0;font-size:21px;font-family:var(--display)}
+.pain-body ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14.5px}
+.pain-body li::marker{color:var(--brass)}
+.pain-body .fmt{border-top:1px solid var(--line);padding-top:10px;font-size:13.5px;font-weight:600;margin:0}
+.pain-body .btn{justify-self:start;margin-top:4px}
 
-/* 진행 순서 */
-.steps{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:st}
-.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;padding-bottom:16px;position:relative;counter-increment:st}
-.steps li::before{content:counter(st);width:34px;height:34px;border-radius:50%;border:1.5px solid var(--brass);color:var(--brass);display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--paper);position:relative;z-index:1}
-.steps li:not(:last-child)::after{content:"";position:absolute;left:16.5px;top:34px;bottom:0;width:1px;background:var(--line)}
-.steps b{display:block;font-size:15px}
-.steps span{font-size:13.5px;color:var(--muted)}
+.diag{display:grid;gap:12px}
+.dcard{border-radius:18px;padding:22px 20px;display:grid;gap:12px}
+.dcard.green{background:var(--mint);color:#fff}
+.dcard.navy{background:var(--ink);color:var(--on-ink)}
+.dcard small{font-size:12px;font-weight:700;letter-spacing:.04em;opacity:.9}
+.dcard.navy small{color:var(--brass);opacity:1}
+.dcard h3{margin:-4px 0 0;font-size:20px;line-height:1.4}
+.dcard p{margin:0;font-size:14px;opacity:.92}
+.dcard label{display:grid;gap:6px;font-size:13px;font-weight:600}
+.dcard input[type=date]{width:100%;border:0;border-radius:12px;padding:11px 12px;background:#fff;color:#17201e;color-scheme:light}
+.result{border-radius:14px;padding:14px;background:rgb(255 255 255/.14);display:grid;gap:5px}
+.result .big{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.result.warn{background:rgb(255 214 140/.25)} .result.bad{background:rgb(0 0 0/.2)}
+.result p{font-size:13px}
+.bar{height:6px;border-radius:99px;background:rgb(255 255 255/.25);overflow:hidden}
+.bar i{display:block;height:100%;background:#fff}
+.dcard .fine{font-size:11.5px;opacity:.8;margin:0}
+.nsteps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:n}
+.nsteps li{display:flex;align-items:center;gap:10px;font-size:14px;counter-increment:n}
+.nsteps li::before{content:counter(n);width:24px;height:24px;border-radius:50%;background:var(--brass);color:#1a1405;font-weight:700;font-size:12.5px;display:grid;place-items:center;flex:none}
 
-/* 상담 신청 */
-.form{display:grid;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
-.form label{display:grid;gap:6px;font-size:13px;color:var(--muted)}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form textarea{min-height:84px;resize:vertical}
-.submit{border:0;background:var(--brass);color:#1a1405;font-weight:600;border-radius:12px;padding:13px;cursor:pointer;font-size:15px}
-.out{display:grid;gap:8px;padding:14px;border-radius:12px;background:var(--chip)}
-.out pre{margin:0;white-space:pre-wrap;font:13.5px/1.6 var(--body);user-select:all}
-.out .btns{display:flex;flex-wrap:wrap;gap:8px}
-.out .btns a,.out .btns button{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 12px;font-size:13px;text-decoration:none;cursor:pointer}
+.quotes{display:grid;gap:10px}
+.quote{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px 18px}
+.quote q{display:block;font-weight:700;font-size:15.5px;line-height:1.5}
+.quote span{display:block;font-size:13px;color:var(--muted);margin-top:4px}
 
-.quick{display:grid;gap:8px;margin-bottom:6px}
-.qk{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;text-decoration:none;border:1px solid var(--line);background:var(--card)}
-.qk svg{width:26px;height:26px}
-.qk b{display:block;font-size:15.5px}
-.qk small{font-size:12.5px;color:var(--muted)}
-.qk.form-link{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
-.qk.form-link small{color:var(--on-ink);opacity:.75}
-.qk.kakao-link svg{color:#3c1e1e;background:#fee500;border-radius:10px;padding:6px;width:40px;height:40px}
-.or{text-align:center;font-size:12.5px;color:var(--muted);margin:14px 0 10px}
+.steps4{display:grid;grid-template-columns:1fr 1fr;gap:10px;list-style:none;margin:0;padding:0;counter-reset:s}
+.steps4 li{background:var(--card);color:var(--fg);border-radius:14px;padding:14px;counter-increment:s;display:grid;gap:2px;align-content:start}
+.steps4 li::before{content:counter(s);font-family:var(--display);font-weight:700;color:var(--brass);font-size:20px;line-height:1}
+.steps4 b{font-size:15px}
+.steps4 span{font-size:12.5px;color:var(--muted);line-height:1.5}
 
-/* 공유 */
-.share{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
-#qr{width:116px;height:116px;background:#fff;border-radius:10px;padding:8px;display:grid;place-items:center}
-#qr img,#qr canvas{width:100%!important;height:100%!important}
-.share p{margin:0 0 10px;font-size:13.5px;color:var(--muted)}
-.share .btns{display:flex;flex-wrap:wrap;gap:8px}
-@media (max-width:360px){.share{grid-template-columns:1fr;justify-items:center;text-align:center}.share .btns{justify-content:center}.s .body{padding-left:16px}}
-
-/* MOU 파트너 */
 .pchips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
 .pchips::-webkit-scrollbar{display:none}
 .pchips button{flex:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
 .pchips button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .pchips em{font-style:normal;opacity:.65;margin-left:3px;font-variant-numeric:tabular-nums}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:5px;align-content:start;min-width:0}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:4px;align-content:start;min-width:0}
 .pc.has{grid-column:1/-1}
-.pc .cat{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--brass);font-weight:600;letter-spacing:.04em}
-.pc .mou{font-size:10px;border:1px solid var(--brass);border-radius:4px;padding:0 4px;letter-spacing:.06em}
+.pc .cat{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700}
+.pc .mou{font-size:10px;border:1px solid var(--brass);color:var(--brass);border-radius:4px;padding:0 4px;letter-spacing:.06em}
 .pc .pn{font-weight:600;font-size:15px;line-height:1.35}
 .pc .pp{font-size:13px;color:var(--muted)}
 .pc .pd{font-size:13px}
-.pc.empty .pn{font-size:13px;font-weight:500;color:var(--muted)}
+.pc.empty .pn{font-size:12.5px;font-weight:500;color:var(--muted)}
 .pc .pb{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.pc .pb a,.pc .pb button{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:5px 10px;font-size:12.5px;text-decoration:none;cursor:pointer}
+.pc .pb a,.pc .pb button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 11px;font-size:12.5px;text-decoration:none;cursor:pointer}
 .pc .pb .pri{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
 .pc .tel{font-variant-numeric:tabular-nums;font-size:13px;user-select:all}
 .pnote{font-size:12.5px;color:var(--muted);margin:12px 0 0}
 details.reg{margin-top:14px;background:var(--card);border:1px dashed var(--brass);border-radius:16px}
-details.reg summary{cursor:pointer;padding:14px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details.reg summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 details.reg summary::-webkit-details-marker{display:none}
 details.reg summary span{font-weight:400;font-size:12.5px;color:var(--muted)}
-details.reg .form{border:0;border-top:1px solid var(--line);border-radius:0 0 16px 16px}
-@media (max-width:340px){.pgrid{grid-template-columns:1fr}}
 
-footer{padding-block:28px 40px;font-size:11.5px;color:var(--muted);display:grid;gap:6px;border-top:1px solid var(--line);margin-top:30px}
+.form{display:grid;gap:10px;padding:0 18px 18px}
+.form label{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:11px 12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form textarea{min-height:84px;resize:vertical}
+.submit{border:0;background:var(--brass);color:#1a1405;font-weight:700;border-radius:12px;padding:13px;cursor:pointer;font-size:15px}
+.out{display:grid;gap:8px;padding:14px;border-radius:12px;background:var(--chip)}
+.out pre{margin:0;white-space:pre-wrap;font:13.5px/1.6 var(--body);user-select:all;color:var(--fg)}
+.out .btns{display:flex;flex-wrap:wrap;gap:8px}
+.out .btns a,.out .btns button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px;font-size:13px;text-decoration:none;cursor:pointer;color:var(--fg)}
+
+.contact{background:var(--ink);color:var(--on-ink);margin-top:40px}
+.contact .wrap{padding-block:36px 40px}
+.contact h2{font-size:23px}
+.contact .lead{color:var(--on-ink);opacity:.8}
+.cgroup{display:grid;gap:6px;margin-top:22px}
+.cgroup > small{font-size:12px;color:var(--brass);font-weight:700;letter-spacing:.06em}
+.cgroup .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgb(255 255 255/.55);border-radius:999px;padding:10px 18px;font-weight:700;font-size:15px;text-decoration:none;font-variant-numeric:tabular-nums;color:var(--on-ink)}
+.pill svg{width:16px;height:16px}
+.mini{border:1px solid rgb(255 255 255/.35);background:transparent;color:var(--on-ink);border-radius:8px;padding:5px 10px;font-size:12.5px;cursor:pointer}
+.refcard{margin-top:28px;background:var(--card);color:var(--fg);border-radius:18px;padding:20px;display:grid;gap:12px}
+.refcard h3{margin:0;font-size:16px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+.refcard h3 span{font-size:12.5px;color:var(--brass);font-weight:700}
+.refcard p{margin:0;font-size:14.5px;line-height:1.75}
+.refcard .btn{justify-self:start}
+details.sms{margin-top:14px;background:var(--card);color:var(--fg);border-radius:18px}
+details.sms summary{cursor:pointer;padding:16px 20px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:8px}
+details.sms summary::-webkit-details-marker{display:none}
+details.sms summary::after{content:"+";color:var(--brass);font-size:18px;line-height:1}
+details.sms[open] summary::after{content:"−"}
+.share{margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;background:var(--ink-3);border:1px solid rgb(255 255 255/.12);border-radius:18px;padding:16px}
+#qr{width:108px;height:108px;background:#fff;border-radius:10px;padding:7px;display:grid;place-items:center;color:#10302d;font-size:12px}
+#qr img,#qr canvas{width:100%!important;height:100%!important}
+.share p{margin:0 0 10px;font-size:13.5px;opacity:.85}
+.share .row{display:flex;flex-wrap:wrap;gap:8px}
+
+footer{background:var(--ink);color:var(--on-ink);border-top:1px solid rgb(255 255 255/.12)}
+footer .wrap{padding-block:20px calc(28px + env(safe-area-inset-bottom,0px));display:grid;gap:6px;font-size:11.5px;opacity:.75}
 footer p{margin:0}
 
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--fg);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--fg);color:var(--paper);padding:10px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1}
-@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media (max-width:360px){.hero-grid{grid-template-columns:1fr 100px}.share{grid-template-columns:1fr;justify-items:center;text-align:center}.pgrid{grid-template-columns:1fr}.top .who span{display:none}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -209,261 +225,296 @@ footer p{margin:0}
 window.CARD = {
   brand:   "지혜로운 보험생활",
   nick:    "보험지기",
-  name:    "이헌영",                   // 실명 (예: "홍길동")  비워두면 표시 안 함
-  title:   "지점장",                   // 직함
-  // 영문 표기
-  brandEn: "Wise Insurance Life",
-  nickEn:  "Bohumjigi",
-  nameEn:  "Heon-young Lee",                         // 영문 실명 (예: "Gildong Hong")
-  titleEn: "Branch Manager",
-  companyEn: "",
+  name:    "이헌영",
+  title:   "지점장",
   company: "",                         // 소속 (예: "○○보험대리점")
   regNo:   "",                         // 보험설계사 등록번호
   phone:   "010-8950-6400",            // 휴대폰
   phone2:  "0504-006-6400",            // 팩스 (비우면 표시 안 함)
-  kakao:   "https://open.kakao.com/o/suQkQBlh",                         // 카카오톡 오픈채팅/채널 링크 (https://open.kakao.com/...)
+  kakao:   "https://open.kakao.com/o/suQkQBlh",
   email:   "niea7@naver.com",
   blog:    "",                         // 블로그·유튜브 등 링크
-  formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfuAciYtvjiQBeeHcd75yWoDb-eVGe7M9wBaNgFrBmfpeqQnw/viewform", // 구글 폼 상담 신청
-  photo:   "profile.jpg",              // 같은 폴더에 얼굴 사진을 이 이름으로 넣으세요
+  formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSfuAciYtvjiQBeeHcd75yWoDb-eVGe7M9wBaNgFrBmfpeqQnw/viewform",
+  photo:   "profile-hero.jpg",
   shareUrl:"",                         // 명함 공개 주소 (QR코드에 사용). 비우면 현재 주소
 
-  // ── MOU 협약 파트너 ──────────────────────────────
-  // 분야 목록 (순서대로 표시). 새 분야는 여기에 추가하세요.
+  // 영문 표기
+  brandEn: "Wise Insurance Life",
+  nickEn:  "Bohumjigi",
+  nameEn:  "Heon-young Lee",
+  titleEn: "Branch Manager",
+  companyEn: "",
+
+  // 소개 아래 약력 (한 줄씩). 자격증·경력이 생기면 추가하세요
+  credentials: [
+    { ko: "지혜로운 보험생활 지점장", en: "Branch Manager, Wise Insurance Life" },
+    { ko: "보험금 청구 · 보험 재설계 · 재무 컨설팅", en: "Insurance claims · Policy review · Financial consulting" }
+  ],
+  // 숫자 띠. 실제 경력 숫자(예: 경력 연수, 상담 건수)로 바꿔도 됩니다
+  stats: [
+    { num: "3년", numEn: "3 yrs", label: "보험금 청구 가능 기간", labelEn: "Window to file a claim" },
+    { num: "4가지", numEn: "4", label: "전문 상담 분야", labelEn: "Service areas" },
+    { num: "{partners}개", numEn: "{partners}", label: "MOU 협약 분야", labelEn: "Partner fields" }
+  ],
+  // 고객 후기. 비어 있으면 후기 구역이 숨겨집니다
+  // 예) { quote:"몰랐던 보험금을 찾았어요", quoteEn:"...", who:"40대 직장인 · 보험금 청구", whoEn:"..." }
+  reviews: [
+  ],
+
+  // ── MOU 협약 파트너 ──
   partnerCats: ["병원","세무사","노무사","골프회원권","공인중개사","변리사","감정평가사","식당","학원","제조업","쇼핑몰","기타 전문가"],
-  // 등록된 파트너. mode: "direct" = 연락처 공개 / "via" = 보험지기 통해 연결
-  // 예) { cat:"세무사", name:"○○세무회계", person:"김○○ 세무사", desc:"법인·개인사업자 기장, 절세 상담", phone:"02-000-0000", url:"", mode:"direct" },
-  // 분야 영문 이름
   partnerCatsEn: {"병원":"Hospital & Clinic","세무사":"Tax Accountant","노무사":"Labor Attorney","골프회원권":"Golf Membership","공인중개사":"Real Estate Agent","변리사":"Patent Attorney","감정평가사":"Appraiser","식당":"Restaurant","학원":"Academy","제조업":"Manufacturing","쇼핑몰":"Online Store","기타 전문가":"Other Experts","기타":"Other"},
-  // 파트너마다 nameEn, personEn, descEn 을 넣으면 영문 화면에 표시됩니다
+  // mode: "direct" = 연락처 공개 / "via" = 지점장 통해 연결. nameEn·personEn·descEn은 영문 화면용
+  // 예) { cat:"세무사", name:"○○세무회계", person:"김○○ 세무사", desc:"개인사업자 기장·절세", phone:"02-000-0000", url:"", mode:"direct" },
   partners: [
   ]
 };
 </script>
 <!-- ▲▲▲ ─────────────────────────────── ▲▲▲ -->
 
-<header class="hero">
+<header class="top">
   <div class="wrap">
-    <button class="lang" id="langBtn" type="button" aria-label="Switch language">EN</button>
-    <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
-      <span id="brand">지혜로운 보험생활</span>
-    </div>
-    <div class="photo">
-      <img id="photo" alt="보험지기 프로필 사진" data-en-alt="Bohumjigi profile photo" hidden>
-      <div class="ph" id="photoPh"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><br>사진 영역<br>profile.jpg</div></div>
-    </div>
-    <p class="slogan" data-en="Know your coverage. Get what you&#x27;re owed.">내 보험, 제대로 알고 제대로 받으세요</p>
-    <h1 class="name"><span class="nickline" id="nick">보험지기</span><span id="nameBig"></span><small id="nameLine">지점장</small></h1>
-    <div class="tags"><span data-en="#InsuranceClaims">#보험금청구</span><span data-en="#PolicyReview">#보험재설계</span><span data-en="#FinancialPlanning">#재무컨설팅</span><span data-en="#CoverageAnalysis">#보장분석</span></div>
+    <div class="who"><b id="topName">이헌영</b><span id="topNick">BOHUMJIGI</span></div>
+    <button class="lang" id="langBtn" type="button">EN</button>
+    <a class="btn" href="#contact" data-en="Contact">상담 문의</a>
   </div>
 </header>
 
-<main class="wrap">
-  <nav class="actions" aria-label="연락하기" data-en-aria="Contact">
-    <a class="act" id="aCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span data-en="Call">전화</span></a>
-    <a class="act" id="aSms" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.6A8 8 0 1121 12z"/></svg><span data-en="Text">문자</span></a>
-    <a class="act" id="aKakao" href="#consult" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg><span data-en="KakaoTalk">카카오톡</span></a>
-    <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg><span data-en="Save contact">연락처 저장</span></button>
-  </nav>
-  <div class="nums">
-    <div class="numline"><span data-en="Mobile">휴대폰</span> <b id="phoneTxt">010-8950-6400</b> <button class="mini" type="button" id="copyPhone" data-en="Copy">복사</button></div>
-    <div class="numline" id="phone2Row"><span data-en="Fax">팩스</span> <b id="phone2Txt">0504-006-6400</b> <button class="mini" type="button" id="copyPhone2" data-en="Copy">복사</button></div>
-    <div class="numline" id="emailRow"><span data-en="Email">이메일</span> <b id="emailTxt">niea7@naver.com</b> <button class="mini" type="button" id="copyEmail" data-en="Copy">복사</button></div>
-  </div>
+<main>
+  <section class="hero" aria-labelledby="headline">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow" data-en="CLAIMS · POLICY REVIEW · FINANCES">보험금 청구 · 보험 재설계 · 재무</p>
+          <h1 class="headline" id="headline" data-en-html="Find the <em>benefits</em> you missed. Stop wasted <em>premiums</em>. Plan your family's <em>future</em>."><em>놓친 보험금</em>은 찾고<br><em>새는 보험료</em>는 막고<br>가족의 <em>미래</em>를 설계합니다.</h1>
+        </div>
+        <div class="hero-photo"><img id="photo" alt="이헌영 지점장 프로필 사진" data-en-alt="Profile photo of Heon-young Lee"></div>
+      </div>
+      <p class="idline"><span class="nick" id="nick">보험지기</span><span class="nm" id="nameBig">이헌영</span><span class="tt" id="nameLine">지점장</span></p>
+      <p class="intro" data-en="Insurance matters most after you sign. I help you use the policies you already have, keep only the coverage you need, and plan your household's money with the same care.">보험은 가입보다 관리가 더 중요합니다. 이미 가입한 보험을 제대로 쓰고, 꼭 필요한 보장만 남기고, 가정의 돈 흐름까지 함께 설계해 드립니다.</p>
+      <ul class="creds" id="creds"></ul>
+      <div class="hero-cta">
+        <a class="btn" href="#contact" data-en="Request a consultation">상담 신청하기</a>
+        <a class="btn line" href="#services" data-en="See services">상담 분야 보기</a>
+      </div>
+      <a class="selfcheck" href="#diag"><span><span data-en="Visited a hospital?">병원 다녀오셨나요?</span> <b data-en="1-minute claim deadline check">1분 청구 기한 확인</b></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+
+      <nav class="actions" aria-label="연락하기" data-en-aria="Contact">
+        <a class="act" id="aCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span data-en="Call">전화</span></a>
+        <a class="act" id="aSms" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1.1-4.6A8 8 0 1121 12z"/></svg><span data-en="Text">문자</span></a>
+        <a class="act" id="aKakao" href="#contact" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg><span data-en="KakaoTalk">카카오톡</span></a>
+        <button class="act" id="aSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3 20c1.2-3.5 3.8-5 7-5s5.8 1.5 7 5"/><path d="M19 8v6M16 11h6"/></svg><span data-en="Save contact">연락처 저장</span></button>
+      </nav>
+    </div>
+  </section>
+
+  <div class="stats" aria-label="주요 숫자" data-en-aria="Key numbers"><div class="wrap" id="stats"></div></div>
 
   <section id="services" aria-labelledby="h-svc">
-    <p class="eyebrow">SERVICES</p>
-    <h2 id="h-svc" data-en="How I can help">이런 일을 도와드립니다</h2>
-    <p class="lead" data-en="Tap a service for details. Feel free to reach out anytime, with no pressure.">궁금한 항목을 눌러 자세히 보세요. 상담은 부담 없이 시작하셔도 됩니다.</p>
-    <div class="svc">
+    <div class="wrap">
+      <p class="sec-label" data-en="SERVICES">상담 분야</p>
+      <h2 id="h-svc" data-en="It starts with your real concern">고객님의 고민에서 상담을 시작합니다</h2>
+      <p class="lead" data-en="I first listen to your situation, then look at your policies and household finances together. Consultations are available by phone, KakaoTalk, or in person.">먼저 지금 상황을 듣고, 가입한 보험과 가정의 돈 흐름을 함께 봅니다. 전화 · 카카오톡 · 방문 상담 모두 가능합니다.</p>
+      <div class="pain-list">
 
-      <details class="s" open>
-        <summary>
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/></svg></span>
-          <span><h3 data-en="Insurance Claims">보험금 청구</h3><span class="sub" data-en="Unclaimed benefits and tricky paperwork, handled together">놓친 보험금, 어려운 서류까지 함께</span></span>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </summary>
-        <div class="body">
-          <p class="who" data-en="Who it&#x27;s for">이런 분께</p>
-          <ul>
-            <li data-en="Not sure what you can claim after a hospital stay, surgery, or outpatient visit">입원·수술·통원 후 무엇을 청구할 수 있는지 모르는 분</li>
-            <li data-en="Confused by documents like medical certificates and itemized bills">진단서, 진료비 세부내역서 등 필요 서류가 헷갈리는 분</li>
-            <li data-en="Visited a hospital in the past 3 years but never filed a claim">지난 3년 안에 병원 다녀온 기록이 있는데 청구를 안 하신 분</li>
-            <li data-en="Had a claim reduced or denied and want to know why">보험금이 삭감·부지급되어 이유가 궁금한 분</li>
-          </ul>
-          <button class="cta" type="button" data-topic="보험금 청구" data-en="Request claim help">보험금 청구 상담 신청</button>
-        </div>
-      </details>
+        <article class="pain">
+          <div class="pain-head"><small data-en="If this sounds familiar">이런 고민에</small><p data-en="I went to the hospital, but I don't know what I can claim.">병원은 다녀왔는데, 무엇을 청구해야 할지 모르겠습니다</p></div>
+          <div class="pain-body">
+            <p class="aud" data-en="After a hospital stay · surgery · outpatient visit">입원 · 수술 · 통원 이후</p>
+            <h3 data-en="Insurance Claims">보험금 청구</h3>
+            <ul>
+              <li data-en="Find what you can claim from hospital visits in the last 3 years">지난 3년 진료 기록 중 청구 가능한 항목 찾기</li>
+              <li data-en="Guidance on medical certificates and itemized bills">진단서 · 진료비 세부내역서 등 서류 안내</li>
+              <li data-en="Find out why a claim was reduced or denied">삭감 · 부지급된 보험금 사유 확인</li>
+            </ul>
+            <p class="fmt" data-en="Claim review · Document guidance · Follow-up until payout">청구 점검 · 서류 안내 · 지급까지 진행 확인</p>
+            <button class="btn" type="button" data-topic="보험금 청구" data-en="Ask about a claim ↗">보험금 청구 문의하기 ↗</button>
+          </div>
+        </article>
 
-      <details class="s">
-        <summary>
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0113.7-5.7L20 8"/><path d="M20 3v5h-5"/><path d="M20 12a8 8 0 01-13.7 5.7L4 16"/><path d="M4 21v-5h5"/></svg></span>
-          <span><h3 data-en="Policy Review &amp; Redesign">보험 재설계 상담</h3><span class="sub" data-en="Cut the overlaps, fill the gaps">중복은 줄이고, 빈 곳은 채우고</span></span>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </summary>
-        <div class="body">
-          <p class="who" data-en="Who it&#x27;s for">이런 분께</p>
-          <ul>
-            <li data-en="Paying high premiums without knowing what you&#x27;re covered for">매달 보험료는 많이 내는데 보장 내용을 잘 모르는 분</li>
-            <li data-en="Want to check that your medical, cancer, stroke, and heart coverage is enough">실손·암·뇌·심장 보장이 충분한지 점검하고 싶은 분</li>
-            <li data-en="Worried about rising premiums on renewable policies">갱신형 보험료 인상이 걱정되는 분</li>
-            <li data-en="Going through marriage, a new baby, or retirement and need coverage to match">결혼·출산·은퇴 등 생활이 바뀌어 보장을 다시 맞추고 싶은 분</li>
-          </ul>
-          <p class="fine" data-en="Cancelling an existing policy can cost you, so I first compare keeping, reducing, or adding coverage to find what works best.">기존 계약 해지는 손해가 생길 수 있어, 유지·감액·추가 중 유리한 방법을 먼저 비교해 드립니다.</p>
-          <button class="cta" type="button" data-topic="보험 재설계" data-en="Request a policy review">재설계 상담 신청</button>
-        </div>
-      </details>
+        <article class="pain">
+          <div class="pain-head"><small data-en="If this sounds familiar">이런 고민에</small><p data-en="Premiums leave my account every month, but I don't really know what I'm covered for.">보험료는 매달 나가는데, 보장 내용은 잘 모릅니다</p></div>
+          <div class="pain-body">
+            <p class="aud" data-en="Breadwinners · dual-income couples · pre-retirees">가장 · 맞벌이 · 은퇴 준비</p>
+            <h3 data-en="Policy Review & Redesign">보험 재설계</h3>
+            <ul>
+              <li data-en="Check for overlapping or missing coverage">중복 보장과 빈 보장 점검</li>
+              <li data-en="Medical, cancer, stroke, and heart coverage review">실손 · 암 · 뇌 · 심장 보장 확인</li>
+              <li data-en="Plan ahead for renewal premium increases">갱신형 보험료 인상 대비</li>
+            </ul>
+            <p class="fmt" data-en="Compare keeping · reducing · adding before any cancellation">해지 전 유지 · 감액 · 추가 방법부터 비교</p>
+            <button class="btn" type="button" data-topic="보험 재설계" data-en="Ask about a review ↗">재설계 상담 문의하기 ↗</button>
+          </div>
+        </article>
 
-      <details class="s">
-        <summary>
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
-          <span><h3 data-en="Financial Consulting">재무 컨설팅</h3><span class="sub" data-en="From cash flow to retirement">현금흐름부터 노후 준비까지</span></span>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </summary>
-        <div class="body">
-          <p class="who" data-en="Who it&#x27;s for">이런 분께</p>
-          <ul>
-            <li data-en="Not sure where your paycheck goes each month">월급이 들어와도 어디로 새는지 모르는 분</li>
-            <li data-en="Planning for a home, your children&#x27;s education, or retirement">내 집 마련·자녀 교육·노후 자금 계획을 세우고 싶은 분</li>
-            <li data-en="Deciding how to split money between pensions, savings, and investments">연금·저축·투자 비중을 어떻게 나눌지 고민인 분</li>
-            <li data-en="Self-employed or freelancing with an irregular income">1인 사업자·프리랜서로 소득이 일정하지 않은 분</li>
-          </ul>
-          <button class="cta" type="button" data-topic="재무 컨설팅" data-en="Request financial consulting">재무 컨설팅 신청</button>
-        </div>
-      </details>
+        <article class="pain">
+          <div class="pain-head"><small data-en="If this sounds familiar">이런 고민에</small><p data-en="I earn money, but it never seems to add up.">돈은 버는데, 모이지 않습니다</p></div>
+          <div class="pain-body">
+            <p class="aud" data-en="Employees · sole proprietors · freelancers">직장인 · 1인 사업자 · 프리랜서</p>
+            <h3 data-en="Financial Consulting">재무 컨설팅</h3>
+            <ul>
+              <li data-en="See where your monthly cash flow is leaking">월 현금흐름 진단과 새는 돈 찾기</li>
+              <li data-en="Plan for a home, education, and other goals">내 집 마련 · 자녀 교육 목적자금 계획</li>
+              <li data-en="Balance pensions, savings, and investments for retirement">연금 · 저축 · 투자 비중과 노후 준비</li>
+            </ul>
+            <p class="fmt" data-en="Cash flow review · Goal-based planning · Retirement">현금흐름 진단 · 목적자금 설계 · 노후 준비</p>
+            <button class="btn" type="button" data-topic="재무 컨설팅" data-en="Ask about financial planning ↗">재무 컨설팅 문의하기 ↗</button>
+          </div>
+        </article>
 
-      <details class="s">
-        <summary>
-          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><circle cx="11.5" cy="11.5" r="2.8"/><path d="M13.6 13.6L16 16"/></svg></span>
-          <span><h3 data-en="Free Coverage Analysis">무료 보장 분석</h3><span class="sub" data-en="All your policies on one page">가입한 보험을 한 장으로 정리</span></span>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </summary>
-        <div class="body">
-          <ul>
-            <li data-en="Policies spread across several insurers, organized in one place">여러 회사에 흩어진 보험을 한 번에 정리해 드립니다</li>
-            <li data-en="Diagnosis, surgery, hospitalization, and medical expense cover compared side by side">진단비·수술비·입원비·실손 보장을 표로 비교합니다</li>
-            <li data-en="Your whole family&#x27;s coverage can be reviewed together">가족 전체 보장도 함께 점검할 수 있습니다</li>
-          </ul>
-          <button class="cta" type="button" data-topic="보장 분석" data-en="Request coverage analysis">보장 분석 신청</button>
-        </div>
-      </details>
+        <article class="pain">
+          <div class="pain-head"><small data-en="If this sounds familiar">이런 고민에</small><p data-en="My policies are spread across several insurers and I've lost track.">여러 회사 보험이 흩어져 무엇이 있는지 모릅니다</p></div>
+          <div class="pain-body">
+            <p class="aud" data-en="Individuals · whole family">개인 · 가족 전체</p>
+            <h3 data-en="Free Coverage Analysis">무료 보장 분석</h3>
+            <ul>
+              <li data-en="All your policies organized on one page">가입한 보험을 한 장으로 정리</li>
+              <li data-en="Diagnosis, surgery, and hospitalization cover compared side by side">진단비 · 수술비 · 입원비 보장을 표로 비교</li>
+              <li data-en="Your family's coverage reviewed together">가족 보장 통합 점검</li>
+            </ul>
+            <p class="fmt" data-en="Free · One-page report · Family review">무료 · 한 장 리포트 · 가족 통합 점검</p>
+            <button class="btn" type="button" data-topic="보장 분석" data-en="Request an analysis ↗">보장 분석 신청하기 ↗</button>
+          </div>
+        </article>
+      </div>
     </div>
   </section>
 
-  <section id="claim-check" aria-labelledby="h-claim">
-    <p class="eyebrow">CLAIM CHECK</p>
-    <h2 id="h-claim" data-en="Can I still file my claim?">내 보험금, 아직 청구할 수 있을까?</h2>
-    <p class="lead" data-en="In Korea, the right to claim insurance benefits expires 3 years after the incident or treatment date. Enter a date to see how much time is left.">보험금 청구권은 사고(진료)일로부터 3년이 지나면 소멸시효가 완성됩니다. 날짜를 넣어 남은 기간을 확인해 보세요.</p>
-    <div class="tool">
-      <label for="cDate"><span data-en="Treatment or incident date">진료·사고 날짜</span>
-        <input type="date" id="cDate">
-      </label>
-      <div class="result" id="cRes" aria-live="polite"></div>
-      <p class="fine" data-en="General guidance based on Article 662 of the Korean Commercial Act. The actual start date and payout depend on your policy terms and circumstances.">상법 제662조 기준 일반적인 안내이며, 실제 기산일과 지급 여부는 약관과 사안에 따라 달라질 수 있습니다.</p>
+  <section id="diag" aria-labelledby="h-diag">
+    <div class="wrap">
+      <p class="sec-label" data-en="SELF CHECK">셀프 진단</p>
+      <h2 id="h-diag" data-en="Check it yourself first">먼저 가볍게 확인해 보세요</h2>
+      <div class="diag">
+        <div class="dcard green">
+          <small data-en="Free · 1 minute · instant result">무료 · 1분 · 결과는 바로</small>
+          <h3 data-en="Can I still file my claim?">내 보험금, 아직 청구할 수 있을까?</h3>
+          <p data-en="In Korea, the right to claim insurance benefits expires 3 years after the incident or treatment date.">보험금 청구권은 사고(진료)일로부터 3년이 지나면 소멸시효가 완성됩니다.</p>
+          <label for="cDate"><span data-en="Treatment or incident date">진료 · 사고 날짜</span><input type="date" id="cDate"></label>
+          <div class="result" id="cRes" aria-live="polite"></div>
+          <p class="fine" data-en="General guidance based on Article 662 of the Korean Commercial Act. The actual start date and payout depend on your policy terms.">상법 제662조 기준 일반 안내이며, 실제 기산일과 지급 여부는 약관과 사안에 따라 다릅니다.</p>
+        </div>
+        <div class="dcard navy">
+          <small data-en="Coverage analysis · free">보장 분석 · 무료</small>
+          <h3 data-en="See all your coverage on one page">내 보험, 한 장으로 정리해 드립니다</h3>
+          <ol class="nsteps">
+            <li data-en="Apply online">온라인 신청</li>
+            <li data-en="Coverage analysis report">보장 분석 리포트</li>
+            <li data-en="1:1 consultation">1:1 상담</li>
+          </ol>
+          <button class="btn brass" type="button" data-topic="보장 분석" data-en="Apply for an analysis →" style="justify-self:start">보장 분석 신청하기 →</button>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section aria-labelledby="h-steps">
-    <p class="eyebrow">HOW IT WORKS</p>
-    <h2 id="h-steps" data-en="How a consultation works">상담은 이렇게 진행됩니다</h2>
-    <ol class="steps">
-      <li><div><b data-en="Get in touch">문의</b><span data-en="Call, text, message on KakaoTalk, or use the form below.">전화·문자·카카오톡 또는 아래 신청서로 편하게 연락 주세요.</span></div></li>
-      <li><div><b data-en="Coverage Analysis">보장 분석</b><span data-en="I review your policies and medical records to see where you stand.">가입 내역과 진료 기록을 확인해 현재 상태를 정리합니다.</span></div></li>
-      <li><div><b data-en="Tailored advice">맞춤 제안</b><span data-en="Claimable items, policy changes, and financial plans explained in plain language.">청구 가능 항목, 재설계 방향, 재무 계획을 쉬운 말로 설명드립니다.</span></div></li>
-      <li><div><b data-en="Ongoing care">꾸준한 관리</b><span data-en="I keep track of claim progress and renewal dates for you.">청구 진행 상황과 갱신 시점을 계속 챙겨 드립니다.</span></div></li>
-    </ol>
-  </section>
-
-  <section id="consult" aria-labelledby="h-form">
-    <p class="eyebrow">CONSULTATION</p>
-    <h2 id="h-form" data-en="Request a consultation">상담 신청</h2>
-    <p class="lead" data-en="Choose the quickest way for you. The form below creates a message you can text or paste into KakaoTalk.">작성하시면 보낼 문자 내용이 만들어집니다. 그대로 보내거나 복사해서 카카오톡에 붙여 넣으세요.</p>
-    <div class="quick" id="quick">
-      <a class="qk form-link" id="qForm" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h10v18H7z"/><path d="M10 8h4M10 12h4M10 16h2"/></svg>
-        <span><b data-en="Online consultation form">온라인 상담 신청서</b><small data-en="Google Form · takes about a minute">구글 폼 · 1분이면 작성 완료</small></span>
-      </a>
-      <a class="qk kakao-link" id="qKakao" href="#" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4C6.9 4 3 7.2 3 11.1c0 2.5 1.6 4.6 4.1 5.9l-.9 3.3c-.1.3.3.5.5.3l3.9-2.6c.5.1.9.1 1.4.1 5.1 0 9-3.2 9-7.1S17.1 4 12 4z"/></svg>
-        <span><b data-en="KakaoTalk Open Chat">카카오톡 오픈채팅</b><small data-en="Send photos and documents right away">사진·서류도 바로 보낼 수 있어요</small></span>
-      </a>
-    </div>
-    <p class="or" data-en="Or write below and send it as a text message">또는 아래에 적어서 문자로 보내기</p>
-    <form class="form" id="form" novalidate>
-      <div class="row2">
-        <label for="fName"><span data-en="Name">성함</span><input id="fName" required autocomplete="name" placeholder="홍길동" data-en-ph="Jane Kim"></label>
-        <label for="fPhone"><span data-en="Phone">연락처</span><input id="fPhone" type="tel" autocomplete="tel" placeholder="010-1234-5678"></label>
-      </div>
-      <label for="fTopic"><span data-en="Topic">상담 주제</span>
-        <select id="fTopic">
-          <option value="보험금 청구" data-en="Insurance Claims">보험금 청구</option><option value="보험 재설계" data-en="Policy Review">보험 재설계</option><option value="재무 컨설팅" data-en="Financial Consulting">재무 컨설팅</option><option value="보장 분석" data-en="Coverage Analysis">보장 분석</option><option value="파트너 연결" data-en="Partner Referral">파트너 연결</option><option value="기타" data-en="Other">기타</option>
-        </select>
-      </label>
-      <label for="fTime"><span data-en="Best time to call">통화 편한 시간</span>
-        <select id="fTime"><option data-en="Anytime">언제든 괜찮아요</option><option data-en="Morning (9am–12pm)">오전 (9~12시)</option><option data-en="Afternoon (12–6pm)">오후 (12~18시)</option><option data-en="Evening (after 6pm)">저녁 (18시 이후)</option></select>
-      </label>
-      <label for="fMsg"><span data-en="Message (optional)">간단한 내용 (선택)</span><textarea id="fMsg" placeholder="예) 지난달 무릎 수술했는데 청구 가능한지 궁금해요" data-en-ph="e.g. I had knee surgery last month. Can I still claim?"></textarea></label>
-      <button class="submit" type="submit" data-en="Create request message">신청 문자 만들기</button>
-      <div class="out" id="out" hidden>
-        <pre id="outTxt"></pre>
-        <div class="btns"><a id="outSms" href="#" data-en="Send as text">문자로 보내기</a><button type="button" id="outCopy" data-en="Copy text">내용 복사</button></div>
-      </div>
-    </form>
-  </section>
-
-  <section aria-labelledby="h-share">
-    <p class="eyebrow">SHARE</p>
-    <h2 id="h-share" data-en="Share this card">명함 공유하기</h2>
-    <div class="share">
-      <div id="qr" aria-label="명함 QR코드" data-en-aria="QR code for this card"></div>
-      <div>
-        <p data-en="Show the QR code or send the link. I&#x27;d be grateful if you pass it on to anyone who could use some help.">QR코드를 보여주거나 링크를 보내 주세요. 주변에 도움이 필요한 분께 전해 주시면 감사하겠습니다.</p>
-        <div class="btns"><button class="mini" type="button" id="shareBtn" data-en="Share">공유하기</button><button class="mini" type="button" id="copyLink" data-en="Copy link">링크 복사</button></div>
-      </div>
+  <section id="reviews" aria-labelledby="h-rev" hidden>
+    <div class="wrap">
+      <p class="sec-label" data-en="CLIENT VOICES">고객의 말</p>
+      <h2 id="h-rev" data-en="What clients said after consulting">상담 후 남겨 주신 말</h2>
+      <div class="quotes" id="quotes"></div>
     </div>
   </section>
 
   <section id="partners" aria-labelledby="h-partners">
-    <p class="eyebrow">MOU PARTNERS</p>
-    <h2 id="h-partners" data-en="MOU Partners &amp; Experts">함께하는 협약 기관·전문가</h2>
-    <p class="lead" data-en="Business owners who have signed a partnership agreement (MOU) with Bohumjigi. Tell me what you need and I&#x27;ll connect you with someone I trust.">보험지기와 업무협약(MOU)을 맺은 대표님들입니다. 필요한 분야를 말씀해 주시면 믿을 수 있는 분께 직접 연결해 드립니다.</p>
-    <div class="pchips" id="pChips" role="group" aria-label="분야 선택" data-en-aria="Choose a field"></div>
-    <div class="pgrid" id="pGrid"></div>
-    <p class="pnote" data-en="&#x27;Request intro&#x27; takes you to the consultation form. For partners without public contact details, I check with them first and then make the introduction.">'연결 요청'을 누르면 상담 신청서로 이동합니다. 연락처가 공개되지 않은 파트너는 보험지기가 먼저 확인한 뒤 연결해 드립니다.</p>
-
-    <details class="reg" id="regBox">
-      <summary><b data-en="Apply as a partner">파트너 등록 신청</b> <span data-en="For business owners · listed after review">대표님용 · 검토 후 게재</span></summary>
-      <form class="form" id="rForm" novalidate>
-        <div class="row2">
-          <label for="rBiz"><span data-en="Business name">상호</span><input id="rBiz" placeholder="○○세무회계" data-en-ph="ABC Tax Office"></label>
-          <label for="rName"><span data-en="Owner name &amp; title">대표자 성함·직함</span><input id="rName" placeholder="김○○ 세무사" data-en-ph="Jin Kim, Tax Accountant"></label>
-        </div>
-        <div class="row2">
-          <label for="rCat"><span data-en="Field">분야</span><select id="rCat"></select></label>
-          <label for="rPhone"><span data-en="Phone">연락처</span><input id="rPhone" type="tel" placeholder="010-1234-5678"></label>
-        </div>
-        <label for="rDesc"><span data-en="One-line intro">한 줄 소개</span><input id="rDesc" placeholder="예) 개인사업자 기장·종합소득세 신고 전문" data-en-ph="e.g. Bookkeeping and tax filing for sole proprietors"></label>
-        <label for="rMode"><span data-en="Contact visibility">연락처 공개 방식</span>
-          <select id="rMode"><option value="direct" data-en="Show my contact on the card">명함에 연락처 공개</option><option value="via" data-en="Introductions through Bohumjigi only">보험지기 통해서만 연결</option></select>
-        </label>
-        <label for="rUrl"><span data-en="Website or blog (optional)">홈페이지·블로그 (선택)</span><input id="rUrl" type="url" placeholder="https://"></label>
-        <button class="submit" type="submit" data-en="Create application message">등록 신청 문자 만들기</button>
-        <div class="out" id="rOut" hidden>
-          <pre id="rOutTxt"></pre>
-          <div class="btns"><a id="rSms" href="#" data-en="Send as text">문자로 보내기</a><button type="button" id="rCopy" data-en="Copy text">내용 복사</button></div>
-        </div>
-      </form>
-    </details>
+    <div class="wrap">
+      <p class="sec-label" data-en="MOU PARTNERS">MOU 협약 파트너</p>
+      <h2 id="h-partners" data-en="Trusted experts, one call away">믿을 수 있는 전문가를 연결해 드립니다</h2>
+      <p class="lead" data-en="Business owners who have signed a partnership agreement (MOU) with me. Tell me what you need and I'll introduce you to someone I trust.">업무협약(MOU)을 맺은 대표님들입니다. 필요한 분야를 말씀해 주시면 믿을 수 있는 분께 직접 연결해 드립니다.</p>
+      <div class="pchips" id="pChips" role="group" aria-label="분야 선택" data-en-aria="Choose a field"></div>
+      <div class="pgrid" id="pGrid"></div>
+      <p class="pnote" data-en="'Request intro' opens the request form. For partners without public contact details, I check with them first and then make the introduction.">'연결 요청'을 누르면 신청서가 열립니다. 연락처가 공개되지 않은 파트너는 먼저 확인한 뒤 연결해 드립니다.</p>
+      <details class="reg" id="regBox">
+        <summary><b data-en="Apply as a partner">파트너 등록 신청</b> <span data-en="For business owners · listed after review">대표님용 · 검토 후 게재</span></summary>
+        <form class="form" id="rForm" novalidate>
+          <div class="row2">
+            <label for="rBiz"><span data-en="Business name">상호</span><input id="rBiz" placeholder="○○세무회계" data-en-ph="ABC Tax Office"></label>
+            <label for="rName"><span data-en="Owner name & title">대표자 성함·직함</span><input id="rName" placeholder="김○○ 세무사" data-en-ph="Jin Kim, Tax Accountant"></label>
+          </div>
+          <div class="row2">
+            <label for="rCat"><span data-en="Field">분야</span><select id="rCat"></select></label>
+            <label for="rPhone"><span data-en="Phone">연락처</span><input id="rPhone" type="tel" placeholder="010-1234-5678"></label>
+          </div>
+          <label for="rDesc"><span data-en="One-line intro">한 줄 소개</span><input id="rDesc" placeholder="예) 개인사업자 기장·종합소득세 신고 전문" data-en-ph="e.g. Bookkeeping and tax filing for sole proprietors"></label>
+          <label for="rMode"><span data-en="Contact visibility">연락처 공개 방식</span>
+            <select id="rMode"><option value="direct" data-en="Show my contact on the card">명함에 연락처 공개</option><option value="via" data-en="Introductions through Heon-young Lee only">지점장 통해서만 연결</option></select>
+          </label>
+          <label for="rUrl"><span data-en="Website or blog (optional)">홈페이지·블로그 (선택)</span><input id="rUrl" type="url" placeholder="https://"></label>
+          <button class="submit" type="submit" data-en="Create application message">등록 신청 문자 만들기</button>
+          <div class="out" id="rOut" hidden>
+            <pre id="rOutTxt"></pre>
+            <div class="btns"><a id="rSms" href="#" data-en="Send as text">문자로 보내기</a><button type="button" id="rCopy" data-en="Copy text">내용 복사</button></div>
+          </div>
+        </form>
+      </details>
+    </div>
   </section>
 
-  <footer>
-    <p><b id="fBrand">지혜로운 보험생활</b> · <span id="fNick">보험지기</span><span id="fCompany"></span></p>
+  <section class="contact" id="contact" aria-labelledby="h-contact">
+    <div class="wrap">
+      <p class="sec-label" data-en="CONSULTATION">상담 문의</p>
+      <h2 id="h-contact" data-en="Let's sort out your insurance worries together">보험 고민, 상담 전에 함께 정리합니다</h2>
+      <p class="lead" data-en="Leave your name, phone, and what you'd like to discuss. I'll get back to you directly after checking.">성함과 연락처, 궁금한 내용만 남겨 주세요. 확인 후 직접 연락드립니다.</p>
+      <a class="btn brass" id="qForm" href="#" target="_blank" rel="noopener" data-en="Fill in the consultation form ↗">상담 신청서 작성하기 ↗</a>
+      <p class="lead" style="margin-top:14px" data-en="I reply by phone, text, or KakaoTalk after checking your request.">신청 내용을 확인한 뒤 전화 · 문자 · 카카오톡으로 연락드립니다.</p>
+      <ol class="steps4">
+        <li><b data-en="Get in touch">문의</b><span data-en="Form, phone, or KakaoTalk">신청서 · 전화 · 카카오톡</span></li>
+        <li><b data-en="Coverage review">보장 분석</b><span data-en="Policies and medical records">가입 내역과 진료 기록 확인</span></li>
+        <li><b data-en="Tailored advice">맞춤 제안</b><span data-en="Explained in plain language">쉬운 말로 설명</span></li>
+        <li><b data-en="Ongoing care">꾸준한 관리</b><span data-en="Claim progress and renewals">청구 진행 · 갱신 시점 관리</span></li>
+      </ol>
+
+      <div class="cgroup"><small data-en="MOBILE">휴대폰</small><div class="row"><a class="pill" id="pCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2"/></svg><span id="phoneTxt">010-8950-6400</span></a><button class="mini" type="button" id="copyPhone" data-en="Copy">복사</button></div></div>
+      <div class="cgroup" id="phone2Row"><small data-en="FAX">팩스</small><div class="row"><span class="pill" id="phone2Txt">0504-006-6400</span><button class="mini" type="button" id="copyPhone2" data-en="Copy">복사</button></div></div>
+      <div class="cgroup" id="emailRow"><small data-en="EMAIL">이메일</small><div class="row"><span class="pill" id="emailTxt" style="user-select:all">niea7@naver.com</span><button class="mini" type="button" id="copyEmail" data-en="Copy">복사</button></div></div>
+      <div class="cgroup" id="kakaoRow"><small data-en="KAKAOTALK">카카오톡</small><div class="row"><a class="pill" id="qKakao" href="#" target="_blank" rel="noopener" data-en="Open chat ↗">오픈채팅 열기 ↗</a></div></div>
+
+      <div class="refcard">
+        <h3><b data-en="Referral message">소개 문구</b> <span data-en="Send it to friends as is">지인에게 그대로 보내세요</span></h3>
+        <p id="refTxt"></p>
+        <button class="btn" type="button" id="refCopy" data-en="Copy referral message">소개 문구 복사하기</button>
+      </div>
+
+      <details class="sms">
+        <summary data-en="Or create a text message request">또는 문자로 신청하기</summary>
+        <form class="form" id="form" novalidate>
+          <div class="row2">
+            <label for="fName"><span data-en="Name">성함</span><input id="fName" autocomplete="name" placeholder="홍길동" data-en-ph="Jane Kim"></label>
+            <label for="fPhone"><span data-en="Phone">연락처</span><input id="fPhone" type="tel" autocomplete="tel" placeholder="010-1234-5678"></label>
+          </div>
+          <label for="fTopic"><span data-en="Topic">상담 주제</span>
+            <select id="fTopic"><option value="보험금 청구" data-en="Insurance Claims">보험금 청구</option><option value="보험 재설계" data-en="Policy Review">보험 재설계</option><option value="재무 컨설팅" data-en="Financial Consulting">재무 컨설팅</option><option value="보장 분석" data-en="Coverage Analysis">보장 분석</option><option value="파트너 연결" data-en="Partner Referral">파트너 연결</option><option value="기타" data-en="Other">기타</option></select>
+          </label>
+          <label for="fTime"><span data-en="Best time to call">통화 편한 시간</span>
+            <select id="fTime"><option data-en="Anytime">언제든 괜찮아요</option><option data-en="Morning (9am–12pm)">오전 (9~12시)</option><option data-en="Afternoon (12–6pm)">오후 (12~18시)</option><option data-en="Evening (after 6pm)">저녁 (18시 이후)</option></select>
+          </label>
+          <label for="fMsg"><span data-en="Message (optional)">간단한 내용 (선택)</span><textarea id="fMsg" placeholder="예) 지난달 무릎 수술했는데 청구 가능한지 궁금해요" data-en-ph="e.g. I had knee surgery last month. Can I still claim?"></textarea></label>
+          <button class="submit" type="submit" data-en="Create request message">신청 문자 만들기</button>
+          <div class="out" id="out" hidden>
+            <pre id="outTxt"></pre>
+            <div class="btns"><a id="outSms" href="#" data-en="Send as text">문자로 보내기</a><button type="button" id="outCopy" data-en="Copy text">내용 복사</button></div>
+          </div>
+        </form>
+      </details>
+
+      <div class="share">
+        <div id="qr" aria-label="명함 QR코드" data-en-aria="QR code for this card">QR</div>
+        <div>
+          <p data-en="Show the QR code or send the link to anyone who could use some help.">QR코드를 보여주거나 링크를 보내 주세요. 도움이 필요한 분께 전해 주시면 감사하겠습니다.</p>
+          <div class="row"><button class="mini" type="button" id="shareBtn" data-en="Share">공유하기</button><button class="mini" type="button" id="copyLink" data-en="Copy link">링크 복사</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b id="fBrand">지혜로운 보험생활</b> · <span id="fName2">이헌영 지점장</span><span id="fCompany"></span></p>
     <p id="fReg" hidden></p>
     <p id="fEtc" hidden></p>
     <p data-en="This card is for consultation information only. Always read the product summary and policy terms before signing. Replacing an existing policy with a new one may lead to higher premiums or limited coverage.">이 명함은 상담 안내용입니다. 보험 계약 시 상품설명서와 약관을 반드시 확인하시기 바랍니다. 기존 계약을 해지하고 새 계약을 맺으면 보험료 인상, 보장 제한 등 불이익이 생길 수 있습니다.</p>
-  </footer>
-</main>
+  </div>
+</footer>
 
 <div class="toast" id="toast" role="status"></div>
 
@@ -479,47 +530,69 @@ window.CARD = {
   const linkUrl = () => baseUrl + (LANG === "en" ? "#en" : "");
   const brand = () => T(C.brand, C.brandEn || C.brand);
   const nick = () => T(C.nick, C.nickEn || C.nick);
+  const nameT = () => T(C.name, C.nameEn || C.name);
+  const titleT = () => T(C.title, C.titleEn || C.title);
+  const who = () => nameT() ? nameT() + " " + titleT() : nick();
   const catName = c => T(c, (C.partnerCatsEn || {})[c] || c);
+  const el = (t, cls, txt) => { const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
 
-  // 원문(한국어) 저장
   document.querySelectorAll("[data-en]").forEach(e => e.dataset.ko = e.textContent);
+  document.querySelectorAll("[data-en-html]").forEach(e => e.dataset.koHtml = e.innerHTML);
   document.querySelectorAll("[data-en-ph]").forEach(e => e.dataset.koPh = e.placeholder);
   document.querySelectorAll("[data-en-aria]").forEach(e => e.dataset.koAria = e.getAttribute("aria-label"));
   document.querySelectorAll("[data-en-alt]").forEach(e => e.dataset.koAlt = e.alt);
 
+  const P = C.partners || [], cats = C.partnerCats.slice();
+  P.forEach(p => { if (!cats.includes(p.cat)) cats.push(p.cat); });
+
+  function refText(){
+    return T("보험금 청구, 보험 재설계, 재무 컨설팅을 꼼꼼하게 도와주시는 분을 소개해요. " + brand() + " " + who() + "(" + C.nick + ")입니다. 놓친 보험금 찾기와 보장 점검을 받아 보세요. 연락처 " + C.phone + " / 명함 " + linkUrl(),
+             "Let me introduce someone who helps with insurance claims, policy reviews, and financial planning: " + who() + " of " + brand() + ". Worth a call to find unclaimed benefits or check your coverage. Phone " + C.phone + " / Card " + linkUrl());
+  }
+
   function fillInfo(){
-    $("brand").textContent = $("fBrand").textContent = brand();
-    $("nick").textContent = $("fNick").textContent = nick();
-    const nm = T(C.name, C.nameEn || C.name);
-    if (nm) { $("nameBig").textContent = nm; $("nick").hidden = false; }
-    else { $("nameBig").textContent = nick(); $("nick").hidden = true; }
-    $("nameLine").textContent = T(C.title, C.titleEn);
+    $("topName").textContent = nameT() || nick();
+    $("topNick").textContent = (C.nickEn || "").toUpperCase();
+    $("nick").textContent = nick();
+    $("nameBig").textContent = nameT() || nick();
+    $("nick").hidden = !nameT();
+    $("nameLine").textContent = titleT();
+    $("fBrand").textContent = brand();
+    $("fName2").textContent = who();
     const comp = T(C.company, C.companyEn || C.company);
     $("fCompany").textContent = comp ? " · " + comp : "";
     if (C.regNo) { $("fReg").textContent = T("보험설계사 등록번호 ", "Insurance agent reg. no. ") + C.regNo; $("fReg").hidden = false; }
     document.title = T("보험지기 모바일 명함", "Bohumjigi · Digital Business Card");
+    const cr = $("creds"); cr.textContent = "";
+    (C.credentials || []).forEach(c => cr.appendChild(el("li", null, T(c.ko, c.en || c.ko))));
+    cr.hidden = !cr.children.length;
+    const st = $("stats"); st.textContent = "";
+    (C.stats || []).forEach(s => {
+      const d = el("div","stat");
+      d.appendChild(el("b", null, T(s.num, s.numEn || s.num).replace("{partners}", cats.length)));
+      d.appendChild(el("span", null, T(s.label, s.labelEn || s.label)));
+      st.appendChild(d);
+    });
+    st.parentElement.hidden = !st.children.length;
+    const q = $("quotes"); q.textContent = "";
+    (C.reviews || []).forEach(r => { const d = el("div","quote"); d.appendChild(el("q", null, T(r.quote, r.quoteEn || r.quote))); d.appendChild(el("span", null, T(r.who, r.whoEn || r.who))); q.appendChild(d); });
+    $("reviews").hidden = !q.children.length;
+    $("refTxt").textContent = refText();
   }
+
   $("phoneTxt").textContent = C.phone;
   if (C.phone2) $("phone2Txt").textContent = C.phone2; else $("phone2Row").hidden = true;
   if (C.email) $("emailTxt").textContent = C.email; else $("emailRow").hidden = true;
-  const etc = [C.blog].filter(Boolean);
-  if (etc.length) { $("fEtc").textContent = etc.join(" · "); $("fEtc").hidden = false; }
+  if (C.blog) { $("fEtc").textContent = C.blog; $("fEtc").hidden = false; }
+  $("photo").src = C.photo;
 
-  // 사진
-  const img = $("photo");
-  img.onload = () => { img.hidden = false; $("photoPh").hidden = true; };
-  img.src = C.photo;
-
-  // 연락 링크
-  $("aCall").href = "tel:" + digits;
+  $("aCall").href = $("pCall").href = "tel:" + digits;
   $("aSms").href = "sms:" + digits;
-  if (C.kakao) $("qKakao").href = C.kakao; else $("qKakao").hidden = true;
+  if (C.kakao) { $("qKakao").href = $("aKakao").href = C.kakao; }
+  else { $("kakaoRow").hidden = true; $("aKakao").removeAttribute("target"); $("aKakao").href = "#contact"; }
   if (C.formUrl) $("qForm").href = C.formUrl; else $("qForm").hidden = true;
-  if (C.kakao) $("aKakao").href = C.kakao;
-  else { $("aKakao").removeAttribute("target"); $("aKakao").href = "#consult"; }
 
-  // 토스트 & 복사
-  let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),1800); }
+  let tt; function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove("on"),1900); }
   function copy(text, done){
     const ok = () => toast(done || T("복사했어요","Copied"));
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, () => fallback(text, ok));
@@ -535,19 +608,18 @@ window.CARD = {
   $("copyPhone2").onclick = () => copy(C.phone2, T("팩스번호를 복사했어요","Fax number copied"));
   $("copyEmail").onclick = () => copy(C.email, T("이메일을 복사했어요","Email copied"));
   $("copyLink").onclick = () => copy(linkUrl(), T("명함 링크를 복사했어요","Card link copied"));
+  $("refCopy").onclick = () => copy(refText(), T("소개 문구를 복사했어요. 카카오톡에 붙여 넣으세요","Referral message copied"));
   $("shareBtn").onclick = async () => {
-    const data = { title: brand() + " · " + nick(), text: T("보험금 청구 · 보험 재설계 · 재무 컨설팅 상담","Insurance claims · Policy review · Financial consulting"), url: linkUrl() };
+    const data = { title: brand() + " · " + who(), text: T("보험금 청구 · 보험 재설계 · 재무 컨설팅 상담","Insurance claims · Policy review · Financial consulting"), url: linkUrl() };
     if (navigator.share) { try { await navigator.share(data); return; } catch(e){ if (e.name === "AbortError") return; } }
     copy(linkUrl(), T("공유가 안 되는 환경이라 링크를 복사했어요","Sharing isn't available here, so the link was copied"));
   };
 
-  // 연락처 저장 (vCard)
   $("aSave").onclick = () => {
-    const nm = T(C.name, C.nameEn || C.name);
-    const fn = nm ? nm + " (" + nick() + ")" : nick();
-    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(T(C.company, C.companyEn || C.company)||brand()),"TITLE:"+T(C.title,C.titleEn),"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=FAX:"+C.phone2:"",
+    const fn = nameT() ? nameT() + " (" + nick() + ")" : nick();
+    const v = ["BEGIN:VCARD","VERSION:3.0","FN:"+fn,"ORG:"+(T(C.company, C.companyEn || C.company)||brand()),"TITLE:"+titleT(),"TEL;TYPE=CELL:"+C.phone, C.phone2?"TEL;TYPE=FAX:"+C.phone2:"",
       C.email?"EMAIL:"+C.email:"", "URL:"+linkUrl(), "NOTE:"+T("보험금 청구 · 보험 재설계 상담 · 재무 컨설팅","Insurance claims · Policy review · Financial consulting"),"END:VCARD"].filter(Boolean).join("\r\n");
-    if (window.self !== window.top) { copy([fn,C.phone,C.phone2?T("팩스 ","Fax ")+C.phone2:"",C.email,linkUrl()].filter(Boolean).join("\n"), T("연락처를 복사했어요. 주소록에 붙여 넣으세요","Contact copied. Paste it into your contacts")); return; }
+    if (window.self !== window.top) { copy([fn+" "+titleT(),C.phone,C.phone2?T("팩스 ","Fax ")+C.phone2:"",C.email,linkUrl()].filter(Boolean).join("\n"), T("연락처를 복사했어요. 주소록에 붙여 넣으세요","Contact copied. Paste it into your contacts")); return; }
     try {
       const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([v],{type:"text/vcard"}));
       a.download=(C.nickEn||"contact")+".vcf"; document.body.appendChild(a); a.click(); a.remove();
@@ -555,11 +627,12 @@ window.CARD = {
     } catch(e){ copy(fn+" "+C.phone, T("연락처를 복사했어요","Contact copied")); }
   };
 
-  // 업무 카드 → 상담 신청서
-  const goForm = () => { $("consult").scrollIntoView({behavior:"smooth"}); setTimeout(()=>$("fName").focus({preventScroll:true}), 400); };
-  document.querySelectorAll(".cta[data-topic]").forEach(b => b.onclick = () => { $("fTopic").value = b.dataset.topic; goForm(); });
+  function goForm(){
+    const d = document.querySelector("details.sms"); d.open = true;
+    d.scrollIntoView({behavior:"smooth", block:"start"}); setTimeout(()=>$("fName").focus({preventScroll:true}), 450);
+  }
+  document.querySelectorAll("[data-topic]").forEach(b => b.onclick = () => { $("fTopic").value = b.dataset.topic; goForm(); });
 
-  // 청구 기한 계산기
   const DAY = 864e5;
   function claim(){
     const r = $("cRes"), v = $("cDate").value;
@@ -570,7 +643,7 @@ window.CARD = {
     const pct = Math.max(0, Math.min(100, (left/total)*100));
     const endStr = end.toLocaleDateString(T("ko-KR","en-US"),{year:"numeric",month:"long",day:"numeric"});
     let cls, big, msg;
-    if (d > today) { cls="ok"; big=T("날짜를 확인해 주세요","Check the date"); msg=T("오늘 이후 날짜는 계산할 수 없습니다.","Future dates can't be calculated."); }
+    if (d > today) { cls=""; big=T("날짜를 확인해 주세요","Check the date"); msg=T("오늘 이후 날짜는 계산할 수 없습니다.","Future dates can't be calculated."); }
     else if (left <= 0) { cls="bad"; big=T("청구 기간 경과","Claim period ended"); msg=T(endStr+"에 기간이 끝났습니다. 다른 진료 건이 남아 있을 수 있으니 상담으로 확인해 보세요.","The period ended on "+endStr+". Other treatments may still be claimable, so ask me to check."); }
     else if (left <= 180) { cls="warn"; big=T("D-"+left, left+" days left"); msg=T(endStr+"까지 청구 가능합니다. 기간이 얼마 남지 않았어요. 서두르세요.","You can claim until "+endStr+". Time is running out, so act soon."); }
     else { cls="ok"; big=T("D-"+left, left+" days left"); msg=T(endStr+"까지 청구 가능합니다.","You can claim until "+endStr+"."); }
@@ -582,13 +655,12 @@ window.CARD = {
   $("cDate").value = sample.toISOString().slice(0,10);
   $("cDate").oninput = claim;
 
-  // 상담 신청 문자
   const selText = id => $(id).selectedOptions[0].textContent;
   $("form").onsubmit = e => {
     e.preventDefault();
     const name = $("fName").value.trim();
     if (!name) { $("fName").focus(); toast(T("성함을 적어 주세요","Please enter your name")); return; }
-    const lines = [T("[상담 신청] "+C.nick+"님께","[Consultation request] To "+nick()), T("성함: ","Name: ")+name];
+    const lines = [T("[상담 신청] "+who()+"님께","[Consultation request] To "+who()), T("성함: ","Name: ")+name];
     if ($("fPhone").value.trim()) lines.push(T("연락처: ","Phone: ")+$("fPhone").value.trim());
     lines.push(T("주제: ","Topic: ")+selText("fTopic"), T("통화 시간: ","Best time: ")+selText("fTime"));
     if ($("fMsg").value.trim()) lines.push(T("내용: ","Message: ")+$("fMsg").value.trim());
@@ -599,15 +671,11 @@ window.CARD = {
     $("outCopy").onclick = () => copy(txt, T("신청 내용을 복사했어요","Request copied"));
   };
 
-  // ── MOU 파트너 ──
-  const P = C.partners || [], cats = C.partnerCats.slice();
-  P.forEach(p => { if (!cats.includes(p.cat)) cats.push(p.cat); });
   let curCat = "*";
-  const el = (t, cls, txt) => { const e=document.createElement(t); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
-  function askConnect(cat, who){
+  function askConnect(cat, pname){
     $("fTopic").value = "파트너 연결";
-    $("fMsg").value = who ? T(who+" ("+catName(cat)+") 연결을 원합니다. ", "I'd like an introduction to "+who+" ("+catName(cat)+"). ")
-                          : T(catName(cat)+" 분야 연결을 원합니다. ", "I'd like an introduction to a "+catName(cat).toLowerCase()+". ");
+    $("fMsg").value = pname ? T(pname+" ("+catName(cat)+") 연결을 원합니다. ", "I'd like an introduction to "+pname+" ("+catName(cat)+"). ")
+                            : T(catName(cat)+" 분야 연결을 원합니다. ", "I'd like an introduction to a "+catName(cat).toLowerCase()+". ");
     goForm();
   }
   function renderChips(){
@@ -643,7 +711,7 @@ window.CARD = {
           const a = el("a","pri",T("전화","Call")); a.href="tel:"+p.phone.replace(/\D/g,""); pb.appendChild(a);
           const cp = el("button",null,T("번호 복사","Copy number")); cp.type="button"; cp.onclick=()=>copy(p.phone,T("번호를 복사했어요","Number copied")); pb.appendChild(cp);
         }
-        const b = el("button", p.mode==="via"||!p.phone ? "pri" : null, T("보험지기 통해 연결","Intro via Bohumjigi")); b.type="button"; b.onclick=()=>askConnect(c, pName); pb.appendChild(b);
+        const b = el("button", p.mode==="via"||!p.phone ? "pri" : null, T("지점장 통해 연결","Intro via "+(C.nameEn||"me"))); b.type="button"; b.onclick=()=>askConnect(c, pName); pb.appendChild(b);
         if (p.url && /^https?:\/\//.test(p.url)) { const a = el("a",null,T("홈페이지","Website")); a.href=p.url; a.target="_blank"; a.rel="noopener"; pb.appendChild(a); }
         d.appendChild(pb); g.appendChild(d);
       });
@@ -654,13 +722,12 @@ window.CARD = {
     cats.filter(c=>c!=="기타 전문가").concat("기타").forEach(c => { const o=el("option",null,catName(c)); o.value=c; sel.appendChild(o); });
     if (cur) sel.value = cur;
   }
-
   $("rForm").onsubmit = e => {
     e.preventDefault();
     const biz=$("rBiz").value.trim(), nm=$("rName").value.trim(), ph=$("rPhone").value.trim();
     if (!biz) { $("rBiz").focus(); toast(T("상호를 적어 주세요","Please enter your business name")); return; }
     if (!ph) { $("rPhone").focus(); toast(T("연락처를 적어 주세요","Please enter a phone number")); return; }
-    const lines = [T("[MOU 파트너 등록 신청] "+C.nick+"님께","[MOU partner application] To "+nick()), T("상호: ","Business: ")+biz];
+    const lines = [T("[MOU 파트너 등록 신청] "+who()+"님께","[MOU partner application] To "+who()), T("상호: ","Business: ")+biz];
     if (nm) lines.push(T("대표: ","Owner: ")+nm);
     lines.push(T("분야: ","Field: ")+selText("rCat"), T("연락처: ","Phone: ")+ph, T("공개 방식: ","Visibility: ")+selText("rMode"));
     if ($("rDesc").value.trim()) lines.push(T("소개: ","Intro: ")+$("rDesc").value.trim());
@@ -672,18 +739,17 @@ window.CARD = {
     $("rCopy").onclick = () => copy(txt, T("신청 내용을 복사했어요","Application copied"));
   };
 
-  // QR 코드
   function renderQR(){
-    $("qr").textContent = "";
-    try { new QRCode($("qr"), { text: linkUrl(), width: 200, height: 200, colorDark:"#10302d", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
-    catch(e){ $("qr").textContent = "QR"; }
+    const q = $("qr"); q.textContent = "";
+    try { new QRCode(q, { text: linkUrl(), width: 200, height: 200, colorDark:"#10302d", colorLight:"#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
+    catch(e){ q.textContent = "QR"; }
   }
 
-  // 언어 적용
   function applyLang(){
     const en = LANG === "en";
     document.documentElement.lang = LANG;
     document.querySelectorAll("[data-en]").forEach(e => e.textContent = en ? e.dataset.en : e.dataset.ko);
+    document.querySelectorAll("[data-en-html]").forEach(e => e.innerHTML = en ? e.dataset.enHtml : e.dataset.koHtml);
     document.querySelectorAll("[data-en-ph]").forEach(e => e.placeholder = en ? e.dataset.enPh : e.dataset.koPh);
     document.querySelectorAll("[data-en-aria]").forEach(e => e.setAttribute("aria-label", en ? e.dataset.enAria : e.dataset.koAria));
     document.querySelectorAll("[data-en-alt]").forEach(e => e.alt = en ? e.dataset.enAlt : e.dataset.koAlt);
