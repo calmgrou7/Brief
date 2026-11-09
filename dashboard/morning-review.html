@@ -135,6 +135,22 @@
     pct: (v) => (v === null || v === undefined || v === '') ? '' : (v > 0 ? '+' : '') + Math.round(Number(v) * 1000) / 10 + '%',
   };
 
+  dash.loader('signals', {
+    description: 'Notion 행을 표로 바꿉니다. 날짜 칸 이름을 「기록일」로 줄이고, Notion이 붙인 마크다운 역슬래시를 지우고, 빈 칸은 null로 둡니다.',
+    fn: ({ answer }) => {
+      if (answer && answer.error) throw new Error(answer.error.message || String(answer.error));
+      const cols = ['키워드', '분야', '신호', '변화율', '상태', '타깃 고객', '브랜드 한 줄', '아이디어', '근거', '링크', '아침 검수', '기록일', 'url'];
+      const clean = (v) => typeof v === 'string' ? (v.replace(/\\([\\`*_{}\[\]()#+\-.!~|>])/g, '$1').trim() || null) : (v ?? null);
+      const rows = (answer && Array.isArray(answer.results) ? answer.results : []).map((r) => {
+        const o = {};
+        cols.forEach((c) => { o[c] = clean(c === '기록일' ? r['date:기록일:start'] : r[c]); });
+        o['변화율'] = (o['변화율'] === null || o['변화율'] === '') ? null : Number(o['변화율']);
+        return o;
+      });
+      return { columns: cols, rows, cut: !!(answer && answer.has_more) };
+    },
+  });
+
   dash.calc('summary', {
     title: '검수 현황',
     description: '검수 대기, 상승 신호, 브랜드 한 줄까지 쓴 아이디어의 수.',
