@@ -193,9 +193,9 @@ td select { padding: 6px 8px; width: auto; }
       <a href="#match">피부 진단·매칭<span class="role">고객</span></a>
       <a href="#community">커뮤니티<span class="role">고객</span></a>
       <a href="#partners">파트너<span class="role">브랜드·샵</span></a>
-      <span class="sep" aria-hidden="true"></span>
+      <!-- staff:start --><span class="sep" aria-hidden="true"></span>
       <a href="#admin">운영 대시보드<span class="role">대표</span></a>
-      <a href="#model">사업 구조<span class="role">대표</span></a>
+      <a href="#model">사업 구조<span class="role">대표</span></a><!-- staff:end -->
     </nav>
   </div>
 </header>
@@ -211,7 +211,7 @@ td select { padding: 6px 8px; width: auto; }
       <p class="lead">브랜드 광고가 아니라 커넥터가 직접 써보고 방문해 본 제품·샵만 추천합니다. 3분 피부 진단으로 맞춤 제품과 관리 프로그램을 받고, 1:1 상담까지 이어집니다.</p>
       <div class="cta">
         <a class="btn" href="#match" style="text-decoration:none">3분 피부 진단 시작</a>
-        <a class="btn ghost" href="#model" style="text-decoration:none">사업 구조 보기</a>
+        <!-- staff:start --><a class="btn ghost" href="#model" style="text-decoration:none">사업 구조 보기</a><!-- staff:end -->
       </div>
     </div>
     <div class="triad" aria-label="뷰티커넥트가 연결하는 세 주체">
@@ -275,6 +275,12 @@ td select { padding: 6px 8px; width: auto; }
     <label style="display:flex;gap:8px;align-items:start;font-size:14px" for="l-agree"><input type="checkbox" id="l-agree" required style="margin-top:5px"> <span>[필수] 상담을 위한 개인정보(이름·연락처·진단 결과) 수집·이용 및 상담 연결을 위한 파트너 샵 제공에 동의합니다. 보관 기간 1년.</span></label>
     <div><button class="btn" type="submit">상담 신청</button></div>
   </form>
+  <div class="panel grid" id="lead-done" style="gap:10px;border-color:var(--accent)" hidden>
+    <h3>마지막 단계: 신청 내용을 커넥터에게 보내 주세요</h3>
+    <p class="muted">베타 운영 중이라 아래 내용을 복사해 커넥터 카카오톡(또는 문자)으로 보내 주시면 상담이 시작됩니다.</p>
+    <textarea id="lead-text" readonly rows="5"></textarea>
+    <div><button class="btn" type="button" id="lead-copy">내용 복사</button></div>
+  </div>
 </section>
 
 <!-- ============ 커뮤니티 ============ -->
@@ -329,6 +335,7 @@ td select { padding: 6px 8px; width: auto; }
   </div>
 </section>
 
+<!-- staff:start -->
 <!-- ============ 운영 대시보드 ============ -->
 <section class="view" id="v-admin" hidden>
   <div>
@@ -469,6 +476,7 @@ td select { padding: 6px 8px; width: auto; }
     </ul>
   </div>
 </section>
+<!-- staff:end -->
 </main>
 <div class="toast" id="toast" role="status" hidden></div>
 
@@ -538,7 +546,8 @@ td select { padding: 6px 8px; width: auto; }
   const RATE = 0.15; // 평균 수수료 가정
 
   /* ---------- 라우팅 ---------- */
-  const VIEWS = ['home', 'match', 'community', 'partners', 'admin', 'model'];
+  const STAFF = !!document.getElementById('v-admin');
+  const VIEWS = ['home', 'match', 'community', 'partners', 'admin', 'model'].filter(v => document.getElementById('v-' + v));
   function route() {
     const h = location.hash.slice(1);
     const v = VIEWS.includes(h) ? h : 'home';
@@ -607,8 +616,11 @@ td select { padding: 6px 8px; width: auto; }
       aov: svcs[0] ? svcs[0].first : prods[0].price, status: '신규'
     });
     store.set('leads', leads);
+    const L = leads[0];
     e.target.reset();
-    toast('상담 신청이 접수되었습니다. 운영 대시보드에서 확인하세요');
+    if (STAFF) { toast('상담 신청이 접수되었습니다. 운영 대시보드에서 확인하세요'); return; }
+    const txt = `[뷰티커넥트 상담 신청]\n이름: ${L.name}\n연락처: ${L.phone} (${L.ch})\n진단: ${L.summary} · ${a.region}\n관심: ${svcs.map(v => v.shop + ' ' + v.name).concat(prods.map(p => p.name)).join(', ')}`;
+    $('#lead-text').value = txt; $('#lead-done').hidden = false; $('#lead-done').scrollIntoView({ block: 'center' });
   });
 
   /* ---------- 커뮤니티 ---------- */
@@ -675,7 +687,7 @@ td select { padding: 6px 8px; width: auto; }
       return `<tr><td class="num">${esc(l.date)}</td><td>${esc(l.name)} ${l.demo ? '<span class="pill">예시</span>' : `<span class="pill g">${esc(l.ch || '')}</span>`}</td><td>${esc(l.summary)}</td><td>${esc(l.target)}</td><td class="num">${won(l.aov)}</td><td><span class="st" style="background:${s.c}"></span><select data-id="${esc(l.id)}" aria-label="${esc(l.name)} 상태">${STATUSES.map(x => `<option ${x.k === l.status ? 'selected' : ''}>${x.k}</option>`).join('')}</select></td></tr>`;
     }).join('');
   }
-  $('#lead-rows').addEventListener('change', e => {
+  if (STAFF) $('#lead-rows').addEventListener('change', e => {
     const id = e.target.dataset.id; if (!id) return;
     const leads = store.get('leads', []);
     const mine = leads.find(l => l.id === id);
@@ -697,8 +709,9 @@ td select { padding: 6px 8px; width: auto; }
       ['성사 건수', Math.round(deals) + '건'], ['수수료 매출', man(comm)], ['멤버십 매출', man(mem)], ['파트너 구독', man(par)], ['월 합계', man(total)]
     ].map(([l, x], i) => `<div class="kpi"${i === 4 ? ' style="border-color:var(--rose)"' : ''}><div class="l">${l}</div><div class="v"${i === 4 ? ' style="color:var(--rose)"' : ''}>${x}</div></div>`).join('');
   }
-  simIds.forEach(id => $('#' + id).addEventListener('input', sim));
+  if (STAFF) simIds.forEach(id => $('#' + id).addEventListener('input', sim));
 
-  recommend(); renderFeed(); renderPartners(); sim(); route();
+  $('#lead-copy').addEventListener('click', () => { const t = $('#lead-text'); navigator.clipboard.writeText(t.value).then(() => toast('복사했습니다'), () => { t.select(); toast('선택된 내용을 복사해 주세요'); }); });
+  recommend(); renderFeed(); renderPartners(); if (STAFF) sim(); route();
 })();
 </script>

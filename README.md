@@ -6,3 +6,8 @@
 - `docs/business-plan.md` — 사업 구조 도식, 수익 모델, 콘텐츠 사업화, 자동화 설계, 확장 로드맵, 규제 체크리스트
 
 데이터는 현재 예시이며 브라우저(localStorage)에만 저장된다. 실서비스 전환 순서는 `docs/business-plan.md` 5장 참고.
+
+## 고객용 공개 사이트
+
+- `public/index.html` — 고객용 버전 (운영 대시보드·사업 구조 탭 제외). `mvp/index.html`을 고친 뒤 `python3 build-public.py`로 다시 생성한다.
+- Render 정적 사이트로 배포되며, 이 브랜치에 커밋하면 자동 재배포된다.
