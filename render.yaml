@@ -1,0 +1,14 @@
+# Render 배포 설정 (Blueprint). 대시보드에서 New > Blueprint로 이 저장소를 선택하면 됩니다.
+services:
+  - type: web
+    name: jinro-sansa
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: COACH_CODE
+        sync: false # 배포할 때 직접 입력 (코치 입장 비밀번호)
+      - key: ROOM_CAPACITY
+        value: "40"

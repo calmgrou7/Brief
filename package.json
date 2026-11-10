@@ -1,0 +1,16 @@
+{
+  "name": "jinro-sansa",
+  "version": "0.2.0",
+  "private": true,
+  "description": "진로산사: 중고등학생 진로 코칭 2D 메타버스",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

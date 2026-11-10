@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>진로산사</title>
+  <meta name="description" content="함께 걷는 진로 코칭 산사 — 중고등학생 2D 메타버스 코칭방" />
+  <meta name="theme-color" content="#2b2620" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="world"></canvas>
+
+  <!-- 상단 HUD -->
+  <header class="hud" id="hud" hidden>
+    <div class="hud-row">
+      <span class="hud-brand">진로산사</span>
+      <span class="hud-room" id="hudRoom"></span>
+      <span class="hud-count" id="hudCount"></span>
+    </div>
+    <div class="notice" id="notice" hidden></div>
+    <div class="zone-banner" id="zoneBanner" hidden>
+      <strong id="zoneName"></strong>
+      <span id="zoneDesc"></span>
+    </div>
+  </header>
+
+  <!-- 구역 행동 버튼 -->
+  <div class="actions" id="actions" hidden>
+    <button class="act" id="actBell" hidden>🔔 종 치기</button>
+    <button class="act" id="actQuestion" hidden>🏮 오늘의 질문</button>
+    <button class="act ghost" id="actCoach" hidden>🧭 길잡이 도구</button>
+  </div>
+
+  <!-- 채팅 -->
+  <div class="chat" id="chat" hidden>
+    <ol class="chat-log" id="chatLog" aria-live="polite"></ol>
+    <form class="chat-form" id="chatForm" autocomplete="off">
+      <button type="button" class="chat-toggle" id="chatToggle" aria-label="대화 기록 열고 닫기">💬</button>
+      <input id="chatInput" maxlength="80" placeholder="고운 말로 이야기해요" enterkeyhint="send" />
+      <button type="submit" class="chat-send">보내기</button>
+    </form>
+    <p class="chat-scope" id="chatScope"></p>
+  </div>
+
+  <!-- 입장 화면 -->
+  <section class="overlay" id="entry">
+    <div class="panel entry">
+      <p class="eyebrow">함께 걷는 진로 코칭 산사</p>
+      <h1>진로산사</h1>
+      <p class="lead">나는 어떤 사람이 될까?<br />친구들과 산사 마당을 거닐며 이야기 나눠요.</p>
+
+      <label class="field">
+        <span>별명 <em>(실명 대신 별명을 써주세요)</em></span>
+        <div class="nick-row">
+          <input id="nickInput" maxlength="10" />
+          <button type="button" class="btn ghost small" id="reroll" aria-label="별명 다시 뽑기">🎲</button>
+        </div>
+      </label>
+
+      <div class="field">
+        <span>옷 색깔</span>
+        <div class="swatches" id="swatches"></div>
+      </div>
+
+      <label class="field">
+        <span>방 이름 <em>(선생님이 알려준 방 이름)</em></span>
+        <input id="roomInput" maxlength="20" placeholder="lobby" />
+      </label>
+
+      <label class="field" id="coachField" hidden>
+        <span>코치 코드</span>
+        <input id="coachInput" type="password" maxlength="40" />
+      </label>
+
+      <p class="error" id="entryError" role="alert"></p>
+      <button class="btn primary" id="enterBtn">산문 들어서기</button>
+      <p class="help">이동: 방향키·WASD 또는 화면 탭 · 대화: 아래 입력창</p>
+      <a class="solo-link" href="solo/?test=1">혼자 걷는 7일 진로 일기 →</a>
+    </div>
+  </section>
+
+  <!-- 질문 모달 -->
+  <section class="overlay" id="questionModal" hidden>
+    <div class="panel">
+      <p class="eyebrow">생각의 돌탑 · 오늘의 질문</p>
+      <h2 class="q-text" id="qText"></h2>
+      <p class="sub">답을 적으면 돌탑 곁에 내 등불이 켜지고, 친구들도 읽을 수 있어요.</p>
+      <textarea id="qInput" rows="3" maxlength="60" placeholder="한 줄로 적어보세요"></textarea>
+      <div class="row">
+        <button class="btn ghost" data-close>닫기</button>
+        <button class="btn primary" id="qSubmit">등불 밝히기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 등불 읽기 -->
+  <section class="overlay soft" id="lanternModal" hidden>
+    <div class="panel lantern-panel">
+      <div class="lantern-icon" aria-hidden="true"></div>
+      <p class="eyebrow" id="lanternNick"></p>
+      <p class="lantern-text" id="lanternText"></p>
+      <div class="row">
+        <button class="btn ghost" data-close>닫기</button>
+        <button class="btn danger" id="lanternRemove" hidden>등불 내리기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 코치 도구 -->
+  <section class="overlay" id="coachModal" hidden>
+    <div class="panel">
+      <p class="eyebrow">길잡이 도구</p>
+      <label class="field"><span>공지 (모두의 화면 위에 표시)</span><input id="noticeInput" maxlength="100" /></label>
+      <button class="btn ghost" id="noticeSend">공지 올리기</button>
+      <label class="field"><span>오늘의 질문 바꾸기 (등불이 초기화돼요)</span><input id="questionInput" maxlength="80" /></label>
+      <button class="btn ghost" id="questionSend">질문 바꾸기</button>
+      <button class="btn primary" id="gatherSend">모두 법당으로 부르기</button>
+      <p class="help">학생 아바타를 탭하면 채팅을 5분간 멈출 수 있어요.</p>
+      <button class="btn ghost small" data-close>닫기</button>
+    </div>
+  </section>
+
+  <!-- 학생 정보 (코치용) -->
+  <section class="overlay soft" id="playerModal" hidden>
+    <div class="panel">
+      <p class="eyebrow">학생</p>
+      <h2 id="playerNick"></h2>
+      <div class="row">
+        <button class="btn ghost" data-close>닫기</button>
+        <button class="btn danger" id="muteBtn">채팅 5분 멈추기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 마음 돌봄 -->
+  <section class="overlay" id="careModal" hidden>
+    <div class="panel">
+      <p class="eyebrow">마음 돌봄</p>
+      <p class="lead">혹시 많이 힘든 마음이 있다면, 혼자 견디지 않아도 돼요.</p>
+      <p><strong>청소년상담 1388</strong><br />전화·문자·카카오톡으로 24시간 이야기를 들어줘요.</p>
+      <button class="btn primary" data-close>고마워요</button>
+    </div>
+  </section>
+
+  <!-- 법당 모이기 -->
+  <div class="gather" id="gather" hidden>
+    <span id="gatherText"></span>
+    <button class="btn primary small" id="gatherGo">법당으로 가기</button>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <div class="disconnected" id="disconnected" hidden>
+    연결이 끊겼어요. <button class="btn primary small" onclick="location.reload()">다시 들어가기</button>
+  </div>
+
+  <script src="js/world.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
