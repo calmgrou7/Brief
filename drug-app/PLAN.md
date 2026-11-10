@@ -41,14 +41,30 @@
 
 ## 4. 사용할 공공데이터 (식품의약품안전처, 공공데이터포털)
 
-| 용도 | 데이터셋 | 공공데이터포털 | 비고 |
+> ✅ **2026-11-10 검증 완료**: 아래 6개 주소 모두 공공데이터포털 명세(Swagger)로 확인했다. 인증키 없이 실제 호출하면 `SERVICE_KEY_IS_NULL`(키 없음)이 응답되어, 엔드포인트가 살아 있음을 확인했다. 세부 필드는 **부록 A**에 정리했다.
+> 공통 Base URL: `https://apis.data.go.kr/1471000/` · 공통 파라미터: `serviceKey`(필수), `pageNo`, `numOfRows`, `type=json`
+
+| 용도 | 데이터셋 (포털 ID) | 서비스 경로 | 사용할 operation |
 |---|---|---|---|
-| **병용금기·연령·임부·노인·용량·기간·효능군중복 등 DUR** | 식약처 DUR 품목정보 | [15059486](https://www.data.go.kr/data/15059486/openapi.do) | 제품(품목) 단위. 기능별 operation이 여러 개 있다 |
-| **성분 단위 DUR** (교차 점검 엔진의 핵심) | 식약처 DUR 성분정보 | [15056780](https://www.data.go.kr/data/15056780/openapi.do) (M0에서 확인) | 성분 A와 성분 B의 금기 쌍 |
-| 일반의약품 쉬운 설명 (효능·사용법·주의·**상호작용**·부작용·보관) | 의약품개요정보(e약은요) `DrbEasyDrugInfoService/getDrbEasyDrugList` | [15075057](https://www.data.go.kr/data/15075057/openapi.do) | `intrcQesitm` 필드가 상호작용(약·음식) 문항이다. 일반의약품만 있다 |
-| **같은 성분 과량 판단** | 의약품 성분별 1일 최대투여량 정보 | [15098095](https://www.data.go.kr/data/15098095/openapi.do) | 아세트아미노펜 같은 성분의 중복 과량 경고 |
-| 제품 → 주성분 매핑, 전문/일반 구분 | 의약품 제품 허가정보 | 포털에서 "의약품 제품 허가정보" 검색 | 품목기준코드(ITEM_SEQ)가 모든 데이터를 연결하는 키다 |
-| 낱알 모양으로 약 찾기, 약 사진 | 의약품 낱알식별 정보 | 포털에서 "의약품 낱알식별" 검색 | 모양, 색, 각인, 분할선, 이미지 URL |
+| **성분 단위 DUR** (교차 점검 엔진의 핵심) | DUR 성분정보 ([15056780](https://www.data.go.kr/data/15056780/openapi.do)) | `DURIrdntInfoService03` | `getUsjntTabooInfoList02` 병용금기 · `getPwnmTabooInfoList02` 임부 · `getSpcifyAgrdeTabooInfoList02` 연령 · `getOdsnAtentInfoList02` 노인 · `getCpctyAtentInfoList02` 용량 · `getMdctnPdAtentInfoList02` 투여기간 · `getEfcyDplctInfoList02` 효능군중복 |
+| **제품 단위 DUR**, 제품 → DUR 성분코드 매핑 | DUR 품목정보 ([15059486](https://www.data.go.kr/data/15059486/openapi.do)) | `DURPrdlstInfoService03` | `getUsjntTabooInfoList03` 등 9개(위와 같은 유형 + `getSeobangjeongPartitnAtentInfoList03` 서방정분할 + `getDurPrdlstInfoList03` 품목) |
+| 일반의약품 쉬운 설명 | e약은요 ([15075057](https://www.data.go.kr/data/15075057/openapi.do)) | `DrbEasyDrugInfoService` | `getDrbEasyDrugList` |
+| **같은 성분 과량 판단** | 성분별 1일 최대투여량 ([15098095](https://www.data.go.kr/data/15098095/openapi.do)) | `DayMaxDosgQyByIngdService` | `getDayMaxDosgQyByIngdInq` |
+| 제품 → 주성분·함량, 전문/일반 | 의약품 제품 허가정보 ([15095677](https://www.data.go.kr/data/15095677/openapi.do)) | `DrugPrdtPrmsnInfoService08` | `getDrugPrdtPrmsnInq08` 목록 · `getDrugPrdtPrmsnDtlInq08` 상세 · `getDrugPrdtMcpnDtlInq08` **주성분 상세(함량)** |
+| 낱알 모양으로 약 찾기, 약 사진 | 낱알식별 ([15057639](https://www.data.go.kr/data/15057639/openapi.do)) | `MdcinGrnIdntfcInfoService03` | `getMdcinGrnIdntfcInfoList03` |
+
+예시 호출: `https://apis.data.go.kr/1471000/DURIrdntInfoService03/getUsjntTabooInfoList02?serviceKey={KEY}&type=json&pageNo=1&numOfRows=100`
+
+**검증하면서 확인한 설계상 주의점**
+1. **e약은요에는 성분 필드가 없다.** e약은요의 필드는 제품명, 업체, 품목기준코드, 문항 텍스트, 이미지뿐이다. 성분은 반드시 허가정보나 DUR 품목정보에서 `itemSeq`로 조인해서 가져온다.
+2. **성분코드 체계가 데이터셋마다 다를 수 있다.**
+   - DUR 쪽은 `INGR_CODE`, 1일 최대투여량은 `CPNT_CD`, 허가 주성분은 `MTRAL_CODE`를 쓴다.
+   - 세 코드가 같은 체계인지 M0에서 실제 샘플로 확인한다.
+   - 다르면 영문 성분명(`INGR_ENG_NAME` / `DRUG_CPNT_ENG_NM` / `MAIN_INGR_ENG`)을 정규화해서 매핑 테이블을 만든다.
+3. **제품 → DUR 성분 매핑**: DUR 품목정보 응답에 `ITEM_SEQ`와 `INGR_CODE`가 함께 있다. DUR 대상 제품은 이 응답으로 직접 매핑하는 것을 1순위로 한다.
+4. **삭제된 규칙 걸러내기**: 성분정보 응답의 `DEL_YN`(상태)으로 삭제된 규칙을 제외한다.
+5. **증분 동기화**: 품목정보 계열은 `start_change_date`, `end_change_date` 파라미터를 지원한다. 일일 배치는 변경분만 받는다.
+6. **http 금지**: 주소는 https로 호출한다.
 
 - **활용신청**: 공공데이터포털에 회원가입하고 각 API를 활용신청하면 개발계정 키가 발급된다. 대부분 자동 승인이다.
   - 트래픽 한도를 넘으면 운영계정으로 전환을 신청한다. 이때 활용사례를 등록해야 한다.
@@ -259,7 +275,7 @@ function check(drugs: CabinetDrug[], profile: Profile, data: RuleData): {
 각 단계를 별도 작업으로 요청하고, **완료 조건을 만족해야 다음 단계로 넘어간다.**
 
 ### M0. API 탐색 (가장 먼저)
-- 프롬프트: "PLAN.md §4의 각 API를 `DATA_GO_KR_KEY`로 실제 호출해서 응답 샘플을 `docs/api-samples/*.json`에 저장하고, 필드 매핑을 `docs/api-samples/README.md`에 정리해. operation 이름, 필수 파라미터, 전체 건수, 제품→성분코드 연결 방법을 반드시 확인해."
+- 프롬프트: "PLAN.md §4와 부록 A의 operation을 `DATA_GO_KR_KEY`로 실제 호출해서 응답 샘플을 `docs/api-samples/*.json`에 저장하고, 필드 매핑을 `docs/api-samples/README.md`에 정리해. 각 operation의 전체 건수(totalCount)를 기록하고, `INGR_CODE`·`CPNT_CD`·`MTRAL_CODE`가 같은 코드 체계인지 실제 값으로 비교해."
 - 완료 조건:
   - 6개 데이터셋의 샘플과 매핑 문서가 있다.
   - §7 스키마의 각 컬럼이 어느 API의 어떤 필드에서 오는지 표로 정리되어 있다.
@@ -325,3 +341,63 @@ function check(drugs: CabinetDrug[], profile: Profile, data: RuleData): {
 - 회원가입과 서버 저장 (MVP는 로컬 전용)
 - 약 가격·약국 재고
 - 영어 등 다국어
+
+---
+
+## 부록 A. API 응답 필드 (2026-11-10 공공데이터포털 Swagger 기준)
+
+> 응답 구조는 `response.body.items[]`다. 필드명의 대소문자는 API마다 다르니 그대로 쓴다.
+
+### A1. DUR 성분정보 `DURIrdntInfoService03`
+- **요청 파라미터**: `typeName`, `ingrCode`, `ingrKorName`(병용금기) 또는 `ingrName`(그 밖의 operation)
+- **응답 필드**
+
+| operation | 핵심 응답 필드 |
+|---|---|
+| `getUsjntTabooInfoList02` 병용금기 | `INGR_CODE`, `INGR_KOR_NAME`, `INGR_ENG_NAME`, `MIX_TYPE`, `MIX`, `ORI`(관계성분), `CLASS` ↔ `MIXTURE_INGR_CODE`, `MIXTURE_INGR_KOR_NAME`, `MIXTURE_INGR_ENG_NAME`, `MIXTURE_MIX_TYPE`, `MIXTURE_ORI`, `MIXTURE_CLASS`, `PROHBT_CONTENT`(금기내용), `NOTIFICATION_DATE`, `REMARK`, `DEL_YN` |
+| `getPwnmTabooInfoList02` 임부 | `INGR_CODE`, `INGR_NAME`, `GRADE`(등급), `FORM_NAME`, `PROHBT_CONTENT`, `DEL_YN` |
+| `getSpcifyAgrdeTabooInfoList02` 연령 | `INGR_CODE`, `INGR_NAME`, **`AGE_BASE`(연령기준, 텍스트 → 파싱 필요)**, `PROHBT_CONTENT`, `DEL_YN` |
+| `getOdsnAtentInfoList02` 노인 | `INGR_CODE`, `INGR_NAME`, `FORM_NAME`, `PROHBT_CONTENT`, `DEL_YN` |
+| `getCpctyAtentInfoList02` 용량 | `INGR_CODE`, `INGR_NAME`, **`MAX_QTY`(1일최대용량)**, `PROHBT_CONTENT`, `DEL_YN` |
+| `getMdctnPdAtentInfoList02` 투여기간 | `INGR_CODE`, `INGR_NAME`, **`MAX_DOSAGE_TERM`(최대투여기간)**, `DEL_YN` |
+| `getEfcyDplctInfoList02` 효능군중복 | `INGR_CODE`, `INGR_NAME`, **`EFFECT_CODE`(효능군)**, `SERS_NAME`(계열명), `CLASS_NAME`, `DEL_YN` |
+
+### A2. DUR 품목정보 `DURPrdlstInfoService03`
+- **요청 파라미터**: `typeName`, `ingrCode`, `itemName`, `itemSeq`, `bizrno`, **`start_change_date`, `end_change_date`**(증분)
+- **응답 필드**
+  - 병용금기(`getUsjntTabooInfoList03`)
+    - 제품: `ITEM_SEQ`, `ITEM_NAME`, `ENTP_NAME`, `ETC_OTC_CODE`/`ETC_OTC_NAME`, `CLASS_CODE`/`CLASS_NAME`, `MAIN_INGR`, `CHART`
+    - 성분: `INGR_CODE`, `INGR_KOR_NAME`
+    - 상대 제품·성분: `MIXTURE_ITEM_SEQ`, `MIXTURE_ITEM_NAME`, `MIXTURE_INGR_CODE` …
+    - 금기 정보: `PROHBT_CONTENT`, `NOTIFICATION_DATE`
+  - 그 밖의 유형: `ITEM_SEQ`, `ITEM_NAME`, `INGR_CODE`, `INGR_NAME`, `MIX_TYPE`, `MIX_INGR`, `PROHBT_CONTENT`, `CHANGE_DATE`
+  - 효능군중복: 위 필드에 `EFFECT_NAME`(효능), `SERS_NAME`이 추가된다.
+  - `getDurPrdlstInfoList03`: `ITEM_SEQ`, `ITEM_NAME`, `ENTP_NAME`, `ETC_OTC_CODE`, `BAR_CODE`(표준코드), `MATERIAL_NAME`(원료성분), `EDI_CODE`, `CANCEL_DATE`, `CANCEL_NAME`, `TYPE_NAME`, `CHANGE_DATE`
+
+### A3. e약은요 `DrbEasyDrugInfoService/getDrbEasyDrugList`
+- **응답 필드**
+  - 제품: `itemSeq`, `itemName`, `entpName`, `itemImage`, `openDe`, `updateDe`
+  - 문항 텍스트(효능·사용법·주의·상호작용·부작용·보관): `efcyQesitm`, `useMethodQesitm`, `atpnWarnQesitm`, `atpnQesitm`, **`intrcQesitm`**, `seQesitm`, `depositMethodQesitm`
+- 성분 필드는 없다.
+
+### A4. 1일 최대투여량 `DayMaxDosgQyByIngdService/getDayMaxDosgQyByIngdInq`
+- **응답 필드**: `CPNT_CD`(성분코드), `DRUG_CPNT_KOR_NM`, `DRUG_CPNT_ENG_NM`, `FOML_CD`, `FOML_NM`(제형), `DOSAGE_ROUTE_CODE`(투여경로), `DAY_MAX_DOSG_QY`(1일 최대투여량), `DAY_MAX_DOSG_QY_UNIT`(단위)
+
+### A5. 의약품 제품 허가정보 `DrugPrdtPrmsnInfoService08`
+
+| operation | 주요 요청 파라미터 | 핵심 응답 필드 |
+|---|---|---|
+| `getDrugPrdtPrmsnInq08` 목록 | `item_name`, `entp_name`, `item_ingr_name`, `spclty_pblc`, `edi_code` | `ITEM_SEQ`, `ITEM_NAME`, `ENTP_NAME`, `SPCLTY_PBLC`(전문/일반), `ITEM_INGR_NAME`(주성분), `ITEM_INGR_CNT`, `BIG_PRDT_IMG_URL`, `CANCEL_DATE`, `CANCEL_NAME`, `EDI_CODE` |
+| `getDrugPrdtPrmsnDtlInq08` 상세 | `item_seq`, `main_item_ingr`, `start_change_date`, `end_change_date` | `ETC_OTC_CODE`, `MAIN_ITEM_INGR`(유효성분), `MAIN_INGR_ENG`, `MATERIAL_NAME`, `ATC_CODE`, `EE_DOC_DATA`/`UD_DOC_DATA`/`NB_DOC_DATA`(효능·용법·주의 문서), `BAR_CODE`, `CANCEL_NAME`, `CHANGE_DATE` |
+| `getDrugPrdtMcpnDtlInq08` 주성분 상세 | `Item_seq`(대문자 I 주의) | `ITEM_SEQ`, `MTRAL_CODE`(원료코드), `MTRAL_NM`(원료명), **`QNT`(분량)**, **`INGD_UNIT_CD`(단위)**, `MAIN_INGR_ENG` |
+
+- 규칙 R3(1일 최대량)의 용량은 주성분 상세의 `QNT`와 `INGD_UNIT_CD`를 사용한다.
+- 취하·취소된 품목(`CANCEL_DATE`가 있는 품목)은 검색 결과에서 제외하거나 "허가 취소" 배지를 붙인다.
+
+### A6. 낱알식별 `MdcinGrnIdntfcInfoService03/getMdcinGrnIdntfcInfoList03`
+- **요청 파라미터**: `item_name`, `entp_name`, `item_seq`, `edi_code`, `img_regist_ts`
+- **응답 필드**
+  - 제품: `ITEM_SEQ`, `ITEM_NAME`, `ENTP_NAME`, `ITEM_IMAGE`
+  - 모양·색·각인: `DRUG_SHAPE`, `COLOR_CLASS1`, `COLOR_CLASS2`, `PRINT_FRONT`, `PRINT_BACK`, `LINE_FRONT`, `LINE_BACK`, `MARK_CODE_FRONT_ANAL`, `MARK_CODE_FRONT_IMG`
+  - 크기: `LENG_LONG`, `LENG_SHORT`, `THICK`
+  - 분류·코드: `ETC_OTC_NAME`, `FORM_CODE_NAME`, `EDI_CODE`, `STD_CD`(표준코드, 향후 바코드 스캔에 활용)
