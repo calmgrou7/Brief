@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>진로산사</title>
+  <meta name="description" content="나는 어떤 사람이 될까? 하루 한 질문, 조용히 걸어보는 진로의 길" />
+  <meta name="theme-color" content="#f4ede1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">진로산사</span>
+    <span class="presence" id="presence">·</span>
+  </header>
+
+  <main id="app">
+    <!-- 0. 산문 (입구) -->
+    <section class="screen active" data-screen="gate">
+      <div class="gate-mountain" aria-hidden="true">
+        <svg viewBox="0 0 320 120" preserveAspectRatio="none">
+          <path d="M0 120 L60 55 L95 80 L150 20 L205 75 L240 50 L320 120 Z" class="m-back" />
+          <path d="M0 120 L40 90 L90 105 L140 70 L200 100 L260 80 L320 120 Z" class="m-front" />
+        </svg>
+      </div>
+      <h1 class="title">나는 어떤 사람이<br />될까?</h1>
+      <p class="lead">하루 한 질문, 조용히 걸어보는 진로의 길.<br />고르기만 해도 괜찮아요. 3분이면 충분해요.</p>
+      <div class="nick-card">
+        <span class="nick-label">오늘 당신의 이름</span>
+        <strong id="nick">-</strong>
+      </div>
+      <p class="day-info" id="gateDayInfo"></p>
+      <button class="btn primary" id="enterBtn">산문 들어서기</button>
+      <button class="btn ghost small" id="cardShortcut" hidden>나의 길 카드 보기</button>
+    </section>
+
+    <!-- 1. 숨 고르기 -->
+    <section class="screen" data-screen="breath">
+      <p class="step-label">마음 내려놓기</p>
+      <div class="breath-wrap">
+        <div class="breath-circle" id="breathCircle"></div>
+        <p class="breath-text" id="breathText">숨을 들이쉬어요</p>
+      </div>
+      <p class="sub" id="breathCount">1 / 3</p>
+      <button class="btn ghost small" id="skipBreath">건너뛰기</button>
+    </section>
+
+    <!-- 2. 오늘의 질문 -->
+    <section class="screen" data-screen="question">
+      <p class="step-label" id="qLabel">1일차 · 흥미</p>
+      <h2 class="question" id="qText"></h2>
+      <p class="sub" id="qHint"></p>
+      <div class="chips" id="chips" role="group" aria-label="선택지 (최대 3개)"></div>
+      <p class="chip-note">최대 3개까지 고를 수 있어요</p>
+      <label class="write">
+        <span>한 줄로 적어보기 <em>(선택)</em></span>
+        <textarea id="qWrite" rows="2" maxlength="120"></textarea>
+      </label>
+      <button class="btn primary" id="answerBtn" disabled>생각 내려놓기</button>
+    </section>
+
+    <!-- 3. 종 치기 -->
+    <section class="screen" data-screen="bell">
+      <p class="step-label">종 치기</p>
+      <p class="sub">오늘의 생각을 종소리에 실어 보내요.</p>
+      <button class="bell" id="bellBtn" aria-label="종 치기">
+        <svg viewBox="0 0 120 140" aria-hidden="true">
+          <rect x="54" y="4" width="12" height="14" rx="3" class="bell-hook" />
+          <path d="M20 112 C20 60 30 22 60 22 C90 22 100 60 100 112 Z" class="bell-body" />
+          <rect x="12" y="110" width="96" height="10" rx="5" class="bell-lip" />
+          <circle cx="60" cy="72" r="9" class="bell-dang" />
+          <path d="M34 50 H86 M30 64 H90" class="bell-line" />
+        </svg>
+      </button>
+      <p class="sub" id="bellHint">종을 눌러주세요</p>
+      <div class="lanterns" id="lanterns" aria-live="polite"></div>
+    </section>
+
+    <!-- 4. 길잡이의 한마디 -->
+    <section class="screen" data-screen="feedback">
+      <p class="step-label">길잡이의 한마디</p>
+      <div class="lantern-big" aria-hidden="true"></div>
+      <blockquote class="feedback" id="fbText"></blockquote>
+      <div class="action-card">
+        <span>오늘의 작은 실천</span>
+        <p id="fbAction"></p>
+      </div>
+      <div class="crisis" id="crisis" hidden>
+        혹시 많이 힘든 마음이 있다면, 혼자 견디지 않아도 돼요.<br />
+        <strong>청소년상담 1388</strong> (전화·문자·카카오톡, 24시간)에서 이야기를 들어줘요.
+      </div>
+      <button class="btn primary" id="toBeads">염주 보기</button>
+    </section>
+
+    <!-- 5. 염주 (진행 현황) -->
+    <section class="screen" data-screen="beads">
+      <p class="step-label">나의 염주</p>
+      <div class="beads" id="beads"></div>
+      <p class="beads-msg" id="beadsMsg"></p>
+      <button class="btn primary" id="beadsNext"></button>
+      <button class="btn ghost small" id="reviewBtn">지난 생각 다시 보기</button>
+    </section>
+
+    <!-- 6. 지난 생각 -->
+    <section class="screen" data-screen="review">
+      <p class="step-label">지난 생각들</p>
+      <ol class="review" id="reviewList"></ol>
+      <button class="btn ghost" data-go="beads">돌아가기</button>
+    </section>
+
+    <!-- 7. 나의 길 카드 -->
+    <section class="screen" data-screen="card">
+      <p class="step-label">7일의 길을 걸었어요</p>
+      <div class="path-card" id="pathCard"></div>
+      <p class="disclaimer">흥미·강점 선택을 바탕으로 한 참고용 제안이에요. 진단이 아니라 대화의 출발점으로 써주세요.
+        더 정확히 알고 싶다면 <a href="https://www.career.go.kr" target="_blank" rel="noopener">커리어넷</a>의 무료 진로검사를 해보세요.</p>
+      <div class="row">
+        <button class="btn primary" id="saveCard">이미지로 저장</button>
+        <button class="btn ghost" id="copyCard">텍스트 복사</button>
+      </div>
+      <button class="btn ghost small" data-go="gate">처음 화면으로</button>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span id="modeNote"></span>
+    <button class="link" id="resetBtn">처음부터 다시</button>
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/realtime.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
