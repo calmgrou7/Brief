@@ -1,0 +1,704 @@
+<title>뷰티커넥트 MVP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;600;800;900&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 상단 고정 탭 + 단일 컬럼 작업면. 고객 화면(진단·커뮤니티)과 대표님 화면(대시보드·사업모델)을 탭으로 전환 */
+:root {
+  --bg: #f3f6f5;          /* 포슬린 그레이, 살짝 그린 쪽 */
+  --surface: #ffffff;
+  --sunken: #e7eeec;
+  --ink: #17221f;
+  --ink-2: #4a5a55;
+  --line: #d3dedb;
+  --accent: #0d6b5c;      /* 더마 그린 */
+  --accent-soft: #d6ebe6;
+  --rose: #c8506b;        /* 포인트(가격·커미션) */
+  --rose-soft: #f7e1e6;
+  --ok: #2f7d3b; --warn: #a76a06; --info: #2d5f9a;
+  --f-display: "Gothic A1", "Noto Sans KR", system-ui, sans-serif;
+  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1615; --surface: #172120; --sunken: #1f2b29; --ink: #e5eeeb; --ink-2: #a3b4af; --line: #2c3b38;
+  --accent: #4fc2ab; --accent-soft: #1b3a34; --rose: #f0879d; --rose-soft: #3b2129;
+  --ok: #7bc787; --warn: #e3b25a; --info: #8ab4e8; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1615; --surface: #172120; --sunken: #1f2b29; --ink: #e5eeeb; --ink-2: #a3b4af; --line: #2c3b38;
+  --accent: #4fc2ab; --accent-soft: #1b3a34; --rose: #f0879d; --rose-soft: #3b2129;
+  --ok: #7bc787; --warn: #e3b25a; --info: #8ab4e8; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.25; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(26px, 4.4vw, 40px); font-weight: 900; letter-spacing: -0.02em; }
+h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 16px; font-weight: 800; }
+p { margin: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.muted { color: var(--ink-2); }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* 헤더 & 탭 */
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar { display: flex; align-items: center; gap: 16px; padding-block: 10px; flex-wrap: wrap; }
+.logo { font-family: var(--f-display); font-weight: 900; font-size: 18px; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+.logo i { width: 22px; height: 22px; border-radius: 50%; border: 5px solid var(--accent); display: inline-block; position: relative; }
+.logo i::after { content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--rose); right: -9px; top: -6px; }
+nav.tabs { display: flex; gap: 4px; overflow-x: auto; margin-left: auto; scrollbar-width: none; }
+nav.tabs a { white-space: nowrap; text-decoration: none; color: var(--ink-2); font-weight: 500; padding: 7px 12px; border-radius: 999px; font-size: 14px; }
+nav.tabs a:hover { background: var(--sunken); color: var(--ink); }
+nav.tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
+nav.tabs .sep { width: 1px; background: var(--line); margin: 6px 4px; flex: none; }
+.role { font-family: var(--f-mono); font-size: 10.5px; opacity: .7; margin-left: 4px; }
+
+main { padding-block: 28px 64px; }
+section.view { display: grid; gap: 24px; }
+.demo-note { font-size: 12.5px; background: var(--sunken); border-radius: 8px; padding: 8px 12px; color: var(--ink-2); }
+
+/* 공통 컴포넌트 */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; min-width: 0; }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.btn { font: inherit; font-weight: 700; border: 0; border-radius: 8px; padding: 10px 16px; cursor: pointer; background: var(--accent); color: var(--surface); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(--accent); outline-offset: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--sunken); color: var(--ink-2); white-space: nowrap; }
+.pill.g { background: var(--accent-soft); color: var(--accent); }
+.pill.r { background: var(--rose-soft); color: var(--rose); }
+label.f { display: grid; gap: 6px; font-weight: 500; font-size: 14px; }
+input[type=text], input[type=tel], select, textarea { font: inherit; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; }
+textarea { min-height: 80px; resize: vertical; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.chip span { display: inline-block; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; cursor: pointer; }
+.chip input:checked + span { background: var(--accent); color: var(--surface); border-color: var(--accent); font-weight: 700; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; z-index: 20; }
+
+/* 홈 */
+.hero { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: center; }
+.hero .lead { font-size: 17px; color: var(--ink-2); margin-top: 12px; max-width: 34em; }
+.hero .cta { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+.triad { display: grid; gap: 10px; }
+.triad div { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+.triad b.k { font-family: var(--f-display); font-size: 13px; font-weight: 900; color: var(--accent); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); }
+.triad .center { border-color: var(--accent); }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; counter-reset: s; }
+.steps li { list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; counter-increment: s; }
+.steps li::before { content: "STEP " counter(s); font-family: var(--f-mono); font-size: 11px; color: var(--accent); display: block; margin-bottom: 6px; letter-spacing: .06em; }
+.steps { padding: 0; margin: 0; }
+
+/* 진단 */
+.quiz { display: grid; gap: 22px; }
+.result-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .top { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+.card .price { font-family: var(--f-display); font-weight: 800; color: var(--rose); }
+.score { font-family: var(--f-mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.why { font-size: 13px; color: var(--ink-2); }
+.thumb { aspect-ratio: 5/2; max-width: 100%; border-radius: 8px; display: grid; place-items: center; font-family: var(--f-display); font-weight: 900; font-size: 13px; letter-spacing: .04em; color: var(--accent); background: repeating-linear-gradient(135deg, var(--accent-soft) 0 10px, var(--sunken) 10px 20px); }
+.thumb.svc { color: var(--rose); background: repeating-linear-gradient(135deg, var(--rose-soft) 0 10px, var(--sunken) 10px 20px); }
+
+/* 커뮤니티 */
+.feed { display: grid; gap: 12px; }
+.post { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; }
+.post .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.post .act { display: flex; gap: 8px; }
+.like { font: inherit; font-size: 13px; background: var(--sunken); border: 0; border-radius: 999px; padding: 4px 12px; cursor: pointer; color: var(--ink); }
+.like[aria-pressed="true"] { background: var(--rose-soft); color: var(--rose); font-weight: 700; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* 대시보드 */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.kpi .v { font-family: var(--f-display); font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--ink-2); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { font-size: 12px; color: var(--ink-2); font-weight: 700; background: var(--sunken); }
+tr:last-child td { border-bottom: 0; }
+td select { padding: 6px 8px; width: auto; }
+.st { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.pipe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.pipe div { background: var(--sunken); border-radius: 8px; padding: 10px; text-align: center; }
+.pipe b { display: block; font-family: var(--f-display); font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.pipe span { font-size: 12px; color: var(--ink-2); }
+.auto { display: grid; gap: 8px; }
+.auto li { list-style: none; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; background: var(--sunken); border-radius: 8px; font-size: 14px; }
+.auto { padding: 0; margin: 0; }
+.trig { font-family: var(--f-mono); font-size: 11px; color: var(--accent); white-space: nowrap; }
+
+/* 사업 모델 */
+.diagram { overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.n rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.n.c rect { fill: var(--accent); stroke: var(--accent); }
+.n.c text { fill: var(--surface); }
+.n.r rect { stroke: var(--rose); }
+.n text { fill: var(--ink); font-family: var(--f-body); }
+.n .t { font-weight: 800; font-size: 15px; font-family: var(--f-display); }
+.n .s { font-size: 11.5px; fill: var(--ink-2); }
+.n.c .s { fill: var(--surface); opacity: .85; }
+.edge { stroke: var(--ink-2); stroke-width: 1.5; fill: none; }
+.edge.d { stroke-dasharray: 5 5; }
+.arrowhead { fill: var(--ink-2); }
+.chipbg { fill: var(--bg); stroke: var(--line); }
+.chiptx { font-size: 11px; fill: var(--ink); font-family: var(--f-body); }
+.chiptx.m { fill: var(--rose); font-weight: 700; }
+.rev table { min-width: 640px; }
+.fly { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0; }
+.fly div { padding: 14px; border: 1px solid var(--line); background: var(--surface); margin: -1px 0 0 -1px; position: relative; }
+.fly div b { display: block; font-family: var(--f-display); font-weight: 800; }
+.fly div small { color: var(--ink-2); font-size: 13px; }
+.fly div::after { content: "→"; position: absolute; right: 8px; top: 10px; color: var(--accent); font-weight: 900; }
+.fly div:last-child::after { content: "↺"; }
+.road { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.phase { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; align-content: start; }
+.phase:nth-child(2) { border-top-color: color-mix(in srgb, var(--accent) 70%, var(--rose)); }
+.phase:nth-child(3) { border-top-color: color-mix(in srgb, var(--accent) 35%, var(--rose)); }
+.phase:nth-child(4) { border-top-color: var(--rose); }
+.phase ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
+.phase .kpi-line { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 8px; }
+.risk li { margin-bottom: 6px; }
+.risk { padding-left: 18px; margin: 0; }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; }
+  .pipe { grid-template-columns: repeat(5, minmax(56px, 1fr)); overflow-x: auto; }
+  .bar { gap: 8px; }
+  nav.tabs { margin-left: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card, .post { transition: border-color .15s; }
+  .card:hover { border-color: var(--accent); }
+}
+</style>
+
+<header>
+  <div class="wrap bar">
+    <div class="logo"><i aria-hidden="true"></i>뷰티커넥트</div>
+    <nav class="tabs" aria-label="화면 전환">
+      <a href="#home">소개</a>
+      <a href="#match">피부 진단·매칭<span class="role">고객</span></a>
+      <a href="#community">커뮤니티<span class="role">고객</span></a>
+      <a href="#partners">파트너<span class="role">브랜드·샵</span></a>
+      <span class="sep" aria-hidden="true"></span>
+      <a href="#admin">운영 대시보드<span class="role">대표</span></a>
+      <a href="#model">사업 구조<span class="role">대표</span></a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ 소개 ============ -->
+<section class="view" id="v-home">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Beauty Connector · MVP v0.1</p>
+      <h1>검증된 화장품과 에스테틱을, 내 피부에 맞게 연결해 드립니다</h1>
+      <p class="lead">브랜드 광고가 아니라 커넥터가 직접 써보고 방문해 본 제품·샵만 추천합니다. 3분 피부 진단으로 맞춤 제품과 관리 프로그램을 받고, 1:1 상담까지 이어집니다.</p>
+      <div class="cta">
+        <a class="btn" href="#match" style="text-decoration:none">3분 피부 진단 시작</a>
+        <a class="btn ghost" href="#model" style="text-decoration:none">사업 구조 보기</a>
+      </div>
+    </div>
+    <div class="triad" aria-label="뷰티커넥트가 연결하는 세 주체">
+      <div><b class="k">고객</b><p><strong>피부 고민이 있는 고객</strong><br><span class="muted">광고 대신 믿을 만한 추천을 원함</span></p></div>
+      <div class="center"><b class="k">연결</b><p><strong>뷰티 커넥터 (대표님)</strong><br><span class="muted">검증 · 큐레이션 · 상담 · 사후관리</span></p></div>
+      <div><b class="k">공급</b><p><strong>브랜드 · 에스테틱 샵</strong><br><span class="muted">신규 고객과 진성 후기를 원함</span></p></div>
+    </div>
+  </div>
+  <div>
+    <p class="eyebrow" style="margin-bottom:10px">고객이 겪는 흐름</p>
+    <ol class="steps">
+      <li><h3>피부 진단</h3><p class="muted">타입·고민·예산·지역 5문항</p></li>
+      <li><h3>맞춤 매칭</h3><p class="muted">검증 제품 3개 + 관리 프로그램 2곳</p></li>
+      <li><h3>1:1 상담</h3><p class="muted">카카오톡으로 커넥터가 직접 연락</p></li>
+      <li><h3>구매·방문</h3><p class="muted">공동구매가·첫 방문 혜택 적용</p></li>
+      <li><h3>후기·재관리</h3><p class="muted">2주 뒤 체크인, 후기는 커뮤니티로</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 진단·매칭 ============ -->
+<section class="view" id="v-match" hidden>
+  <div>
+    <p class="eyebrow">고객 화면</p>
+    <h2>3분 피부 진단</h2>
+    <p class="muted">답변을 바꾸면 추천이 바로 바뀝니다. 제품·샵은 모두 예시 데이터입니다.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <form class="panel quiz" id="quiz" onsubmit="return false">
+      <fieldset><legend>1. 피부 타입</legend>
+        <div class="chips" id="q-type"></div></fieldset>
+      <fieldset><legend>2. 가장 큰 고민 (여러 개 선택)</legend>
+        <div class="chips" id="q-concern"></div></fieldset>
+      <fieldset><legend>3. 연령대</legend>
+        <div class="chips" id="q-age"></div></fieldset>
+      <label class="f" for="q-region">4. 관리받을 지역
+        <select id="q-region"></select></label>
+      <label class="f" for="q-budget">5. 한 달 뷰티 예산
+        <select id="q-budget">
+          <option value="5">5만원 이하</option>
+          <option value="15" selected>5~15만원</option>
+          <option value="30">15~30만원</option>
+          <option value="99">30만원 이상</option>
+        </select></label>
+    </form>
+    <div class="grid" style="gap:16px">
+      <div class="result-head" id="profile"></div>
+      <div><h3 style="margin-bottom:10px">추천 제품</h3><div class="grid g3" id="rec-products"></div></div>
+      <div><h3 style="margin-bottom:10px">추천 에스테틱 프로그램</h3><div class="grid g2" id="rec-services"></div></div>
+    </div>
+  </div>
+
+  <form class="panel grid" id="lead-form" style="gap:14px">
+    <div><h3>커넥터에게 1:1 상담 받기</h3><p class="muted">진단 결과가 함께 전달됩니다. 영업일 기준 24시간 안에 연락드립니다.</p></div>
+    <div class="grid g3">
+      <label class="f" for="l-name">이름<input type="text" id="l-name" required placeholder="홍길동"></label>
+      <label class="f" for="l-phone">연락처<input type="tel" id="l-phone" required placeholder="010-0000-0000"></label>
+      <label class="f" for="l-ch">선호 연락 방식
+        <select id="l-ch"><option>카카오톡</option><option>전화</option><option>문자</option></select></label>
+    </div>
+    <label style="display:flex;gap:8px;align-items:start;font-size:14px" for="l-agree"><input type="checkbox" id="l-agree" required style="margin-top:5px"> <span>[필수] 상담을 위한 개인정보(이름·연락처·진단 결과) 수집·이용 및 상담 연결을 위한 파트너 샵 제공에 동의합니다. 보관 기간 1년.</span></label>
+    <div><button class="btn" type="submit">상담 신청</button></div>
+  </form>
+</section>
+
+<!-- ============ 커뮤니티 ============ -->
+<section class="view" id="v-community" hidden>
+  <div>
+    <p class="eyebrow">고객 화면 · 콘텐츠 = 유입 엔진</p>
+    <h2>커뮤니티</h2>
+    <p class="muted">진성 후기, 커넥터 칼럼, 공동구매, 라이브 예고가 한곳에 모입니다. 협찬·제휴 글은 반드시 표시합니다.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="grid" style="gap:12px">
+      <div class="filters chips" id="feed-filter"></div>
+      <div class="feed" id="feed"></div>
+    </div>
+    <form class="panel grid" id="post-form" style="gap:12px">
+      <h3>후기 남기기</h3>
+      <label class="f" for="p-cat">분류<select id="p-cat"><option>후기</option><option>질문</option></select></label>
+      <label class="f" for="p-title">제목<input type="text" id="p-title" required placeholder="시카 앰플 2주 사용 후기"></label>
+      <label class="f" for="p-body">내용<textarea id="p-body" required placeholder="피부 타입, 사용 기간, 변화를 적어 주세요."></textarea></label>
+      <label style="display:flex;gap:8px;align-items:center;font-size:14px" for="p-sponsor"><input type="checkbox" id="p-sponsor"> 제품을 제공받았거나 할인받았어요 (경제적 이해관계 표시)</label>
+      <div><button class="btn" type="submit">등록</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ 파트너 ============ -->
+<section class="view" id="v-partners" hidden>
+  <div>
+    <p class="eyebrow">브랜드 · 에스테틱 샵 화면</p>
+    <h2>검증 파트너</h2>
+    <p class="muted">커넥터가 직접 검증한 곳만 고객에게 노출됩니다. 검증 항목을 통과하면 배지가 붙습니다.</p>
+  </div>
+  <div class="grid g3" id="partner-list"></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="panel grid" style="gap:10px">
+      <h3>입점 검증 기준</h3>
+      <ul class="risk">
+        <li><strong>브랜드</strong>: 화장품책임판매업 등록증, 전성분표, 기능성 심사(해당 시), 커넥터 2주 실사용</li>
+        <li><strong>에스테틱 샵</strong>: 피부미용업 신고증, 위생·소독 점검, 가격표 공개, 커넥터 직접 체험</li>
+        <li><strong>공통</strong>: 과장 광고 금지 서약, 고객 불만 48시간 내 응대, 정산 조건 서면 계약</li>
+      </ul>
+      <p class="demo-note">의원·피부과 시술은 소개 수수료를 받는 연결 대상에서 제외합니다. 의료법상 환자 유인·알선에 해당할 수 있습니다.</p>
+    </div>
+    <form class="panel grid" id="partner-form" style="gap:12px">
+      <h3>입점 신청</h3>
+      <label class="f" for="pa-kind">유형<select id="pa-kind"><option>브랜드</option><option>에스테틱 샵</option></select></label>
+      <label class="f" for="pa-name">상호<input type="text" id="pa-name" required placeholder="예: 라온 스킨랩"></label>
+      <label class="f" for="pa-plan">희망 플랜
+        <select id="pa-plan"><option value="basic">베이직 · 성과 수수료만</option><option value="pro">프로 · 월 9.9만원 + 콘텐츠 1회</option><option value="premium">프리미엄 · 월 29만원 + 라이브·공동구매</option></select></label>
+      <div><button class="btn" type="submit">신청서 제출</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ 운영 대시보드 ============ -->
+<section class="view" id="v-admin" hidden>
+  <div>
+    <p class="eyebrow">대표님 화면 · 1인 운영</p>
+    <h2>운영 대시보드</h2>
+    <p class="muted">상담 신청이 들어오면 여기로 모입니다. 상태를 바꾸면 예상 수익이 다시 계산됩니다.</p>
+  </div>
+  <p class="demo-note">'예시' 표시 리드는 샘플입니다. 진단 탭에서 상담을 신청하면 이 브라우저에 실제 행이 추가됩니다. 다음 단계에서 공유 DB(노션·Supabase)로 옮기면 기기 간 동기화됩니다.</p>
+  <div class="kpis" id="kpis"></div>
+  <div class="panel grid" style="gap:12px">
+    <h3>매칭 파이프라인</h3>
+    <div class="pipe" id="pipe"></div>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>신청일</th><th>고객</th><th>진단 요약</th><th>매칭 대상</th><th>예상 객단가</th><th>상태</th></tr></thead>
+      <tbody id="lead-rows"></tbody>
+    </table>
+  </div>
+  <div class="panel grid" style="gap:12px">
+    <div><h3>자동화 시나리오</h3><p class="muted">대표님 손을 거치지 않아도 돌아가야 하는 일입니다. Zapier 또는 Make로 연결합니다.</p></div>
+    <ol class="auto">
+      <li><span class="trig">상담 신청 시</span><span>CRM(노션/시트)에 행 생성 + 카카오 알림톡 "접수 완료" 발송</span><span class="pill g">즉시</span></li>
+      <li><span class="trig">상태=매칭</span><span>파트너 샵에 고객 요약 카드 전송, 예약 가능 시간 요청</span><span class="pill g">즉시</span></li>
+      <li><span class="trig">방문 D+1</span><span>고객 만족도 3문항 설문, 샵에는 방문 확인 요청</span><span class="pill">D+1</span></li>
+      <li><span class="trig">방문 D+14</span><span>후기 요청 + 커뮤니티 작성 시 적립금 안내</span><span class="pill">D+14</span></li>
+      <li><span class="trig">매월 1일</span><span>방문완료 건 집계 → 파트너별 정산서 자동 생성·메일 발송</span><span class="pill r">월간</span></li>
+      <li><span class="trig">후기 등록 시</span><span>AI로 카드뉴스·릴스 대본 초안 생성 → 승인 대기함</span><span class="pill">주간</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ 사업 구조 ============ -->
+<section class="view" id="v-model" hidden>
+  <div>
+    <p class="eyebrow">대표님 화면 · 사업 도식</p>
+    <h2>뷰티 커넥터 사업 구조</h2>
+    <p class="muted">커넥터는 재고를 들고 있지 않는 신뢰 기반 중개자입니다. 돈은 연결이 성사될 때, 그리고 신뢰가 쌓인 커뮤니티에서 나옵니다.</p>
+  </div>
+
+  <div class="panel diagram" aria-label="생태계 도식">
+    <svg viewBox="0 0 760 450" role="img" aria-labelledby="eco-t">
+      <title id="eco-t">고객, 커넥터, 브랜드, 에스테틱 샵, 콘텐츠, 자동화 운영 사이의 흐름</title>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrowhead" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <!-- edges -->
+      <line class="edge" x1="172" y1="235" x2="308" y2="235" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <line class="edge" x1="462" y1="210" x2="583" y2="102" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <line class="edge" x1="462" y1="262" x2="583" y2="368" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <line class="edge" x1="385" y1="102" x2="385" y2="183" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <line class="edge" x1="385" y1="287" x2="385" y2="363" marker-start="url(#ah)" marker-end="url(#ah)"/>
+      <path class="edge d" d="M308,62 C200,62 110,110 95,193" marker-end="url(#ah)"/>
+      <!-- chips -->
+      <g><rect class="chipbg" x="185" y="214" width="110" height="42" rx="8"/><text class="chiptx" x="240" y="231" text-anchor="middle">→ 진단·상담 신청</text><text class="chiptx m" x="240" y="248" text-anchor="middle">← 맞춤 추천·공구가</text></g>
+      <g><rect class="chipbg" x="466" y="135" width="112" height="42" rx="8"/><text class="chiptx" x="522" y="152" text-anchor="middle">→ 판매 연결·후기</text><text class="chiptx m" x="522" y="169" text-anchor="middle">← 커미션 10–25%</text></g>
+      <g><rect class="chipbg" x="466" y="294" width="112" height="42" rx="8"/><text class="chiptx" x="522" y="311" text-anchor="middle">→ 신규 고객 소개</text><text class="chiptx m" x="522" y="328" text-anchor="middle">← 소개비·입점료</text></g>
+      <g><rect class="chipbg" x="274" y="122" width="104" height="42" rx="8"/><text class="chiptx" x="326" y="139" text-anchor="middle">→ 후기·사례</text><text class="chiptx m" x="326" y="156" text-anchor="middle">← 멤버십·광고</text></g>
+      <g><rect class="chipbg" x="274" y="304" width="104" height="42" rx="8"/><text class="chiptx" x="326" y="321" text-anchor="middle">CRM·알림톡</text><text class="chiptx" x="326" y="338" text-anchor="middle">정산·리포트</text></g>
+      <g><rect class="chipbg" x="140" y="74" width="88" height="26" rx="8"/><text class="chiptx" x="184" y="91" text-anchor="middle">SNS 유입</text></g>
+      <!-- nodes -->
+      <g class="n"><rect x="20" y="195" width="150" height="80" rx="12"/><text class="t" x="95" y="228" text-anchor="middle">고객</text><text class="s" x="95" y="250" text-anchor="middle">20–50대 피부 고민층</text></g>
+      <g class="n c"><rect x="310" y="185" width="150" height="100" rx="12"/><text class="t" x="385" y="222" text-anchor="middle">뷰티 커넥터</text><text class="s" x="385" y="244" text-anchor="middle">검증 · 큐레이션</text><text class="s" x="385" y="262" text-anchor="middle">상담 · 사후관리</text></g>
+      <g class="n"><rect x="585" y="50" width="155" height="80" rx="12"/><text class="t" x="662" y="83" text-anchor="middle">브랜드·제조사</text><text class="s" x="662" y="105" text-anchor="middle">인디 K뷰티 · 수입사</text></g>
+      <g class="n r"><rect x="585" y="330" width="155" height="80" rx="12"/><text class="t" x="662" y="363" text-anchor="middle">에스테틱 샵</text><text class="s" x="662" y="385" text-anchor="middle">피부관리실 · 원장님</text></g>
+      <g class="n"><rect x="310" y="30" width="150" height="70" rx="12"/><text class="t" x="385" y="60" text-anchor="middle">콘텐츠·커뮤니티</text><text class="s" x="385" y="80" text-anchor="middle">인스타 · 오픈채팅 · 라이브</text></g>
+      <g class="n"><rect x="310" y="365" width="150" height="70" rx="12"/><text class="t" x="385" y="395" text-anchor="middle">자동화 운영</text><text class="s" x="385" y="415" text-anchor="middle">1인이 10명분 처리</text></g>
+    </svg>
+  </div>
+
+  <div class="panel rev" style="display:grid;gap:12px">
+    <div><h3>수익 모델 6가지</h3><p class="muted">금액·비율은 업계 통상 범위를 참고한 가정치입니다. 파트너 계약 시 확정합니다.</p></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>수익원</th><th>누가 내나</th><th>구조 (가정)</th><th>시작 시점</th><th>자동화 포인트</th></tr></thead>
+        <tbody>
+          <tr><td><strong>판매 커미션</strong></td><td>브랜드</td><td class="num">판매가의 10–25%</td><td><span class="pill g">1단계</span></td><td>제휴 링크·쿠폰코드로 자동 추적</td></tr>
+          <tr><td><strong>샵 소개비</strong></td><td>에스테틱 샵</td><td class="num">첫 결제액의 10–20% 또는 건당 2–5만원</td><td><span class="pill g">1단계</span></td><td>방문 확인 → 월말 정산서 자동</td></tr>
+          <tr><td><strong>공동구매·큐레이션 박스</strong></td><td>고객</td><td class="num">마진 25–40%, 월 1회</td><td><span class="pill g">1단계</span></td><td>주문폼 → 발주 시트 → 배송 알림</td></tr>
+          <tr><td><strong>파트너 멤버십</strong></td><td>브랜드·샵</td><td class="num">월 9.9만 / 29만원</td><td><span class="pill">2단계</span></td><td>정기결제, 성과 리포트 월간 발송</td></tr>
+          <tr><td><strong>고객 유료 멤버십</strong></td><td>고객</td><td class="num">월 9,900원 · 공구 우선권·월 1회 상담</td><td><span class="pill">2단계</span></td><td>정기결제 + 멤버 전용 채널 자동 초대</td></tr>
+          <tr><td><strong>콘텐츠·교육 사업</strong></td><td>브랜드·원장님</td><td class="num">브랜디드 콘텐츠 건당 30–100만원, 원장님 클래스 1인 15–30만원</td><td><span class="pill r">3단계</span></td><td>AI 초안 → 승인 → 예약 발행</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel grid" style="gap:12px">
+    <div><h3>성장 플라이휠</h3><p class="muted">한 바퀴 돌 때마다 광고비 없이 다음 고객이 생깁니다.</p></div>
+    <div class="fly">
+      <div><b>콘텐츠</b><small>사용기·비교·피부 칼럼</small></div>
+      <div><b>신뢰</b><small>팔로워·오픈채팅 멤버</small></div>
+      <div><b>진단 리드</b><small>3분 진단 → 상담 신청</small></div>
+      <div><b>매칭·구매</b><small>커미션·소개비 발생</small></div>
+      <div><b>진성 후기</b><small>다시 콘텐츠의 재료</small></div>
+    </div>
+  </div>
+
+  <div class="panel grid" style="gap:12px">
+    <h3>수익 시뮬레이터 <span class="muted" style="font-weight:400;font-size:13px">월 기준, 가정치를 바꿔 보세요</span></h3>
+    <div class="grid g3">
+      <label class="f" for="s-leads">월 상담 신청 (건)<input type="text" inputmode="numeric" id="s-leads" value="120"></label>
+      <label class="f" for="s-conv">매칭 성사율 (%)<input type="text" inputmode="numeric" id="s-conv" value="30"></label>
+      <label class="f" for="s-aov">평균 객단가 (원)<input type="text" inputmode="numeric" id="s-aov" value="150000"></label>
+      <label class="f" for="s-rate">평균 수수료율 (%)<input type="text" inputmode="numeric" id="s-rate" value="15"></label>
+      <label class="f" for="s-mem">유료 멤버 (명)<input type="text" inputmode="numeric" id="s-mem" value="80"></label>
+      <label class="f" for="s-par">유료 파트너 (곳)<input type="text" inputmode="numeric" id="s-par" value="8"></label>
+    </div>
+    <div class="kpis" id="sim-out"></div>
+  </div>
+
+  <div class="grid" style="gap:12px">
+    <h3>확장 로드맵</h3>
+    <div class="road">
+      <div class="phase"><span class="eyebrow">0단계 · 0–1개월</span><h3>노코드 검증</h3>
+        <ul><li>인스타 + 카카오 채널 개설</li><li>구글폼 진단 → 노션 CRM</li><li>브랜드 10개 · 샵 5곳 확보</li><li>오픈채팅 커뮤니티 시작</li></ul>
+        <p class="kpi-line">리드 100 · 매칭 20 · 후기 10</p></div>
+      <div class="phase"><span class="eyebrow">1단계 · 2–4개월</span><h3>MVP 웹 + 자동화</h3>
+        <ul><li>이 MVP를 실서비스로 (공유 DB)</li><li>알림톡·정산 자동화</li><li>월 1회 공동구매</li><li>커미션·소개비 매출 시작</li></ul>
+        <p class="kpi-line">월 매출 300만 · 재구매 30%</p></div>
+      <div class="phase"><span class="eyebrow">2단계 · 5–9개월</span><h3>커뮤니티 유료화</h3>
+        <ul><li>고객 멤버십 · 파트너 구독</li><li>월 2회 라이브 커머스</li><li>원장님 대상 마케팅 클래스</li><li>큐레이션 박스 정기배송</li></ul>
+        <p class="kpi-line">유료 멤버 300 · 파트너 20</p></div>
+      <div class="phase"><span class="eyebrow">3단계 · 10–18개월</span><h3>네트워크 확장</h3>
+        <ul><li>커넥터 양성 과정 → 지역 커넥터 네트워크</li><li>PB 제품 (OEM/ODM)</li><li>K뷰티 해외 바이어 연결</li><li>트렌드 데이터 리포트 판매</li></ul>
+        <p class="kpi-line">커넥터 10명 · 지역 5곳</p></div>
+    </div>
+  </div>
+
+  <div class="panel grid" style="gap:10px">
+    <h3>꼭 챙길 규제 · 리스크</h3>
+    <ul class="risk">
+      <li><strong>의료법</strong>: 의원·피부과를 소개하고 수수료를 받으면 환자 유인·알선 금지 위반 소지가 있습니다. 연결 대상은 피부미용업(에스테틱)과 화장품으로 한정합니다.</li>
+      <li><strong>화장품법 광고</strong>: "치료", "재생", "여드름 완치"처럼 의약품으로 오인될 표현을 쓰면 안 됩니다. 기능성은 심사받은 효능만 씁니다.</li>
+      <li><strong>추천·보증 표시</strong>: 커미션·협찬이 있는 콘텐츠는 "광고", "제휴" 문구를 첫머리에 표시합니다 (공정위 지침).</li>
+      <li><strong>통신판매</strong>: 공동구매를 직접 받으면 통신판매업 신고가 필요하고, 중개만 하면 통신판매중개자 고지 의무가 있습니다.</li>
+      <li><strong>개인정보</strong>: 진단 결과를 샵에 넘길 때 제3자 제공 동의를 따로 받습니다. 이 MVP 폼에 문구를 넣어 두었습니다.</li>
+    </ul>
+  </div>
+</section>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+  const man = n => (n >= 10000 ? (Math.round(n / 1000) / 10).toLocaleString('ko-KR') + '만원' : won(n));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('bc:' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('bc:' + k, JSON.stringify(v)); } catch {} }
+  };
+  const toast = msg => { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* ---------- 예시 데이터 ---------- */
+  const TYPES = ['건성', '지성', '복합성', '민감성'];
+  const CONCERNS = ['트러블', '건조·당김', '칙칙함', '탄력·주름', '모공', '홍조'];
+  const AGES = ['20대', '30대', '40대', '50대+'];
+  const REGIONS = ['서울 강남권', '서울 강북권', '경기 남부', '경기 북부', '부산', '기타 지역'];
+
+  const PRODUCTS = [
+    { name: '시카 진정 앰플 30ml', brand: '그린데이랩', price: 28000, types: ['민감성', '지성', '복합성'], concerns: ['트러블', '홍조'], rate: 20 },
+    { name: '세라마이드 장벽 크림', brand: '모이스트룸', price: 32000, types: ['건성', '민감성'], concerns: ['건조·당김', '홍조'], rate: 18 },
+    { name: '비타C 15% 브라이트 세럼', brand: '루미에트', price: 39000, types: ['지성', '복합성', '건성'], concerns: ['칙칙함'], rate: 22 },
+    { name: '저자극 BHA 토너 패드', brand: '클리어핏', price: 24000, types: ['지성', '복합성'], concerns: ['트러블', '모공'], rate: 15 },
+    { name: '펩타이드 리프팅 아이크림', brand: '에이지블룸', price: 45000, types: ['건성', '복합성', '민감성'], concerns: ['탄력·주름'], rate: 25 },
+    { name: '수분 진정 젤 마스크 10매', brand: '그린데이랩', price: 18000, types: ['민감성', '지성', '복합성', '건성'], concerns: ['건조·당김', '홍조'], rate: 20 },
+    { name: '나이아신아마이드 모공 세럼', brand: '클리어핏', price: 27000, types: ['지성', '복합성'], concerns: ['모공', '칙칙함'], rate: 15 },
+    { name: '레티날 0.05% 나이트 크림', brand: '에이지블룸', price: 52000, types: ['건성', '복합성', '지성'], concerns: ['탄력·주름', '모공'], rate: 25 },
+    { name: '무기자차 톤업 선크림', brand: '모이스트룸', price: 22000, types: ['민감성', '건성', '복합성', '지성'], concerns: ['홍조', '칙칙함'], rate: 18 }
+  ];
+  const SERVICES = [
+    { name: '진정·장벽 집중 관리 (60분)', shop: '라온 스킨랩', region: '서울 강남권', price: 89000, first: 59000, concerns: ['홍조', '건조·당김', '트러블'], types: ['민감성', '건성'] },
+    { name: '아쿠아 딥클렌징 관리 (70분)', shop: '피부정원', region: '서울 강북권', price: 79000, first: 49000, concerns: ['모공', '트러블'], types: ['지성', '복합성'] },
+    { name: '브라이트닝 각질·광채 관리', shop: '데이글로우 에스테틱', region: '경기 남부', price: 95000, first: 69000, concerns: ['칙칙함'], types: ['건성', '복합성', '지성'] },
+    { name: '리프팅 경락·탄력 관리 (80분)', shop: '소담 뷰티하우스', region: '서울 강남권', price: 120000, first: 89000, concerns: ['탄력·주름'], types: ['건성', '복합성', '민감성', '지성'] },
+    { name: '트러블 피부 정기 관리 4회권', shop: '클린스킨 하우스', region: '부산', price: 280000, first: 240000, concerns: ['트러블', '모공'], types: ['지성', '복합성', '민감성'] },
+    { name: '수분 충전 보습 관리 (60분)', shop: '물결 피부관리실', region: '경기 북부', price: 75000, first: 49000, concerns: ['건조·당김', '탄력·주름'], types: ['건성', '민감성'] }
+  ];
+  const PARTNERS = [
+    { kind: '브랜드', name: '그린데이랩', desc: '민감 피부 진정 라인 · 인디 브랜드', badges: ['책임판매업', '전성분 공개', '2주 실사용'], plan: '프로' },
+    { kind: '브랜드', name: '에이지블룸', desc: '안티에이징 · 기능성 심사 완료', badges: ['기능성 심사', '2주 실사용'], plan: '프리미엄' },
+    { kind: '브랜드', name: '클리어핏', desc: '지성·트러블 케어 · 약산성', badges: ['책임판매업', '전성분 공개'], plan: '베이직' },
+    { kind: '에스테틱 샵', name: '라온 스킨랩', desc: '서울 강남권 · 1인 원장 샵', badges: ['피부미용업 신고', '위생 점검', '직접 체험'], plan: '프로' },
+    { kind: '에스테틱 샵', name: '소담 뷰티하우스', desc: '서울 강남권 · 리프팅 경락 전문', badges: ['피부미용업 신고', '가격표 공개'], plan: '프리미엄' },
+    { kind: '에스테틱 샵', name: '클린스킨 하우스', desc: '부산 · 트러블 정기관리', badges: ['피부미용업 신고', '직접 체험'], plan: '베이직' }
+  ];
+  const POSTS0 = [
+    { id: 'p1', cat: '칼럼', title: '민감성 피부가 레티놀 시작할 때 지켜야 할 3가지', body: '주 2회, 저농도, 장벽 크림 먼저. 커넥터가 3개월 직접 테스트한 순서를 공유합니다.', who: '커넥터', likes: 42, sponsor: false },
+    { id: 'p2', cat: '공구', title: '[11월 공동구매] 시카 진정 앰플 + 젤 마스크 세트 32% 할인', body: '11/18–11/24 · 멤버 우선 오픈 11/17. 수량 200세트 한정.', who: '커넥터', likes: 87, sponsor: true },
+    { id: 'p3', cat: '후기', title: '라온 스킨랩 진정 관리 다녀왔어요 (홍조 30대)', body: '첫 방문가로 받았고 붉은기가 확실히 가라앉았어요. 원장님이 홈케어 루틴도 알려주셨어요.', who: '민지', likes: 23, sponsor: true },
+    { id: 'p4', cat: '라이브', title: '목요일 밤 9시 · 겨울철 건조 피부 Q&A 라이브', body: '세라마이드 크림 브랜드 담당자와 함께. 라이브 중 질문 남기면 샘플 드려요.', who: '커넥터', likes: 31, sponsor: true },
+    { id: 'p5', cat: '질문', title: '지성인데 겨울엔 속당김이 심해요. 토너 패드 계속 써도 될까요?', body: '각질 제거 패드를 매일 쓰고 있어요.', who: '수진', likes: 6, sponsor: false }
+  ];
+  const STATUSES = [
+    { k: '신규', c: 'var(--info)' }, { k: '상담중', c: 'var(--warn)' }, { k: '매칭', c: 'var(--accent)' },
+    { k: '방문·구매완료', c: 'var(--ok)' }, { k: '정산완료', c: 'var(--rose)' }
+  ];
+  const LEADS0 = [
+    { id: 'e1', demo: true, date: '11-03', name: '김○○', summary: '민감성 · 홍조, 건조·당김 · 30대', target: '라온 스킨랩', aov: 89000, status: '정산완료' },
+    { id: 'e2', demo: true, date: '11-05', name: '이○○', summary: '지성 · 트러블, 모공 · 20대', target: '클리어핏 패드 + 피부정원', aov: 103000, status: '방문·구매완료' },
+    { id: 'e3', demo: true, date: '11-07', name: '박○○', summary: '건성 · 탄력·주름 · 40대', target: '소담 뷰티하우스', aov: 120000, status: '매칭' },
+    { id: 'e4', demo: true, date: '11-08', name: '최○○', summary: '복합성 · 칙칙함 · 30대', target: '루미에트 세럼', aov: 39000, status: '상담중' },
+    { id: 'e5', demo: true, date: '11-09', name: '정○○', summary: '민감성 · 트러블 · 20대', target: '-', aov: 60000, status: '신규' }
+  ];
+  const RATE = 0.15; // 평균 수수료 가정
+
+  /* ---------- 라우팅 ---------- */
+  const VIEWS = ['home', 'match', 'community', 'partners', 'admin', 'model'];
+  function route() {
+    const h = location.hash.slice(1);
+    const v = VIEWS.includes(h) ? h : 'home';
+    VIEWS.forEach(x => { $('#v-' + x).hidden = x !== v; });
+    document.querySelectorAll('nav.tabs a').forEach(a => {
+      if (a.getAttribute('href') === '#' + v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    if (v === 'admin') renderAdmin();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+
+  /* ---------- 진단 ---------- */
+  const chip = (name, val, type, checked) => `<label class="chip"><input type="${type}" name="${name}" value="${val}" ${checked ? 'checked' : ''}><span>${val}</span></label>`;
+  $('#q-type').innerHTML = TYPES.map((t, i) => chip('type', t, 'radio', i === 3)).join('');
+  $('#q-concern').innerHTML = CONCERNS.map(c => chip('concern', c, 'checkbox', c === '홍조' || c === '건조·당김')).join('');
+  $('#q-age').innerHTML = AGES.map((a, i) => chip('age', a, 'radio', i === 1)).join('');
+  $('#q-region').innerHTML = REGIONS.map(r => `<option>${r}</option>`).join('');
+
+  function answers() {
+    const f = $('#quiz');
+    return {
+      type: (f.querySelector('[name=type]:checked') || {}).value || '민감성',
+      concerns: [...f.querySelectorAll('[name=concern]:checked')].map(x => x.value),
+      age: (f.querySelector('[name=age]:checked') || {}).value || '30대',
+      region: $('#q-region').value,
+      budget: +$('#q-budget').value
+    };
+  }
+  function scoreItem(it, a) {
+    let s = 0; const why = [];
+    if (it.types.includes(a.type)) { s += 40; why.push(a.type + ' 피부 적합'); }
+    const hit = it.concerns.filter(c => a.concerns.includes(c));
+    s += hit.length * 25; if (hit.length) why.push(hit.join('·') + ' 고민 대응');
+    return { s, why };
+  }
+  let lastRec = null;
+  function recommend() {
+    const a = answers();
+    const budgetWon = a.budget * 10000;
+    const prods = PRODUCTS.map(p => { const r = scoreItem(p, a); if (p.price * 2 > budgetWon && a.budget < 99) { r.s -= 15; } return { ...p, ...r }; })
+      .sort((x, y) => y.s - x.s).slice(0, 3);
+    const svcs = SERVICES.map(v => { const r = scoreItem(v, a); if (v.region === a.region) { r.s += 30; r.why.unshift('같은 지역'); } if (v.first > budgetWon && a.budget < 99) r.s -= 20; return { ...v, ...r }; })
+      .sort((x, y) => y.s - x.s).slice(0, 2);
+    const max = 40 + 25 * Math.max(1, a.concerns.length);
+    const pct = s => Math.max(35, Math.min(99, Math.round(s / max * 100)));
+    $('#profile').innerHTML = `<span class="pill g">${a.type}</span>${a.concerns.map(c => `<span class="pill">${c}</span>`).join('')}<span class="pill">${a.age}</span><span class="pill">${a.region}</span>`;
+    $('#rec-products').innerHTML = prods.map(p => `<article class="card"><div class="thumb">${esc(p.brand)}</div><div class="top"><h3>${esc(p.name)}</h3><span class="score">${pct(p.s)}%</span></div><p class="why">${esc(p.why.join(' · ') || '기본 케어')}</p><p class="price num">${won(p.price)} <span class="pill r">공구 시 -20%</span></p></article>`).join('');
+    $('#rec-services').innerHTML = svcs.map(v => `<article class="card"><div class="thumb svc">${esc(v.shop)}</div><div class="top"><h3>${esc(v.name)}</h3><span class="score">${pct(v.s)}%</span></div><p class="why">${esc(v.region)} · ${esc(v.why.join(' · ') || '기본 관리')}</p><p class="num"><span class="price">첫 방문 ${won(v.first)}</span> <s class="muted">${won(v.price)}</s></p></article>`).join('');
+    lastRec = { a, prods, svcs };
+  }
+  $('#quiz').addEventListener('change', recommend);
+
+  $('#lead-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!lastRec) recommend();
+    const { a, prods, svcs } = lastRec;
+    const leads = store.get('leads', []);
+    const d = new Date();
+    leads.unshift({
+      id: 'l' + Date.now(), demo: false,
+      date: String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+      name: $('#l-name').value.trim(), phone: $('#l-phone').value.trim(), ch: $('#l-ch').value,
+      summary: `${a.type} · ${a.concerns.join(', ') || '고민 미선택'} · ${a.age}`,
+      target: svcs[0] ? svcs[0].shop : prods[0].brand,
+      aov: svcs[0] ? svcs[0].first : prods[0].price, status: '신규'
+    });
+    store.set('leads', leads);
+    e.target.reset();
+    toast('상담 신청이 접수되었습니다. 운영 대시보드에서 확인하세요');
+  });
+
+  /* ---------- 커뮤니티 ---------- */
+  const CATS = ['전체', '칼럼', '후기', '공구', '라이브', '질문'];
+  let catSel = '전체';
+  $('#feed-filter').innerHTML = CATS.map((c, i) => chip('cat', c, 'radio', i === 0)).join('');
+  $('#feed-filter').addEventListener('change', e => { catSel = e.target.value; renderFeed(); });
+  function renderFeed() {
+    const mine = store.get('posts', []);
+    const liked = store.get('liked', {});
+    const all = [...mine, ...POSTS0].filter(p => catSel === '전체' || p.cat === catSel);
+    $('#feed').innerHTML = all.map(p => {
+      const on = !!liked[p.id];
+      const tone = p.cat === '공구' ? 'r' : (p.cat === '칼럼' || p.cat === '라이브') ? 'g' : '';
+      return `<article class="post"><div class="meta"><span class="pill ${tone}">${esc(p.cat)}</span>${p.sponsor ? '<span class="pill">광고·제휴 포함</span>' : ''}<span>${esc(p.who)}</span></div><h3>${esc(p.title)}</h3><p class="muted">${esc(p.body)}</p><div class="act"><button class="like" type="button" data-id="${esc(p.id)}" aria-pressed="${on}">♥ <span class="num">${p.likes + (on ? 1 : 0)}</span></button></div></article>`;
+    }).join('') || '<p class="muted">아직 글이 없습니다.</p>';
+  }
+  $('#feed').addEventListener('click', e => {
+    const b = e.target.closest('.like'); if (!b) return;
+    const liked = store.get('liked', {}); liked[b.dataset.id] = !liked[b.dataset.id]; store.set('liked', liked); renderFeed();
+  });
+  $('#post-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const posts = store.get('posts', []);
+    posts.unshift({ id: 'u' + Date.now(), cat: $('#p-cat').value, title: $('#p-title').value.trim(), body: $('#p-body').value.trim(), who: '나', likes: 0, sponsor: $('#p-sponsor').checked });
+    store.set('posts', posts); e.target.reset(); renderFeed(); toast('등록했습니다');
+  });
+
+  /* ---------- 파트너 ---------- */
+  function renderPartners() {
+    const extra = store.get('partnerApps', []);
+    const all = [...extra.map(x => ({ ...x, badges: ['검증 대기'], desc: '입점 신청 접수됨' })), ...PARTNERS];
+    $('#partner-list').innerHTML = all.map(p => `<article class="card"><div class="top"><h3>${esc(p.name)}</h3><span class="pill ${p.kind === '브랜드' ? 'g' : 'r'}">${esc(p.kind)}</span></div><p class="why">${esc(p.desc)}</p><div class="chips" style="gap:6px">${p.badges.map(b => `<span class="pill">${b === '검증 대기' ? '' : '✓ '}${esc(b)}</span>`).join('')}</div><p class="muted" style="font-size:13px">플랜: ${esc(p.plan)}</p></article>`).join('');
+  }
+  $('#partner-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const apps = store.get('partnerApps', []);
+    const planLabel = { basic: '베이직', pro: '프로', premium: '프리미엄' }[$('#pa-plan').value];
+    apps.unshift({ kind: $('#pa-kind').value, name: $('#pa-name').value.trim(), plan: planLabel });
+    store.set('partnerApps', apps); e.target.reset(); renderPartners(); toast('입점 신청을 접수했습니다');
+  });
+
+  /* ---------- 대시보드 ---------- */
+  function allLeads() {
+    const st = store.get('demoStatus', {});
+    return [...store.get('leads', []), ...LEADS0.map(l => ({ ...l, status: st[l.id] || l.status }))];
+  }
+  function renderAdmin() {
+    const leads = allLeads();
+    const cnt = k => leads.filter(l => l.status === k).length;
+    const doneIdx = 3;
+    const done = leads.filter(l => STATUSES.findIndex(s => s.k === l.status) >= doneIdx);
+    const pending = leads.filter(l => l.status === '매칭');
+    const gmv = done.reduce((s, l) => s + l.aov, 0);
+    const rev = gmv * RATE;
+    const conv = leads.length ? Math.round(done.length / leads.length * 100) : 0;
+    $('#kpis').innerHTML = [
+      ['이번 달 리드', leads.length + '건'], ['성사율', conv + '%'],
+      ['연결 거래액', man(gmv)], ['예상 수수료 (15%)', man(rev)], ['매칭 대기 예상분', man(pending.reduce((s, l) => s + l.aov, 0) * RATE)]
+    ].map(([l, v]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
+    $('#pipe').innerHTML = STATUSES.map(s => `<div><b style="color:${s.c}">${cnt(s.k)}</b><span>${s.k}</span></div>`).join('');
+    $('#lead-rows').innerHTML = leads.map(l => {
+      const s = STATUSES.find(x => x.k === l.status) || STATUSES[0];
+      return `<tr><td class="num">${esc(l.date)}</td><td>${esc(l.name)} ${l.demo ? '<span class="pill">예시</span>' : `<span class="pill g">${esc(l.ch || '')}</span>`}</td><td>${esc(l.summary)}</td><td>${esc(l.target)}</td><td class="num">${won(l.aov)}</td><td><span class="st" style="background:${s.c}"></span><select data-id="${esc(l.id)}" aria-label="${esc(l.name)} 상태">${STATUSES.map(x => `<option ${x.k === l.status ? 'selected' : ''}>${x.k}</option>`).join('')}</select></td></tr>`;
+    }).join('');
+  }
+  $('#lead-rows').addEventListener('change', e => {
+    const id = e.target.dataset.id; if (!id) return;
+    const leads = store.get('leads', []);
+    const mine = leads.find(l => l.id === id);
+    if (mine) { mine.status = e.target.value; store.set('leads', leads); }
+    else { const st = store.get('demoStatus', {}); st[id] = e.target.value; store.set('demoStatus', st); }
+    renderAdmin(); toast('상태를 ' + e.target.value + '(으)로 바꿨습니다');
+  });
+
+  /* ---------- 시뮬레이터 ---------- */
+  const simIds = ['s-leads', 's-conv', 's-aov', 's-rate', 's-mem', 's-par'];
+  function sim() {
+    const v = Object.fromEntries(simIds.map(id => [id, Math.max(0, parseFloat(String($('#' + id).value).replace(/[^0-9.]/g, '')) || 0)]));
+    const deals = v['s-leads'] * v['s-conv'] / 100;
+    const comm = deals * v['s-aov'] * v['s-rate'] / 100;
+    const mem = v['s-mem'] * 9900;
+    const par = v['s-par'] * 99000;
+    const total = comm + mem + par;
+    $('#sim-out').innerHTML = [
+      ['성사 건수', Math.round(deals) + '건'], ['수수료 매출', man(comm)], ['멤버십 매출', man(mem)], ['파트너 구독', man(par)], ['월 합계', man(total)]
+    ].map(([l, x], i) => `<div class="kpi"${i === 4 ? ' style="border-color:var(--rose)"' : ''}><div class="l">${l}</div><div class="v"${i === 4 ? ' style="color:var(--rose)"' : ''}>${x}</div></div>`).join('');
+  }
+  simIds.forEach(id => $('#' + id).addEventListener('input', sim));
+
+  recommend(); renderFeed(); renderPartners(); sim(); route();
+})();
+</script>
