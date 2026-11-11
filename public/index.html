@@ -177,6 +177,20 @@ td select { padding: 6px 8px; width: auto; }
 .phase ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
 .phase .kpi-line { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 8px; }
 .risk li { margin-bottom: 6px; }
+.life { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.stage { padding: 14px; display: grid; gap: 6px; align-content: start; border-left: 1px solid var(--line); background: var(--surface); }
+.stage:first-child { border-left: 0; }
+.stage.entry { background: var(--rose-soft); }
+.stage .pill { justify-self: start; background: var(--surface); }
+.stage b { font-family: var(--f-display); font-weight: 800; font-size: 16px; }
+.stage p { font-size: 13.5px; color: var(--ink-2); }
+.stage small { font-size: 12px; font-weight: 700; color: var(--accent); }
+.cycle { background: var(--accent-soft); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 4px; }
+.cycle b { font-family: var(--f-display); color: var(--accent); }
+.road-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14.5px; }
+.road-steps li::marker { color: var(--accent); font-weight: 700; font-family: var(--f-mono); }
+.road-steps .tag { font-size: 11.5px; margin-left: 6px; }
+@media (max-width: 760px) { .life { grid-template-columns: 1fr; } .stage { border-left: 0; border-top: 1px solid var(--line); } .stage:first-child { border-top: 0; } }
 .brandband { display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; padding: 24px; border-radius: var(--r); background: var(--ink); color: var(--bg); }
 .brandband .muted { color: color-mix(in srgb, var(--bg) 70%, var(--ink)); font-size: 13px; }
 .brandband .eyebrow { color: var(--accent-soft); }
@@ -215,6 +229,7 @@ td select { padding: 6px 8px; width: auto; }
     <div class="logo"><i aria-hidden="true"></i>뷰티커넥트</div>
     <nav class="tabs" aria-label="화면 전환">
       <a href="#home">소개</a>
+      <a href="#biz">창업·원장님 상담<span class="role">원장님</span></a>
       <a href="#match">피부 진단·매칭<span class="role">고객</span></a>
       <a href="#community">커뮤니티<span class="role">고객</span></a>
       <a href="#partners">파트너<span class="role">브랜드·샵</span></a>
@@ -234,6 +249,7 @@ td select { padding: 6px 8px; width: auto; }
       <p class="lead">브랜드 광고가 아니라 커넥터가 직접 써보고 방문해 본 제품·샵만 추천합니다. 3분 피부 진단으로 맞춤 제품과 관리 프로그램을 받고, 1:1 상담까지 이어집니다.</p>
       <div class="cta">
         <a class="btn" href="#match" style="text-decoration:none">3분 피부 진단 시작</a>
+        <a class="btn ghost" href="#biz" style="text-decoration:none">뷰티 창업·원장님 상담</a>
         
       </div>
     </div>
@@ -303,6 +319,64 @@ td select { padding: 6px 8px; width: auto; }
     <p class="muted">베타 운영 중이라 아래 내용을 복사해 커넥터 카카오톡(또는 문자)으로 보내 주시면 상담이 시작됩니다.</p>
     <textarea id="lead-text" readonly rows="5"></textarea>
     <div><button class="btn" type="button" id="lead-copy">내용 복사</button></div>
+  </div>
+</section>
+
+<!-- ============ 창업·원장님 상담 ============ -->
+<section class="view" id="v-biz" hidden>
+  <div>
+    <p class="eyebrow">예비 창업자 · 원장님 화면</p>
+    <h2>뷰티 창업 · 원장님 상담</h2>
+    <p class="muted">창업 준비부터 업종 추가, 샵인샵·이전, 정리까지 원장님의 모든 단계를 함께합니다. 상황을 고르면 맞춤 진행 순서가 바로 나옵니다. 첫 상담 30분은 무료입니다.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <form class="panel quiz" id="bq" onsubmit="return false">
+      <fieldset><legend>1. 어떤 상담이 필요하세요?</legend>
+        <div class="chips" id="bq-type"></div></fieldset>
+      <fieldset id="bq-dir-wrap" hidden><legend id="bq-dir-legend">방향</legend>
+        <div class="chips" id="bq-dir"></div></fieldset>
+      <fieldset><legend>2. 관심 분야 (여러 개 선택)</legend>
+        <div class="chips" id="bq-field"></div></fieldset>
+      <div class="grid g2" style="gap:14px">
+        <label class="f" for="bq-region">3. 지역<select id="bq-region"></select></label>
+        <label class="f" for="bq-career">4. 경력<select id="bq-career">
+          <option>자격 준비 중</option><option selected>1–3년</option><option>3–10년</option><option>10년 이상</option></select></label>
+        <label class="f" for="bq-age">5. 연령대<select id="bq-age">
+          <option>20대</option><option selected>30대</option><option>40대</option><option>50대 이상</option></select></label>
+        <label class="f" for="bq-budget">6. 준비 자금<select id="bq-budget">
+          <option>1천만원 이하</option><option selected>1천–3천만원</option><option>3천–7천만원</option><option>7천만원 이상</option></select></label>
+      </div>
+    </form>
+    <div class="grid" style="gap:16px">
+      <div class="panel grid" style="gap:12px">
+        <div class="result-head" id="bq-profile"></div>
+        <h3 id="bq-title"></h3>
+        <ol class="road-steps" id="bq-steps"></ol>
+        <p class="why" id="bq-pack"></p>
+      </div>
+      <div id="bq-listings-wrap" class="grid" style="gap:10px">
+        <h3 id="bq-listings-title">지역 공간 매물</h3>
+        <p class="demo-note">아래 매물은 예시입니다. 실제 매물은 상담 후 조건에 맞춰 안내드립니다.</p>
+        <div class="grid g2" id="bq-listings"></div>
+      </div>
+    </div>
+  </div>
+  <form class="panel grid" id="biz-form" style="gap:14px">
+    <div><h3>무료 30분 상담 신청</h3><p class="muted">선택하신 상황과 조건이 함께 전달됩니다.</p></div>
+    <div class="grid g3">
+      <label class="f" for="b-name">이름<input type="text" id="b-name" required placeholder="홍길동"></label>
+      <label class="f" for="b-phone">연락처<input type="tel" id="b-phone" required placeholder="010-0000-0000"></label>
+      <label class="f" for="b-ch">편한 연락 방식<select id="b-ch"><option>카카오톡</option><option>전화</option><option>위챗</option></select></label>
+    </div>
+    <label class="f" for="b-memo">궁금한 점 (선택)<textarea id="b-memo" placeholder="예: 샵인샵으로 먼저 시작할지, 1인샵을 바로 낼지 고민이에요."></textarea></label>
+    <label style="display:flex;gap:8px;align-items:start;font-size:14px" for="b-agree"><input type="checkbox" id="b-agree" required style="margin-top:5px"> <span>[필수] 상담을 위한 개인정보(이름·연락처·상담 내용) 수집·이용에 동의합니다. 매칭이 필요한 경우 동의를 다시 받은 뒤 상대방에게 전달합니다. 보관 기간 1년.</span></label>
+    <div><button class="btn" type="submit">상담 신청</button></div>
+  </form>
+  <div class="panel grid" id="biz-done" style="gap:10px;border-color:var(--accent)" hidden>
+    <h3>마지막 단계: 신청 내용을 보내 주세요</h3>
+    <p class="muted">베타 운영 중이라 아래 내용을 복사해 카카오톡·문자·위챗으로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+    <textarea id="biz-text" readonly rows="6"></textarea>
+    <div><button class="btn" type="button" id="biz-copy">내용 복사</button></div>
   </div>
 </section>
 
@@ -429,7 +503,7 @@ td select { padding: 6px 8px; width: auto; }
 
   /* ---------- 라우팅 ---------- */
   const STAFF = !!document.getElementById('v-admin');
-  const VIEWS = ['home', 'match', 'community', 'partners', 'admin', 'model'].filter(v => document.getElementById('v-' + v));
+  const VIEWS = ['home', 'biz', 'match', 'community', 'partners', 'admin', 'model'].filter(v => document.getElementById('v-' + v));
   function route() {
     const h = location.hash.slice(1);
     const v = VIEWS.includes(h) ? h : 'home';
@@ -545,6 +619,119 @@ td select { padding: 6px 8px; width: auto; }
     store.set('partnerApps', apps); e.target.reset(); renderPartners(); toast('입점 신청을 접수했습니다');
   });
 
+
+  /* ---------- 창업·원장님 상담 ---------- */
+  const BTYPES = {
+    '신규 창업': { title: '30대 신규 뷰티 창업 진행 순서', dir: null,
+      steps: [['무료 진단 상담 30분', '직접'], ['창업 진단 리포트: 콘셉트·상권·예산', ''], ['공간 결정: 1인샵 / 샵인샵 / 기존 샵 인수', '매칭'], ['교육기관·장비·제품 연결', '연결'], ['오픈 런칭: 예약·홍보 세팅', ''], ['오픈 후 90일 운영 자문', '자동 체크인']],
+      pack: '추천: 창업 스타트 진단 → 창업 패키지. 자금이 적다면 샵인샵이나 이전 매물 인수로 보증금·인테리어 비용을 줄이는 방법을 먼저 검토합니다.', listings: '저비용 시작 공간 (샵인샵 · 인수 매물)' },
+    '업종 추가': { title: '기존 원장님 업종 추가 진행 순서', dir: null,
+      steps: [['현재 매출·고객층 진단', '직접'], ['추가 아이템 선정 (예: 두피·헤드스파 리추얼)', ''], ['교육기관 연결 · 실습', '연결'], ['장비·제품 도입 (공급사 연결)', '연결'], ['기존 고객 대상 런칭 프로모션', ''], ['3개월 성과 리뷰', '자동 체크인']],
+      pack: '추천: 업종 추가 패키지. 교육비·장비비는 연결된 기관과 공급사에 따로 지불하며, 공간이 남으면 샵인샵으로 내주는 방법도 함께 봅니다.', listings: null },
+    '샵인샵': { title: '샵인샵 매칭 진행 순서', dir: ['자리를 구해요', '자리를 내드려요'],
+      steps: { '자리를 구해요': [['원하는 지역·업종·예산 등록', ''], ['조건 맞는 공간 매칭', '자동 매칭'], ['현장 방문 동행', '직접'], ['계약 조건 정리 (건물주 동의·영업신고 확인)', ''], ['입점·오픈 지원', '연결']],
+               '자리를 내드려요': [['공간·시간대·조건 등록', ''], ['업종 궁합 맞는 원장님 매칭', '자동 매칭'], ['양측 미팅', '직접'], ['계약 조건 정리 (건물주 동의·영업신고 확인)', ''], ['입점 후 공동 프로모션', '']] },
+      pack: '매칭이 성사됐을 때만 성공보수가 발생합니다.', listings: '지역 샵인샵 공간' },
+    '샵 이전·양도': { title: '샵 이전·양도 진행 순서', dir: ['샵을 넘기려 해요', '샵을 인수하려 해요'],
+      steps: { '샵을 넘기려 해요': [['운영 현황 진단', '직접'], ['가치 정리: 시설·고객·브랜드', ''], ['인수 희망자 매칭 (예비 창업자 포함)', '자동 매칭'], ['고객·노하우 인수인계 설계', ''], ['이전할 새 자리 찾기 (원하시면)', '매칭']],
+               '샵을 인수하려 해요': [['원하는 지역·예산·업종 등록', ''], ['매물 매칭', '자동 매칭'], ['인수 전 점검 체크리스트', '직접'], ['인수 조건 정리', ''], ['인수 후 리뉴얼 컨설팅', '연결']] },
+      pack: '매칭이 성사됐을 때 성공보수가 발생합니다. 상가 임대차·부동산 중개에 해당하는 부분은 공인중개사와 함께 진행합니다.', listings: '지역 이전·양도 매물' },
+    '정리·폐업': { title: '샵 정리·폐업 지원 순서', dir: null,
+      steps: [['정리 vs 전환 무료 진단', '직접'], ['양도 가능성 먼저 검토 (인수자 매칭)', '매칭'], ['장비·제품 재판매 연결', '연결'], ['단골 고객 제휴샵 인계', ''], ['폐업 절차 체크리스트', ''], ['재창업·취업 연결 (원하시면)', '연결']],
+      pack: '폐업보다 양도·샵인샵 전환이 유리한 경우가 많아 그 가능성부터 확인합니다.', listings: null }
+  };
+  const BFIELDS = ['피부관리', '두피·헤드스파', '바디·경락', '왁싱', '네일', '속눈썹펌'];
+  const SPACES = [
+    { kind: '샵인샵', region: '서울 강남권', title: '피부관리실 내 독립 룸 1개 (베드 1)', cost: '월 90만원 · 보증금 300만원', fit: ['두피·헤드스파', '왁싱'] },
+    { kind: '샵인샵', region: '경기 남부', title: '헤어살롱 2층 케어룸, 평일 낮 시간대', cost: '월 60만원 · 보증금 200만원', fit: ['두피·헤드스파', '피부관리'] },
+    { kind: '샵인샵', region: '서울 강북권', title: '네일샵 내 왁싱 부스', cost: '매출 20% 수수료 방식', fit: ['왁싱', '속눈썹펌'] },
+    { kind: '양도', region: '서울 강남권', title: '1인 피부관리실 8평 · 장비 포함', cost: '양도가 2,500만원 (협의)', fit: ['피부관리', '바디·경락'] },
+    { kind: '양도', region: '부산', title: '바디·경락 샵 15평 · 단골 120명', cost: '양도가 4,000만원 (협의)', fit: ['바디·경락', '피부관리'] },
+    { kind: '양도', region: '경기 북부', title: '왁싱·속눈썹 1인샵 6평', cost: '양도가 1,500만원 (협의)', fit: ['왁싱', '속눈썹펌'] }
+  ];
+  const BIZ_STAGES = ['문의', '진단미팅', '제안', '계약', '실행', '사후관리'];
+  const BIZ0 = [
+    { id: 'b1', demo: true, date: '11-04', name: '윤○○ (32)', type: '신규 창업', dir: '', cond: '서울 강남권 · 두피·헤드스파 · 1천–3천만원', stage: '제안' },
+    { id: 'b2', demo: true, date: '11-06', name: '한○○ 원장', type: '업종 추가', dir: '', cond: '경기 남부 · 피부관리 10년 · 두피 추가 희망', stage: '계약' },
+    { id: 'b3', demo: true, date: '11-08', name: '서○○ (29)', type: '샵인샵', dir: '자리를 구해요', cond: '서울 강남권 · 왁싱 · 1천만원 이하', stage: '진단미팅' },
+    { id: 'b4', demo: true, date: '11-09', name: '조○○ 원장', type: '샵 이전·양도', dir: '샵을 넘기려 해요', cond: '부산 · 바디·경락 · 이전 예정', stage: '문의' }
+  ];
+  const regionOf = c => (REGIONS.find(r => c.includes(r)) || '');
+  function spaceMatches(type, dir, region, fields) {
+    let kinds = [];
+    if (type === '신규 창업') kinds = ['샵인샵', '양도'];
+    if (type === '샵인샵' && dir === '자리를 구해요') kinds = ['샵인샵'];
+    if (type === '샵 이전·양도' && dir === '샵을 인수하려 해요') kinds = ['양도'];
+    return SPACES.filter(x => kinds.includes(x.kind))
+      .map(x => ({ ...x, sc: (x.region === region ? 2 : 0) + x.fit.filter(f => fields.includes(f)).length }))
+      .sort((a, b) => b.sc - a.sc);
+  }
+  function bAnswers() {
+    const f = $('#bq');
+    return {
+      type: (f.querySelector('[name=btype]:checked') || {}).value || '신규 창업',
+      dir: (f.querySelector('[name=bdir]:checked') || {}).value || '',
+      fields: [...f.querySelectorAll('[name=bfield]:checked')].map(x => x.value),
+      region: $('#bq-region').value, career: $('#bq-career').value, age: $('#bq-age').value, budget: $('#bq-budget').value
+    };
+  }
+  function renderDir(type) {
+    const t = BTYPES[type];
+    $('#bq-dir-wrap').hidden = !t.dir;
+    if (t.dir) { $('#bq-dir-legend').textContent = '어느 쪽이세요?'; $('#bq-dir').innerHTML = t.dir.map((d, i) => chip('bdir', d, 'radio', i === 0)).join(''); }
+    else $('#bq-dir').innerHTML = '';
+  }
+  function bRender() {
+    const a = bAnswers(); const t = BTYPES[a.type];
+    const steps = Array.isArray(t.steps) ? t.steps : t.steps[a.dir] || Object.values(t.steps)[0];
+    $('#bq-profile').innerHTML = `<span class="pill r">${esc(a.type)}</span>${a.dir ? `<span class="pill">${esc(a.dir)}</span>` : ''}${a.fields.map(x => `<span class="pill g">${esc(x)}</span>`).join('')}<span class="pill">${esc(a.region)}</span><span class="pill">${esc(a.age)} · ${esc(a.career)}</span>`;
+    $('#bq-title').textContent = t.title;
+    $('#bq-steps').innerHTML = steps.map(([x, tag]) => `<li>${esc(x)}${tag ? `<span class="pill tag ${tag === '직접' ? 'r' : 'g'}">${esc(tag)}</span>` : ''}</li>`).join('');
+    $('#bq-pack').textContent = t.pack;
+    const m = spaceMatches(a.type, a.dir, a.region, a.fields).slice(0, 4);
+    $('#bq-listings-wrap').hidden = !m.length;
+    $('#bq-listings-title').textContent = t.listings || '공간 매물';
+    $('#bq-listings').innerHTML = m.map(x => `<article class="card"><div class="top"><h3>${esc(x.title)}</h3><span class="pill ${x.kind === '양도' ? 'r' : 'g'}">${esc(x.kind)}</span></div><p class="why">${esc(x.region)} · 추천 업종 ${esc(x.fit.join('·'))}</p><p class="num"><strong>${esc(x.cost)}</strong></p>${x.region === a.region ? '<span class="pill g" style="justify-self:start">같은 지역</span>' : ''}</article>`).join('');
+    return a;
+  }
+  function bizInit() {
+    $('#bq-type').innerHTML = Object.keys(BTYPES).map((k, i) => chip('btype', k, 'radio', i === 0)).join('');
+    $('#bq-field').innerHTML = BFIELDS.map(x => chip('bfield', x, 'checkbox', x === '두피·헤드스파')).join('');
+    $('#bq-region').innerHTML = REGIONS.map(r => `<option>${r}</option>`).join('');
+    renderDir('신규 창업'); bRender();
+    $('#bq').addEventListener('change', e => { if (e.target.name === 'btype') renderDir(e.target.value); bRender(); });
+    $('#biz-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const a = bAnswers(); const d = new Date();
+      const L = { id: 'b' + Date.now(), demo: false, date: String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+        name: $('#b-name').value.trim(), phone: $('#b-phone').value.trim(), ch: $('#b-ch').value, type: a.type, dir: a.dir,
+        cond: `${a.region} · ${a.fields.join('·') || '분야 미정'} · ${a.age} · ${a.career} · ${a.budget}`, memo: $('#b-memo').value.trim(), stage: '문의' };
+      const list = store.get('bizLeads', []); list.unshift(L); store.set('bizLeads', list);
+      e.target.reset();
+      if (STAFF) { toast('상담 신청이 접수되었습니다. 운영 대시보드에서 확인하세요'); return; }
+      $('#biz-text').value = `[뷰티 창업·원장님 상담 신청]\n이름: ${L.name}\n연락처: ${L.phone} (${L.ch})\n상담: ${L.type}${L.dir ? ' · ' + L.dir : ''}\n조건: ${L.cond}${L.memo ? '\n메모: ' + L.memo : ''}`;
+      $('#biz-done').hidden = false; $('#biz-done').scrollIntoView({ block: 'center' });
+    });
+    $('#biz-copy').addEventListener('click', () => { const t = $('#biz-text'); navigator.clipboard.writeText(t.value).then(() => toast('복사했습니다'), () => { t.select(); toast('선택된 내용을 복사해 주세요'); }); });
+    if (STAFF) $('#biz-rows').addEventListener('change', e => {
+      const id = e.target.dataset.id; if (!id) return;
+      const list = store.get('bizLeads', []); const mine = list.find(x => x.id === id);
+      if (mine) { mine.stage = e.target.value; store.set('bizLeads', list); }
+      else { const st = store.get('bizStage', {}); st[id] = e.target.value; store.set('bizStage', st); }
+      toast('단계를 ' + e.target.value + '(으)로 바꿨습니다');
+    });
+  }
+  function renderBizAdmin() {
+    const st = store.get('bizStage', {});
+    const rows = [...store.get('bizLeads', []), ...BIZ0.map(x => ({ ...x, stage: st[x.id] || x.stage }))];
+    $('#biz-rows').innerHTML = rows.map(l => {
+      const fields = BFIELDS.filter(f => l.cond.includes(f));
+      const m = spaceMatches(l.type, l.dir, regionOf(l.cond), fields).filter(x => x.sc >= 2).slice(0, 2);
+      const mt = m.length ? m.map(x => `<span class="pill ${x.kind === '양도' ? 'r' : 'g'}">${esc(x.kind)}</span> ${esc(x.title)}`).join('<br>') : (l.type === '샵 이전·양도' && l.dir === '샵을 넘기려 해요' ? '<span class="muted">인수 희망 창업자 상담에서 찾기</span>' : '<span class="muted">-</span>');
+      return `<tr><td class="num">${esc(l.date)}</td><td>${esc(l.name)} ${l.demo ? '<span class="pill">예시</span>' : `<span class="pill g">${esc(l.ch || '')}</span>`}</td><td><strong>${esc(l.type)}</strong>${l.dir ? `<br><span class="muted">${esc(l.dir)}</span>` : ''}</td><td>${esc(l.cond)}</td><td style="font-size:13px">${mt}</td><td><select data-id="${esc(l.id)}" aria-label="${esc(l.name)} 단계">${BIZ_STAGES.map(x => `<option ${x === l.stage ? 'selected' : ''}>${x}</option>`).join('')}</select></td></tr>`;
+    }).join('');
+  }
+
   /* ---------- 대시보드 ---------- */
   function allLeads() {
     const st = store.get('demoStatus', {});
@@ -563,6 +750,7 @@ td select { padding: 6px 8px; width: auto; }
       ['이번 달 리드', leads.length + '건'], ['성사율', conv + '%'],
       ['연결 거래액', man(gmv)], ['예상 수수료 (15%)', man(rev)], ['매칭 대기 예상분', man(pending.reduce((s, l) => s + l.aov, 0) * RATE)]
     ].map(([l, v]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
+    renderBizAdmin();
     $('#pipe').innerHTML = STATUSES.map(s => `<div><b style="color:${s.c}">${cnt(s.k)}</b><span>${s.k}</span></div>`).join('');
     $('#lead-rows').innerHTML = leads.map(l => {
       const s = STATUSES.find(x => x.k === l.status) || STATUSES[0];
@@ -594,6 +782,7 @@ td select { padding: 6px 8px; width: auto; }
   if (STAFF) simIds.forEach(id => $('#' + id).addEventListener('input', sim));
 
   $('#lead-copy').addEventListener('click', () => { const t = $('#lead-text'); navigator.clipboard.writeText(t.value).then(() => toast('복사했습니다'), () => { t.select(); toast('선택된 내용을 복사해 주세요'); }); });
+  bizInit();
   recommend(); renderFeed(); renderPartners(); if (STAFF) sim(); route();
 })();
 </script>
