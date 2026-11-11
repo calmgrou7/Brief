@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>정우회 회원 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fa; --panel:#ffffff; --ink:#1b2333; --sub:#5d6b82; --line:#e3e8f0;
+  --brand:#1f3a68; --brand-2:#2f5ea8; --accent:#c8a24a; --soft:#eef3fb;
+  --ok:#2e7d5b; --warn:#b5543a; --radius:12px; --shadow:0 1px 3px rgba(20,30,50,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;font-size:15px}
+a{color:var(--brand-2);text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+aside{background:var(--brand);color:#fff;padding:20px 14px;position:sticky;top:0;height:100vh}
+.logo{font-weight:700;font-size:20px;letter-spacing:.5px;margin:4px 8px 22px}
+.logo small{display:block;font-weight:400;font-size:12px;opacity:.7;margin-top:2px}
+nav a{display:flex;gap:10px;align-items:center;color:#dfe7f5;padding:10px 12px;border-radius:8px;margin-bottom:2px}
+nav a:hover{background:rgba(255,255,255,.08)}
+nav a.on{background:#fff;color:var(--brand);font-weight:700}
+main{padding:24px 28px;max-width:1280px;width:100%;min-width:0}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:22px;margin:0}
+h2{font-size:16px;margin:0 0 12px}
+.muted{color:var(--sub)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(4,1fr)}
+.two{grid-template-columns:3fr 2fr}
+.kpi .n{font-size:28px;font-weight:700;color:var(--brand)}
+.kpi .l{color:var(--sub);font-size:13px}
+.btn{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--brand-2)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn.danger{color:var(--warn)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.input,select.input,textarea.input{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;min-width:0}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;color:var(--sub);font-weight:500;background:var(--soft)}
+tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--brand-2)}
+.tag.off{background:#fbf3e2;color:#8a6a1c}
+.tag.gray{background:#f0f1f4;color:#6b7280}
+.av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;color:var(--brand);font-weight:700;flex:none}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.mcard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;box-shadow:var(--shadow)}
+.mcard:hover{border-color:var(--brand-2)}
+.mcard .av{width:56px;height:56px;font-size:20px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:180px;padding-top:10px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar i{display:block;width:100%;max-width:44px;background:var(--brand-2);border-radius:6px 6px 0 0}
+.bar b{font-size:13px;margin-bottom:4px}
+.bar span{font-size:12px;color:var(--sub);margin-top:6px}
+.rank li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
+.rank{list-style:none;margin:0;padding:0}
+.meter{height:8px;background:var(--soft);border-radius:4px;overflow:hidden;margin-top:4px}
+.meter i{display:block;height:100%;background:var(--accent)}
+.empty{padding:28px;text-align:center;color:var(--sub);border:1px dashed var(--line);border-radius:var(--radius)}
+/* profile card */
+.profile{max-width:720px}
+.pc-top{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pc-img{aspect-ratio:3/3.4;border:1px solid var(--line);border-radius:10px;background:var(--soft);overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--sub)}
+.pc-img img{width:100%;height:100%;object-fit:cover}
+.pc-cap{text-align:center;font-weight:700;font-size:20px;padding:8px 0}
+.pc-card{border:1px solid var(--line);border-radius:10px;min-height:140px;background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:12px;color:var(--sub)}
+.pc-card img{width:100%;display:block}
+.pc-table{width:100%;margin-top:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.pc-table th{background:var(--soft);width:120px;text-align:center;color:var(--ink);font-weight:700}
+.pc-table td{font-size:15px}
+.prod{color:#1d4fd1;font-weight:700}
+/* timeline */
+.tl{border-left:3px solid var(--line);margin-left:8px;padding-left:18px}
+.tl .it{position:relative;padding:8px 0 14px}
+.tl .it:before{content:"";position:absolute;left:-26px;top:13px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #fff}
+/* tree */
+.tree ul{list-style:none;margin:0;padding-left:22px;border-left:1px dashed var(--line)}
+.tree>ul{border:none;padding-left:0}
+.tree li{padding:4px 0}
+/* modal */
+.mask{position:fixed;inset:0;background:rgba(15,23,40,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:20}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:640px;padding:22px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub)}
+.form .full{grid-column:1/-1}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;z-index:30;font-size:14px}
+pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:8px;margin:8px 0;font-family:inherit}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  aside{position:static;height:auto;padding:12px}
+  .logo{margin:0 6px 10px}
+  nav{display:flex;overflow-x:auto;gap:4px}
+  nav a{white-space:nowrap;margin:0}
+  main{padding:16px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .two{grid-template-columns:1fr}
+  .form{grid-template-columns:1fr}
+  .hide-m{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo">정우회<small>기업가 대표 모임</small></div>
+    <nav id="nav"></nav>
+  </aside>
+  <main id="view"></main>
+</div>
+<div id="modal-root"></div>
+
+<script>
+/* =========================================================
+   데이터 계층 (Store)
+   지금은 브라우저 localStorage에 저장합니다.
+   Supabase로 옮길 때는 load()/save() 부분만 교체하면 됩니다.
+   ========================================================= */
+const STORE_KEY = 'jungwoo-platform-v1';
+
+const SEED_ROWS = [
+  ['2026-03','임우현','김동관'],['2026-03','전기철','김동관'],['2026-03','정준효','김영진'],
+  ['2026-03','김진목','김현식'],['2026-03','김민준','신동찬'],['2026-03','김성환','황성광'],
+  ['2026-06','박운하','고영득'],['2026-06','이광만','김동관'],['2026-06','이승문','김동관'],
+  ['2026-06','서동근','김상원'],['2026-06','정종혁','노승권'],['2026-06','조성민','전효찬'],
+  ['2026-07','김재원','김동관'],['2026-07','이해성','김영진'],['2026-07','이성호','전기철'],
+  ['2026-08','심봉주','김동관'],['2026-08','최석우','김동관'],['2026-08','박홍진','김상원'],
+  ['2026-08','노길현','정일태'],['2026-08','이헌영','황시완'],['2026-09','황진기','김동관'],
+  ['2026-09','조홍범','정일태'],['2026-10','이상섭','황시완'],
+];
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+
+function blankMember(name){
+  return {id:uid(), name, birthYear:'', company:'', title:'', products:'', industry:'',
+    phone:'', email:'', address:'', joined:'', guardianId:'', status:'active',
+    memo:'', photo:'', companyImage:'', cardImage:''};
+}
+
+function seedData(){
+  const db = {members:[], positions:[], terms:[], events:[], history:[]};
+  [['회장',true],['부회장',false],['총무',true],['감사',false],['사무국장',true]]
+    .forEach(([name,single],i)=>db.positions.push({id:uid(), name, single, order:i}));
+  importRows(db, SEED_ROWS.map(([joined,name,guardian])=>({joined,name,guardian})));
+  const p = db.members.find(m=>m.name==='박홍진');
+  if(p) Object.assign(p,{birthYear:'1981', company:'영진종합유통', title:'영업이사',
+    products:'위생용품, 일회용품, 식품 등', industry:'유통'});
+  return db;
+}
+
+/* 행 단위 일괄 등록: 이름으로 매칭, 명단에 없는 추천인은 '기존회원'으로 자동 생성 */
+function importRows(db, rows){
+  const byName = n => db.members.find(m=>m.name===n);
+  let added = 0, updated = 0;
+  rows.forEach(r=>{
+    if(!r.name) return;
+    let m = byName(r.name);
+    if(!m){ m = blankMember(r.name); db.members.push(m); added++; } else updated++;
+    if(r.joined) m.joined = r.joined;
+    ['company','products','birthYear','phone','title'].forEach(k=>{ if(r[k]) m[k]=r[k]; });
+    if(r.guardian){
+      let g = byName(r.guardian);
+      if(!g){ g = blankMember(r.guardian); db.members.push(g); added++; }
+      m.guardianId = g.id;
+    }
+  });
+  return {added, updated};
+}
+
+const Store = {
+  db:null,
+  load(){
+    try{ const raw = localStorage.getItem(STORE_KEY); if(raw){ this.db = JSON.parse(raw); return; } }catch(e){}
+    this.db = seedData(); this.save();
+  },
+  save(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(this.db)); }
+    catch(e){ toast('저장 공간이 부족합니다. 이미지 용량을 줄이거나 백업 후 정리해주세요.'); }
+  },
+};
+
+/* ===================== 조회 헬퍼 ===================== */
+const D = () => Store.db;
+const member = id => D().members.find(m=>m.id===id);
+const position = id => D().positions.find(p=>p.id===id);
+const currentTerm = mid => D().terms.find(t=>t.memberId===mid && !t.end);
+const isOfficer = mid => !!currentTerm(mid);
+const recruits = mid => D().members.filter(m=>m.guardianId===mid);
+const activeMembers = () => D().members.filter(m=>m.status!=='inactive');
+const today = () => new Date().toISOString().slice(0,10);
+
+function guardianRanking(){
+  const map = {};
+  D().members.forEach(m=>{ if(m.guardianId){ (map[m.guardianId] ||= []).push(m); } });
+  return Object.entries(map).map(([gid,list])=>({g:member(gid), list}))
+    .filter(x=>x.g).sort((a,b)=>b.list.length-a.list.length || a.g.name.localeCompare(b.g.name,'ko'));
+}
+
+/* ===================== UI 유틸 ===================== */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = s => document.querySelector(s);
+function toast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 2400);
+}
+function avatar(m, size){
+  const st = size ? `style="width:${size}px;height:${size}px;font-size:${size*.38}px"` : '';
+  return m.photo ? `<img class="av" ${st} src="${m.photo}" alt="">`
+                 : `<span class="av" ${st}>${esc(m.name.slice(0,1))}</span>`;
+}
+function typeTag(m){
+  const t = currentTerm(m.id);
+  if(m.status==='inactive') return '<span class="tag gray">휴면</span>';
+  return t ? `<span class="tag off">${esc(position(t.positionId)?.name||'임원')}</span>` : '<span class="tag">일반회원</span>';
+}
+const joinedLabel = m => m.joined ? m.joined.replace('-', '.') : '<span class="muted">기존회원</span>';
+const memberLink = m => m ? `<a href="#/member/${m.id}">${esc(m.name)}</a>` : '<span class="muted">-</span>';
+
+function readImage(file, max=520){
+  return new Promise((res,rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{ const img = new Image(); img.onload = ()=>{
+      const s = Math.min(1, max/Math.max(img.width,img.height));
+      const c = document.createElement('canvas'); c.width=img.width*s; c.height=img.height*s;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',.82));
+    }; img.onerror=rej; img.src=fr.result; };
+    fr.onerror=rej; fr.readAsDataURL(file);
+  });
+}
+function download(name, text, type='text/plain'){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text],{type})); a.download = name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+function parseCSV(text){
+  const rows=[]; let row=[], cur='', q=false;
+  text = text.replace(/^﻿/,'');
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(cur); cur=''; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(cur); rows.push(row); row=[]; cur=''; }
+    else cur+=c;
+  }
+  if(cur||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(x=>x.trim()));
+}
+const csvCell = v => /[",\n]/.test(v=String(v??'')) ? `"${v.replace(/"/g,'""')}"` : v;
+
+/* ===================== 모달 ===================== */
+function openModal(html, onMount){
+  $('#modal-root').innerHTML = `<div class="mask"><div class="modal">${html}</div></div>`;
+  const mask = $('#modal-root .mask');
+  mask.addEventListener('click', e=>{ if(e.target===mask) closeModal(); });
+  mask.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModal);
+  onMount && onMount(mask);
+}
+function closeModal(){ $('#modal-root').innerHTML=''; }
+
+/* ===================== 라우팅 ===================== */
+const ROUTES = [
+  ['dashboard','🏠','대시보드'],['members','👥','회원명부'],['guardians','🛡️','가디언'],
+  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['settings','⚙️','관리·백업'],
+];
+const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().getFullYear())};
+
+function render(){
+  const [, page='dashboard', id] = location.hash.split('/');
+  const navKey = page==='member' ? 'members' : page;
+  $('#nav').innerHTML = ROUTES.map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}</a>`).join('');
+  const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
+              officers:Officers, events:Events, history:History, settings:Settings}[page] || Dashboard;
+  $('#view').innerHTML = fn();
+  bind[page]?.(id);
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', render);
+
+/* ===================== 화면: 대시보드 ===================== */
+function Dashboard(){
+  const ms = activeMembers();
+  const year = String(new Date().getFullYear());
+  const newThisYear = ms.filter(m=>m.joined.startsWith(year)).length;
+  const officers = ms.filter(m=>isOfficer(m.id)).length;
+  const upcoming = D().events.filter(e=>e.date>=today()).sort((a,b)=>a.date.localeCompare(b.date));
+  const next = upcoming[0];
+  const dday = next ? Math.ceil((new Date(next.date)-new Date(today()))/864e5) : null;
+
+  const byMonth = {};
+  ms.forEach(m=>{ if(m.joined) byMonth[m.joined]=(byMonth[m.joined]||0)+1; });
+  const months = Object.keys(byMonth).sort().slice(-12);
+  const max = Math.max(1,...months.map(k=>byMonth[k]));
+  const rank = guardianRanking().slice(0,5);
+  const rmax = rank[0]?.list.length || 1;
+  const recent = ms.filter(m=>m.joined).sort((a,b)=>b.joined.localeCompare(a.joined)).slice(0,6);
+
+  return `
+  <div class="head"><h1>대시보드</h1><span class="muted">${today().replace(/-/g,'.')} 기준</span></div>
+  <div class="grid kpis">
+    <div class="panel kpi"><div class="l">전체 회원</div><div class="n">${ms.length}</div><div class="l">기존회원 포함</div></div>
+    <div class="panel kpi"><div class="l">${year}년 신규 입회</div><div class="n">${newThisYear}</div><div class="l">명</div></div>
+    <div class="panel kpi"><div class="l">현 임원</div><div class="n">${officers}</div><div class="l"><a href="#/officers">직책 관리 →</a></div></div>
+    <div class="panel kpi"><div class="l">다음 행사</div><div class="n">${next ? (dday===0?'D-DAY':'D-'+dday) : '-'}</div>
+      <div class="l">${next ? esc(next.title) : '<a href="#/events">행사 등록 →</a>'}</div></div>
+  </div>
+  <div class="grid two" style="margin-top:16px">
+    <div class="panel"><h2>월별 입회 추이</h2>
+      ${months.length ? `<div class="bars">${months.map(k=>`<div class="bar"><b>${byMonth[k]}</b><i style="height:${byMonth[k]/max*130}px"></i><span>${k.slice(2).replace('-','.')}</span></div>`).join('')}</div>`
+        : '<div class="empty">입회 기록이 없습니다.</div>'}
+    </div>
+    <div class="panel"><h2>가디언 TOP 5 <a class="muted" style="font-size:13px;font-weight:400" href="#/guardians">전체 보기</a></h2>
+      ${rank.length ? `<ul class="rank">${rank.map((r,i)=>`<li><div style="flex:1">${i+1}. ${memberLink(r.g)}
+        <div class="meter"><i style="width:${r.list.length/rmax*100}%"></i></div></div><b style="margin-left:12px">${r.list.length}회</b></li>`).join('')}</ul>`
+        : '<div class="empty">추천 기록이 없습니다.</div>'}
+    </div>
+  </div>
+  <div class="grid two" style="margin-top:16px">
+    <div class="panel"><h2>최근 입회 회원</h2>
+      ${recent.length ? `<table><tr><th></th><th>이름</th><th class="hide-m">회사</th><th>입회</th><th>가디언</th></tr>
+      ${recent.map(m=>`<tr class="click" data-href="#/member/${m.id}"><td>${avatar(m)}</td><td>${esc(m.name)}</td>
+        <td class="hide-m">${esc(m.company)||'<span class="muted">-</span>'}</td><td>${joinedLabel(m)}</td><td>${esc(member(m.guardianId)?.name||'-')}</td></tr>`).join('')}</table>`
+        : '<div class="empty">아직 입회 회원이 없습니다.</div>'}
+    </div>
+    <div class="panel"><h2>다가오는 행사</h2>
+      ${upcoming.length ? `<ul class="rank">${upcoming.slice(0,5).map(e=>`<li><a href="#/events">${esc(e.title)}</a><span class="muted">${e.date.replace(/-/g,'.')}</span></li>`).join('')}</ul>`
+        : '<div class="empty">예정된 행사가 없습니다.<br><br><a class="btn sm" href="#/events">행사 등록하기</a></div>'}
+    </div>
+  </div>`;
+}
+
+/* ===================== 화면: 회원명부 ===================== */
+function filteredMembers(){
+  const q = ui.q.trim();
+  return D().members.filter(m=>{
+    if(q && ![m.name,m.company,m.products,m.industry].join(' ').includes(q)) return false;
+    if(ui.type==='officer' && !isOfficer(m.id)) return false;
+    if(ui.type==='regular' && (isOfficer(m.id) || m.status==='inactive')) return false;
+    if(ui.type==='inactive' && m.status!=='inactive') return false;
+    if(ui.year==='old' && m.joined) return false;
+    if(ui.year && ui.year!=='old' && !m.joined.startsWith(ui.year)) return false;
+    return true;
+  }).sort((a,b)=>(b.joined||'0').localeCompare(a.joined||'0') || a.name.localeCompare(b.name,'ko'));
+}
+function Members(){
+  const years = [...new Set(D().members.map(m=>m.joined.slice(0,4)).filter(Boolean))].sort().reverse();
+  const list = filteredMembers();
+  return `
+  <div class="head"><h1>회원명부 <span class="muted" style="font-size:15px">${list.length}명</span></h1>
+    <div class="row">
+      <button class="btn" id="exp">엑셀(CSV) 내보내기</button>
+      <button class="btn pri" id="add">+ 회원 등록</button>
+    </div></div>
+  <div class="panel" style="margin-bottom:14px"><div class="row">
+    <input class="input" id="q" placeholder="이름·회사·제품 검색 (예: 위생용품)" value="${esc(ui.q)}" style="flex:1;min-width:200px">
+    <select class="input" id="type">
+      <option value="">전체 구분</option><option value="officer">임원</option><option value="regular">일반회원</option><option value="inactive">휴면</option>
+    </select>
+    <select class="input" id="year"><option value="">전체 입회연도</option>${years.map(y=>`<option>${y}</option>`).join('')}<option value="old">기존회원</option></select>
+    <div class="row"><button class="btn sm ${ui.view==='table'?'pri':''}" data-v="table">표</button><button class="btn sm ${ui.view==='card'?'pri':''}" data-v="card">카드</button></div>
+  </div></div>
+  <div id="mlist">${memberList(list)}</div>`;
+}
+function memberList(list){
+  if(!list.length) return '<div class="empty">조건에 맞는 회원이 없습니다.</div>';
+  if(ui.view==='card') return `<div class="cards">${list.map(m=>`
+    <div class="mcard" data-href="#/member/${m.id}">
+      <div class="row" style="gap:12px">${avatar(m)}<div><b style="font-size:17px">${esc(m.name)}</b><div>${typeTag(m)}</div></div></div>
+      <div style="margin-top:10px">${esc(m.company)||'<span class="muted">회사 미입력</span>'} ${m.title?`<span class="muted">· ${esc(m.title)}</span>`:''}</div>
+      <div class="prod" style="font-size:13px;margin-top:4px">${esc(m.products)}</div>
+      <div class="muted" style="font-size:13px;margin-top:8px">입회 ${joinedLabel(m)} · 가디언 ${esc(member(m.guardianId)?.name||'-')}</div>
+    </div>`).join('')}</div>`;
+  return `<div class="panel" style="padding:0;overflow-x:auto"><table>
+    <tr><th></th><th>이름</th><th>구분</th><th class="hide-m">회사</th><th class="hide-m">제품(서비스)</th><th>입회</th><th>가디언</th></tr>
+    ${list.map(m=>`<tr class="click" data-href="#/member/${m.id}"><td style="width:48px">${avatar(m)}</td><td><b>${esc(m.name)}</b></td>
+      <td>${typeTag(m)}</td><td class="hide-m">${esc(m.company)||'<span class="muted">-</span>'}</td>
+      <td class="hide-m">${esc(m.products)||'<span class="muted">-</span>'}</td><td>${joinedLabel(m)}</td><td>${esc(member(m.guardianId)?.name||'-')}</td></tr>`).join('')}
+  </table></div>`;
+}
+
+/* ===================== 화면: 회원 상세 (프로필 카드) ===================== */
+function MemberDetail(id){
+  const m = member(id);
+  if(!m) return '<div class="empty">회원을 찾을 수 없습니다. <a href="#/members">명부로</a></div>';
+  const t = currentTerm(m.id);
+  const past = D().terms.filter(x=>x.memberId===m.id && x.end);
+  const rec = recruits(m.id);
+  const img = (src, label) => `<div class="pc-img">${src?`<img src="${src}" alt="">`:label}</div>`;
+  return `
+  <div class="head"><div class="row"><a class="btn sm" href="#/members">← 명부</a><h1>${esc(m.name)}</h1>${typeTag(m)}</div>
+    <div class="row"><button class="btn" id="edit">정보 수정</button></div></div>
+  <div class="grid two">
+    <div class="panel profile">
+      <div class="pc-top">
+        <div>${img(m.photo,'인물 사진')}<div class="pc-cap">${esc(m.name)}</div></div>
+        <div>${img(m.companyImage,'회사 이미지')}<div class="pc-cap">${esc(m.birthYear)||'<span class="muted" style="font-weight:400">출생연도</span>'}</div></div>
+      </div>
+      <div class="pc-card">${m.cardImage?`<img src="${m.cardImage}" alt="명함">`:'명함 이미지'}</div>
+      <table class="pc-table">
+        <tr><th>회사</th><td colspan="3">${esc(m.company)||'-'} ${m.title?`· ${esc(m.title)}`:''}</td></tr>
+        <tr><th>제품<br>(서비스)</th><td colspan="3" class="prod">${esc(m.products)||'-'}</td></tr>
+        <tr><th>입회연도</th><td>${m.joined?esc(m.joined.slice(0,4)):'기존회원'}</td><th>추천회원</th><td>${memberLink(member(m.guardianId))}</td></tr>
+      </table>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="panel"><h2>연락처</h2>
+        <table>
+          <tr><th style="width:80px">전화</th><td>${m.phone?`<a href="tel:${esc(m.phone)}">${esc(m.phone)}</a>`:'-'}</td></tr>
+          <tr><th>이메일</th><td>${m.email?`<a href="mailto:${esc(m.email)}">${esc(m.email)}</a>`:'-'}</td></tr>
+          <tr><th>주소</th><td>${esc(m.address)||'-'}</td></tr>
+          <tr><th>업종</th><td>${esc(m.industry)||'-'}</td></tr>
+        </table>
+      </div>
+      <div class="panel"><h2>정우회 활동</h2>
+        <div>현재: ${t?`<b>${esc(position(t.positionId)?.name)}</b> <span class="muted">(${t.start}~)</span>`:'일반회원'}</div>
+        ${past.length?`<div class="muted" style="margin-top:6px">이전 직책: ${past.map(p=>`${esc(position(p.positionId)?.name)} (${p.start}~${p.end})`).join(', ')}</div>`:''}
+        <div style="margin-top:12px"><b>이 회원이 추천한 회원 (${rec.length})</b></div>
+        <div class="row" style="margin-top:6px">${rec.length?rec.map(r=>`<a class="tag" href="#/member/${r.id}">${esc(r.name)}</a>`).join(''):'<span class="muted">없음</span>'}</div>
+        ${m.memo?`<div style="margin-top:12px"><b>메모</b><pre class="text">${esc(m.memo)}</pre></div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function memberForm(m){
+  const isNew = !m; m = m || blankMember('');
+  const opts = D().members.filter(x=>x.id!==m.id).sort((a,b)=>a.name.localeCompare(b.name,'ko'))
+    .map(x=>`<option value="${x.id}" ${x.id===m.guardianId?'selected':''}>${esc(x.name)}</option>`).join('');
+  const f = (k,l,type='text',cls='') => `<label class="${cls}">${l}<input class="input" name="${k}" type="${type}" value="${esc(m[k])}"></label>`;
+  const imgf = (k,l) => `<label>${l}<input class="input" type="file" accept="image/*" data-img="${k}">
+    ${m[k]?`<span class="row"><img src="${m[k]}" style="height:40px;border-radius:4px"><button type="button" class="btn sm danger" data-rmimg="${k}">삭제</button></span>`:''}</label>`;
+  openModal(`<h2>${isNew?'회원 등록':'회원 정보 수정'}</h2>
+    <form class="form" id="mf">
+      ${f('name','이름 *')}${f('birthYear','출생연도','number')}
+      ${f('company','회사명')}${f('title','회사 직함')}
+      ${f('products','제품(서비스)','text','full')}
+      ${f('industry','업종')}${f('phone','전화','tel')}
+      ${f('email','이메일','email')}${f('joined','입회월 (비우면 기존회원)','month')}
+      ${f('address','주소','text','full')}
+      <label>추천회원(가디언)<select class="input" name="guardianId"><option value="">없음</option>${opts}</select></label>
+      <label>상태<select class="input" name="status"><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
+      ${imgf('photo','인물 사진')}${imgf('companyImage','회사 이미지')}${imgf('cardImage','명함 이미지')}
+      <label class="full">메모<textarea class="input" name="memo" rows="3">${esc(m.memo)}</textarea></label>
+      <div class="full row" style="justify-content:space-between">
+        <div>${isNew?'':'<button type="button" class="btn danger" id="del">회원 삭제</button>'}</div>
+        <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+      </div>
+    </form>`, root=>{
+      const imgs = {};
+      root.querySelectorAll('[data-img]').forEach(inp=>inp.onchange=async()=>{
+        if(inp.files[0]) imgs[inp.dataset.img] = await readImage(inp.files[0], inp.dataset.img==='cardImage'?900:520);
+      });
+      root.querySelectorAll('[data-rmimg]').forEach(b=>b.onclick=()=>{ imgs[b.dataset.rmimg]=''; b.parentElement.remove(); });
+      root.querySelector('#mf').onsubmit = e=>{
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target));
+        if(!data.name.trim()) return toast('이름을 입력해주세요.');
+        if(D().members.some(x=>x.name===data.name.trim() && x.id!==m.id) && !confirm('같은 이름의 회원이 있습니다. 그래도 저장할까요?')) return;
+        Object.assign(m, data, imgs, {name:data.name.trim()});
+        if(isNew) D().members.push(m);
+        Store.save(); closeModal(); toast('저장했습니다.');
+        isNew ? (location.hash = '#/member/'+m.id) : render();
+      };
+      const del = root.querySelector('#del');
+      if(del) del.onclick = ()=>{
+        if(!confirm(`${m.name} 회원을 삭제할까요? 추천 관계와 직책 이력도 함께 정리됩니다.`)) return;
+        D().members.forEach(x=>{ if(x.guardianId===m.id) x.guardianId=''; });
+        D().terms = D().terms.filter(t=>t.memberId!==m.id);
+        D().members = D().members.filter(x=>x.id!==m.id);
+        Store.save(); closeModal(); location.hash='#/members';
+      };
+    });
+}
+
+/* ===================== 화면: 가디언 ===================== */
+function Guardians(){
+  const rank = guardianRanking();
+  const total = rank.reduce((s,r)=>s+r.list.length,0);
+  const roots = D().members.filter(m=>!m.guardianId && recruits(m.id).length);
+  const tree = (m, depth=0) => depth>8 ? '' : `<li>${memberLink(m)} ${recruits(m.id).length?`<span class="muted">(${recruits(m.id).length})</span>`:''}
+    ${recruits(m.id).length?`<ul>${recruits(m.id).map(r=>tree(r,depth+1)).join('')}</ul>`:''}</li>`;
+  return `
+  <div class="head"><h1>가디언 (추천인)</h1><span class="muted">총 ${rank.length}명의 가디언 · 추천 ${total}건 · 자동 집계</span></div>
+  <div class="grid two">
+    <div class="panel" style="padding:0;overflow-x:auto"><table>
+      <tr><th style="width:44px">순위</th><th>추천인</th><th>횟수</th><th class="hide-m">추천한 회원</th></tr>
+      ${rank.map((r,i)=>`<tr><td>${i+1}</td><td>${memberLink(r.g)}</td><td><b>${r.list.length}</b></td>
+        <td class="hide-m"><div class="row">${r.list.map(x=>`<a class="tag" href="#/member/${x.id}">${esc(x.name)}</a>`).join('')}</div></td></tr>`).join('')}
+    </table></div>
+    <div class="panel"><h2>추천 계보</h2>
+      <p class="muted" style="margin-top:-6px;font-size:13px">가디언 → 추천받은 회원 → 그 회원이 추천한 회원 순으로 이어집니다.</p>
+      <div class="tree"><ul>${roots.map(r=>tree(r)).join('')}</ul></div>
+    </div>
+  </div>`;
+}
+
+/* ===================== 화면: 임원진 ===================== */
+function Officers(){
+  const pos = [...D().positions].sort((a,b)=>a.order-b.order);
+  const current = D().terms.filter(t=>!t.end);
+  const past = D().terms.filter(t=>t.end).sort((a,b)=>b.end.localeCompare(a.end));
+  return `
+  <div class="head"><h1>임원진</h1>
+    <div class="row"><button class="btn" id="pos">직책 설정</button><button class="btn pri" id="assign">+ 직책 지정·변경</button></div></div>
+  <div class="cards">
+    ${pos.map(p=>{ const hs = current.filter(t=>t.positionId===p.id);
+      return `<div class="panel"><div class="muted" style="font-size:13px">${esc(p.name)}${p.single?'':' · 복수'}</div>
+        ${hs.length?hs.map(t=>{const m=member(t.memberId); return `<div class="row" style="margin-top:10px;justify-content:space-between">
+          <div class="row">${m?avatar(m):''}<div>${memberLink(m)}<div class="muted" style="font-size:12px">${t.start}~</div></div></div>
+          <button class="btn sm" data-end="${t.id}">해제</button></div>`;}).join('')
+          :'<div class="muted" style="margin-top:10px">공석</div>'}
+      </div>`; }).join('')}
+  </div>
+  <div class="panel" style="margin-top:16px;padding:0;overflow-x:auto">
+    <div style="padding:16px 16px 0"><h2>역대 임원 이력</h2></div>
+    ${past.length?`<table><tr><th>이름</th><th>직책</th><th>임기</th></tr>
+      ${past.map(t=>`<tr><td>${memberLink(member(t.memberId))}</td><td>${esc(position(t.positionId)?.name||'-')}</td><td>${t.start} ~ ${t.end}</td></tr>`).join('')}</table>`
+      :'<div class="empty" style="margin:16px">직책이 변경되면 이전 직책이 여기에 자동으로 기록됩니다.</div>'}
+  </div>`;
+}
+function endTerm(t, date){
+  t.end = date;
+}
+function assignForm(){
+  const ms = activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  const pos = [...D().positions].sort((a,b)=>a.order-b.order);
+  openModal(`<h2>직책 지정·변경</h2>
+    <p class="muted" style="margin-top:-6px;font-size:13px">기존 직책은 시작일 기준으로 자동 종료되어 이력으로 남습니다.</p>
+    <form class="form" id="af">
+      <label>회원<select class="input" name="memberId" required>${ms.map(m=>`<option value="${m.id}">${esc(m.name)}${isOfficer(m.id)?' ('+esc(position(currentTerm(m.id).positionId)?.name)+')':''}</option>`).join('')}</select></label>
+      <label>직책<select class="input" name="positionId" required>${pos.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
+      <label>임기 시작일<input class="input" type="date" name="start" value="${today()}" required></label>
+      <label style="justify-content:flex-end"><span><input type="checkbox" name="hist" checked> 연혁에 자동 기록</span></label>
+      <div class="full row" style="justify-content:flex-end"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+    </form>`, root=>{
+    root.querySelector('#af').onsubmit = e=>{
+      e.preventDefault();
+      const {memberId, positionId, start, hist} = Object.fromEntries(new FormData(e.target));
+      const p = position(positionId), m = member(memberId);
+      const cur = currentTerm(memberId);
+      if(cur && cur.positionId===positionId) return toast('이미 같은 직책입니다.');
+      if(cur) endTerm(cur, start);
+      if(p.single) D().terms.filter(t=>!t.end && t.positionId===positionId).forEach(t=>endTerm(t,start));
+      D().terms.push({id:uid(), memberId, positionId, start, end:''});
+      if(hist) D().history.push({id:uid(), date:start, title:`${m.name} ${p.name} 취임`, desc:'', source:'officer'});
+      Store.save(); closeModal(); toast(`${m.name} → ${p.name}`); render();
+    };
+  });
+}
+function positionsForm(){
+  const rowHtml = p => `<div class="row" data-pid="${p.id}" style="margin-bottom:8px">
+    <input class="input" value="${esc(p.name)}" data-name style="flex:1">
+    <label class="row" style="font-size:13px"><input type="checkbox" data-single ${p.single?'checked':''}>1인 직책</label>
+    <button type="button" class="btn sm" data-up>↑</button><button type="button" class="btn sm danger" data-rm>삭제</button></div>`;
+  const pos = [...D().positions].sort((a,b)=>a.order-b.order);
+  openModal(`<h2>직책 설정</h2>
+    <p class="muted" style="margin-top:-6px;font-size:13px">1인 직책은 새로 지정하면 기존 담당자가 자동 해제됩니다.</p>
+    <div id="plist">${pos.map(rowHtml).join('')}</div>
+    <button type="button" class="btn sm" id="padd">+ 직책 추가</button>
+    <div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-close>취소</button><button class="btn pri" id="psave">저장</button></div>`, root=>{
+    const list = root.querySelector('#plist');
+    const wire = () => list.querySelectorAll('[data-pid]').forEach(r=>{
+      r.querySelector('[data-up]').onclick=()=>{ r.previousElementSibling && list.insertBefore(r, r.previousElementSibling); };
+      r.querySelector('[data-rm]').onclick=()=>{
+        if(D().terms.some(t=>t.positionId===r.dataset.pid)) return toast('이력이 있는 직책은 삭제할 수 없습니다. 이름만 변경해주세요.');
+        r.remove();
+      };
+    });
+    wire();
+    root.querySelector('#padd').onclick=()=>{ list.insertAdjacentHTML('beforeend', rowHtml({id:uid(),name:'',single:false})); wire(); };
+    root.querySelector('#psave').onclick=()=>{
+      D().positions = [...list.querySelectorAll('[data-pid]')].map((r,i)=>({id:r.dataset.pid,
+        name:r.querySelector('[data-name]').value.trim(), single:r.querySelector('[data-single]').checked, order:i})).filter(p=>p.name);
+      Store.save(); closeModal(); render();
+    };
+  });
+}
+
+/* ===================== 화면: 행사 ===================== */
+function Events(){
+  const years = [...new Set([String(new Date().getFullYear()), ...D().events.map(e=>e.date.slice(0,4))])].sort().reverse();
+  const list = D().events.filter(e=>e.date.startsWith(ui.eventYear)).sort((a,b)=>a.date.localeCompare(b.date));
+  return `
+  <div class="head"><h1>행사</h1>
+    <div class="row"><select class="input" id="ey">${years.map(y=>`<option ${y===ui.eventYear?'selected':''}>${y}</option>`).join('')}</select>
+    <button class="btn pri" id="eadd">+ 행사 등록</button></div></div>
+  ${list.length?`<div class="grid">${list.map(e=>`
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <div><span class="tag">${esc(e.category||'행사')}</span> <b style="font-size:17px">${esc(e.title)}</b>
+          <div class="muted" style="font-size:13px;margin-top:4px">${e.date.replace(/-/g,'.')} ${e.location?'· '+esc(e.location):''} ${e.host?'· 주관 '+esc(member(e.host)?.name||''):''} ${e.attendees?'· 참석 '+esc(e.attendees)+'명':''}</div></div>
+        <div class="row"><button class="btn sm" data-dup="${e.id}">내년으로 복제</button><button class="btn sm" data-eedit="${e.id}">수정</button></div>
+      </div>
+      ${e.text?`<div style="margin-top:10px"><div class="row" style="justify-content:space-between"><b>문구·공지</b><button class="btn sm" data-copy="${e.id}">복사</button></div><pre class="text">${esc(e.text)}</pre></div>`:''}
+      ${e.docs?.length?`<div style="margin-top:6px"><b>서류·자료</b><ul style="margin:6px 0 0;padding-left:18px">${e.docs.map(d=>`<li><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.name||d.url)}</a></li>`).join('')}</ul></div>`:''}
+      ${e.memo?`<div class="muted" style="margin-top:8px;font-size:13px">${esc(e.memo)}</div>`:''}
+    </div>`).join('')}</div>`
+  :`<div class="empty">${ui.eventYear}년 등록된 행사가 없습니다.<br>정기총회·월례회·송년회 등 1년 행사를 등록하고 문구와 서류 링크를 함께 보관하세요.</div>`}`;
+}
+function eventForm(e){
+  const isNew = !e;
+  e = e || {id:uid(), title:'', category:'월례회', date:today(), location:'', host:'', attendees:'', text:'', docs:[], memo:''};
+  const ms = activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  openModal(`<h2>${isNew?'행사 등록':'행사 수정'}</h2>
+    <form class="form" id="ef">
+      <label class="full">행사명 *<input class="input" name="title" value="${esc(e.title)}" required></label>
+      <label>구분<input class="input" name="category" list="cats" value="${esc(e.category)}"></label>
+      <datalist id="cats"><option>정기총회</option><option>월례회</option><option>워크숍</option><option>송년회</option><option>봉사활동</option><option>골프·친목</option></datalist>
+      <label>일자<input class="input" type="date" name="date" value="${e.date}" required></label>
+      <label>장소<input class="input" name="location" value="${esc(e.location)}"></label>
+      <label>주관 임원<select class="input" name="host"><option value="">-</option>${ms.map(m=>`<option value="${m.id}" ${m.id===e.host?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label>참석 인원<input class="input" type="number" name="attendees" value="${esc(e.attendees)}"></label>
+      <label class="full">문구·공지 (초대 문자, 인사말 등)<textarea class="input" name="text" rows="5">${esc(e.text)}</textarea></label>
+      <label class="full">서류·자료 링크 (한 줄에 하나: 제목 | 링크 — 구글드라이브 등 외부 저장소)
+        <textarea class="input" name="docs" rows="3" placeholder="예산안 | https://drive.google.com/...">${esc((e.docs||[]).map(d=>`${d.name} | ${d.url}`).join('\n'))}</textarea></label>
+      <label class="full">메모<input class="input" name="memo" value="${esc(e.memo)}"></label>
+      <div class="full row" style="justify-content:space-between">
+        <div>${isNew?'':'<button type="button" class="btn danger" id="edel">삭제</button>'}</div>
+        <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+      </div>
+    </form>`, root=>{
+    root.querySelector('#ef').onsubmit = ev=>{
+      ev.preventDefault();
+      const d = Object.fromEntries(new FormData(ev.target));
+      d.docs = d.docs.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+        const [a,b] = l.includes('|') ? l.split('|').map(s=>s.trim()) : ['', l];
+        return {name:a||b, url:b};
+      });
+      Object.assign(e, d);
+      if(isNew) D().events.push(e);
+      ui.eventYear = e.date.slice(0,4);
+      Store.save(); closeModal(); render();
+    };
+    const del = root.querySelector('#edel');
+    if(del) del.onclick=()=>{ if(confirm('행사를 삭제할까요?')){ D().events = D().events.filter(x=>x.id!==e.id); Store.save(); closeModal(); render(); } };
+  });
+}
+
+/* ===================== 화면: 연혁 ===================== */
+function History(){
+  const items = [...D().history].sort((a,b)=>b.date.localeCompare(a.date));
+  const byYear = {};
+  items.forEach(h=>(byYear[h.date.slice(0,4)] ||= []).push(h));
+  return `
+  <div class="head"><h1>연혁·히스토리</h1><button class="btn pri" id="hadd">+ 연혁 추가</button></div>
+  ${items.length?Object.keys(byYear).sort().reverse().map(y=>`<div class="panel" style="margin-bottom:14px"><h2>${y}</h2><div class="tl">
+    ${byYear[y].map(h=>`<div class="it"><div class="row" style="justify-content:space-between"><div><span class="muted">${h.date.slice(5).replace('-','.')}</span> <b>${esc(h.title)}</b>
+      ${h.source==='officer'?'<span class="tag gray">자동</span>':''}</div><button class="btn sm" data-hedit="${h.id}">수정</button></div>
+      ${h.desc?`<div class="muted" style="margin-top:4px">${esc(h.desc)}</div>`:''}</div>`).join('')}
+  </div></div>`).join('')
+  :'<div class="empty">창립, 회장 취임, 주요 행사 등을 기록하세요.<br>임원 직책을 지정하면 취임 기록이 자동으로 추가됩니다.</div>'}`;
+}
+function historyForm(h){
+  const isNew = !h; h = h || {id:uid(), date:today(), title:'', desc:'', source:'manual'};
+  openModal(`<h2>${isNew?'연혁 추가':'연혁 수정'}</h2>
+    <form class="form" id="hf">
+      <label>일자<input class="input" type="date" name="date" value="${h.date}" required></label>
+      <label>제목 *<input class="input" name="title" value="${esc(h.title)}" required></label>
+      <label class="full">내용<textarea class="input" name="desc" rows="3">${esc(h.desc)}</textarea></label>
+      <div class="full row" style="justify-content:space-between">
+        <div>${isNew?'':'<button type="button" class="btn danger" id="hdel">삭제</button>'}</div>
+        <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+      </div></form>`, root=>{
+    root.querySelector('#hf').onsubmit = ev=>{
+      ev.preventDefault(); Object.assign(h, Object.fromEntries(new FormData(ev.target)));
+      if(isNew) D().history.push(h); Store.save(); closeModal(); render();
+    };
+    const del = root.querySelector('#hdel');
+    if(del) del.onclick=()=>{ D().history = D().history.filter(x=>x.id!==h.id); Store.save(); closeModal(); render(); };
+  });
+}
+
+/* ===================== 화면: 관리·백업 ===================== */
+function Settings(){
+  return `
+  <div class="head"><h1>관리·백업</h1></div>
+  <div class="grid two">
+    <div class="panel"><h2>회원 일괄 등록 (엑셀 → CSV)</h2>
+      <p class="muted">엑셀에서 <b>CSV(UTF-8)</b>로 저장해 올리면 회원과 가디언 관계가 자동으로 만들어집니다. 같은 이름은 정보가 갱신됩니다.</p>
+      <pre class="text">입회월,회원명,추천인,회사,제품,출생연도,연락처
+2026-08,박홍진,김상원,영진종합유통,위생용품,1981,</pre>
+      <div class="row"><input type="file" id="csv" accept=".csv,text/csv" class="input"><button class="btn sm" id="tpl">양식 받기</button></div>
+    </div>
+    <div class="panel"><h2>데이터 백업·복원</h2>
+      <p class="muted">현재 데이터는 이 브라우저에 저장됩니다. 정기적으로 백업 파일을 받아 구글드라이브 등에 보관하세요.</p>
+      <div class="row"><button class="btn pri" id="bak">백업 파일 받기 (JSON)</button>
+        <label class="btn">복원하기<input type="file" id="restore" accept=".json" hidden></label></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+      <button class="btn danger" id="reset">초기 데이터로 되돌리기</button>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px"><h2>현황</h2>
+    <div class="muted">회원 ${D().members.length}명 · 직책 ${D().positions.length}개 · 임원 이력 ${D().terms.length}건 · 행사 ${D().events.length}건 · 연혁 ${D().history.length}건</div>
+  </div>`;
+}
+
+/* ===================== 이벤트 바인딩 ===================== */
+function bindRowLinks(){
+  document.querySelectorAll('[data-href]').forEach(el=>el.onclick=()=>location.hash=el.dataset.href);
+}
+const bind = {
+  dashboard: bindRowLinks,
+  members(){
+    bindRowLinks();
+    $('#type').value = ui.type; $('#year').value = ui.year;
+    const refresh = ()=>{ $('#mlist').innerHTML = memberList(filteredMembers()); bindRowLinks();
+      $('.head h1 span').textContent = filteredMembers().length+'명'; };
+    $('#q').oninput = e=>{ ui.q=e.target.value; refresh(); };
+    $('#type').onchange = e=>{ ui.type=e.target.value; refresh(); };
+    $('#year').onchange = e=>{ ui.year=e.target.value; refresh(); };
+    document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ ui.view=b.dataset.v; render(); });
+    $('#add').onclick = ()=>memberForm();
+    $('#exp').onclick = ()=>{
+      const head = ['입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','추천인','추천횟수'];
+      const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.joined||'기존회원', m.name, t?'임원':'일반회원',
+        t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address,
+        member(m.guardianId)?.name||'', recruits(m.id).length]; });
+      download(`정우회_회원명부_${today()}.csv`, '﻿'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv');
+    };
+  },
+  member(id){ const m = member(id); if(m) $('#edit').onclick = ()=>memberForm(m); },
+  officers(){
+    $('#assign').onclick = assignForm;
+    $('#pos').onclick = positionsForm;
+    document.querySelectorAll('[data-end]').forEach(b=>b.onclick=()=>{
+      const t = D().terms.find(x=>x.id===b.dataset.end);
+      const date = prompt('임기 종료일 (YYYY-MM-DD)', today());
+      if(!date) return; endTerm(t, date); Store.save(); render();
+    });
+  },
+  events(){
+    $('#ey').onchange = e=>{ ui.eventYear=e.target.value; render(); };
+    $('#eadd').onclick = ()=>eventForm();
+    document.querySelectorAll('[data-eedit]').forEach(b=>b.onclick=()=>eventForm(D().events.find(e=>e.id===b.dataset.eedit)));
+    document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{
+      try{ await navigator.clipboard.writeText(D().events.find(e=>e.id===b.dataset.copy).text); toast('문구를 복사했습니다.'); }
+      catch(e){ toast('복사에 실패했습니다. 직접 선택해 복사해주세요.'); }
+    });
+    document.querySelectorAll('[data-dup]').forEach(b=>b.onclick=()=>{
+      const src = D().events.find(e=>e.id===b.dataset.dup);
+      const y = +src.date.slice(0,4);
+      const copy = {...src, id:uid(), date:(y+1)+src.date.slice(4), title:src.title.replace(String(y), String(y+1)), docs:[], attendees:''};
+      D().events.push(copy); ui.eventYear=String(y+1); Store.save(); toast(`${y+1}년으로 복제했습니다. 날짜를 확인해주세요.`); render();
+    });
+  },
+  history(){
+    $('#hadd').onclick = ()=>historyForm();
+    document.querySelectorAll('[data-hedit]').forEach(b=>b.onclick=()=>historyForm(D().history.find(h=>h.id===b.dataset.hedit)));
+  },
+  settings(){
+    $('#csv').onchange = async e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const rows = parseCSV(await f.text());
+      const head = rows.shift().map(h=>h.trim());
+      const col = (...names) => head.findIndex(h=>names.some(n=>h.includes(n)));
+      const ix = {joined:col('입회'), name:col('회원명','이름','회원'), guardian:col('추천'), company:col('회사'),
+                  products:col('제품'), birthYear:col('출생'), phone:col('연락처','전화')};
+      if(ix.name<0) return toast('"회원명" 열을 찾을 수 없습니다.');
+      const data = rows.map(r=>{ const o={}; for(const k in ix) o[k] = ix[k]>=0 ? (r[ix[k]]||'').trim() : '';
+        o.joined = o.joined.replace(/[.\/]/g,'-').replace(/-$/,'').replace(/^(\d{4})-(\d)$/,'$1-0$2'); return o; });
+      const res = importRows(D(), data); Store.save();
+      toast(`신규 ${res.added}명, 갱신 ${res.updated}명`); render();
+    };
+    $('#tpl').onclick = ()=>download('정우회_회원등록양식.csv', '﻿입회월,회원명,추천인,회사,제품,출생연도,연락처\n', 'text/csv');
+    $('#bak').onclick = ()=>download(`정우회_백업_${today()}.json`, JSON.stringify(D(),null,1), 'application/json');
+    $('#restore').onchange = async e=>{
+      const f = e.target.files[0]; if(!f) return;
+      try{ const d = JSON.parse(await f.text()); if(!Array.isArray(d.members)) throw 0;
+        if(!confirm('현재 데이터를 백업 파일로 덮어쓸까요?')) return;
+        Store.db = Object.assign({members:[],positions:[],terms:[],events:[],history:[]}, d); Store.save(); toast('복원했습니다.'); render();
+      }catch(err){ toast('올바른 백업 파일이 아닙니다.'); }
+    };
+    $('#reset').onclick = ()=>{ if(confirm('모든 데이터를 지우고 초기 회원명부로 되돌릴까요? (먼저 백업을 권장합니다)')){ Store.db = seedData(); Store.save(); render(); } };
+  },
+};
+
+Store.load();
+render();
+</script>
+</body>
+</html>
