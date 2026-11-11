@@ -90,6 +90,11 @@ tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub)}
 .form .full{grid-column:1/-1}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;z-index:30;font-size:14px}
+body.gate aside{display:none} body.gate .app{grid-template-columns:minmax(0,1fr)}
+.gate-box{max-width:400px;margin:12vh auto 0}
+#who{margin-top:24px;padding:12px;border-top:1px solid rgba(255,255,255,.15);font-size:12px;color:#c9d5ea;word-break:break-all}
+#who button{margin-top:8px;background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+.input:disabled{background:#f3f4f6;color:#8a93a3}
 pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:8px;margin:8px 0;font-family:inherit}
 @media (max-width:900px){
   .app{grid-template-columns:minmax(0,1fr)}
@@ -97,6 +102,8 @@ pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:
   .logo{margin:0 6px 10px}
   nav{display:flex;overflow-x:auto;gap:4px}
   nav a{white-space:nowrap;margin:0}
+  #who{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px;padding:8px 6px 0}
+  #who button{margin-top:0}
   main{padding:16px}
   .kpis{grid-template-columns:repeat(2,1fr)}
   .two{grid-template-columns:1fr}
@@ -110,79 +117,124 @@ pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:
   <aside>
     <div class="logo">정우회<small>기업가 대표 모임</small></div>
     <nav id="nav"></nav>
+    <div id="who"></div>
   </aside>
   <main id="view"></main>
 </div>
 <div id="modal-root"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* =========================================================
-   데이터 계층 (Store)
-   지금은 브라우저 localStorage에 저장합니다.
-   Supabase로 옮길 때는 load()/save() 부분만 교체하면 됩니다.
+   데이터 계층 — Supabase
+   (dongne-expert 프로젝트 안의 jw_ 테이블 / jw-media 저장소)
+   anon 키는 공개용 키입니다. 실제 접근 권한은 DB의 RLS 정책이 막습니다.
    ========================================================= */
-const STORE_KEY = 'jungwoo-platform-v1';
+const SUPABASE_URL = 'https://ltnwbinctflmczqnhuii.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bndiaW5jdGZsbWN6cW5odWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxMzkwMjUsImV4cCI6MjEwOTcxNTAyNX0.UL6jWktHRze0K6W6cw21uaoRp3i2lgVIe7aAAV_g5gg';
+const BUCKET = 'jw-media';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'jungwoo-auth'}});
 
-const SEED_ROWS = [
-  ['2026-03','임우현','김동관'],['2026-03','전기철','김동관'],['2026-03','정준효','김영진'],
-  ['2026-03','김진목','김현식'],['2026-03','김민준','신동찬'],['2026-03','김성환','황성광'],
-  ['2026-06','박운하','고영득'],['2026-06','이광만','김동관'],['2026-06','이승문','김동관'],
-  ['2026-06','서동근','김상원'],['2026-06','정종혁','노승권'],['2026-06','조성민','전효찬'],
-  ['2026-07','김재원','김동관'],['2026-07','이해성','김영진'],['2026-07','이성호','전기철'],
-  ['2026-08','심봉주','김동관'],['2026-08','최석우','김동관'],['2026-08','박홍진','김상원'],
-  ['2026-08','노길현','정일태'],['2026-08','이헌영','황시완'],['2026-09','황진기','김동관'],
-  ['2026-09','조홍범','정일태'],['2026-10','이상섭','황시완'],
-];
-
-const uid = () => Math.random().toString(36).slice(2, 10);
+const uid = () => (crypto.randomUUID ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{ const r=Math.random()*16|0; return (c==='x'?r:(r&3|8)).toString(16); }));
 
 function blankMember(name){
-  return {id:uid(), name, birthYear:'', company:'', title:'', products:'', industry:'',
-    phone:'', email:'', address:'', joined:'', guardianId:'', status:'active',
-    memo:'', photo:'', companyImage:'', cardImage:''};
+  return {id:'', name, birthYear:'', company:'', title:'', products:'', industry:'',
+    phone:'', email:'', address:'', joined:'', guardianId:'', status:'active', memo:'',
+    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:''};
 }
 
-function seedData(){
-  const db = {members:[], positions:[], terms:[], events:[], history:[]};
-  [['회장',true],['부회장',false],['총무',true],['감사',false],['사무국장',true]]
-    .forEach(([name,single],i)=>db.positions.push({id:uid(), name, single, order:i}));
-  importRows(db, SEED_ROWS.map(([joined,name,guardian])=>({joined,name,guardian})));
-  const p = db.members.find(m=>m.name==='박홍진');
-  if(p) Object.assign(p,{birthYear:'1981', company:'영진종합유통', title:'영업이사',
-    products:'위생용품, 일회용품, 식품 등', industry:'유통'});
-  return db;
-}
+const IMG_KEYS = {photo:'photoPath', companyImage:'companyImagePath', cardImage:'cardImagePath'};
+const fromMember = r => ({id:r.id, name:r.name, birthYear:r.birth_year||'', company:r.company||'', title:r.title||'',
+  products:r.products||'', industry:r.industry||'', phone:r.phone||'', email:r.email||'', address:r.address||'',
+  joined:r.joined||'', guardianId:r.guardian_id||'', status:r.status||'active', memo:r.memo||'',
+  photoPath:r.photo_path||'', companyImagePath:r.company_image_path||'', cardImagePath:r.card_image_path||'',
+  photo:'', companyImage:'', cardImage:''});
+const toMember = m => ({name:m.name, birth_year:m.birthYear||'', company:m.company||'', title:m.title||'',
+  products:m.products||'', industry:m.industry||'', phone:m.phone||'', email:(m.email||'').trim().toLowerCase(),
+  address:m.address||'', joined:m.joined||'', guardian_id:m.guardianId||null, status:m.status||'active', memo:m.memo||'',
+  photo_path:m.photoPath||'', company_image_path:m.companyImagePath||'', card_image_path:m.cardImagePath||''});
+const fromTerm = r => ({id:r.id, memberId:r.member_id, positionId:r.position_id, start:r.started_on, end:r.ended_on||''});
+const fromEvent = r => ({id:r.id, title:r.title, category:r.category||'', date:r.event_date, location:r.location||'',
+  host:r.host_id||'', attendees:r.attendees ?? '', text:r.body||'', docs:r.docs||[], memo:r.memo||''});
+const toEvent = e => ({title:e.title, category:e.category||'', event_date:e.date, location:e.location||'',
+  host_id:e.host||null, attendees:(e.attendees===''||e.attendees==null) ? null : +e.attendees,
+  body:e.text||'', docs:e.docs||[], memo:e.memo||''});
+const fromHistory = r => ({id:r.id, date:r.happened_on, title:r.title, desc:r.description||'', source:r.source});
+const toHistory = h => ({happened_on:h.date, title:h.title, description:h.desc||'', source:h.source||'manual'});
 
-/* 행 단위 일괄 등록: 이름으로 매칭, 명단에 없는 추천인은 '기존회원'으로 자동 생성 */
-function importRows(db, rows){
-  const byName = n => db.members.find(m=>m.name===n);
-  let added = 0, updated = 0;
-  rows.forEach(r=>{
-    if(!r.name) return;
-    let m = byName(r.name);
-    if(!m){ m = blankMember(r.name); db.members.push(m); added++; } else updated++;
-    if(r.joined) m.joined = r.joined;
-    ['company','products','birthYear','phone','title'].forEach(k=>{ if(r[k]) m[k]=r[k]; });
-    if(r.guardian){
-      let g = byName(r.guardian);
-      if(!g){ g = blankMember(r.guardian); db.members.push(g); added++; }
-      m.guardianId = g.id;
-    }
-  });
-  return {added, updated};
+/* Supabase 호출 결과에서 오류를 토스트로 알리고 예외로 던짐 */
+async function q(p){
+  const {data, error} = await p;
+  if(error){ toast('오류: ' + (error.message || error)); throw error; }
+  return data;
 }
 
 const Store = {
-  db:null,
-  load(){
-    try{ const raw = localStorage.getItem(STORE_KEY); if(raw){ this.db = JSON.parse(raw); return; } }catch(e){}
-    this.db = seedData(); this.save();
+  ready:false,
+  db:{members:[], positions:[], terms:[], events:[], history:[]},
+  me:{email:'', admin:false, officer:false, memberId:''},
+  async loadMe(){
+    const {data:{user}} = await sb.auth.getUser();
+    const [admin, memberId, officer] = await Promise.all([
+      q(sb.rpc('jw_is_admin')), q(sb.rpc('jw_my_member_id')), q(sb.rpc('jw_is_officer'))]);
+    this.me = {email:user?.email||'', admin:!!admin, officer:!!officer, memberId:memberId||''};
   },
-  save(){
-    try{ localStorage.setItem(STORE_KEY, JSON.stringify(this.db)); }
-    catch(e){ toast('저장 공간이 부족합니다. 이미지 용량을 줄이거나 백업 후 정리해주세요.'); }
+  async load(){
+    const [ms, ps, ts, es, hs] = await Promise.all([
+      q(sb.from('jw_members').select('*')),
+      q(sb.from('jw_positions').select('*').order('sort_order')),
+      q(sb.from('jw_terms').select('*')),
+      q(sb.from('jw_events').select('*')),
+      q(sb.from('jw_history').select('*'))]);
+    this.db = {members:ms.map(fromMember),
+      positions:ps.map(r=>({id:r.id, name:r.name, single:r.single, order:r.sort_order})),
+      terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory)};
+    await this.signImages();
   },
+  /* 비공개 저장소 이미지 → 12시간짜리 서명 URL을 한 번에 발급 */
+  async signImages(){
+    const paths = [];
+    this.db.members.forEach(m=>Object.values(IMG_KEYS).forEach(k=>{ if(m[k]) paths.push(m[k]); }));
+    if(!paths.length) return;
+    const {data} = await sb.storage.from(BUCKET).createSignedUrls(paths, 60*60*12);
+    const map = Object.fromEntries((data||[]).filter(x=>x.signedUrl).map(x=>[x.path, x.signedUrl]));
+    this.db.members.forEach(m=>Object.entries(IMG_KEYS).forEach(([u,k])=>{ m[u] = map[m[k]] || ''; }));
+  },
+  async refresh(){ await this.load(); render(); },
 };
+
+function dataUrlToBlob(u){
+  const [h,b] = u.split(','); const bin = atob(b); const a = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) a[i] = bin.charCodeAt(i);
+  return new Blob([a], {type:h.match(/:(.*?);/)[1]});
+}
+async function uploadImage(memberId, kind, dataUrl){
+  const path = `${memberId}/${kind}-${Date.now()}.jpg`;
+  await q(sb.storage.from(BUCKET).upload(path, dataUrlToBlob(dataUrl), {contentType:'image/jpeg', upsert:false}));
+  return path;
+}
+
+/* 엑셀(CSV) 일괄 등록: 이름으로 매칭, 명단에 없는 추천인은 '기존회원'으로 자동 생성 */
+async function importRows(rows){
+  rows = rows.filter(r=>r.name);
+  const byName = n => D().members.find(m=>m.name===n);
+  const need = [...new Set(rows.flatMap(r=>[r.name, r.guardian]).filter(n=>n && !byName(n)))];
+  if(need.length){
+    const created = await q(sb.from('jw_members').insert(need.map(name=>({name}))).select('*'));
+    D().members.push(...created.map(fromMember));
+  }
+  for(const r of rows){
+    const patch = {};
+    if(r.joined) patch.joined = r.joined;
+    [['company','company'],['products','products'],['birthYear','birth_year'],['phone','phone'],['title','title']]
+      .forEach(([k,c])=>{ if(r[k]) patch[c] = r[k]; });
+    if(r.guardian) patch.guardian_id = byName(r.guardian).id;
+    if(Object.keys(patch).length) await q(sb.from('jw_members').update(patch).eq('id', byName(r.name).id));
+  }
+  return {added:need.length, total:rows.length};
+}
 
 /* ===================== 조회 헬퍼 ===================== */
 const D = () => Store.db;
@@ -192,7 +244,12 @@ const currentTerm = mid => D().terms.find(t=>t.memberId===mid && !t.end);
 const isOfficer = mid => !!currentTerm(mid);
 const recruits = mid => D().members.filter(m=>m.guardianId===mid);
 const activeMembers = () => D().members.filter(m=>m.status!=='inactive');
-const today = () => new Date().toISOString().slice(0,10);
+const today = () => { const d = new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const can = {
+  admin: () => Store.me.admin,
+  officer: () => Store.me.admin || Store.me.officer,
+  edit: m => Store.me.admin || (m && m.id === Store.me.memberId),
+};
 
 function guardianRanking(){
   const map = {};
@@ -266,14 +323,20 @@ function closeModal(){ $('#modal-root').innerHTML=''; }
 /* ===================== 라우팅 ===================== */
 const ROUTES = [
   ['dashboard','🏠','대시보드'],['members','👥','회원명부'],['guardians','🛡️','가디언'],
-  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['settings','⚙️','관리·백업'],
+  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['settings','⚙️','관리'],
 ];
 const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().getFullYear())};
 
 function render(){
-  const [, page='dashboard', id] = location.hash.split('/');
+  if(!Store.ready) return;
+  let [, page='dashboard', id] = location.hash.split('/');
+  if(page==='settings' && !can.admin()) page = 'dashboard';
   const navKey = page==='member' ? 'members' : page;
-  $('#nav').innerHTML = ROUTES.map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}</a>`).join('');
+  const me = Store.me, mine = member(me.memberId);
+  $('#who').innerHTML = `<div>${mine?`<a href="#/member/${mine.id}" style="color:#fff"><b>${esc(mine.name)}</b></a>`:''}
+    <div>${esc(me.email)} · ${me.admin?'관리자':me.officer?'임원':'회원'}</div></div><button class="btn sm" id="logout">로그아웃</button>`;
+  $('#logout').onclick = ()=>sb.auth.signOut();
+  $('#nav').innerHTML = ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}</a>`).join('');
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
               officers:Officers, events:Events, history:History, settings:Settings}[page] || Dashboard;
   $('#view').innerHTML = fn();
@@ -281,6 +344,60 @@ function render(){
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', render);
+
+/* ===================== 로그인 / 진입 ===================== */
+function renderGate(html){
+  Store.ready = false; document.body.classList.add('gate'); closeModal();
+  $('#view').innerHTML = `<div class="gate-box panel"><div class="logo" style="color:var(--brand);margin:0 0 18px">정우회
+    <small style="color:var(--sub);opacity:1">기업가 대표 모임 · 회원 전용</small></div>${html}</div>`;
+}
+function renderLogin(msg=''){
+  renderGate(`<form id="lf"><label class="muted" style="font-size:13px">등록된 이메일</label>
+    <input class="input" type="email" name="email" required autocomplete="email" placeholder="name@company.com" style="width:100%;margin:6px 0 12px">
+    <button class="btn pri" style="width:100%">로그인 링크 받기</button></form>
+    <p class="muted" style="font-size:13px;margin:14px 0 0">${msg || '이메일로 받은 링크를 누르면 바로 로그인됩니다. 비밀번호는 필요 없습니다.'}</p>`);
+  $('#lf').onsubmit = async e=>{
+    e.preventDefault();
+    const email = new FormData(e.target).get('email').trim().toLowerCase();
+    const btn = e.target.querySelector('button');
+    const reset = ()=>{ btn.disabled = false; btn.textContent = '로그인 링크 받기'; };
+    btn.disabled = true; btn.textContent = '확인 중…';
+    try{
+      if(!await q(sb.rpc('jw_can_login', {p_email:email}))){ reset(); return toast('등록된 회원 이메일이 아닙니다. 사무국에 문의해주세요.'); }
+      await q(sb.auth.signInWithOtp({email, options:{emailRedirectTo: location.origin + location.pathname,
+        shouldCreateUser:true, data:{app:'jungwoo'}}}));
+      renderLogin(`<b>${esc(email)}</b>(으)로 로그인 링크를 보냈습니다. 메일함(스팸함 포함)을 확인해주세요.`);
+    }catch(err){ reset(); }
+  };
+}
+let entering = false;
+async function enter(){
+  if(entering || Store.ready) return; entering = true;
+  try{
+    renderGate('<p class="muted">불러오는 중…</p>');
+    await Store.loadMe();
+    if(!Store.me.admin && !Store.me.memberId){
+      renderGate(`<p><b>${esc(Store.me.email)}</b> 계정은 정우회 회원으로 등록되어 있지 않습니다.</p>
+        <button class="btn" id="lo">다른 이메일로 로그인</button>`);
+      $('#lo').onclick = ()=>sb.auth.signOut();
+      return;
+    }
+    await Store.load();
+    Store.ready = true; document.body.classList.remove('gate');
+    if(!location.hash.startsWith('#/')) history.replaceState(null, '', location.pathname + '#/dashboard');
+    render();
+  }catch(e){
+    renderGate('<p>데이터를 불러오지 못했습니다.</p><button class="btn" onclick="location.reload()">다시 시도</button>');
+  }finally{ entering = false; }
+}
+sb.auth.onAuthStateChange((ev, session)=>{
+  if(ev === 'SIGNED_OUT'){ Store.ready = false; return renderLogin(); }
+  if(session && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION')) return setTimeout(enter);
+  if(!session && ev === 'INITIAL_SESSION'){
+    const err = new URLSearchParams(location.hash.slice(1)).get('error_description');
+    renderLogin(err ? '로그인 링크가 만료되었거나 이미 사용되었습니다. 다시 요청해주세요.' : '');
+  }
+});
 
 /* ===================== 화면: 대시보드 ===================== */
 function Dashboard(){
@@ -353,8 +470,8 @@ function Members(){
   return `
   <div class="head"><h1>회원명부 <span class="muted" style="font-size:15px">${list.length}명</span></h1>
     <div class="row">
-      <button class="btn" id="exp">엑셀(CSV) 내보내기</button>
-      <button class="btn pri" id="add">+ 회원 등록</button>
+      ${can.officer()?'<button class="btn" id="exp">엑셀(CSV) 내보내기</button>':''}
+      ${can.admin()?'<button class="btn pri" id="add">+ 회원 등록</button>':''}
     </div></div>
   <div class="panel" style="margin-bottom:14px"><div class="row">
     <input class="input" id="q" placeholder="이름·회사·제품 검색 (예: 위생용품)" value="${esc(ui.q)}" style="flex:1;min-width:200px">
@@ -393,7 +510,7 @@ function MemberDetail(id){
   const img = (src, label) => `<div class="pc-img">${src?`<img src="${src}" alt="">`:label}</div>`;
   return `
   <div class="head"><div class="row"><a class="btn sm" href="#/members">← 명부</a><h1>${esc(m.name)}</h1>${typeTag(m)}</div>
-    <div class="row"><button class="btn" id="edit">정보 수정</button></div></div>
+    <div class="row">${can.edit(m)?`<button class="btn" id="edit">${m.id===Store.me.memberId?'내 정보 수정':'정보 수정'}</button>`:''}</div></div>
   <div class="grid two">
     <div class="panel profile">
       <div class="pc-top">
@@ -429,9 +546,10 @@ function MemberDetail(id){
 
 function memberForm(m){
   const isNew = !m; m = m || blankMember('');
+  const lock = can.admin() ? '' : 'disabled';
   const opts = D().members.filter(x=>x.id!==m.id).sort((a,b)=>a.name.localeCompare(b.name,'ko'))
     .map(x=>`<option value="${x.id}" ${x.id===m.guardianId?'selected':''}>${esc(x.name)}</option>`).join('');
-  const f = (k,l,type='text',cls='') => `<label class="${cls}">${l}<input class="input" name="${k}" type="${type}" value="${esc(m[k])}"></label>`;
+  const f = (k,l,type='text',cls='',dis='') => `<label class="${cls}">${l}<input class="input" name="${k}" type="${type}" value="${esc(m[k])}" ${dis}></label>`;
   const imgf = (k,l) => `<label>${l}<input class="input" type="file" accept="image/*" data-img="${k}">
     ${m[k]?`<span class="row"><img src="${m[k]}" style="height:40px;border-radius:4px"><button type="button" class="btn sm danger" data-rmimg="${k}">삭제</button></span>`:''}</label>`;
   openModal(`<h2>${isNew?'회원 등록':'회원 정보 수정'}</h2>
@@ -440,14 +558,14 @@ function memberForm(m){
       ${f('company','회사명')}${f('title','회사 직함')}
       ${f('products','제품(서비스)','text','full')}
       ${f('industry','업종')}${f('phone','전화','tel')}
-      ${f('email','이메일','email')}${f('joined','입회월 (비우면 기존회원)','month')}
+      ${f('email','로그인 이메일','email','',lock)}${f('joined','입회월 (비우면 기존회원)','month','',lock)}
       ${f('address','주소','text','full')}
-      <label>추천회원(가디언)<select class="input" name="guardianId"><option value="">없음</option>${opts}</select></label>
-      <label>상태<select class="input" name="status"><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
+      <label>추천회원(가디언)<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
+      <label>상태<select class="input" name="status" ${lock}><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
       ${imgf('photo','인물 사진')}${imgf('companyImage','회사 이미지')}${imgf('cardImage','명함 이미지')}
       <label class="full">메모<textarea class="input" name="memo" rows="3">${esc(m.memo)}</textarea></label>
       <div class="full row" style="justify-content:space-between">
-        <div>${isNew?'':'<button type="button" class="btn danger" id="del">회원 삭제</button>'}</div>
+        <div>${isNew||!can.admin()?'':'<button type="button" class="btn danger" id="del">회원 삭제</button>'}</div>
         <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
       </div>
     </form>`, root=>{
@@ -456,23 +574,34 @@ function memberForm(m){
         if(inp.files[0]) imgs[inp.dataset.img] = await readImage(inp.files[0], inp.dataset.img==='cardImage'?900:520);
       });
       root.querySelectorAll('[data-rmimg]').forEach(b=>b.onclick=()=>{ imgs[b.dataset.rmimg]=''; b.parentElement.remove(); });
-      root.querySelector('#mf').onsubmit = e=>{
+      root.querySelector('#mf').onsubmit = async e=>{
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.target));
         if(!data.name.trim()) return toast('이름을 입력해주세요.');
         if(D().members.some(x=>x.name===data.name.trim() && x.id!==m.id) && !confirm('같은 이름의 회원이 있습니다. 그래도 저장할까요?')) return;
-        Object.assign(m, data, imgs, {name:data.name.trim()});
-        if(isNew) D().members.push(m);
-        Store.save(); closeModal(); toast('저장했습니다.');
-        isNew ? (location.hash = '#/member/'+m.id) : render();
+        const btn = e.submitter; if(btn){ btn.disabled = true; btn.textContent = '저장 중…'; }
+        try{
+          const next = {...m, ...data, name:data.name.trim()};
+          let id = m.id;
+          if(isNew){ const [row] = await q(sb.from('jw_members').insert(toMember(next)).select('id')); id = row.id; }
+          for(const [k, pk] of Object.entries(IMG_KEYS)){
+            if(!(k in imgs)) continue;
+            if(m[pk]) sb.storage.from(BUCKET).remove([m[pk]]);
+            next[pk] = imgs[k] ? await uploadImage(id, k, imgs[k]) : '';
+          }
+          await q(sb.from('jw_members').update(toMember(next)).eq('id', id));
+          closeModal(); toast('저장했습니다.');
+          await Store.load();
+          isNew ? (location.hash = '#/member/'+id) : render();
+        }catch(err){ if(btn){ btn.disabled = false; btn.textContent = '저장'; } }
       };
       const del = root.querySelector('#del');
-      if(del) del.onclick = ()=>{
+      if(del) del.onclick = async ()=>{
         if(!confirm(`${m.name} 회원을 삭제할까요? 추천 관계와 직책 이력도 함께 정리됩니다.`)) return;
-        D().members.forEach(x=>{ if(x.guardianId===m.id) x.guardianId=''; });
-        D().terms = D().terms.filter(t=>t.memberId!==m.id);
-        D().members = D().members.filter(x=>x.id!==m.id);
-        Store.save(); closeModal(); location.hash='#/members';
+        await q(sb.from('jw_members').delete().eq('id', m.id));
+        const files = Object.values(IMG_KEYS).map(k=>m[k]).filter(Boolean);
+        if(files.length) sb.storage.from(BUCKET).remove(files);
+        closeModal(); await Store.load(); location.hash = '#/members';
       };
     });
 }
@@ -506,13 +635,13 @@ function Officers(){
   const past = D().terms.filter(t=>t.end).sort((a,b)=>b.end.localeCompare(a.end));
   return `
   <div class="head"><h1>임원진</h1>
-    <div class="row"><button class="btn" id="pos">직책 설정</button><button class="btn pri" id="assign">+ 직책 지정·변경</button></div></div>
+    ${can.admin()?'<div class="row"><button class="btn" id="pos">직책 설정</button><button class="btn pri" id="assign">+ 직책 지정·변경</button></div>':''}</div>
   <div class="cards">
     ${pos.map(p=>{ const hs = current.filter(t=>t.positionId===p.id);
       return `<div class="panel"><div class="muted" style="font-size:13px">${esc(p.name)}${p.single?'':' · 복수'}</div>
         ${hs.length?hs.map(t=>{const m=member(t.memberId); return `<div class="row" style="margin-top:10px;justify-content:space-between">
           <div class="row">${m?avatar(m):''}<div>${memberLink(m)}<div class="muted" style="font-size:12px">${t.start}~</div></div></div>
-          <button class="btn sm" data-end="${t.id}">해제</button></div>`;}).join('')
+          ${can.admin()?`<button class="btn sm" data-end="${t.id}">해제</button>`:''}</div>`;}).join('')
           :'<div class="muted" style="margin-top:10px">공석</div>'}
       </div>`; }).join('')}
   </div>
@@ -522,9 +651,6 @@ function Officers(){
       ${past.map(t=>`<tr><td>${memberLink(member(t.memberId))}</td><td>${esc(position(t.positionId)?.name||'-')}</td><td>${t.start} ~ ${t.end}</td></tr>`).join('')}</table>`
       :'<div class="empty" style="margin:16px">직책이 변경되면 이전 직책이 여기에 자동으로 기록됩니다.</div>'}
   </div>`;
-}
-function endTerm(t, date){
-  t.end = date;
 }
 function assignForm(){
   const ms = activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
@@ -538,17 +664,13 @@ function assignForm(){
       <label style="justify-content:flex-end"><span><input type="checkbox" name="hist" checked> 연혁에 자동 기록</span></label>
       <div class="full row" style="justify-content:flex-end"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
     </form>`, root=>{
-    root.querySelector('#af').onsubmit = e=>{
+    root.querySelector('#af').onsubmit = async e=>{
       e.preventDefault();
       const {memberId, positionId, start, hist} = Object.fromEntries(new FormData(e.target));
-      const p = position(positionId), m = member(memberId);
       const cur = currentTerm(memberId);
       if(cur && cur.positionId===positionId) return toast('이미 같은 직책입니다.');
-      if(cur) endTerm(cur, start);
-      if(p.single) D().terms.filter(t=>!t.end && t.positionId===positionId).forEach(t=>endTerm(t,start));
-      D().terms.push({id:uid(), memberId, positionId, start, end:''});
-      if(hist) D().history.push({id:uid(), date:start, title:`${m.name} ${p.name} 취임`, desc:'', source:'officer'});
-      Store.save(); closeModal(); toast(`${m.name} → ${p.name}`); render();
+      await q(sb.rpc('jw_assign_position', {p_member:memberId, p_position:positionId, p_start:start, p_add_history:!!hist}));
+      closeModal(); toast(`${member(memberId).name} → ${position(positionId).name}`); Store.refresh();
     };
   });
 }
@@ -573,10 +695,13 @@ function positionsForm(){
     });
     wire();
     root.querySelector('#padd').onclick=()=>{ list.insertAdjacentHTML('beforeend', rowHtml({id:uid(),name:'',single:false})); wire(); };
-    root.querySelector('#psave').onclick=()=>{
-      D().positions = [...list.querySelectorAll('[data-pid]')].map((r,i)=>({id:r.dataset.pid,
-        name:r.querySelector('[data-name]').value.trim(), single:r.querySelector('[data-single]').checked, order:i})).filter(p=>p.name);
-      Store.save(); closeModal(); render();
+    root.querySelector('#psave').onclick=async()=>{
+      const rows = [...list.querySelectorAll('[data-pid]')].map((r,i)=>({id:r.dataset.pid,
+        name:r.querySelector('[data-name]').value.trim(), single:r.querySelector('[data-single]').checked, sort_order:i})).filter(p=>p.name);
+      const removed = D().positions.filter(p=>!rows.some(r=>r.id===p.id)).map(p=>p.id);
+      if(removed.length) await q(sb.from('jw_positions').delete().in('id', removed));
+      if(rows.length) await q(sb.from('jw_positions').upsert(rows));
+      closeModal(); Store.refresh();
     };
   });
 }
@@ -588,13 +713,13 @@ function Events(){
   return `
   <div class="head"><h1>행사</h1>
     <div class="row"><select class="input" id="ey">${years.map(y=>`<option ${y===ui.eventYear?'selected':''}>${y}</option>`).join('')}</select>
-    <button class="btn pri" id="eadd">+ 행사 등록</button></div></div>
+    ${can.officer()?'<button class="btn pri" id="eadd">+ 행사 등록</button>':''}</div></div>
   ${list.length?`<div class="grid">${list.map(e=>`
     <div class="panel">
       <div class="row" style="justify-content:space-between">
         <div><span class="tag">${esc(e.category||'행사')}</span> <b style="font-size:17px">${esc(e.title)}</b>
           <div class="muted" style="font-size:13px;margin-top:4px">${e.date.replace(/-/g,'.')} ${e.location?'· '+esc(e.location):''} ${e.host?'· 주관 '+esc(member(e.host)?.name||''):''} ${e.attendees?'· 참석 '+esc(e.attendees)+'명':''}</div></div>
-        <div class="row"><button class="btn sm" data-dup="${e.id}">내년으로 복제</button><button class="btn sm" data-eedit="${e.id}">수정</button></div>
+        ${can.officer()?`<div class="row"><button class="btn sm" data-dup="${e.id}">내년으로 복제</button><button class="btn sm" data-eedit="${e.id}">수정</button></div>`:''}
       </div>
       ${e.text?`<div style="margin-top:10px"><div class="row" style="justify-content:space-between"><b>문구·공지</b><button class="btn sm" data-copy="${e.id}">복사</button></div><pre class="text">${esc(e.text)}</pre></div>`:''}
       ${e.docs?.length?`<div style="margin-top:6px"><b>서류·자료</b><ul style="margin:6px 0 0;padding-left:18px">${e.docs.map(d=>`<li><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.name||d.url)}</a></li>`).join('')}</ul></div>`:''}
@@ -604,7 +729,7 @@ function Events(){
 }
 function eventForm(e){
   const isNew = !e;
-  e = e || {id:uid(), title:'', category:'월례회', date:today(), location:'', host:'', attendees:'', text:'', docs:[], memo:''};
+  e = e || {id:'', title:'', category:'월례회', date:today(), location:'', host:'', attendees:'', text:'', docs:[], memo:''};
   const ms = activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
   openModal(`<h2>${isNew?'행사 등록':'행사 수정'}</h2>
     <form class="form" id="ef">
@@ -624,20 +749,21 @@ function eventForm(e){
         <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
       </div>
     </form>`, root=>{
-    root.querySelector('#ef').onsubmit = ev=>{
+    root.querySelector('#ef').onsubmit = async ev=>{
       ev.preventDefault();
       const d = Object.fromEntries(new FormData(ev.target));
       d.docs = d.docs.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
         const [a,b] = l.includes('|') ? l.split('|').map(s=>s.trim()) : ['', l];
         return {name:a||b, url:b};
       });
-      Object.assign(e, d);
-      if(isNew) D().events.push(e);
-      ui.eventYear = e.date.slice(0,4);
-      Store.save(); closeModal(); render();
+      const next = {...e, ...d};
+      if(isNew) await q(sb.from('jw_events').insert(toEvent(next)));
+      else await q(sb.from('jw_events').update(toEvent(next)).eq('id', e.id));
+      ui.eventYear = next.date.slice(0,4);
+      closeModal(); Store.refresh();
     };
     const del = root.querySelector('#edel');
-    if(del) del.onclick=()=>{ if(confirm('행사를 삭제할까요?')){ D().events = D().events.filter(x=>x.id!==e.id); Store.save(); closeModal(); render(); } };
+    if(del) del.onclick=async()=>{ if(confirm('행사를 삭제할까요?')){ await q(sb.from('jw_events').delete().eq('id', e.id)); closeModal(); Store.refresh(); } };
   });
 }
 
@@ -647,16 +773,16 @@ function History(){
   const byYear = {};
   items.forEach(h=>(byYear[h.date.slice(0,4)] ||= []).push(h));
   return `
-  <div class="head"><h1>연혁·히스토리</h1><button class="btn pri" id="hadd">+ 연혁 추가</button></div>
+  <div class="head"><h1>연혁·히스토리</h1>${can.officer()?'<button class="btn pri" id="hadd">+ 연혁 추가</button>':''}</div>
   ${items.length?Object.keys(byYear).sort().reverse().map(y=>`<div class="panel" style="margin-bottom:14px"><h2>${y}</h2><div class="tl">
     ${byYear[y].map(h=>`<div class="it"><div class="row" style="justify-content:space-between"><div><span class="muted">${h.date.slice(5).replace('-','.')}</span> <b>${esc(h.title)}</b>
-      ${h.source==='officer'?'<span class="tag gray">자동</span>':''}</div><button class="btn sm" data-hedit="${h.id}">수정</button></div>
+      ${h.source==='officer'?'<span class="tag gray">자동</span>':''}</div>${can.officer()?`<button class="btn sm" data-hedit="${h.id}">수정</button>`:''}</div>
       ${h.desc?`<div class="muted" style="margin-top:4px">${esc(h.desc)}</div>`:''}</div>`).join('')}
   </div></div>`).join('')
   :'<div class="empty">창립, 회장 취임, 주요 행사 등을 기록하세요.<br>임원 직책을 지정하면 취임 기록이 자동으로 추가됩니다.</div>'}`;
 }
 function historyForm(h){
-  const isNew = !h; h = h || {id:uid(), date:today(), title:'', desc:'', source:'manual'};
+  const isNew = !h; h = h || {id:'', date:today(), title:'', desc:'', source:'manual'};
   openModal(`<h2>${isNew?'연혁 추가':'연혁 수정'}</h2>
     <form class="form" id="hf">
       <label>일자<input class="input" type="date" name="date" value="${h.date}" required></label>
@@ -666,12 +792,15 @@ function historyForm(h){
         <div>${isNew?'':'<button type="button" class="btn danger" id="hdel">삭제</button>'}</div>
         <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
       </div></form>`, root=>{
-    root.querySelector('#hf').onsubmit = ev=>{
-      ev.preventDefault(); Object.assign(h, Object.fromEntries(new FormData(ev.target)));
-      if(isNew) D().history.push(h); Store.save(); closeModal(); render();
+    root.querySelector('#hf').onsubmit = async ev=>{
+      ev.preventDefault();
+      const next = {...h, ...Object.fromEntries(new FormData(ev.target))};
+      if(isNew) await q(sb.from('jw_history').insert(toHistory(next)));
+      else await q(sb.from('jw_history').update(toHistory(next)).eq('id', h.id));
+      closeModal(); Store.refresh();
     };
     const del = root.querySelector('#hdel');
-    if(del) del.onclick=()=>{ D().history = D().history.filter(x=>x.id!==h.id); Store.save(); closeModal(); render(); };
+    if(del) del.onclick=async()=>{ await q(sb.from('jw_history').delete().eq('id', h.id)); closeModal(); Store.refresh(); };
   });
 }
 
@@ -686,12 +815,14 @@ function Settings(){
 2026-08,박홍진,김상원,영진종합유통,위생용품,1981,</pre>
       <div class="row"><input type="file" id="csv" accept=".csv,text/csv" class="input"><button class="btn sm" id="tpl">양식 받기</button></div>
     </div>
-    <div class="panel"><h2>데이터 백업·복원</h2>
-      <p class="muted">현재 데이터는 이 브라우저에 저장됩니다. 정기적으로 백업 파일을 받아 구글드라이브 등에 보관하세요.</p>
-      <div class="row"><button class="btn pri" id="bak">백업 파일 받기 (JSON)</button>
-        <label class="btn">복원하기<input type="file" id="restore" accept=".json" hidden></label></div>
+    <div class="panel"><h2>회원 로그인 허용</h2>
+      <p class="muted">회원 상세 → <b>정보 수정</b>에서 <b>로그인 이메일</b>을 입력하면 그 회원이 이메일 링크로 로그인할 수 있습니다.
+      이메일이 없는 회원은 로그인할 수 없습니다.</p>
+      <p class="muted">현재 로그인 가능 회원: <b>${D().members.filter(m=>m.email && m.status!=='inactive').length}</b>명 / 전체 ${D().members.length}명</p>
       <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-      <button class="btn danger" id="reset">초기 데이터로 되돌리기</button>
+      <h2>데이터 백업</h2>
+      <p class="muted">데이터는 Supabase에 저장되고 매일 자동 백업됩니다. 별도 보관용 파일이 필요하면 받아두세요.</p>
+      <button class="btn" id="bak">백업 파일 받기 (JSON)</button>
     </div>
   </div>
   <div class="panel" style="margin-top:16px"><h2>현황</h2>
@@ -714,8 +845,8 @@ const bind = {
     $('#type').onchange = e=>{ ui.type=e.target.value; refresh(); };
     $('#year').onchange = e=>{ ui.year=e.target.value; refresh(); };
     document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ ui.view=b.dataset.v; render(); });
-    $('#add').onclick = ()=>memberForm();
-    $('#exp').onclick = ()=>{
+    if($('#add')) $('#add').onclick = ()=>memberForm();
+    if($('#exp')) $('#exp').onclick = ()=>{
       const head = ['입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','추천인','추천횟수'];
       const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.joined||'기존회원', m.name, t?'임원':'일반회원',
         t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address,
@@ -723,33 +854,36 @@ const bind = {
       download(`정우회_회원명부_${today()}.csv`, '﻿'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv');
     };
   },
-  member(id){ const m = member(id); if(m) $('#edit').onclick = ()=>memberForm(m); },
+  member(id){ const m = member(id); if(m && $('#edit')) $('#edit').onclick = ()=>memberForm(m); },
   officers(){
+    if(!can.admin()) return;
     $('#assign').onclick = assignForm;
     $('#pos').onclick = positionsForm;
-    document.querySelectorAll('[data-end]').forEach(b=>b.onclick=()=>{
-      const t = D().terms.find(x=>x.id===b.dataset.end);
+    document.querySelectorAll('[data-end]').forEach(b=>b.onclick=async()=>{
       const date = prompt('임기 종료일 (YYYY-MM-DD)', today());
-      if(!date) return; endTerm(t, date); Store.save(); render();
+      if(!date) return;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast('날짜 형식은 YYYY-MM-DD 입니다.');
+      await q(sb.from('jw_terms').update({ended_on:date}).eq('id', b.dataset.end)); Store.refresh();
     });
   },
   events(){
     $('#ey').onchange = e=>{ ui.eventYear=e.target.value; render(); };
-    $('#eadd').onclick = ()=>eventForm();
+    if($('#eadd')) $('#eadd').onclick = ()=>eventForm();
     document.querySelectorAll('[data-eedit]').forEach(b=>b.onclick=()=>eventForm(D().events.find(e=>e.id===b.dataset.eedit)));
     document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{
       try{ await navigator.clipboard.writeText(D().events.find(e=>e.id===b.dataset.copy).text); toast('문구를 복사했습니다.'); }
       catch(e){ toast('복사에 실패했습니다. 직접 선택해 복사해주세요.'); }
     });
-    document.querySelectorAll('[data-dup]').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('[data-dup]').forEach(b=>b.onclick=async()=>{
       const src = D().events.find(e=>e.id===b.dataset.dup);
       const y = +src.date.slice(0,4);
-      const copy = {...src, id:uid(), date:(y+1)+src.date.slice(4), title:src.title.replace(String(y), String(y+1)), docs:[], attendees:''};
-      D().events.push(copy); ui.eventYear=String(y+1); Store.save(); toast(`${y+1}년으로 복제했습니다. 날짜를 확인해주세요.`); render();
+      const copy = {...src, date:(y+1)+src.date.slice(4), title:src.title.replace(String(y), String(y+1)), docs:[], attendees:''};
+      await q(sb.from('jw_events').insert(toEvent(copy)));
+      ui.eventYear = String(y+1); toast(`${y+1}년으로 복제했습니다. 날짜를 확인해주세요.`); Store.refresh();
     });
   },
   history(){
-    $('#hadd').onclick = ()=>historyForm();
+    if($('#hadd')) $('#hadd').onclick = ()=>historyForm();
     document.querySelectorAll('[data-hedit]').forEach(b=>b.onclick=()=>historyForm(D().history.find(h=>h.id===b.dataset.hedit)));
   },
   settings(){
@@ -763,24 +897,15 @@ const bind = {
       if(ix.name<0) return toast('"회원명" 열을 찾을 수 없습니다.');
       const data = rows.map(r=>{ const o={}; for(const k in ix) o[k] = ix[k]>=0 ? (r[ix[k]]||'').trim() : '';
         o.joined = o.joined.replace(/[.\/]/g,'-').replace(/-$/,'').replace(/^(\d{4})-(\d)$/,'$1-0$2'); return o; });
-      const res = importRows(D(), data); Store.save();
-      toast(`신규 ${res.added}명, 갱신 ${res.updated}명`); render();
+      try{ const res = await importRows(data); toast(`${res.total}행 처리 · 신규 ${res.added}명 생성`); }
+      finally{ Store.refresh(); }
     };
     $('#tpl').onclick = ()=>download('정우회_회원등록양식.csv', '﻿입회월,회원명,추천인,회사,제품,출생연도,연락처\n', 'text/csv');
     $('#bak').onclick = ()=>download(`정우회_백업_${today()}.json`, JSON.stringify(D(),null,1), 'application/json');
-    $('#restore').onchange = async e=>{
-      const f = e.target.files[0]; if(!f) return;
-      try{ const d = JSON.parse(await f.text()); if(!Array.isArray(d.members)) throw 0;
-        if(!confirm('현재 데이터를 백업 파일로 덮어쓸까요?')) return;
-        Store.db = Object.assign({members:[],positions:[],terms:[],events:[],history:[]}, d); Store.save(); toast('복원했습니다.'); render();
-      }catch(err){ toast('올바른 백업 파일이 아닙니다.'); }
-    };
-    $('#reset').onclick = ()=>{ if(confirm('모든 데이터를 지우고 초기 회원명부로 되돌릴까요? (먼저 백업을 권장합니다)')){ Store.db = seedData(); Store.save(); render(); } };
   },
 };
 
-Store.load();
-render();
+/* 시작: 로그인 상태는 sb.auth.onAuthStateChange 의 INITIAL_SESSION 에서 처리 */
 </script>
 </body>
 </html>
