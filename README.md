@@ -11,3 +11,7 @@
 
 - `public/index.html` — 고객용 버전 (운영 대시보드·사업 구조 탭 제외). `mvp/index.html`을 고친 뒤 `python3 build-public.py`로 다시 생성한다.
 - Render 정적 사이트로 배포되며, 이 브랜치에 커밋하면 자동 재배포된다.
+
+## 플랫폼 디자인 (NEW BEAUTY NEXUS)
+
+- `platform/index.html` — 대표 피드백을 반영한 비즈니스 솔루션 플랫폼 (5개 고객 입구, 서비스 20, 창업 플래너, 파트너·브랜드, 해외 바이어, 전환·양도, 상담 신청). `build-public.py`가 `public/platform/`으로 복사해 함께 배포한다.

@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="뷰티 비즈니스의 시작부터 전환까지, 필요한 사람·제품·기술·정보를 연결합니다.">
+<title>NEW BEAUTY NEXUS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Gothic+A1:wght@500;700;800;900&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 브랜드 상단바 + 고객군 5개 입구가 모든 화면의 출발점. 한 화면 = 한 고객의 한 가지 일 */
+:root {
+  --bg: #f4f4f6;
+  --surface: #ffffff;
+  --sunken: #ebebef;
+  --ink: #131318;
+  --ink-2: #55555f;
+  --line: #dcdce2;
+  --gold: #9a7529;        /* 브랜드 골드 (명함) */
+  --gold-soft: #f1e8d4;
+  --red: #c21f33;         /* 배너 레드: 입구·강조에만 */
+  --red-soft: #f8e1e4;
+  --band: #121216;        /* 브랜드 블랙 밴드 */
+  --band-ink: #f2efe7;
+  --band-gold: #d6b062;
+  --ok: #2c7a45;
+  --f-mark: "Marcellus", "Gothic A1", serif;
+  --f-display: "Gothic A1", "Noto Sans KR", system-ui, sans-serif;
+  --f-body: "Noto Sans KR", "Noto Sans SC", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0c0c0f; --surface: #16161b; --sunken: #1e1e25; --ink: #ecebe6; --ink-2: #a6a5ad; --line: #2b2b33;
+  --gold: #d6b062; --gold-soft: #2c2516; --red: #f0697b; --red-soft: #3a1a20; --band: #050507; --band-ink: #f2efe7; --band-gold: #d6b062;
+  --ok: #7fcb95; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0c0c0f; --surface: #16161b; --sunken: #1e1e25; --ink: #ecebe6; --ink-2: #a6a5ad; --line: #2b2b33;
+  --gold: #d6b062; --gold-soft: #2c2516; --red: #f0697b; --red-soft: #3a1a20; --band: #050507; --band-ink: #f2efe7; --band-gold: #d6b062;
+  --ok: #7fcb95; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band); }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.25; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 4.6vw, 46px); font-weight: 900; letter-spacing: -0.025em; }
+h2 { font-size: clamp(21px, 2.6vw, 26px); font-weight: 800; letter-spacing: -0.015em; }
+h3 { font-size: 16px; font-weight: 800; }
+p { margin: 0; }
+a { color: inherit; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.muted { color: var(--ink-2); }
+.eyebrow { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* 상단바 */
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--band); color: var(--band-ink); }
+.bar { display: flex; align-items: center; gap: 18px; padding-block: 12px; flex-wrap: wrap; }
+.mark { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.mark svg { flex: none; }
+.mark b { font-family: var(--f-mark); font-weight: 400; font-size: 18px; letter-spacing: .06em; color: var(--band-gold); line-height: 1; }
+.mark small { display: block; font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .18em; color: var(--band-ink); opacity: .7; margin-top: 3px; }
+nav.tabs { display: flex; gap: 2px; overflow-x: auto; margin-left: auto; scrollbar-width: none; }
+nav.tabs a { white-space: nowrap; text-decoration: none; color: var(--band-ink); opacity: .75; padding: 7px 12px; border-radius: 999px; font-size: 14px; font-weight: 500; }
+nav.tabs a:hover { opacity: 1; background: rgba(255,255,255,.08); }
+nav.tabs a[aria-current="page"] { opacity: 1; background: var(--band-gold); color: var(--band); font-weight: 700; }
+nav.tabs a.cta { border: 1px solid var(--band-gold); color: var(--band-gold); opacity: 1; }
+nav.tabs a.cta[aria-current="page"] { color: var(--band); }
+
+main { padding-block: 32px 72px; }
+section.view { display: grid; gap: 28px; }
+.head { display: grid; gap: 6px; max-width: 46em; }
+
+/* 공통 */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; min-width: 0; }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-weight: 700; border: 0; border-radius: 999px; padding: 11px 20px; cursor: pointer; background: var(--ink); color: var(--bg); text-decoration: none; }
+.btn.gold { background: var(--gold); color: var(--surface); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, .chip input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; background: var(--sunken); color: var(--ink-2); white-space: nowrap; }
+.pill.gold { background: var(--gold-soft); color: var(--gold); }
+.pill.red { background: var(--red-soft); color: var(--red); }
+.pill.ok { background: var(--sunken); color: var(--ok); }
+label.f { display: grid; gap: 6px; font-weight: 500; font-size: 14px; }
+input[type=text], input[type=tel], select, textarea { font: inherit; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; }
+textarea { min-height: 84px; resize: vertical; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; margin: 0; }
+.chip span { display: inline-block; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; }
+.chip input:checked + span { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 700; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.note { font-size: 12.5px; background: var(--sunken); border-radius: 8px; padding: 8px 12px; color: var(--ink-2); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; z-index: 20; }
+
+/* 홈 */
+.hero { background: var(--band); color: var(--band-ink); border-radius: 18px; padding: clamp(24px, 5vw, 48px); display: grid; grid-template-columns: 1.25fr 1fr; gap: 32px; align-items: center; position: relative; overflow: hidden; }
+.hero::after { content: ""; position: absolute; right: -120px; top: -120px; width: 420px; height: 420px; border-radius: 50%; border: 1px solid var(--band-gold); opacity: .35; pointer-events: none; }
+.hero::before { content: ""; position: absolute; right: -60px; top: -60px; width: 300px; height: 300px; border-radius: 50%; border: 1px solid var(--band-gold); opacity: .2; pointer-events: none; }
+.hero .eyebrow { color: var(--band-gold); }
+.hero h1 em { font-style: normal; color: var(--band-gold); }
+.hero .lead { font-size: 16.5px; opacity: .82; margin-top: 14px; max-width: 32em; }
+.hero .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.hero .btn.ghost { color: var(--band-ink); border-color: rgba(255,255,255,.3); }
+.hero .btn.gold { background: var(--band-gold); color: var(--band); }
+.connect { display: grid; gap: 8px; position: relative; z-index: 1; }
+.connect div { display: grid; grid-template-columns: 76px 1fr; gap: 12px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+.connect div:last-child { border-bottom: 0; }
+.connect b { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .12em; color: var(--band-gold); }
+.connect span { font-size: 14.5px; }
+
+.who { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.who a { text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.who a:hover { border-color: var(--gold); }
+.who .k { font-family: var(--f-mono); font-size: 11px; color: var(--gold); letter-spacing: .08em; }
+.who h3 { font-size: 15.5px; }
+.who p { font-size: 13px; color: var(--ink-2); }
+.who .go { font-size: 13px; font-weight: 700; margin-top: auto; }
+
+.life { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--surface); }
+.life div { padding: 16px; border-left: 1px solid var(--line); display: grid; gap: 4px; align-content: start; }
+.life div:first-child { border-left: 0; }
+.life b { font-family: var(--f-display); font-weight: 800; font-size: 17px; }
+.life small { font-family: var(--f-mono); font-size: 11px; color: var(--gold); letter-spacing: .08em; }
+.life p { font-size: 13.5px; color: var(--ink-2); }
+
+.how { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 0; margin: 0; counter-reset: h; }
+.how li { list-style: none; counter-increment: h; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 6px; align-content: start; }
+.how li::before { content: "0" counter(h); font-family: var(--f-mark); font-size: 26px; color: var(--gold); line-height: 1; }
+.how p { font-size: 13.5px; color: var(--ink-2); }
+
+.promise { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: start; background: var(--gold-soft); border-radius: var(--r); padding: 24px; }
+.promise ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.promise li::marker { color: var(--gold); font-weight: 800; }
+.quote { font-family: var(--f-display); font-weight: 800; font-size: clamp(18px, 2.2vw, 22px); line-height: 1.45; text-wrap: balance; }
+
+.case { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.case > div { padding: 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.case > div:first-child { background: var(--sunken); }
+.case > div:last-child { background: var(--surface); border-left: 1px solid var(--line); }
+.case ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+
+/* 서비스 카탈로그 */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.svc-group { display: grid; gap: 12px; }
+.svc-group > header { position: static; background: none; color: var(--ink); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.svc-group > header b { font-family: var(--f-mark); font-size: 22px; color: var(--gold); font-weight: 400; }
+.svc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.svc .top { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+.svc .no { font-family: var(--f-mono); font-size: 12px; color: var(--gold); }
+.svc dl { margin: 0; display: grid; gap: 6px; font-size: 13.5px; }
+.svc dl div { display: grid; grid-template-columns: 64px 1fr; gap: 8px; }
+.svc dt { color: var(--ink-2); font-size: 12px; padding-top: 1px; }
+.svc dd { margin: 0; }
+
+/* 창업 플래너 */
+.planner { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+.bars { display: grid; gap: 10px; }
+.barrow { display: grid; grid-template-columns: 112px 1fr 92px; gap: 10px; align-items: center; font-size: 14px; }
+.barrow .track { height: 12px; background: var(--sunken); border-radius: 999px; overflow: hidden; }
+.barrow .fill { height: 100%; background: var(--gold); border-radius: 999px; }
+.barrow .amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+.total b { font-family: var(--f-display); font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 14px; }
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--ink-2); font-weight: 700; background: var(--sunken); }
+tr:last-child td { border-bottom: 0; }
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.kpi .v { font-family: var(--f-display); font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 13px; color: var(--ink-2); }
+
+/* 파트너 · 글로벌 · 전환 */
+.net { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.net div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 4px; }
+.net b { font-family: var(--f-display); font-weight: 800; }
+.net small { color: var(--ink-2); font-size: 13px; }
+.zh { font-family: "Noto Sans SC", var(--f-body); }
+.bil { display: grid; gap: 2px; }
+.bil .zh { font-size: 13px; color: var(--ink-2); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .top { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+.steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14.5px; }
+.steps li::marker { color: var(--gold); font-weight: 700; font-family: var(--f-mono); }
+
+footer.site { border-top: 1px solid var(--line); padding-block: 24px 40px; color: var(--ink-2); font-size: 13px; }
+footer.site .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold); letter-spacing: .06em; }
+
+@media (max-width: 900px) {
+  .who { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .how, .life { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .life div:nth-child(3) { border-left: 0; }
+  .life div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .planner { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .hero, .promise, .case { grid-template-columns: 1fr; }
+  .case > div:last-child { border-left: 0; border-top: 1px solid var(--line); }
+  nav.tabs { margin-left: 0; width: 100%; }
+  .barrow { grid-template-columns: 84px 1fr 80px; font-size: 13px; }
+}
+@media (max-width: 460px) {
+  .who, .how, .life { grid-template-columns: 1fr; }
+  .life div { border-left: 0 !important; border-top: 1px solid var(--line); }
+  .life div:first-child { border-top: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .barrow .fill { transition: width .35s ease; }
+  .who a, .svc { transition: border-color .15s; }
+}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a class="mark" href="#home" aria-label="NEW BEAUTY NEXUS 홈">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path d="M5 26V4l20 22V4" fill="none" stroke="var(--band-gold)" stroke-width="3" stroke-linejoin="round"/></svg>
+      <span><b>NEW BEAUTY NEXUS</b><small>BEAUTY BUSINESS CONNECTOR</small></span>
+    </a>
+    <nav class="tabs" aria-label="화면 전환">
+      <a href="#home">홈</a>
+      <a href="#services">서비스 20</a>
+      <a href="#plan">창업 플래너</a>
+      <a href="#partners">파트너·브랜드</a>
+      <a href="#global">해외 바이어</a>
+      <a href="#transition">전환·양도</a>
+      <a href="#consult" class="cta">상담 신청</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ 홈 ============ -->
+<section class="view" id="v-home">
+  <div class="hero">
+    <div>
+      <p class="eyebrow">Beauty Business Solution · K-Beauty Beyond Borders</p>
+      <h1>뷰티 비즈니스의<br>시작부터 전환까지,<br><em>필요한 연결</em>을 설계합니다</h1>
+      <p class="lead">창업·매출 확대·판로 개척·해외 진출·사업 전환. 지금 단계에 필요한 사람, 제품, 기술, 정보를 검증된 파트너 중에서 비교해 연결해 드립니다.</p>
+      <div class="cta">
+        <a class="btn gold" href="#consult">무료 상담 신청</a>
+        <a class="btn ghost" href="#plan">창업 비용 미리 계산하기</a>
+      </div>
+    </div>
+    <div class="connect" aria-label="연결하는 네 가지">
+      <div><b>PEOPLE</b><span>교육기관 · 원장님 · 바이어 · 인수 희망자</span></div>
+      <div><b>PRODUCT</b><span>화장품 제조사 · 브랜드 · 장비 공급사</span></div>
+      <div><b>SKILL</b><span>한국 뷰티 기술 교육 · K-두피 리추얼</span></div>
+      <div><b>INFO</b><span>창업 비용 · 상권 · 운영 진단 · 수출 절차</span></div>
+    </div>
+  </div>
+
+  <div class="grid" style="gap:14px">
+    <div class="head"><p class="eyebrow">지금 어떤 상황이세요?</p><h2>다섯 가지 입구에서 시작합니다</h2></div>
+    <div class="who" id="who"></div>
+  </div>
+
+  <div class="grid" style="gap:14px">
+    <div class="head"><p class="eyebrow">Business Lifecycle</p><h2>한 번 만나면, 다음 단계까지 함께합니다</h2></div>
+    <div class="life">
+      <div><small>START</small><b>시작</b><p>창업 방향 · 비용 설계 · 교육 · 장비 · 인테리어 연결</p></div>
+      <div><small>GROW</small><b>성장</b><p>업종 추가 · 신규 기술·제품 도입 · 운영 진단</p></div>
+      <div><small>EXPAND</small><b>확장</b><p>국내외 판로 · 해외 바이어 · 라이선스</p></div>
+      <div><small>SHIFT</small><b>전환</b><p>업종 전환 · 샵인샵 · 양도양수 · 재고 정리</p></div>
+    </div>
+  </div>
+
+  <div class="grid" style="gap:14px">
+    <div class="head"><p class="eyebrow">How it works</p><h2>진행 방식</h2></div>
+    <ol class="how">
+      <li><h3>무료 상담 30분</h3><p>현재 상황과 목표, 예산을 듣고 방향을 잡습니다.</p></li>
+      <li><h3>맞춤 설계</h3><p>필요한 항목과 비용, 순서를 한 장의 계획서로 정리합니다.</p></li>
+      <li><h3>비교 연결</h3><p>항목마다 검증된 파트너 2곳 이상을 조건과 함께 비교해 드립니다.</p></li>
+      <li><h3>사후 관리</h3><p>오픈·계약 후 30·60·90일에 점검하고 다음 단계를 제안합니다.</p></li>
+    </ol>
+  </div>
+
+  <div class="promise">
+    <div class="grid" style="gap:10px">
+      <p class="eyebrow">Transparency Policy</p>
+      <p class="quote">"무엇부터 시작해야 할지 모를 때, 믿을 만한 전문가와 불확실성을 줄이는 일"</p>
+      <p class="muted">고객이 비용을 내는 이유입니다. 그래서 연결 수수료를 숨기지 않습니다.</p>
+    </div>
+    <ol>
+      <li><strong>누가 비용을 내는지 표시합니다.</strong> 모든 서비스에 "고객 부담"과 "파트너 부담(고객 추가 비용 없음)"을 구분해 적습니다.</li>
+      <li><strong>수수료를 받는 연결은 미리 알립니다.</strong> 계획서에 해당 파트너와 수수료 여부를 함께 적습니다.</li>
+      <li><strong>항상 2곳 이상 비교안을 드립니다.</strong> 수수료가 없는 업체가 조건이 더 좋으면 그쪽을 추천합니다.</li>
+      <li><strong>결정은 고객이 합니다.</strong> 추천을 따르지 않아도 컨설팅 결과물은 그대로 드립니다.</li>
+    </ol>
+  </div>
+
+  <div class="grid" style="gap:14px">
+    <div class="head"><p class="eyebrow">Case · 예시</p><h2>5,000만원으로 피부관리샵을 창업한다면</h2></div>
+    <div class="case">
+      <div>
+        <span class="pill">혼자 준비할 때</span>
+        <ul>
+          <li>교육기관·장비·화장품·인테리어·간판·마케팅 업체를 각각 검색하고 미팅</li>
+          <li>업체마다 조건이 달라 비교 기준을 세우기 어려움</li>
+          <li>비용 배분 실수로 오픈 직후 운영자금 부족</li>
+        </ul>
+      </div>
+      <div>
+        <span class="pill gold">뉴뷰티넥서스와 함께할 때</span>
+        <ul>
+          <li>창업 방향 상담 → 예산 배분표 → 항목별 비교안 2곳 이상</li>
+          <li>교육기관, 장비 공급사, 화장품 공급사, 인테리어 업체를 한 번에 연결</li>
+          <li>운영 예비비를 먼저 떼어 두는 예산 설계</li>
+        </ul>
+        <div><a class="btn" href="#plan">내 조건으로 계산해 보기</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 서비스 20 ============ -->
+<section class="view" id="v-services" hidden>
+  <div class="head">
+    <p class="eyebrow">Services · 20</p>
+    <h2>뉴뷰티넥서스가 제공하는 20가지 서비스</h2>
+    <p class="muted">서비스마다 고객이 얻는 이익과, 누가 비용을 내는지를 함께 적었습니다. 비용은 상담 후 견적으로 안내합니다.</p>
+  </div>
+  <div class="filters chips" id="svc-filter"></div>
+  <div class="grid" style="gap:28px" id="svc-list"></div>
+</section>
+
+<!-- ============ 창업 플래너 ============ -->
+<section class="view" id="v-plan" hidden>
+  <div class="head">
+    <p class="eyebrow">Startup Planner</p>
+    <h2>창업 플래너</h2>
+    <p class="muted">예산과 방식을 넣으면 비용 배분과, 항목마다 연결할 파트너 유형이 나옵니다. 배분 비율은 업계 사례를 참고한 출발점이며 상담에서 실제 견적으로 바꿉니다.</p>
+  </div>
+  <div class="planner">
+    <form class="panel grid" id="pf" style="gap:18px" onsubmit="return false">
+      <label class="f" for="pf-budget">총 창업 예산 (만원)<input type="text" inputmode="numeric" id="pf-budget" value="5000"></label>
+      <fieldset><legend>업종</legend><div class="chips" id="pf-field"></div></fieldset>
+      <fieldset><legend>시작 방식</legend><div class="chips" id="pf-mode"></div></fieldset>
+      <label class="f" for="pf-region">지역<select id="pf-region"></select></label>
+      <p class="note">샵인샵·인수는 보증금과 인테리어 부담이 줄어드는 대신 예비비와 마케팅 비중을 높게 잡았습니다.</p>
+    </form>
+    <div class="grid" style="gap:16px">
+      <div class="panel grid" style="gap:12px">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline"><h3 id="pf-title"></h3><span class="pill gold" id="pf-badge"></span></div>
+        <div class="bars" id="pf-bars"></div>
+        <div class="total"><span class="muted">합계</span><b id="pf-total"></b></div>
+      </div>
+      <div class="compare" id="pf-kpi"></div>
+    </div>
+  </div>
+  <div class="grid" style="gap:10px">
+    <h3>항목별 연결 계획과 수수료 공개</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>항목</th><th>연결할 파트너</th><th>비교안</th><th>고객이 얻는 것</th><th>뉴뷰티넥서스 수익</th></tr></thead>
+        <tbody id="pf-rows"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn gold" href="#consult" id="pf-cta">이 계획으로 상담 신청</a><a class="btn ghost" href="#transition">샵인샵·인수 매물 보기</a></div>
+  </div>
+</section>
+
+<!-- ============ 파트너·브랜드 ============ -->
+<section class="view" id="v-partners" hidden>
+  <div class="head">
+    <p class="eyebrow">Partner Network</p>
+    <h2>파트너 · 브랜드</h2>
+    <p class="muted">고객에게 소개되는 모든 파트너는 같은 기준으로 검증합니다. 화장품 제조사·브랜드라면 국내 샵 판로와 해외 바이어를 함께 연결해 드립니다.</p>
+  </div>
+  <div class="net">
+    <div><b>뷰티 기술 교육기관</b><small>피부·두피·바디·왁싱 아카데미, 국가자격 과정</small></div>
+    <div><b>장비 공급사</b><small>피부·두피 관리 장비, 베드·소모품</small></div>
+    <div><b>화장품 제조사·브랜드</b><small>전문가용 라인, OEM·ODM, 인디 브랜드</small></div>
+    <div><b>인테리어·간판</b><small>소형 샵 전문 시공, 간판·사인물</small></div>
+    <div><b>마케팅·예약</b><small>플레이스·SNS 운영, 예약·CRM 세팅</small></div>
+    <div><b>해외 바이어·에이전트</b><small>중국·동남아 수입사, 현지 창업 파트너</small></div>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="panel grid" style="gap:10px">
+      <h3>파트너 검증 기준</h3>
+      <ul class="steps">
+        <li>사업자·인허가 확인 (화장품책임판매업, 피부미용업 신고, 교육기관 등록 등)</li>
+        <li>대표 또는 담당자 직접 미팅, 제품·교육은 실사용·체험</li>
+        <li>가격표와 계약 조건 공개 동의</li>
+        <li>고객 불만 48시간 내 응대, 분기별 고객 평가 공유</li>
+        <li>연결 수수료 조건 서면 계약 · 고객에게 공개 동의</li>
+      </ul>
+    </div>
+    <form class="panel grid" id="partner-form" style="gap:12px">
+      <h3>파트너 · 브랜드 등록 신청</h3>
+      <label class="f" for="pa-kind">유형<select id="pa-kind"><option>화장품 제조사·브랜드</option><option>교육기관</option><option>장비 공급사</option><option>인테리어·간판</option><option>마케팅·예약</option></select></label>
+      <label class="f" for="pa-name">회사명<input type="text" id="pa-name" required placeholder="회사명"></label>
+      <fieldset><legend style="font-size:14px">원하는 연결 (여러 개 선택)</legend><div class="chips" id="pa-want"></div></fieldset>
+      <div><button class="btn" type="submit">등록 신청</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ 해외 바이어 ============ -->
+<section class="view" id="v-global" hidden>
+  <div class="head">
+    <p class="eyebrow">Global Buyers · 海外买家</p>
+    <h2 class="bil">한국 뷰티 제품과 기술을 찾는 해외 바이어<span class="zh">寻找韩国美容产品与技术的海外买家</span></h2>
+    <p class="muted">검증된 한국 제조사 소싱, 기술 연수 투어, 현지 창업 라이선스까지 한·중 이중언어로 진행합니다.</p>
+  </div>
+  <div class="grid g3">
+    <article class="card"><span class="pill gold" style="justify-self:start">SOURCING</span><h3 class="bil">한국 제품 소싱 대행<span class="zh">韩国产品采购代理</span></h3><p class="muted">요청 조건에 맞는 제조사·브랜드 후보와 샘플, 견적을 정리해 드립니다. 수출 등록(NMPA 등) 진행 여부를 함께 확인합니다.</p></article>
+    <article class="card"><span class="pill gold" style="justify-self:start">TRAINING TOUR</span><h3 class="bil">한국 뷰티 기술 연수 투어<span class="zh">韩国美容技术研修之旅</span></h3><p class="muted">교육기관 수강, 샵 견학, 공급사 미팅을 묶은 3–5일 일정입니다. 통역과 일정 조율을 포함합니다.</p></article>
+    <article class="card"><span class="pill gold" style="justify-self:start">LICENSE</span><h3 class="bil">현지 창업 · 라이선스 패키지<span class="zh">海外开店与授权方案</span></h3><p class="muted">K-두피 리추얼 등 검증된 프로그램을 매뉴얼·교육·제품 키트와 함께 현지 샵에 도입합니다.</p></article>
+  </div>
+  <form class="panel grid" id="buyer-form" style="gap:14px">
+    <h3 class="bil">소싱 · 연수 요청서<span class="zh">采购 / 研修需求表</span></h3>
+    <div class="grid g3">
+      <label class="f" for="by-country"><span class="bil">국가·도시<span class="zh">国家 / 城市</span></span><input type="text" id="by-country" required placeholder="예: 上海 / 상하이"></label>
+      <label class="f" for="by-need"><span class="bil">필요한 것<span class="zh">需求类型</span></span><select id="by-need"><option>제품 소싱 · 产品采购</option><option>기술 연수 · 技术研修</option><option>현지 창업 라이선스 · 开店授权</option></select></label>
+      <label class="f" for="by-qty"><span class="bil">예상 규모<span class="zh">预计规模</span></span><select id="by-qty"><option>테스트 주문 · 试单</option><option>정기 거래 · 长期合作</option><option>1–5명 연수 · 1–5人</option><option>6명 이상 연수 · 6人以上</option></select></label>
+    </div>
+    <label class="f" for="by-memo"><span class="bil">상세 요청<span class="zh">具体需求</span></span><textarea id="by-memo" placeholder="예: 敏感肌修护类精华，小批量试单 / 민감 피부 진정 앰플, 소량 테스트 주문"></textarea></label>
+    <div><button class="btn" type="submit">요청서 작성 · 提交</button></div>
+  </form>
+</section>
+
+<!-- ============ 전환·양도 ============ -->
+<section class="view" id="v-transition" hidden>
+  <div class="head">
+    <p class="eyebrow">Shift · 전환 · 양도 · 정리</p>
+    <h2>사업 전환 · 샵인샵 · 양도양수</h2>
+    <p class="muted">정리하는 원장님의 공간과 장비는 다음 창업자에게 비용을 줄인 출발점이 됩니다. 나가는 쪽과 들어오는 쪽을 함께 상담해 연결합니다.</p>
+  </div>
+  <div class="grid g3">
+    <article class="card"><h3>사업 전환 컨설팅</h3><p class="muted">정리할지, 업종을 바꿀지, 샵인샵으로 공간을 나눌지 숫자로 비교합니다.</p><span class="pill" style="justify-self:start">고객 부담 · 상담 후 견적</span></article>
+    <article class="card"><h3>샵인샵 · 양도양수 매칭</h3><p class="muted">공간을 내줄 샵, 자리를 찾는 창업자, 인수 희망자를 지역·업종 궁합으로 연결합니다.</p><span class="pill" style="justify-self:start">성사 시 성공보수</span></article>
+    <article class="card"><h3>장비 · 재고 재판매</h3><p class="muted">쓰던 장비와 남은 제품을 필요한 샵에 연결해 잔존 가치를 돌려받습니다.</p><span class="pill" style="justify-self:start">판매 시 재판매 수수료</span></article>
+  </div>
+  <div class="grid" style="gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h3>공간 매물 보드</h3><div class="chips" id="sp-filter"></div></div>
+    <p class="note">아래 매물은 예시입니다. 실제 매물은 상담 후 조건에 맞춰 안내드립니다. 상가 임대차·부동산 중개에 해당하는 부분은 공인중개사와 함께 진행하며, 샵인샵(전대)은 건물주 동의와 영업신고 가능 여부를 먼저 확인합니다.</p>
+    <div class="grid g3" id="sp-list"></div>
+  </div>
+</section>
+
+<!-- ============ 상담 신청 ============ -->
+<section class="view" id="v-consult" hidden>
+  <div class="head">
+    <p class="eyebrow">Free Consultation · 30 min</p>
+    <h2>무료 상담 신청</h2>
+    <p class="muted">어떤 상황인지 고르면 상담 전에 준비할 것을 알려 드립니다.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <form class="panel grid" id="cf" style="gap:16px">
+      <fieldset><legend>지금 상황</legend><div class="chips" id="cf-seg"></div></fieldset>
+      <div class="grid g2" style="gap:14px">
+        <label class="f" for="cf-name">이름<input type="text" id="cf-name" required placeholder="홍길동"></label>
+        <label class="f" for="cf-phone">연락처<input type="tel" id="cf-phone" required placeholder="010-0000-0000"></label>
+      </div>
+      <label class="f" for="cf-ch">편한 연락 방식<select id="cf-ch"><option>카카오톡</option><option>전화</option><option>위챗 · WeChat</option><option>이메일</option></select></label>
+      <label class="f" for="cf-memo">상황 메모 (선택)<textarea id="cf-memo"></textarea></label>
+      <label style="display:flex;gap:8px;align-items:start;font-size:14px" for="cf-agree"><input type="checkbox" id="cf-agree" required style="margin-top:5px"> <span>[필수] 상담을 위한 개인정보(이름·연락처·상담 내용) 수집·이용에 동의합니다. 파트너 연결이 필요하면 동의를 다시 받은 뒤 전달합니다. 보관 기간 1년.</span></label>
+      <div><button class="btn gold" type="submit">상담 신청</button></div>
+    </form>
+    <div class="grid" style="gap:16px">
+      <div class="panel grid" style="gap:10px">
+        <h3 id="cf-prep-title"></h3>
+        <ul class="steps" id="cf-prep"></ul>
+      </div>
+      <div class="panel grid" id="cf-done" style="gap:10px;border-color:var(--gold)" hidden>
+        <h3>마지막 단계: 신청 내용을 보내 주세요</h3>
+        <p class="muted">베타 운영 중이라 아래 내용을 복사해 카카오톡·문자·위챗으로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+        <textarea id="cf-text" readonly rows="6"></textarea>
+        <div><button class="btn" type="button" id="cf-copy">내용 복사</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span><b>NEW BEAUTY NEXUS</b> · 뷰티 비즈니스 솔루션 · Connecting K-Beauty, Creating New Business Opportunities</span>
+    <span>베타 버전 · 화면의 업체·매물·비율은 예시입니다</span>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const man = n => Math.round(n).toLocaleString('ko-KR') + '만원';
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem('nbn:' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
+    set(k, v) { try { localStorage.setItem('nbn:' + k, JSON.stringify(v)); } catch {} }
+  };
+  const toast = m => { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2200); };
+  const chip = (name, val, type, checked, label) => `<label class="chip"><input type="${type}" name="${name}" value="${esc(val)}" ${checked ? 'checked' : ''}><span>${esc(label || val)}</span></label>`;
+  const pick = (form, name) => (form.querySelector(`[name="${name}"]:checked`) || {}).value;
+  const copyBtn = (btn, area) => $(btn).addEventListener('click', () => { const t = $(area); navigator.clipboard.writeText(t.value).then(() => toast('복사했습니다'), () => { t.select(); toast('선택된 내용을 복사해 주세요'); }); });
+  const REGIONS = ['서울 강남권', '서울 강북권', '경기 남부', '경기 북부', '인천', '부산', '대구·경북', '기타 지역'];
+
+  /* ---------- 고객군 5 ---------- */
+  const SEGS = [
+    { k: 'A', name: '예비 창업자', title: '뷰티 창업을 준비해요', desc: '방향, 비용, 교육, 장비, 인테리어까지 한 번에', href: '#plan', go: '창업 플래너' },
+    { k: 'B', name: '기존 원장님', title: '추가 매출이 필요해요', desc: '업종 추가, 신규 기술·제품 도입, 운영 진단', href: '#services', go: '성장 서비스', filter: 'B' },
+    { k: 'C', name: '제조사·브랜드', title: '판로를 넓히고 싶어요', desc: '국내 샵 네트워크와 해외 바이어 연결', href: '#partners', go: '파트너 등록' },
+    { k: 'D', name: '해외 바이어', title: '한국 제품·기술을 찾아요', desc: '소싱 대행 · 연수 투어 · 라이선스 · 韩中双语', href: '#global', go: '요청서 작성' },
+    { k: 'E', name: '전환·정리', title: '사업 전환을 고민해요', desc: '업종 전환, 샵인샵, 양도양수, 장비 재판매', href: '#transition', go: '전환·양도' }
+  ];
+  $('#who').innerHTML = SEGS.map(s => `<a href="${s.href}" data-filter="${s.filter || ''}"><span class="k">${s.k} · ${esc(s.name)}</span><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p><span class="go">${esc(s.go)} →</span></a>`).join('');
+
+  /* ---------- 서비스 20 ---------- */
+  const PAY = { c: '고객 부담', p: '파트너 부담 · 고객 추가 비용 없음', s: '성사 시 성공보수' };
+  const SVCS = [
+    ['A', 1, '뷰티 창업 상담', '나에게 맞는 창업 방향 파악', '창업 상담료', 'c'],
+    ['A', 2, '맞춤형 창업 컨설팅', '창업 비용과 시행착오 감소', '컨설팅 비용', 'c'],
+    ['A', 3, '뷰티 기술 교육기관 연결', '맞는 교육기관을 찾는 시간 절약', '교육기관 제휴 수수료', 'p'],
+    ['A', 4, '창업 장비·제품 공급사 연결', '필요한 장비와 제품을 효율적으로 확보', '공급사 계약 수수료', 'p'],
+    ['A', 5, '인테리어·간판·마케팅 업체 연결', '여러 업체를 직접 찾는 번거로움 감소', '협력업체 소개 수수료', 'p'],
+    ['A', 6, '창업 패키지 구성', '창업 준비 과정을 한 번에 진행', '창업 패키지 운영 수익', 'c'],
+    ['B', 7, '업종 추가·신규 메뉴 컨설팅', '기존 고객으로 추가 매출', '컨설팅 비용', 'c'],
+    ['B', 8, '신규 기술 교육 연결 (두피·헤드스파 등)', '검증된 교육을 빠르게 도입', '교육기관 제휴 수수료', 'p'],
+    ['B', 9, '신규 제품·장비 도입 연결', '좋은 조건으로 비교 도입', '공급사 계약 수수료', 'p'],
+    ['B', 10, '매장 운영 진단 (객단가·재방문·마케팅)', '매출이 새는 곳을 숫자로 확인', '진단비 · 월 자문료', 'c'],
+    ['C', 11, '국내 샵·유통 판로 연결', '검증된 샵 네트워크에 납품', '판매·납품 수수료', 'p'],
+    ['C', 12, '원장님 대상 제품 설명회·샘플링', '실사용 후기와 초도 주문 확보', '행사 운영비', 'c'],
+    ['C', 13, '해외 바이어 매칭·수출 상담', '새로운 수출 기회', '수출 중개 수수료', 's'],
+    ['C', 14, '브랜드 교육 자료·콘텐츠 제작', '판매하는 샵의 설명을 표준화', '제작비', 'c'],
+    ['D', 15, '한국 제품 소싱 대행', '검증된 제조사를 빠르게 확보', '소싱 수수료', 'c'],
+    ['D', 16, '한국 뷰티 기술 연수 투어', '기술·현장·공급사를 한 번에', '투어 패키지 수익', 'c'],
+    ['D', 17, '현지 창업·라이선스 패키지', '검증된 프로그램으로 현지 창업', '라이선스비 · 로열티', 'c'],
+    ['E', 18, '사업 전환 컨설팅', '손실을 줄이고 새 방향 설정', '컨설팅 비용', 'c'],
+    ['E', 19, '샵인샵·양도양수 매칭', '공간·시설 가치 회수', '매칭 성공보수', 's'],
+    ['E', 20, '장비·재고 재판매 연결', '남은 장비와 재고의 잔존 가치 회수', '재판매 수수료', 's']
+  ];
+  const GROUP = { A: '신규 창업자', B: '기존 원장님', C: '제조사·브랜드', D: '해외 바이어', E: '전환·폐업 준비' };
+  let svcSel = 'all';
+  $('#svc-filter').innerHTML = chip('sf', 'all', 'radio', true, '전체 20') + Object.entries(GROUP).map(([k, v]) => chip('sf', k, 'radio', false, `${k} · ${v}`)).join('');
+  function renderSvcs() {
+    const groups = Object.keys(GROUP).filter(k => svcSel === 'all' || k === svcSel);
+    $('#svc-list').innerHTML = groups.map(g => {
+      const items = SVCS.filter(x => x[0] === g);
+      return `<div class="svc-group"><header><b>${g}</b><h3>${esc(GROUP[g])}을 위한 서비스</h3><span class="muted" style="font-size:13px">${items.length}개</span></header><div class="grid g3">${items.map(([, no, name, gain, rev, pay]) => `<article class="svc"><div class="top"><h3>${esc(name)}</h3><span class="no">${String(no).padStart(2, '0')}</span></div><dl><div><dt>고객 이익</dt><dd>${esc(gain)}</dd></div><div><dt>비용 구조</dt><dd>${esc(rev)}</dd></div></dl><span class="pill ${pay === 'p' ? 'ok' : pay === 's' ? 'gold' : ''}" style="justify-self:start">${PAY[pay]}</span></article>`).join('')}</div></div>`;
+    }).join('');
+  }
+  $('#svc-filter').addEventListener('change', e => { svcSel = e.target.value; renderSvcs(); });
+
+  /* ---------- 창업 플래너 ---------- */
+  const FIELDS = ['피부관리', '두피·헤드스파', '바디·경락', '왁싱', '네일·속눈썹'];
+  const MODES = { '1인샵 신규': { dep: 25, int: 25, eq: 18, edu: 8, prod: 7, mkt: 7, res: 10 },
+                  '샵인샵': { dep: 10, int: 8, eq: 25, edu: 12, prod: 10, mkt: 12, res: 23 },
+                  '기존 샵 인수': { dep: 42, int: 8, eq: 8, edu: 10, prod: 8, mkt: 10, res: 14 } };
+  const ITEMS = [
+    { k: 'dep', label: '보증금·양수', modeLabel: { '1인샵 신규': '보증금', '샵인샵': '보증금·입점비', '기존 샵 인수': '양수 대금·보증금' }, partner: '공간: 상가 · 샵인샵 · 양도 매물', cmp: '매물 2–3곳', gain: '초기 고정비를 줄인 출발', rev: { '1인샵 신규': ['수수료 없음 (부동산은 공인중개사)', ''], '샵인샵': ['매칭 성사 시 성공보수', 's'], '기존 샵 인수': ['매칭 성사 시 성공보수', 's'] } },
+    { k: 'int', label: '인테리어·간판', modeLabel: { '기존 샵 인수': '리뉴얼·간판' }, partner: '소형 샵 전문 시공사 · 간판', cmp: '견적 2곳 이상', gain: '평당 단가·공기 비교', rev: ['협력업체 소개 수수료 (업체 부담)', 'p'] },
+    { k: 'eq', label: '장비', partner: '장비 공급사', cmp: '공급사 2곳 이상', gain: '구매·렌탈·중고 조건 비교', rev: ['공급사 계약 수수료 (공급사 부담)', 'p'] },
+    { k: 'edu', label: '기술 교육', partner: '교육기관', cmp: '기관 2곳 이상', gain: '과정·실습 시간·비용 비교', rev: ['교육기관 제휴 수수료 (기관 부담)', 'p'] },
+    { k: 'prod', label: '초도 제품', partner: '화장품 공급사·브랜드', cmp: '브랜드 2–3곳', gain: '전문가용 라인 샘플 비교', rev: ['공급사 계약 수수료 (공급사 부담)', 'p'] },
+    { k: 'mkt', label: '오픈 마케팅', partner: '플레이스·SNS·예약 세팅', cmp: '업체 2곳 또는 직접 운영안', gain: '오픈 첫 3개월 집객 계획', rev: ['협력업체 소개 수수료 (업체 부담)', 'p'] },
+    { k: 'res', label: '운영 예비비', partner: '-', cmp: '-', gain: '오픈 후 3–6개월 버틸 자금', rev: ['없음', ''] }
+  ];
+  $('#pf-field').innerHTML = FIELDS.map((f, i) => chip('pfield', f, 'radio', i === 0)).join('');
+  $('#pf-mode').innerHTML = Object.keys(MODES).map((m, i) => chip('pmode', m, 'radio', i === 0)).join('');
+  $('#pf-region').innerHTML = REGIONS.map(r => `<option>${r}</option>`).join('');
+  let lastPlan = null;
+  function plan() {
+    const f = $('#pf');
+    const B = Math.max(0, parseFloat(String($('#pf-budget').value).replace(/[^0-9.]/g, '')) || 0);
+    const field = pick(f, 'pfield') || FIELDS[0], mode = pick(f, 'pmode') || '1인샵 신규', region = $('#pf-region').value;
+    const r = { ...MODES[mode] };
+    if (field === '두피·헤드스파') { r.eq += 4; r.int -= 2; r.res -= 2; }
+    if (field === '왁싱' || field === '네일·속눈썹') { r.eq -= 6; r.mkt += 3; r.res += 3; }
+    const max = Math.max(...Object.values(r));
+    $('#pf-title').textContent = `${region} · ${field} · ${mode}`;
+    $('#pf-badge').textContent = '예시 배분';
+    $('#pf-bars').innerHTML = ITEMS.map(it => {
+      const pct = r[it.k], amt = B * pct / 100, lab = (it.modeLabel && it.modeLabel[mode]) || it.label;
+      return `<div class="barrow"><span>${esc(lab)}</span><div class="track" aria-hidden="true"><div class="fill" style="width:${(pct / max * 100).toFixed(1)}%"></div></div><span class="amt">${man(amt)}</span></div>`;
+    }).join('');
+    $('#pf-total').textContent = man(B);
+    const conn = ITEMS.filter(it => it.partner !== '-' && !(it.k === 'dep' && mode === '1인샵 신규')).length;
+    $('#pf-kpi').innerHTML = [['연결 항목', conn + '개'], ['받게 될 비교안', '최소 ' + conn * 2 + '건'], ['운영 예비비', r.res + '%'], ['고객 부담', '컨설팅비만']]
+      .map(([l, v]) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`).join('');
+    $('#pf-rows').innerHTML = ITEMS.map(it => {
+      const rv = Array.isArray(it.rev) ? it.rev : it.rev[mode];
+      const lab = (it.modeLabel && it.modeLabel[mode]) || it.label;
+      return `<tr><td><strong>${esc(lab)}</strong></td><td>${esc(it.partner)}</td><td>${esc(it.cmp)}</td><td>${esc(it.gain)}</td><td>${rv[1] ? `<span class="pill ${rv[1] === 'p' ? 'ok' : 'gold'}">${esc(rv[0])}</span>` : `<span class="muted">${esc(rv[0])}</span>`}</td></tr>`;
+    }).join('') + `<tr><td><strong>창업 컨설팅</strong></td><td>뉴뷰티넥서스</td><td>-</td><td>방향 설정 · 예산 설계 · 일정 관리</td><td><span class="pill">상담·컨설팅 비용 (고객 부담, 상담 후 견적)</span></td></tr>`;
+    lastPlan = { B, field, mode, region };
+  }
+  $('#pf').addEventListener('input', plan); $('#pf').addEventListener('change', plan);
+  $('#pf-cta').addEventListener('click', () => {
+    if (!lastPlan) return;
+    setTimeout(() => { const a = $('#cf').querySelector('[name=seg][value="A"]'); if (a) { a.checked = true; prep(); } $('#cf-memo').value = `창업 플래너: ${lastPlan.region} · ${lastPlan.field} · ${lastPlan.mode} · 예산 ${man(lastPlan.B)}`; }, 0);
+  });
+
+  /* ---------- 파트너 등록 ---------- */
+  $('#pa-want').innerHTML = ['국내 샵 판로', '원장님 설명회', '해외 바이어', '창업자 연결', '교육 자료 제작'].map((w, i) => chip('pwant', w, 'checkbox', i === 0)).join('');
+  $('#partner-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const list = store.get('partners', []);
+    list.unshift({ kind: $('#pa-kind').value, name: $('#pa-name').value.trim(), want: [...e.target.querySelectorAll('[name=pwant]:checked')].map(x => x.value) });
+    store.set('partners', list); e.target.reset(); toast('등록 신청을 받았습니다. 검증 일정을 안내드릴게요');
+  });
+
+  /* ---------- 해외 바이어 ---------- */
+  $('#buyer-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const txt = `[해외 바이어 요청 · 海外买家需求]\n지역 · 地区: ${$('#by-country').value}\n유형 · 类型: ${$('#by-need').value}\n규모 · 规模: ${$('#by-qty').value}\n내용 · 内容: ${$('#by-memo').value}`;
+    location.hash = 'consult';
+    setTimeout(() => { const d = $('#cf').querySelector('[name=seg][value="D"]'); if (d) { d.checked = true; prep(); } $('#cf-memo').value = txt; $('#cf-ch').value = '위챗 · WeChat'; }, 0);
+    toast('요청 내용을 상담 신청서에 옮겼습니다 · 已转入咨询表');
+  });
+
+  /* ---------- 전환·양도 ---------- */
+  const SPACES = [
+    { kind: '샵인샵', region: '서울 강남권', title: '피부관리실 내 독립 룸 1개 (베드 1)', cost: '월 90만원 · 보증금 300만원', fit: '두피·헤드스파 · 왁싱' },
+    { kind: '샵인샵', region: '경기 남부', title: '헤어살롱 2층 케어룸, 평일 낮', cost: '월 60만원 · 보증금 200만원', fit: '두피·헤드스파 · 피부관리' },
+    { kind: '샵인샵', region: '서울 강북권', title: '네일샵 내 왁싱 부스', cost: '매출 20% 수수료 방식', fit: '왁싱 · 속눈썹' },
+    { kind: '양도', region: '서울 강남권', title: '1인 피부관리실 8평 · 장비 포함', cost: '양도가 2,500만원 (협의)', fit: '피부관리 · 바디' },
+    { kind: '양도', region: '부산', title: '바디·경락 샵 15평 · 단골 고객 보유', cost: '양도가 4,000만원 (협의)', fit: '바디·경락' },
+    { kind: '장비', region: '경기 북부', title: '두피 스케일링 장비 1대 · 2년 사용', cost: '희망가 350만원', fit: '두피·헤드스파' }
+  ];
+  let spSel = '전체';
+  $('#sp-filter').innerHTML = ['전체', '샵인샵', '양도', '장비'].map((x, i) => chip('spf', x, 'radio', i === 0)).join('');
+  function renderSpaces() {
+    $('#sp-list').innerHTML = SPACES.filter(x => spSel === '전체' || x.kind === spSel).map(x => `<article class="card"><div class="top"><h3>${esc(x.title)}</h3><span class="pill ${x.kind === '양도' ? 'red' : x.kind === '샵인샵' ? 'gold' : ''}">${esc(x.kind)}</span></div><p class="muted" style="font-size:13.5px">${esc(x.region)} · 추천 업종 ${esc(x.fit)}</p><p class="num"><strong>${esc(x.cost)}</strong></p><span class="pill" style="justify-self:start">예시</span></article>`).join('');
+  }
+  $('#sp-filter').addEventListener('change', e => { spSel = e.target.value; renderSpaces(); });
+
+  /* ---------- 상담 신청 ---------- */
+  const PREP = {
+    A: ['생각 중인 업종과 지역', '준비 가능한 총 자금 (대출 포함 여부)', '자격증·경력, 교육 필요 여부', '희망 오픈 시기'],
+    B: ['최근 3개월 월평균 매출과 객단가', '주 고객층과 재방문 비율', '추가하고 싶은 메뉴나 기술', '남는 공간·시간대'],
+    C: ['제품 라인과 전성분표', '화장품책임판매업 등록, 수출 등록 진행 상황', '희망 공급가와 최소 주문 수량', '원하는 판로 (국내 샵 / 해외)'],
+    D: ['찾는 제품 카테고리 또는 기술', '예상 수량·인원과 일정', '현지 수입·판매 자격 · 当地进口资质', '선호 소통 채널 · 沟通方式'],
+    E: ['현재 계약 조건 (임대 기간·보증금)', '보유 장비·재고 목록', '정리 희망 시기', '전환·양도·샵인샵 중 생각하는 방향']
+  };
+  $('#cf-seg').innerHTML = SEGS.map((s, i) => chip('seg', s.k, 'radio', i === 0, `${s.k} · ${s.name}`)).join('');
+  function prep() {
+    const k = pick($('#cf'), 'seg') || 'A'; const s = SEGS.find(x => x.k === k);
+    $('#cf-prep-title').textContent = `${s.name} 상담 전에 준비하면 좋은 것`;
+    $('#cf-prep').innerHTML = PREP[k].map(x => `<li>${esc(x)}</li>`).join('');
+  }
+  $('#cf').addEventListener('change', e => { if (e.target.name === 'seg') prep(); });
+  $('#cf').addEventListener('submit', e => {
+    e.preventDefault();
+    const k = pick(e.target, 'seg') || 'A'; const s = SEGS.find(x => x.k === k);
+    const L = { seg: s.name, name: $('#cf-name').value.trim(), phone: $('#cf-phone').value.trim(), ch: $('#cf-ch').value, memo: $('#cf-memo').value.trim(), at: new Date().toISOString() };
+    const list = store.get('consults', []); list.unshift(L); store.set('consults', list);
+    $('#cf-text').value = `[NEW BEAUTY NEXUS 상담 신청]\n상황: ${L.seg}\n이름: ${L.name}\n연락처: ${L.phone} (${L.ch})${L.memo ? '\n메모: ' + L.memo : ''}`;
+    e.target.reset(); prep();
+    $('#cf-done').hidden = false; $('#cf-done').scrollIntoView({ block: 'center' });
+  });
+  copyBtn('#cf-copy', '#cf-text');
+
+  /* ---------- 라우팅 ---------- */
+  const VIEWS = ['home', 'services', 'plan', 'partners', 'global', 'transition', 'consult'];
+  function route() {
+    const h = location.hash.slice(1); const v = VIEWS.includes(h) ? h : 'home';
+    VIEWS.forEach(x => { $('#v-' + x).hidden = x !== v; });
+    document.querySelectorAll('nav.tabs a').forEach(a => { if (a.getAttribute('href') === '#' + v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+  $('#who').addEventListener('click', e => {
+    const a = e.target.closest('a[data-filter]'); if (!a || !a.dataset.filter) return;
+    svcSel = a.dataset.filter; const r = $('#svc-filter').querySelector(`[value="${svcSel}"]`); if (r) r.checked = true; renderSvcs();
+  });
+
+  renderSvcs(); plan(); renderSpaces(); prep(); route();
+})();
+</script>
+
+</body>
+</html>

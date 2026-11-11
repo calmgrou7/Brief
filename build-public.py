@@ -9,3 +9,10 @@ page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta
 pathlib.Path('public').mkdir(exist_ok=True)
 pathlib.Path('public/index.html').write_text(page, encoding='utf-8')
 print('staff blocks left:', page.count('v-admin'), page.count('v-model'))
+
+# 플랫폼 디자인 (NEW BEAUTY NEXUS) → public/platform/index.html
+plat = pathlib.Path('platform/index.html').read_text(encoding='utf-8')
+plat_page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="description" content="뷰티 비즈니스의 시작부터 전환까지, 필요한 사람·제품·기술·정보를 연결합니다.">\n' + plat.replace('<header>', '</head>\n<body>\n<header>', 1) + '\n</body>\n</html>\n'
+pathlib.Path('public/platform').mkdir(parents=True, exist_ok=True)
+pathlib.Path('public/platform/index.html').write_text(plat_page, encoding='utf-8')
+print('platform built')
