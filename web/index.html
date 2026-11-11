@@ -133,8 +133,21 @@ pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:
 const SUPABASE_URL = 'https://ltnwbinctflmczqnhuii.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bndiaW5jdGZsbWN6cW5odWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxMzkwMjUsImV4cCI6MjEwOTcxNTAyNX0.UL6jWktHRze0K6W6cw21uaoRp3i2lgVIe7aAAV_g5gg';
 const BUCKET = 'jw-media';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'jungwoo-auth'}});
+/* 접속 방식 2가지
+   1) 접속 코드: 코드를 요청 헤더(x-jw-key)로 보내면 DB가 관리자 권한으로 판정 — 지금 사용하는 방식
+   2) 이메일 로그인 링크: 회원별 권한(관리자/임원/일반) — 회원에게 열 때 사용 */
+const KEY_STORE = 'jungwoo-access-code';
+const readKey = () => { try{ return localStorage.getItem(KEY_STORE) || ''; }catch(e){ return ''; } };
+const writeKey = v => { try{ v ? localStorage.setItem(KEY_STORE, v) : localStorage.removeItem(KEY_STORE); }catch(e){} };
+function makeClient(key){
+  return key
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {global:{headers:{'x-jw-key':key}},
+        auth:{persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey:'jungwoo-key-mode'}})
+    : supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'jungwoo-auth'}});
+}
+let keyMode = !!readKey();
+let sb = makeClient(readKey());
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID()
   : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{ const r=Math.random()*16|0; return (c==='x'?r:(r&3|8)).toString(16); }));
@@ -334,8 +347,8 @@ function render(){
   const navKey = page==='member' ? 'members' : page;
   const me = Store.me, mine = member(me.memberId);
   $('#who').innerHTML = `<div>${mine?`<a href="#/member/${mine.id}" style="color:#fff"><b>${esc(mine.name)}</b></a>`:''}
-    <div>${esc(me.email)} · ${me.admin?'관리자':me.officer?'임원':'회원'}</div></div><button class="btn sm" id="logout">로그아웃</button>`;
-  $('#logout').onclick = ()=>sb.auth.signOut();
+    <div>${esc(me.email)} · ${me.admin?'관리자':me.officer?'임원':'회원'}</div></div><button class="btn sm" id="logout">${keyMode?'잠그기':'로그아웃'}</button>`;
+  $('#logout').onclick = ()=>{ if(keyMode){ writeKey(''); location.reload(); } else sb.auth.signOut(); };
   $('#nav').innerHTML = ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}</a>`).join('');
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
               officers:Officers, events:Events, history:History, settings:Settings}[page] || Dashboard;
@@ -352,10 +365,26 @@ function renderGate(html){
     <small style="color:var(--sub);opacity:1">기업가 대표 모임 · 회원 전용</small></div>${html}</div>`;
 }
 function renderLogin(msg=''){
-  renderGate(`<form id="lf"><label class="muted" style="font-size:13px">등록된 이메일</label>
+  renderGate(`<form id="kf"><label class="muted" style="font-size:13px">접속 코드</label>
+    <input class="input" type="password" name="code" required autocomplete="current-password" placeholder="접속 코드 입력" style="width:100%;margin:6px 0 12px">
+    <button class="btn pri" style="width:100%">들어가기</button></form>
+    <p class="muted" style="font-size:13px;margin:12px 0 0">한 번 입력하면 이 기기에서는 다음부터 바로 열립니다.</p>
+    <details ${msg?'open':''} style="margin-top:18px;border-top:1px solid var(--line);padding-top:14px"><summary class="muted" style="cursor:pointer;font-size:13px">회원 이메일로 로그인</summary>
+    <form id="lf" style="margin-top:12px"><label class="muted" style="font-size:13px">등록된 이메일</label>
     <input class="input" type="email" name="email" required autocomplete="email" placeholder="name@company.com" style="width:100%;margin:6px 0 12px">
     <button class="btn pri" style="width:100%">로그인 링크 받기</button></form>
-    <p class="muted" style="font-size:13px;margin:14px 0 0">${msg || '이메일로 받은 링크를 누르면 바로 로그인됩니다. 비밀번호는 필요 없습니다.'}</p>`);
+    <p class="muted" style="font-size:13px;margin:14px 0 0">${msg || '이메일로 받은 링크를 누르면 바로 로그인됩니다.'}</p></details>`);
+  $('#kf').onsubmit = async e=>{
+    e.preventDefault();
+    const code = new FormData(e.target).get('code').trim();
+    const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = '확인 중…';
+    try{
+      const trial = makeClient(code);
+      const {data, error} = await trial.rpc('jw_check_key');
+      if(error || !data){ btn.disabled = false; btn.textContent = '들어가기'; return toast('접속 코드가 맞지 않습니다.'); }
+      writeKey(code); location.reload();
+    }catch(err){ btn.disabled = false; btn.textContent = '들어가기'; toast('연결에 실패했습니다. 잠시 후 다시 시도해주세요.'); }
+  };
   $('#lf').onsubmit = async e=>{
     e.preventDefault();
     const email = new FormData(e.target).get('email').trim().toLowerCase();
@@ -375,7 +404,10 @@ async function enter(){
   if(entering || Store.ready) return; entering = true;
   try{
     renderGate('<p class="muted">불러오는 중…</p>');
-    await Store.loadMe();
+    if(keyMode){
+      if(!await q(sb.rpc('jw_check_key'))){ writeKey(''); keyMode = false; sb = makeClient(''); return renderLogin(); }
+      Store.me = {email:'접속 코드', admin:true, officer:true, memberId:''};
+    } else await Store.loadMe();
     if(!Store.me.admin && !Store.me.memberId){
       renderGate(`<p><b>${esc(Store.me.email)}</b> 계정은 정우회 회원으로 등록되어 있지 않습니다.</p>
         <button class="btn" id="lo">다른 이메일로 로그인</button>`);
@@ -390,14 +422,17 @@ async function enter(){
     renderGate('<p>데이터를 불러오지 못했습니다.</p><button class="btn" onclick="location.reload()">다시 시도</button>');
   }finally{ entering = false; }
 }
-sb.auth.onAuthStateChange((ev, session)=>{
+function boot(){
+  if(keyMode) return enter();
+  sb.auth.onAuthStateChange((ev, session)=>{
   if(ev === 'SIGNED_OUT'){ Store.ready = false; return renderLogin(); }
   if(session && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION')) return setTimeout(enter);
   if(!session && ev === 'INITIAL_SESSION'){
     const err = new URLSearchParams(location.hash.slice(1)).get('error_description');
     renderLogin(err ? '로그인 링크가 만료되었거나 이미 사용되었습니다. 다시 요청해주세요.' : '');
   }
-});
+  });
+}
 
 /* ===================== 화면: 대시보드 ===================== */
 function Dashboard(){
@@ -820,6 +855,10 @@ function Settings(){
       이메일이 없는 회원은 로그인할 수 없습니다.</p>
       <p class="muted">현재 로그인 가능 회원: <b>${D().members.filter(m=>m.email && m.status!=='inactive').length}</b>명 / 전체 ${D().members.length}명</p>
       <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+      <h2>접속 코드 변경</h2>
+      <p class="muted">로그인 없이 들어올 때 쓰는 코드입니다. 바꾸면 다른 기기에서는 새 코드를 다시 입력해야 합니다.</p>
+      <div class="row"><input class="input" type="password" id="newcode" placeholder="새 접속 코드 (8자 이상)" style="flex:1;min-width:180px"><button class="btn" id="setcode">변경</button></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
       <h2>데이터 백업</h2>
       <p class="muted">데이터는 Supabase에 저장되고 매일 자동 백업됩니다. 별도 보관용 파일이 필요하면 받아두세요.</p>
       <button class="btn" id="bak">백업 파일 받기 (JSON)</button>
@@ -901,11 +940,19 @@ const bind = {
       finally{ Store.refresh(); }
     };
     $('#tpl').onclick = ()=>download('정우회_회원등록양식.csv', '﻿입회월,회원명,추천인,회사,제품,출생연도,연락처\n', 'text/csv');
+    $('#setcode').onclick = async ()=>{
+      const v = $('#newcode').value.trim();
+      if(v.length < 8) return toast('접속 코드는 8자 이상으로 정해주세요.');
+      if(!confirm('접속 코드를 변경할까요?')) return;
+      await q(sb.rpc('jw_set_access_code', {p_new:v}));
+      if(keyMode){ writeKey(v); sb = makeClient(v); }
+      $('#newcode').value = ''; toast('접속 코드를 변경했습니다.');
+    };
     $('#bak').onclick = ()=>download(`정우회_백업_${today()}.json`, JSON.stringify(D(),null,1), 'application/json');
   },
 };
 
-/* 시작: 로그인 상태는 sb.auth.onAuthStateChange 의 INITIAL_SESSION 에서 처리 */
+boot();
 </script>
 </body>
 </html>
