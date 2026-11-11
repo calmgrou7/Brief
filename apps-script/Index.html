@@ -1,0 +1,597 @@
+<title>적정단가 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 견적서/원가계산서 한 장 — 왼쪽 입력지, 오른쪽(모바일은 아래) 재단선이 그려진 결과 계산서 */
+:root{
+  --paper:#F3F5F8; --sheet:#FFFFFF; --ink:#17202C; --muted:#5D6877; --line:#D9DEE5;
+  --accent:#2A44B3; --accent-soft:#E7EBFA; --accent-ink:#FFFFFF;
+  --good:#1D7A4C; --good-soft:#E3F3EA; --warn:#9A6513; --warn-soft:#FBF0DC; --bad:#BC3A26; --bad-soft:#FBE6E2;
+  --f-body:"IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#10141A; --sheet:#181E27; --ink:#E6EAF0; --muted:#9AA4B3; --line:#2B3441;
+  --accent:#8FA3F6; --accent-soft:#222B48; --accent-ink:#0E1424;
+  --good:#52C68F; --good-soft:#163226; --warn:#E5B252; --warn-soft:#352A14; --bad:#F27C67; --bad-soft:#3A1E1A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#10141A; --sheet:#181E27; --ink:#E6EAF0; --muted:#9AA4B3; --line:#2B3441;
+  --accent:#8FA3F6; --accent-soft:#222B48; --accent-ink:#0E1424;
+  --good:#52C68F; --good-soft:#163226; --warn:#E5B252; --warn-soft:#352A14; --bad:#F27C67; --bad-soft:#3A1E1A; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand h1{margin:0;font-size:1.55rem;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+.tabs{display:flex;gap:4px;background:var(--sheet);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{border:0;background:transparent;color:var(--muted);font:600 .9rem var(--f-body);padding:8px 16px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel h2{margin:0;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panel h2 small{font-weight:500;color:var(--muted);font-size:.8rem}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted);font-weight:500;min-width:0}
+label.f.wide{grid-column:1/-1}
+input,select{font:500 .95rem var(--f-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+input[type=number]{font-family:var(--f-num);font-variant-numeric:tabular-nums;text-align:right}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.hint{font-size:.78rem;color:var(--muted);margin:0}
+.unit{position:relative}
+.unit input{padding-right:34px}
+.unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.78rem;color:var(--muted);pointer-events:none}
+/* 자재 목록 */
+.items{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.irow{display:grid;grid-template-columns:minmax(0,1.6fr) 96px minmax(84px,1fr) minmax(58px,.7fr) minmax(46px,.55fr) minmax(64px,.8fr) 30px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--line)}
+.irow:first-child{border-top:0}
+.irow.head{background:var(--paper);font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.irow input,.irow select{padding:7px 8px;font-size:.88rem}
+.irow .lbl{display:none;font-size:.72rem;color:var(--muted)}
+.irow .per{font-family:var(--f-num);font-variant-numeric:tabular-nums;text-align:right;font-size:.9rem}
+.irow .per em{display:block;font-style:normal;font-size:.7rem;color:var(--bad);font-family:var(--f-body)}
+.del{border:0;background:transparent;color:var(--muted);font-size:1.1rem;cursor:pointer;border-radius:6px;height:32px}
+.del:hover{background:var(--bad-soft);color:var(--bad)}
+@media (max-width:640px){
+  .irow.head{display:none}
+  .irow{grid-template-columns:1fr 1fr 1fr;row-gap:6px}
+  .irow .c-name{grid-column:1/3}.irow .c-type{grid-column:3}
+  .irow .c-per{grid-column:1/3;text-align:left}.irow .c-del{grid-column:3;justify-self:end}
+  .irow .lbl{display:block}
+  .irow .per{text-align:left}
+}
+.row-actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:1px solid var(--line);background:var(--sheet);color:var(--ink);font:600 .88rem var(--f-body);padding:9px 14px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{opacity:.9;color:var(--accent-ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted)}
+.legend b{color:var(--ink);font-weight:600}
+/* 결과 계산서 */
+.sheet{position:relative;background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:22px 20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.sheet::before,.sheet::after{content:"";position:absolute;width:14px;height:14px;border:solid var(--muted);opacity:.55}
+.sheet::before{top:-8px;left:-8px;border-width:0 1px 1px 0}
+.sheet::after{bottom:-8px;right:-8px;border-width:1px 0 0 1px}
+.sheet-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:2px solid var(--ink);padding-bottom:8px}
+.sheet-h h2{margin:0;font-size:1.05rem;letter-spacing:.3em}
+.sheet-h span{font-family:var(--f-num);font-size:.75rem;color:var(--muted)}
+.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.hero .big{font-family:var(--f-num);font-weight:600;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.hero .cap{font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:5px 11px;border-radius:999px}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.good{color:var(--good);background:var(--good-soft)}.pill.warn{color:var(--warn);background:var(--warn-soft)}.pill.bad{color:var(--bad);background:var(--bad-soft)}
+.meter{height:10px;border-radius:999px;background:var(--paper);border:1px solid var(--line);position:relative;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;display:block}
+.meter .m1{background:var(--accent)}.meter .m2{background:var(--accent);opacity:.45}.meter .m3{background:var(--muted);opacity:.45}
+.meter-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.75rem;color:var(--muted)}
+.meter-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+dl.kv{margin:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0}
+dl.kv dt,dl.kv dd{padding:8px 0;border-top:1px dashed var(--line);margin:0}
+dl.kv dt{color:var(--muted);font-size:.86rem}
+dl.kv dd{font-family:var(--f-num);font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+dl.kv dt small{display:block;font-size:.72rem}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal;min-width:10.5em}
+th{font-size:.74rem;color:var(--muted);font-weight:600}
+td{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+td:first-child{font-family:var(--f-body)}
+td:first-child small{display:block;color:var(--muted);font-size:.72rem}
+tr.hl td{background:var(--accent-soft)}
+.note{font-size:.8rem;color:var(--muted);background:var(--paper);border-radius:8px;padding:10px 12px;margin:0}
+.note b{color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:10px 16px;border-radius:8px;font-size:.88rem;font-weight:600;z-index:20}
+.saved{display:flex;flex-direction:column;gap:0}
+.saved .s{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.saved .s:first-child{border-top:0}
+.saved .s b{display:block;font-size:.92rem}
+.saved .s span{font-size:.78rem;color:var(--muted)}
+.saved .s .r{font-family:var(--f-num);font-size:.85rem}
+.empty{color:var(--muted);font-size:.86rem;margin:0}
+footer{font-size:.76rem;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>적정단가 노트</h1>
+      <p>원가율·마진율을 숫자로 확인하고 손해 안 보는 단가를 정합니다.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button id="tab-set" role="tab" aria-selected="true" data-tab="set">세트 원가</button>
+      <button id="tab-simple" role="tab" aria-selected="false" data-tab="simple">간단 단가</button>
+    </div>
+  </header>
+
+  <!-- ============ 세트 원가 모드 ============ -->
+  <section id="view-set" class="grid">
+    <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+      <div class="panel">
+        <h2>상품 정보 <small id="setExampleTag">예시: 인생실록 세트</small></h2>
+        <div class="fields">
+          <label class="f wide">상품명<input id="s-name" type="text"></label>
+          <label class="f">판매가 (소비자가)<div class="unit"><input id="s-price" type="number" min="0" step="1000"><span>원</span></div></label>
+          <label class="f">이번 생산 세트 수<div class="unit"><input id="s-qty" type="number" min="1" step="1"><span>세트</span></div></label>
+          <label class="f">과세 유형
+            <select id="s-tax"><option value="general">일반과세자</option><option value="simple">간이과세자</option><option value="exempt">면세사업자</option></select></label>
+          <label class="f" id="s-vrate-wrap" hidden>업종 부가가치율<div class="unit"><input id="s-vrate" type="number" min="0" max="100" step="5"><span>%</span></div></label>
+          <label class="f">판매 수수료<div class="unit"><input id="s-fee" type="number" min="0" max="50" step="0.1"><span>%</span></div></label>
+          <label class="f">목표 전체 원가율<div class="unit"><input id="s-target" type="number" min="5" max="95" step="1"><span>%</span></div></label>
+        </div>
+        <p class="hint" id="s-taxhint"></p>
+      </div>
+
+      <div class="panel">
+        <h2>자재·제작비 목록 <small>견적서·주문내역 그대로 입력</small></h2>
+        <div class="legend">
+          <span><b>1회성</b> 재주문 땐 안 드는 비용 (목형, 동판, 샘플)</span>
+          <span><b>회차 기본</b> 주문마다 드는 기본료 (톰슨·금박 기본, 작업비)</span>
+          <span><b>개당</b> 수량만큼 드는 비용</span>
+        </div>
+        <p class="hint">세트당 원가 = 총금액 × 세트당 사용량 ÷ 구매수량. 1회성·회차 기본은 구매수량에 "몇 세트분인지"를 넣으세요.</p>
+        <div class="items" id="items"></div>
+        <div class="row-actions">
+          <button class="btn" id="addItem" type="button">+ 품목 추가</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>자재 말고 세트마다 드는 비용 <small>빠뜨리기 쉬운 항목</small></h2>
+        <div class="fields">
+          <label class="f">조립·포장 시간<div class="unit"><input id="s-min" type="number" min="0" step="5"><span>분</span></div></label>
+          <label class="f">내 시급<div class="unit"><input id="s-wage" type="number" min="0" step="1000"><span>원</span></div></label>
+          <label class="f">포장재·배송비<div class="unit"><input id="s-ship" type="number" min="0" step="500"><span>원</span></div></label>
+          <label class="f">광고·샘플·기타<div class="unit"><input id="s-etc" type="number" min="0" step="500"><span>원</span></div></label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+      <article class="sheet" id="setResult" aria-live="polite"></article>
+      <div class="row-actions">
+        <button class="btn primary" type="button" data-save="set">결과 저장</button>
+        <button class="btn" type="button" data-copy="set">결과 복사</button>
+        <button class="btn" type="button" data-example="set">예시 다시 불러오기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 간단 단가 모드 ============ -->
+  <section id="view-simple" class="grid" hidden>
+    <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+      <div class="panel">
+        <h2>상품·서비스 1건 <small>예시: 네일 기본 시술</small></h2>
+        <div class="fields">
+          <label class="f wide">상품명<input id="p-name" type="text"></label>
+          <label class="f">재료비 (1건)<div class="unit"><input id="p-mat" type="number" min="0" step="100"><span>원</span></div></label>
+          <label class="f">재료 로스율<div class="unit"><input id="p-loss" type="number" min="0" max="100" step="1"><span>%</span></div></label>
+          <label class="f">기타 변동비<div class="unit"><input id="p-var" type="number" min="0" step="100"><span>원</span></div></label>
+          <label class="f">소요 시간<div class="unit"><input id="p-min" type="number" min="0" step="5"><span>분</span></div></label>
+          <label class="f">내 시급<div class="unit"><input id="p-wage" type="number" min="0" step="1000"><span>원</span></div></label>
+        </div>
+        <p class="hint">시급을 모르겠다면: 한 달에 벌고 싶은 금액 ÷ 한 달 일하는 시간. 예) 300만원 ÷ 200시간 = 15,000원</p>
+      </div>
+      <div class="panel">
+        <h2>고정비·조건</h2>
+        <div class="fields">
+          <label class="f">월 고정비<div class="unit"><input id="p-fixed" type="number" min="0" step="10000"><span>원</span></div></label>
+          <label class="f">월 예상 판매 건수<div class="unit"><input id="p-cnt" type="number" min="1" step="1"><span>건</span></div></label>
+          <label class="f">과세 유형
+            <select id="p-tax"><option value="general">일반과세자</option><option value="simple">간이과세자</option><option value="exempt">면세사업자</option></select></label>
+          <label class="f" id="p-vrate-wrap" hidden>업종 부가가치율<div class="unit"><input id="p-vrate" type="number" min="0" max="100" step="5"><span>%</span></div></label>
+          <label class="f">카드·플랫폼 수수료<div class="unit"><input id="p-fee" type="number" min="0" max="50" step="0.1"><span>%</span></div></label>
+          <label class="f">목표 마진율<div class="unit"><input id="p-margin" type="number" min="0" max="90" step="1"><span>%</span></div></label>
+          <label class="f">지금 받는 가격<div class="unit"><input id="p-now" type="number" min="0" step="1000"><span>원</span></div></label>
+        </div>
+        <p class="hint">월 고정비: 임대료, 관리비, 통신비, 프로그램 구독료처럼 매달 나가는 돈.</p>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+      <article class="sheet" id="simpleResult" aria-live="polite"></article>
+      <div class="row-actions">
+        <button class="btn primary" type="button" data-save="simple">결과 저장</button>
+        <button class="btn" type="button" data-copy="simple">결과 복사</button>
+        <button class="btn" type="button" data-example="simple">예시 다시 불러오기</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>저장한 계산 <small id="savedWhere"></small></h2>
+    <div class="saved" id="saved"><p class="empty">불러오는 중…</p></div>
+  </section>
+
+  <footer>계산 결과는 참고용 추정치이며 세무 신고 자료가 아닙니다. 세율·수수료 기준은 2024년 기준 예시값이니 실제 값으로 바꿔 쓰세요.</footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+var GAS = (typeof google !== 'undefined' && google.script && google.script.run) ? google.script.run : null;
+var $ = function(id){ return document.getElementById(id); };
+var won = function(n){ if(!isFinite(n)) return '—'; return Math.round(n).toLocaleString('ko-KR') + '원'; };
+var pct = function(n){ return isFinite(n) ? (Math.round(n*1000)/10).toFixed(1) + '%' : '—'; };
+var num = function(v){ var x = parseFloat(v); return isFinite(x) ? x : 0; };
+var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+
+/* ---------- 세금 ---------- */
+// 판매가 P(소비자가) 중 내 몫(매출 공급가)이 되는 비율
+function netFactor(tax, vrate){
+  if(tax === 'general') return 1/1.1;
+  if(tax === 'simple') return 1 - (vrate/100)*0.1;
+  return 1;
+}
+var TAX_HINT = {
+  general: '일반과세자: 판매가의 1/11은 부가세입니다. 자재비는 부가세 뺀 공급가로 입력하세요 (매입세액 공제).',
+  simple: '간이과세자: 납부세액 ≈ 판매가 × 업종 부가가치율 × 10%. 자재비는 부가세 포함 금액으로 입력하세요. 예) 제조업 20%, 소매업 15%, 음식점 10%, 서비스업 30%',
+  exempt: '면세사업자: 부가세가 없습니다. 자재비는 실제 결제 금액으로 입력하세요.'
+};
+
+/* ---------- 예시 데이터 ---------- */
+var SET_EXAMPLE = {
+  name:'인생실록 세트', price:85000, qty:40, tax:'general', vrate:20, fee:5.5, target:40,
+  min:20, wage:15000, ship:3500, etc:0,
+  items:[
+    {n:'질문카드 35종 (디지털 양면)', t:'unit', a:368000, q:40, u:1},
+    {n:'안내카드', t:'unit', a:21200, q:40, u:1},
+    {n:'편지지 A3 (DC 31,300 반영)', t:'unit', a:21500, q:400, u:10},
+    {n:'브랜드 편지 (DC 13,338 반영)', t:'unit', a:7762, q:100, u:1},
+    {n:'칼라소봉투 1,000매', t:'unit', a:56700, q:1000, u:10},
+    {n:'케이스 · 목형', t:'once', a:80000, q:100, u:1},
+    {n:'케이스 · 금박 동판', t:'once', a:50000, q:100, u:1},
+    {n:'케이스 · 칼선/샘플 제작', t:'once', a:30000, q:100, u:1},
+    {n:'케이스 · 톰슨 기본', t:'run', a:70000, q:100, u:1},
+    {n:'케이스 · 금박(무광) 기본', t:'run', a:80000, q:100, u:1},
+    {n:'케이스 · 포장 및 내부 작업비', t:'run', a:30000, q:100, u:1},
+    {n:'케이스 · 350g 밍크지', t:'unit', a:51000, q:100, u:1},
+    {n:'케이스 · 양면테잎', t:'unit', a:30000, q:100, u:1},
+    {n:'케이스 · 트레싱지', t:'unit', a:20000, q:100, u:1},
+    {n:'케이스 · 금지스티커 1,000개', t:'unit', a:95000, q:1000, u:10}
+  ]
+};
+var SIMPLE_EXAMPLE = { name:'네일 기본 시술', mat:3000, loss:0, vari:0, min:60, wage:15000, fixed:1000000, cnt:120, tax:'general', vrate:30, fee:1.5, margin:20, now:30000 };
+
+var setState, simpleState;
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+/* ---------- 저장(브라우저 초안) ---------- */
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+/* ---------- 세트 모드 ---------- */
+var SET_FIELDS = {name:'s-name',price:'s-price',qty:'s-qty',tax:'s-tax',vrate:'s-vrate',fee:'s-fee',target:'s-target',min:'s-min',wage:'s-wage',ship:'s-ship',etc:'s-etc'};
+var TYPE_LABEL = {once:'1회성', run:'회차 기본', unit:'개당'};
+
+function renderItems(){
+  var h = '<div class="irow head"><span>품목</span><span>구분</span><span>총금액(원)</span><span>구매수량</span><span>세트당 사용</span><span style="text-align:right">세트당 원가</span><span></span></div>';
+  setState.items.forEach(function(it, i){
+    h += '<div class="irow" data-i="'+i+'">'+
+      '<div class="c-name"><span class="lbl">품목</span><input id="it-n-'+i+'" data-k="n" type="text" value="'+esc(it.n)+'" aria-label="품목명"></div>'+
+      '<div class="c-type"><span class="lbl">구분</span><select id="it-t-'+i+'" data-k="t" aria-label="구분">'+
+        ['unit','run','once'].map(function(t){ return '<option value="'+t+'"'+(it.t===t?' selected':'')+'>'+TYPE_LABEL[t]+'</option>'; }).join('')+'</select></div>'+
+      '<div><span class="lbl">총금액(원)</span><input id="it-a-'+i+'" data-k="a" type="number" min="0" value="'+it.a+'" aria-label="총금액"></div>'+
+      '<div><span class="lbl">구매수량</span><input id="it-q-'+i+'" data-k="q" type="number" min="0" value="'+it.q+'" aria-label="구매수량"></div>'+
+      '<div><span class="lbl">세트당 사용</span><input id="it-u-'+i+'" data-k="u" type="number" min="0" step="any" value="'+it.u+'" aria-label="세트당 사용량"></div>'+
+      '<div class="c-per per" id="it-per-'+i+'"></div>'+
+      '<div class="c-del"><button class="del" type="button" data-del="'+i+'" aria-label="품목 삭제">×</button></div>'+
+    '</div>';
+  });
+  $('items').innerHTML = h;
+}
+
+function readSet(){
+  Object.keys(SET_FIELDS).forEach(function(k){
+    var v = $(SET_FIELDS[k]).value;
+    setState[k] = (k==='name'||k==='tax') ? v : num(v);
+  });
+}
+function writeSet(){
+  Object.keys(SET_FIELDS).forEach(function(k){ $(SET_FIELDS[k]).value = setState[k]; });
+  renderItems();
+}
+
+function calcSet(s){
+  var N = Math.max(1, s.qty), k = netFactor(s.tax, s.vrate), f = s.fee/100;
+  var spent = 0, used = 0, reorder = 0, stock = 0, short = [];
+  var per = s.items.map(function(it){
+    var q = num(it.q), u = num(it.u), a = num(it.a);
+    var p = q > 0 ? a * u / q : 0;
+    spent += a; used += p; if(it.t !== 'once') reorder += p;
+    if(it.t === 'unit'){
+      var need = u * N;
+      if(need > q + 1e-9) short.push(it.n);
+      stock += Math.max(0, a - p * N);
+    }
+    return { p:p, short: it.t==='unit' && u*N > q + 1e-9 };
+  });
+  var extra = s.min/60 * s.wage + s.ship + s.etc;
+  var P = s.price, net = P * k, fee = P * f;
+  var cash = spent / N;
+  var r = {
+    N:N, k:k, f:f, per:per, spent:spent, used:used, reorder:reorder, cash:cash, stock:stock, short:short,
+    extra:extra, net:net, fee:fee, vat: P - net,
+    matRatio: net>0 ? used/net : NaN,
+    totalRatio: net>0 ? (used+extra+fee)/net : NaN,
+    profit: net - fee - used - extra,
+    margin: net>0 ? (net - fee - used - extra)/net : NaN
+  };
+  var contrib = net - fee - extra;
+  r.payback = contrib > 0 ? Math.ceil(spent / contrib) : Infinity;
+  r.batchProfit = N * contrib - spent;
+  r.minPrice = (k - f) > 0 ? (used + extra) / (k - f) : Infinity;
+  r.cashMinPrice = (k - f) > 0 ? (cash + extra) / (k - f) : Infinity;
+  r.maxDiscount = P > 0 ? 1 - r.minPrice / P : NaN;
+  var t = s.target/100;
+  r.recommend = (t*k - f) > 0 ? Math.ceil(((used + extra) / (t*k - f))/1000)*1000 : Infinity;
+  r.basis = [
+    {k:'cash', name:'이번 생산분이 전부 떠안을 때', sub:'나간 돈 전부 ÷ '+N+'세트', c:cash},
+    {k:'used', name:'실제 들어간 만큼만 (기준)', sub:'남은 자재는 재고', c:used},
+    {k:'reorder', name:'재주문할 때', sub:'1회성 비용 제외', c:reorder}
+  ].map(function(b){ b.ratio = net>0 ? b.c/net : NaN; b.total = net>0 ? (b.c+extra+fee)/net : NaN; b.profit = net - fee - extra - b.c; return b; });
+  return r;
+}
+
+function status(ratio, profit){
+  if(!(profit > 0)) return {c:'bad', t:'손해 구간'};
+  if(ratio <= 0.40) return {c:'good', t:'안정'};
+  if(ratio <= 0.55) return {c:'warn', t:'빠듯함'};
+  return {c:'bad', t:'위험'};
+}
+
+function renderSet(){
+  var s = setState, r = calcSet(s);
+  r.per.forEach(function(p, i){
+    var el = $('it-per-'+i); if(!el) return;
+    el.innerHTML = '<span class="lbl">세트당 원가</span>' + won(p.p) + (p.short ? '<em>수량 부족</em>' : '');
+  });
+  var st = status(r.totalRatio, r.profit);
+  var w1 = Math.min(100, Math.max(0, r.used / r.net * 100)), w2 = Math.min(100 - w1, Math.max(0, r.extra / r.net * 100)), w3 = Math.min(100 - w1 - w2, Math.max(0, r.fee / r.net * 100));
+  var html =
+    '<div class="sheet-h"><h2>원가계산서</h2><span>세트 · '+r.N+'세트 생산</span></div>'+
+    '<div><div class="cap" style="font-size:.85rem;color:var(--muted)">'+esc(s.name||'이름 없는 상품')+' · 판매가 '+won(s.price)+'</div></div>'+
+    '<div class="hero"><div><div class="cap">전체 원가율 (자재+추가비용+수수료 ÷ 공급가)</div><div class="big">'+pct(r.totalRatio)+'</div></div>'+
+      '<span class="pill '+st.c+'">'+st.t+'</span></div>'+
+    '<div class="meter" role="img" aria-label="공급가 대비 비용 구성"><i class="m1" style="width:'+w1+'%"></i><i class="m2" style="left:'+w1+'%;width:'+w2+'%"></i><i class="m3" style="left:'+(w1+w2)+'%;width:'+w3+'%"></i></div>'+
+    '<div class="meter-legend"><span><i style="background:var(--accent)"></i>자재 '+pct(r.matRatio)+'</span><span><i style="background:var(--accent);opacity:.45"></i>시간·배송·기타 '+pct(r.extra/r.net)+'</span><span><i style="background:var(--muted);opacity:.45"></i>수수료 '+pct(r.fee/r.net)+'</span><span>남는 몫 '+pct(r.margin)+'</span></div>'+
+    '<dl class="kv">'+
+      '<dt>판매가 중 내 매출 (공급가)<small>부가세 '+won(r.vat)+' 제외</small></dt><dd>'+won(r.net)+'</dd>'+
+      '<dt>세트당 자재 원가<small>실제 들어간 만큼 기준</small></dt><dd>'+won(r.used)+'</dd>'+
+      '<dt>세트당 추가 비용<small>시간·포장·배송·기타</small></dt><dd>'+won(r.extra)+'</dd>'+
+      '<dt>판매 수수료</dt><dd>'+won(r.fee)+'</dd>'+
+      '<dt><b style="color:var(--ink)">세트당 남는 돈</b></dt><dd style="color:var(--'+(r.profit>0?'good':'bad')+')">'+won(r.profit)+'</dd>'+
+    '</dl>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>원가 기준</th><th>세트당 자재</th><th>자재 원가율</th><th>전체 원가율</th><th>세트당 이익</th></tr></thead><tbody>'+
+      r.basis.map(function(b){ return '<tr'+(b.k==='used'?' class="hl"':'')+'><td>'+b.name+'<small>'+b.sub+'</small></td><td>'+won(b.c)+'</td><td>'+pct(b.ratio)+'</td><td>'+pct(b.total)+'</td><td>'+won(b.profit)+'</td></tr>'; }).join('')+
+    '</tbody></table></div>'+
+    '<dl class="kv">'+
+      '<dt>첫 생산비 회수<small>총지출 '+won(r.spent)+' 기준</small></dt><dd>'+(isFinite(r.payback)? r.payback+'세트 판매 시' : '회수 불가')+'</dd>'+
+      '<dt>'+r.N+'세트 완판 시 이익<small>추가비용·수수료 차감</small></dt><dd style="color:var(--'+(r.batchProfit>0?'good':'bad')+')">'+won(r.batchProfit)+'</dd>'+
+      '<dt>남는 자재 (재고)<small>다음 생산 때 쓸 수 있는 금액</small></dt><dd>'+won(r.stock)+'</dd>'+
+      '<dt>손해 안 나는 최저 판매가<small>이 밑으로 받으면 손해</small></dt><dd>'+won(r.minPrice)+'</dd>'+
+      '<dt>할인해도 되는 최대 폭</dt><dd>'+(r.maxDiscount>0 ? pct(r.maxDiscount) : '할인 여력 없음')+'</dd>'+
+      '<dt>목표 원가율 '+s.target+'% 추천가<small>소비자가, 천 원 단위 올림</small></dt><dd>'+won(r.recommend)+'</dd>'+
+    '</dl>'+
+    (r.short.length ? '<p class="note"><b>수량 부족:</b> '+r.short.map(esc).join(', ')+' — 구매수량이 '+r.N+'세트에 모자랍니다.</p>' : '')+
+    (s.price < r.cashMinPrice ? '<p class="note"><b>주의:</b> 남은 자재를 못 쓰게 되면 판매가 '+won(r.cashMinPrice)+'부터 손해입니다.</p>' : '');
+  $('setResult').innerHTML = html;
+  lsSet('dn.set', s);
+  return r;
+}
+
+/* ---------- 간단 모드 ---------- */
+var SIMPLE_FIELDS = {name:'p-name',mat:'p-mat',loss:'p-loss',vari:'p-var',min:'p-min',wage:'p-wage',fixed:'p-fixed',cnt:'p-cnt',tax:'p-tax',vrate:'p-vrate',fee:'p-fee',margin:'p-margin',now:'p-now'};
+function readSimple(){ Object.keys(SIMPLE_FIELDS).forEach(function(k){ var v=$(SIMPLE_FIELDS[k]).value; simpleState[k] = (k==='name'||k==='tax') ? v : num(v); }); }
+function writeSimple(){ Object.keys(SIMPLE_FIELDS).forEach(function(k){ $(SIMPLE_FIELDS[k]).value = simpleState[k]; }); }
+
+function calcSimple(s){
+  var k = netFactor(s.tax, s.vrate), f = s.fee/100, m = s.margin/100;
+  var mat = s.mat*(1+s.loss/100), labor = s.min/60*s.wage, fixedPer = s.cnt>0 ? s.fixed/s.cnt : 0;
+  var C = mat + labor + fixedPer + s.vari;
+  var r = {k:k, f:f, mat:mat, labor:labor, fixedPer:fixedPer, vari:s.vari, C:C};
+  r.minPrice = (k-f)>0 ? C/(k-f) : Infinity;
+  r.price = ((1-m)*k - f)>0 ? C/((1-m)*k - f) : Infinity;
+  r.priceRounded = Math.ceil(r.price/1000)*1000;
+  var unitContrib = function(P){ return P*k - P*f - mat - s.vari - labor; };
+  var c = unitContrib(r.priceRounded);
+  r.breakeven = c>0 ? Math.ceil(s.fixed / c) : Infinity;
+  if(s.now > 0){
+    var net = s.now*k;
+    r.nowProfit = net - s.now*f - C;
+    r.nowMargin = r.nowProfit/net;
+    r.naive = s.now>0 ? (s.now - s.mat)/s.now : NaN;
+  }
+  return r;
+}
+
+function renderSimple(){
+  var s = simpleState, r = calcSimple(s);
+  var diag = '';
+  if(s.now > 0){
+    var st = r.nowProfit<=0 ? {c:'bad',t:'손해 구간'} : r.nowMargin < s.margin/100*0.5 ? {c:'bad',t:'목표에 크게 못 미침'} : r.nowMargin < s.margin/100 ? {c:'warn',t:'목표보다 낮음'} : {c:'good',t:'목표 달성'};
+    diag = '<div class="tbl-wrap"><table><thead><tr><th>지금 가격 '+won(s.now)+' 진단</th><th>마진율</th></tr></thead><tbody>'+
+      '<tr><td>재료비만 뺀 마진율<small>흔히 하는 계산</small></td><td>'+pct(r.naive)+'</td></tr>'+
+      '<tr class="hl"><td>실제 마진율<small>시간·고정비·부가세·수수료 반영</small></td><td>'+pct(r.nowMargin)+'</td></tr>'+
+      '</tbody></table></div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:.86rem;color:var(--muted)">1건당 실제 남는 돈 <b style="color:var(--'+(r.nowProfit>0?'good':'bad')+');font-family:var(--f-num)">'+won(r.nowProfit)+'</b></span><span class="pill '+st.c+'">'+st.t+'</span></div>';
+  }
+  var html =
+    '<div class="sheet-h"><h2>단가계산서</h2><span>1건 기준</span></div>'+
+    '<div class="cap" style="font-size:.85rem;color:var(--muted)">'+esc(s.name||'이름 없는 상품')+'</div>'+
+    '<div class="hero"><div><div class="cap">적정가 (목표 마진 '+s.margin+'%, 천 원 단위 올림)</div><div class="big">'+won(r.priceRounded)+'</div></div></div>'+
+    '<dl class="kv">'+
+      '<dt>손해 안 나는 최저가<small>이 밑으로 받으면 손해</small></dt><dd>'+won(r.minPrice)+'</dd>'+
+      '<dt>월 손익분기 건수<small>적정가로 팔 때</small></dt><dd>'+(isFinite(r.breakeven)? r.breakeven+'건' : '—')+'</dd>'+
+    '</dl>'+
+    diag+
+    '<dl class="kv">'+
+      '<dt>재료비 (로스 포함)</dt><dd>'+won(r.mat)+'</dd>'+
+      '<dt>내 인건비</dt><dd>'+won(r.labor)+'</dd>'+
+      '<dt>고정비 1건 몫</dt><dd>'+won(r.fixedPer)+'</dd>'+
+      '<dt>기타 변동비</dt><dd>'+won(r.vari)+'</dd>'+
+      '<dt><b style="color:var(--ink)">1건 총원가</b></dt><dd>'+won(r.C)+'</dd>'+
+    '</dl>';
+  $('simpleResult').innerHTML = html;
+  lsSet('dn.simple', s);
+  return r;
+}
+
+/* ---------- 공통 UI ---------- */
+function toggleVrate(){
+  $('s-vrate-wrap').hidden = $('s-tax').value !== 'simple';
+  $('p-vrate-wrap').hidden = $('p-tax').value !== 'simple';
+  $('s-taxhint').textContent = TAX_HINT[$('s-tax').value];
+}
+function toast(msg){ var t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(function(){ t.hidden=true; }, 2200); }
+
+function summaryText(mode){
+  if(mode==='set'){
+    var s=setState, r=calcSet(s);
+    return '['+(s.name||'상품')+'] 판매가 '+won(s.price)+' / 공급가 '+won(r.net)+'\n'+
+      '세트당 자재원가 '+won(r.used)+' (자재 원가율 '+pct(r.matRatio)+')\n'+
+      '추가비용 '+won(r.extra)+', 수수료 '+won(r.fee)+' → 전체 원가율 '+pct(r.totalRatio)+'\n'+
+      '세트당 남는 돈 '+won(r.profit)+'\n'+
+      '첫 생산비 회수: '+r.payback+'세트 / '+r.N+'세트 완판 이익 '+won(r.batchProfit)+'\n'+
+      '최저 판매가 '+won(r.minPrice)+' / 목표 원가율 '+s.target+'% 추천가 '+won(r.recommend);
+  }
+  var p=simpleState, q=calcSimple(p);
+  return '['+(p.name||'상품')+'] 1건 총원가 '+won(q.C)+'\n최저가 '+won(q.minPrice)+' / 적정가 '+won(q.priceRounded)+' (목표 마진 '+p.margin+'%)\n월 손익분기 '+q.breakeven+'건'+
+    (p.now>0 ? '\n지금 가격 '+won(p.now)+' → 실제 마진율 '+pct(q.nowMargin)+', 1건당 '+won(q.nowProfit) : '');
+}
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ toast('결과를 복사했습니다'); }, function(){ fallbackCopy(text); });
+  } else fallbackCopy(text);
+}
+function fallbackCopy(text){
+  var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); toast('결과를 복사했습니다'); }catch(e){ toast('복사가 막혀 있습니다. 결과를 길게 눌러 복사하세요'); }
+  document.body.removeChild(ta);
+}
+
+/* ---------- 저장소 (구글 시트 또는 이 기기) ---------- */
+var store = {
+  list: function(cb){
+    if(GAS){ GAS.withSuccessHandler(cb).withFailureHandler(function(e){ toast('목록을 못 불러왔습니다: '+e.message); cb([]); }).listRecords(); }
+    else cb(lsGet('dn.records') || []);
+  },
+  save: function(rec, cb){
+    if(GAS){ GAS.withSuccessHandler(cb).withFailureHandler(function(e){ toast('저장 실패: '+e.message); }).saveRecord(rec); }
+    else { var a = lsGet('dn.records') || []; rec.id = Date.now().toString(36); rec.date = new Date().toISOString(); a.unshift(rec); lsSet('dn.records', a.slice(0,50)); cb(rec.id); }
+  },
+  del: function(id, cb){
+    if(GAS){ GAS.withSuccessHandler(cb).deleteRecord(id); }
+    else { lsSet('dn.records', (lsGet('dn.records')||[]).filter(function(r){ return r.id !== id; })); cb(true); }
+  }
+};
+var records = [];
+function refreshSaved(){
+  store.list(function(list){
+    records = list || [];
+    var el = $('saved');
+    if(!records.length){ el.innerHTML = '<p class="empty">아직 저장한 계산이 없습니다. 결과 아래 "결과 저장"을 누르면 여기에 쌓입니다.</p>'; return; }
+    el.innerHTML = records.map(function(r){
+      var d = new Date(r.date);
+      return '<div class="s"><div><b>'+esc(r.name||'이름 없음')+'</b><span>'+(r.mode==='set'?'세트 원가':'간단 단가')+' · '+(isNaN(d)?'':d.toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}))+'</span></div>'+
+        '<span class="r">'+won(r.price)+' · '+(Math.round(r.costRatio*10)/10)+'%</span>'+
+        '<span style="display:flex;gap:6px"><button class="btn" type="button" data-load="'+esc(r.id)+'">열기</button><button class="del" type="button" data-rm="'+esc(r.id)+'" aria-label="삭제">×</button></span></div>';
+    }).join('');
+  });
+}
+
+/* ---------- 이벤트 ---------- */
+function showTab(t){
+  ['set','simple'].forEach(function(x){
+    $('view-'+x).hidden = x !== t;
+    $('tab-'+x).setAttribute('aria-selected', String(x===t));
+  });
+  lsSet('dn.tab', t);
+}
+document.querySelector('.tabs').addEventListener('click', function(e){ var b=e.target.closest('[data-tab]'); if(b) showTab(b.dataset.tab); });
+
+Object.keys(SET_FIELDS).forEach(function(k){ $(SET_FIELDS[k]).addEventListener('input', function(){ readSet(); toggleVrate(); renderSet(); }); });
+Object.keys(SIMPLE_FIELDS).forEach(function(k){ $(SIMPLE_FIELDS[k]).addEventListener('input', function(){ readSimple(); toggleVrate(); renderSimple(); }); });
+
+$('items').addEventListener('input', function(e){
+  var row = e.target.closest('.irow'); if(!row || !e.target.dataset.k) return;
+  var it = setState.items[+row.dataset.i], k = e.target.dataset.k;
+  it[k] = (k==='n'||k==='t') ? e.target.value : num(e.target.value);
+  renderSet();
+});
+$('items').addEventListener('click', function(e){
+  var b = e.target.closest('[data-del]'); if(!b) return;
+  setState.items.splice(+b.dataset.del, 1); renderItems(); renderSet();
+});
+$('addItem').addEventListener('click', function(){
+  setState.items.push({n:'새 품목', t:'unit', a:0, q:setState.qty||1, u:1});
+  renderItems(); renderSet();
+  var last = $('it-n-'+(setState.items.length-1)); if(last){ last.focus(); last.select(); }
+});
+
+document.addEventListener('click', function(e){
+  var b;
+  if((b = e.target.closest('[data-copy]'))) copyText(summaryText(b.dataset.copy));
+  if((b = e.target.closest('[data-example]'))){
+    if(b.dataset.example==='set'){ setState = clone(SET_EXAMPLE); writeSet(); renderSet(); }
+    else { simpleState = clone(SIMPLE_EXAMPLE); writeSimple(); renderSimple(); }
+    toggleVrate(); toast('예시를 불러왔습니다');
+  }
+  if((b = e.target.closest('[data-save]'))){
+    var mode = b.dataset.save, rec;
+    if(mode==='set'){ var r=calcSet(setState); rec={mode:'set', name:setState.name, price:setState.price, unitCost:r.used, costRatio:r.totalRatio*100, profit:r.profit, state:clone(setState)}; }
+    else { var q=calcSimple(simpleState); rec={mode:'simple', name:simpleState.name, price:simpleState.now||q.priceRounded, unitCost:q.C, costRatio:(q.C/((simpleState.now||q.priceRounded)*q.k))*100, profit:simpleState.now?q.nowProfit:(q.priceRounded*q.k - q.priceRounded*q.f - q.C), state:clone(simpleState)}; }
+    store.save(rec, function(){ toast(GAS ? '구글 시트에 저장했습니다' : '이 기기에 저장했습니다'); refreshSaved(); });
+  }
+  if((b = e.target.closest('[data-load]'))){
+    var rec2 = records.filter(function(r){ return r.id === b.dataset.load; })[0]; if(!rec2) return;
+    if(rec2.mode==='set'){ setState = clone(rec2.state); writeSet(); renderSet(); showTab('set'); }
+    else { simpleState = clone(rec2.state); writeSimple(); renderSimple(); showTab('simple'); }
+    toggleVrate(); window.scrollTo({top:0, behavior:'smooth'}); toast('"'+(rec2.name||'계산')+'"을 열었습니다');
+  }
+  if((b = e.target.closest('[data-rm]'))){
+    store.del(b.dataset.rm, function(){ toast('삭제했습니다'); refreshSaved(); });
+  }
+});
+
+/* ---------- 시작 ---------- */
+setState = lsGet('dn.set') || clone(SET_EXAMPLE);
+simpleState = lsGet('dn.simple') || clone(SIMPLE_EXAMPLE);
+writeSet(); writeSimple(); toggleVrate(); renderSet(); renderSimple();
+showTab(lsGet('dn.tab') || 'set');
+$('savedWhere').textContent = GAS ? '구글 시트 "계산기록"에 저장됩니다' : '테스트 버전: 이 기기 브라우저에만 저장됩니다';
+refreshSaved();
+
+// 테스트용 노출
+window.__dn = {calcSet:calcSet, calcSimple:calcSimple, SET_EXAMPLE:SET_EXAMPLE, SIMPLE_EXAMPLE:SIMPLE_EXAMPLE};
+})();
+</script>
