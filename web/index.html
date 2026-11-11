@@ -335,7 +335,7 @@ function closeModal(){ $('#modal-root').innerHTML=''; }
 
 /* ===================== 라우팅 ===================== */
 const ROUTES = [
-  ['dashboard','🏠','대시보드'],['members','👥','회원명부'],['guardians','🛡️','가디언'],
+  ['dashboard','🏠','대시보드'],['members','👥','회원명부'],['guardians','🤝','추천인'],
   ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['settings','⚙️','관리'],
 ];
 const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().getFullYear())};
@@ -466,7 +466,7 @@ function Dashboard(){
       ${months.length ? `<div class="bars">${months.map(k=>`<div class="bar"><b>${byMonth[k]}</b><i style="height:${byMonth[k]/max*130}px"></i><span>${k.slice(2).replace('-','.')}</span></div>`).join('')}</div>`
         : '<div class="empty">입회 기록이 없습니다.</div>'}
     </div>
-    <div class="panel"><h2>가디언 TOP 5 <a class="muted" style="font-size:13px;font-weight:400" href="#/guardians">전체 보기</a></h2>
+    <div class="panel"><h2>추천인 TOP 5 <a class="muted" style="font-size:13px;font-weight:400" href="#/guardians">전체 보기</a></h2>
       ${rank.length ? `<ul class="rank">${rank.map((r,i)=>`<li><div style="flex:1">${i+1}. ${memberLink(r.g)}
         <div class="meter"><i style="width:${r.list.length/rmax*100}%"></i></div></div><b style="margin-left:12px">${r.list.length}회</b></li>`).join('')}</ul>`
         : '<div class="empty">추천 기록이 없습니다.</div>'}
@@ -474,7 +474,7 @@ function Dashboard(){
   </div>
   <div class="grid two" style="margin-top:16px">
     <div class="panel"><h2>최근 입회 회원</h2>
-      ${recent.length ? `<table><tr><th></th><th>이름</th><th class="hide-m">회사</th><th>입회</th><th>가디언</th></tr>
+      ${recent.length ? `<table><tr><th></th><th>이름</th><th class="hide-m">회사</th><th>입회</th><th>추천인</th></tr>
       ${recent.map(m=>`<tr class="click" data-href="#/member/${m.id}"><td>${avatar(m)}</td><td>${esc(m.name)}</td>
         <td class="hide-m">${esc(m.company)||'<span class="muted">-</span>'}</td><td>${joinedLabel(m)}</td><td>${esc(member(m.guardianId)?.name||'-')}</td></tr>`).join('')}</table>`
         : '<div class="empty">아직 입회 회원이 없습니다.</div>'}
@@ -525,10 +525,10 @@ function memberList(list){
       <div class="row" style="gap:12px">${avatar(m)}<div><b style="font-size:17px">${esc(m.name)}</b><div>${typeTag(m)}</div></div></div>
       <div style="margin-top:10px">${esc(m.company)||'<span class="muted">회사 미입력</span>'} ${m.title?`<span class="muted">· ${esc(m.title)}</span>`:''}</div>
       <div class="prod" style="font-size:13px;margin-top:4px">${esc(m.products)}</div>
-      <div class="muted" style="font-size:13px;margin-top:8px">입회 ${joinedLabel(m)} · 가디언 ${esc(member(m.guardianId)?.name||'-')}</div>
+      <div class="muted" style="font-size:13px;margin-top:8px">입회 ${joinedLabel(m)} · 추천인 ${esc(member(m.guardianId)?.name||'-')}</div>
     </div>`).join('')}</div>`;
   return `<div class="panel" style="padding:0;overflow-x:auto"><table>
-    <tr><th></th><th>이름</th><th>구분</th><th class="hide-m">회사</th><th class="hide-m">제품(서비스)</th><th>입회</th><th>가디언</th></tr>
+    <tr><th></th><th>이름</th><th>구분</th><th class="hide-m">회사</th><th class="hide-m">제품(서비스)</th><th>입회</th><th>추천인</th></tr>
     ${list.map(m=>`<tr class="click" data-href="#/member/${m.id}"><td style="width:48px">${avatar(m)}</td><td><b>${esc(m.name)}</b></td>
       <td>${typeTag(m)}</td><td class="hide-m">${esc(m.company)||'<span class="muted">-</span>'}</td>
       <td class="hide-m">${esc(m.products)||'<span class="muted">-</span>'}</td><td>${joinedLabel(m)}</td><td>${esc(member(m.guardianId)?.name||'-')}</td></tr>`).join('')}
@@ -595,7 +595,7 @@ function memberForm(m){
       ${f('industry','업종')}${f('phone','전화','tel')}
       ${f('email','로그인 이메일','email','',lock)}${f('joined','입회월 (비우면 기존회원)','month','',lock)}
       ${f('address','주소','text','full')}
-      <label>추천회원(가디언)<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
+      <label>추천인<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
       <label>상태<select class="input" name="status" ${lock}><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
       ${imgf('photo','인물 사진')}${imgf('companyImage','회사 이미지')}${imgf('cardImage','명함 이미지')}
       <label class="full">메모<textarea class="input" name="memo" rows="3">${esc(m.memo)}</textarea></label>
@@ -641,7 +641,7 @@ function memberForm(m){
     });
 }
 
-/* ===================== 화면: 가디언 ===================== */
+/* ===================== 화면: 추천인 ===================== */
 function Guardians(){
   const rank = guardianRanking();
   const total = rank.reduce((s,r)=>s+r.list.length,0);
@@ -649,7 +649,7 @@ function Guardians(){
   const tree = (m, depth=0) => depth>8 ? '' : `<li>${memberLink(m)} ${recruits(m.id).length?`<span class="muted">(${recruits(m.id).length})</span>`:''}
     ${recruits(m.id).length?`<ul>${recruits(m.id).map(r=>tree(r,depth+1)).join('')}</ul>`:''}</li>`;
   return `
-  <div class="head"><h1>가디언 (추천인)</h1><span class="muted">총 ${rank.length}명의 가디언 · 추천 ${total}건 · 자동 집계</span></div>
+  <div class="head"><h1>추천인</h1><span class="muted">총 ${rank.length}명의 추천인 · 추천 ${total}건 · 자동 집계</span></div>
   <div class="grid two">
     <div class="panel" style="padding:0;overflow-x:auto"><table>
       <tr><th style="width:44px">순위</th><th>추천인</th><th>횟수</th><th class="hide-m">추천한 회원</th></tr>
@@ -657,7 +657,7 @@ function Guardians(){
         <td class="hide-m"><div class="row">${r.list.map(x=>`<a class="tag" href="#/member/${x.id}">${esc(x.name)}</a>`).join('')}</div></td></tr>`).join('')}
     </table></div>
     <div class="panel"><h2>추천 계보</h2>
-      <p class="muted" style="margin-top:-6px;font-size:13px">가디언 → 추천받은 회원 → 그 회원이 추천한 회원 순으로 이어집니다.</p>
+      <p class="muted" style="margin-top:-6px;font-size:13px">추천인 → 추천받은 회원 → 그 회원이 추천한 회원 순으로 이어집니다.</p>
       <div class="tree"><ul>${roots.map(r=>tree(r)).join('')}</ul></div>
     </div>
   </div>`;
@@ -845,7 +845,7 @@ function Settings(){
   <div class="head"><h1>관리·백업</h1></div>
   <div class="grid two">
     <div class="panel"><h2>회원 일괄 등록 (엑셀 → CSV)</h2>
-      <p class="muted">엑셀에서 <b>CSV(UTF-8)</b>로 저장해 올리면 회원과 가디언 관계가 자동으로 만들어집니다. 같은 이름은 정보가 갱신됩니다.</p>
+      <p class="muted">엑셀에서 <b>CSV(UTF-8)</b>로 저장해 올리면 회원과 추천인 관계가 자동으로 만들어집니다. 같은 이름은 정보가 갱신됩니다.</p>
       <pre class="text">입회월,회원명,추천인,회사,제품,출생연도,연락처
 2026-08,박홍진,김상원,영진종합유통,위생용품,1981,</pre>
       <div class="row"><input type="file" id="csv" accept=".csv,text/csv" class="input"><button class="btn sm" id="tpl">양식 받기</button></div>
