@@ -165,6 +165,8 @@ legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
 .total b { font-family: var(--f-display); font-size: 24px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
 table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: 14px; }
+table.value { min-width: 640px; }
+table.value td:first-child { white-space: nowrap; }
 th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
 th { font-size: 12px; color: var(--ink-2); font-weight: 700; background: var(--sunken); }
 tr:last-child td { border-bottom: 0; }
@@ -224,6 +226,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
       <a href="#home">홈</a>
       <a href="#services">서비스 20</a>
       <a href="#plan">창업 플래너</a>
+      <a href="#owner">원장님 추가 매출</a>
       <a href="#partners">파트너·브랜드</a>
       <a href="#global">해외 바이어</a>
       <a href="#transition">전환·양도</a>
@@ -240,7 +243,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     <div>
       <p class="eyebrow">Beauty Business Solution · K-Beauty Beyond Borders</p>
       <h1>뷰티 비즈니스의<br>시작부터 전환까지,<br><em>필요한 연결</em>을 설계합니다</h1>
-      <p class="lead">창업·매출 확대·판로 개척·해외 진출·사업 전환. 지금 단계에 필요한 사람, 제품, 기술, 정보를 검증된 파트너 중에서 비교해 연결해 드립니다.</p>
+      <p class="lead">연결 자체가 아니라 연결로 얻는 결과를 드립니다. 창업, 매출 확대, 판로 개척, 해외 진출, 사업 전환까지 지금 단계에 필요한 사람·제품·기술·정보를 검증된 파트너 중에서 비교해 연결합니다.</p>
       <div class="cta">
         <a class="btn gold" href="#consult">무료 상담 신청</a>
         <a class="btn ghost" href="#plan">창업 비용 미리 계산하기</a>
@@ -257,6 +260,24 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   <div class="grid" style="gap:14px">
     <div class="head"><p class="eyebrow">지금 어떤 상황이세요?</p><h2>다섯 가지 입구에서 시작합니다</h2></div>
     <div class="who" id="who"></div>
+  </div>
+
+  <div class="grid" style="gap:14px">
+    <div class="head"><p class="eyebrow">Problem → Result</p><h2>인맥의 숫자보다, 문제를 얼마나 풀었는지</h2><p class="muted">고객마다 고민이 다르고, 얻어 가는 결과도 다릅니다.</p></div>
+    <div class="tablewrap">
+      <table class="value">
+        <thead><tr><th>고객</th><th>고민</th><th>뉴뷰티넥서스가 푸는 문제</th><th>최종 가치</th></tr></thead>
+        <tbody>
+          <tr><td><strong>예비 창업자</strong></td><td>무엇부터 시작해야 할까?</td><td>창업 방향과 필요한 자원 연결</td><td><span class="pill gold">창업 준비의 효율성</span></td></tr>
+          <tr><td><strong>기존 뷰티샵 원장</strong></td><td>매출을 더 올리고 싶다</td><td>신규 제품·기술·공급사 연결</td><td><span class="pill gold">추가 수익 기회</span></td></tr>
+          <tr><td><strong>화장품 제조사</strong></td><td>제품을 팔 곳이 부족하다</td><td>국내외 유통망 연결</td><td><span class="pill gold">신규 매출 기회</span></td></tr>
+          <tr><td><strong>해외 바이어</strong></td><td>믿을 만한 한국 공급사를 찾고 싶다</td><td>제품과 제조사 발굴</td><td><span class="pill gold">소싱 시간 절약</span></td></tr>
+          <tr><td><strong>뷰티 교육기관</strong></td><td>교육생을 모집하고 싶다</td><td>교육 수요자 연결</td><td><span class="pill gold">신규 교육생 확보</span></td></tr>
+          <tr><td><strong>뷰티 장비 업체</strong></td><td>새로운 판매처가 필요하다</td><td>구매 가능성이 있는 사업자 연결</td><td><span class="pill gold">판매 기회 확대</span></td></tr>
+          <tr><td><strong>사업 전환 고객</strong></td><td>사업을 어떻게 정리해야 할까?</td><td>필요한 전문가와 대안 연결</td><td><span class="pill gold">시간·비용 부담 감소</span></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="grid" style="gap:14px">
@@ -364,17 +385,63 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   </div>
 </section>
 
+<!-- ============ 원장님 추가 매출 ============ -->
+<section class="view" id="v-owner" hidden>
+  <div class="head">
+    <p class="eyebrow">For Shop Owners · 기존 원장님</p>
+    <h2>시술 외 매출, 기존 고객에게서 찾습니다</h2>
+    <p class="muted">새 고객을 모으기 전에 지금 오시는 고객에게 맞는 홈케어 제품과 신규 관리를 더하는 방법입니다. 원장님의 고객층과 운영 상황을 먼저 분석합니다.</p>
+  </div>
+  <div class="grid g2" style="align-items:start">
+    <div class="panel grid" style="gap:12px">
+      <h3>진행 순서</h3>
+      <ol class="steps">
+        <li><strong>고객층·운영 분석</strong>: 연령, 피부 고민, 방문 주기, 현재 판매 품목</li>
+        <li><strong>홈케어 제품 추천</strong>: 관리와 이어지는 제품군을 2–3개 공급사 비교안으로</li>
+        <li><strong>공급사 연결·조건 협의</strong>: 공급가, 최소 주문량, 샘플, 반품 조건</li>
+        <li><strong>제품 교육·판매 방법</strong>: 상담 스크립트, 진열, 관리 후 추천 타이밍</li>
+        <li><strong>재구매 관리</strong>: 소진 시점 알림, 재주문 일정 정리</li>
+      </ol>
+      <p class="note">필요하면 신규 기술 교육(두피·헤드스파 등), 장비 도입, 다른 업종 샵과의 교차 소개(협업 파트너)까지 이어서 연결합니다.</p>
+    </div>
+    <div class="panel grid" style="gap:12px">
+      <h3>원장님이 얻는 것</h3>
+      <ul class="steps">
+        <li>기존 고객에게 판매할 수 있는 상품 증가</li>
+        <li>시술 외 매출원 확보</li>
+        <li>제품과 공급사를 찾는 시간 절약</li>
+        <li>제품 교육과 판매 방법에 관한 정보</li>
+        <li>고객 재구매를 통한 반복 매출</li>
+      </ul>
+      <p class="note"><strong>수수료 공개</strong>: 연결된 공급사가 최초 구매와 이후 재주문 금액의 일정 비율을 뉴뷰티넥서스에 지급합니다. 원장님이 따로 내는 비용은 없으며, 어떤 공급사가 수수료를 지급하는지 계약 전에 알려 드립니다.</p>
+    </div>
+  </div>
+  <div class="panel grid" style="gap:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap"><h3>홈케어 추가 매출 계산</h3><span class="pill">예시 계산 · 우리 샵 숫자로 바꿔 보세요</span></div>
+    <div class="grid g3" id="ow">
+      <label class="f" for="ow-cust">월 방문 고객 (명)<input type="text" inputmode="numeric" id="ow-cust" value="120"></label>
+      <label class="f" for="ow-rate">홈케어 구매 고객 비율 (%)<input type="text" inputmode="numeric" id="ow-rate" value="20"></label>
+      <label class="f" for="ow-price">평균 판매가 (원)<input type="text" inputmode="numeric" id="ow-price" value="45000"></label>
+      <label class="f" for="ow-margin">원장님 판매 마진 (%)<input type="text" inputmode="numeric" id="ow-margin" value="40"></label>
+      <label class="f" for="ow-repeat">구매 고객 중 다음 달 재구매 (%)<input type="text" inputmode="numeric" id="ow-repeat" value="50"></label>
+    </div>
+    <div class="compare" id="ow-out"></div>
+    <p class="muted" style="font-size:13px">재구매 고객이 매달 쌓이는 구조라서, 같은 방문 고객 수에서도 몇 달 뒤 홈케어 매출이 첫 달보다 커집니다. 실제 수치는 상담에서 원장님 매장 자료로 다시 계산합니다.</p>
+  </div>
+  <div><a class="btn gold" href="#consult" id="ow-cta">추가 매출 상담 신청</a></div>
+</section>
+
 <!-- ============ 파트너·브랜드 ============ -->
 <section class="view" id="v-partners" hidden>
   <div class="head">
     <p class="eyebrow">Partner Network</p>
     <h2>파트너 · 브랜드</h2>
-    <p class="muted">고객에게 소개되는 모든 파트너는 같은 기준으로 검증합니다. 화장품 제조사·브랜드라면 국내 샵 판로와 해외 바이어를 함께 연결해 드립니다.</p>
+    <p class="muted">좋은 제품과 교육이 있어도 팔 곳과 배울 사람을 찾기는 어렵습니다. 뉴뷰티넥서스가 제조사·교육기관·장비 업체 대신 맞는 거래처를 찾아 연결하고, 실제 거래가 성사된 매출을 기준으로만 수수료를 받습니다.</p>
   </div>
   <div class="net">
-    <div><b>뷰티 기술 교육기관</b><small>피부·두피·바디·왁싱 아카데미, 국가자격 과정</small></div>
-    <div><b>장비 공급사</b><small>피부·두피 관리 장비, 베드·소모품</small></div>
-    <div><b>화장품 제조사·브랜드</b><small>전문가용 라인, OEM·ODM, 인디 브랜드</small></div>
+    <div><b>화장품 제조사·브랜드</b><small>국내 유통망 · 뷰티샵·병원 B2B 거래처 · 해외 바이어 · 설명회 · 브랜드 협업 → 신규 거래처, 영업 비용 절감</small></div>
+    <div><b>뷰티 기술 교육기관</b><small>창업 예정자·원장님 교육 수요 연결 → 신규 교육생 확보</small></div>
+    <div><b>뷰티 장비 업체</b><small>창업·확장 중인 사업자 연결 → 판매 기회 확대</small></div>
     <div><b>인테리어·간판</b><small>소형 샵 전문 시공, 간판·사인물</small></div>
     <div><b>마케팅·예약</b><small>플레이스·SNS 운영, 예약·CRM 세팅</small></div>
     <div><b>해외 바이어·에이전트</b><small>중국·동남아 수입사, 현지 창업 파트너</small></div>
@@ -392,7 +459,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     </div>
     <form class="panel grid" id="partner-form" style="gap:12px">
       <h3>파트너 · 브랜드 등록 신청</h3>
-      <label class="f" for="pa-kind">유형<select id="pa-kind"><option>화장품 제조사·브랜드</option><option>교육기관</option><option>장비 공급사</option><option>인테리어·간판</option><option>마케팅·예약</option></select></label>
+      <label class="f" for="pa-kind">유형<select id="pa-kind"><option>화장품 제조사·브랜드</option><option>교육기관</option><option>장비 업체</option><option>인테리어·간판</option><option>마케팅·예약</option></select></label>
       <label class="f" for="pa-name">회사명<input type="text" id="pa-name" required placeholder="회사명"></label>
       <fieldset><legend style="font-size:14px">원하는 연결 (여러 개 선택)</legend><div class="chips" id="pa-want"></div></fieldset>
       <div><button class="btn" type="submit">등록 신청</button></div>
@@ -405,19 +472,22 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   <div class="head">
     <p class="eyebrow">Global Buyers · 海外买家</p>
     <h2 class="bil">한국 뷰티 제품과 기술을 찾는 해외 바이어<span class="zh">寻找韩国美容产品与技术的海外买家</span></h2>
-    <p class="muted">검증된 한국 제조사 소싱, 기술 연수 투어, 현지 창업 라이선스까지 한·중 이중언어로 진행합니다.</p>
+    <p class="muted">한국의 수많은 브랜드 중 무엇을 고를지 판단하기 어렵다면, 국가·고객층·희망 가격대·판매 채널에 맞는 공급사를 찾아 비교할 수 있게 정리해 드립니다. 한·중 이중언어로 진행합니다.</p>
   </div>
-  <div class="grid g3">
-    <article class="card"><span class="pill gold" style="justify-self:start">SOURCING</span><h3 class="bil">한국 제품 소싱 대행<span class="zh">韩国产品采购代理</span></h3><p class="muted">요청 조건에 맞는 제조사·브랜드 후보와 샘플, 견적을 정리해 드립니다. 수출 등록(NMPA 등) 진행 여부를 함께 확인합니다.</p></article>
-    <article class="card"><span class="pill gold" style="justify-self:start">TRAINING TOUR</span><h3 class="bil">한국 뷰티 기술 연수 투어<span class="zh">韩国美容技术研修之旅</span></h3><p class="muted">교육기관 수강, 샵 견학, 공급사 미팅을 묶은 3–5일 일정입니다. 통역과 일정 조율을 포함합니다.</p></article>
-    <article class="card"><span class="pill gold" style="justify-self:start">LICENSE</span><h3 class="bil">현지 창업 · 라이선스 패키지<span class="zh">海外开店与授权方案</span></h3><p class="muted">K-두피 리추얼 등 검증된 프로그램을 매뉴얼·교육·제품 키트와 함께 현지 샵에 도입합니다.</p></article>
+  <div class="grid g2">
+    <article class="card"><span class="pill gold" style="justify-self:start">18 · SOURCING</span><h3 class="bil">한국 화장품 제조사 발굴·연결<span class="zh">韩国化妆品厂商寻找与对接</span></h3><p class="muted">조건에 맞는 제조사·브랜드 후보를 비교표, 샘플, 견적과 함께 드립니다. 거래가 성사되면 소싱·거래 수수료가 발생합니다.</p></article>
+    <article class="card"><span class="pill gold" style="justify-self:start">19 · SKILL</span><h3 class="bil">한국 뷰티 교육·기술 파트너 연결<span class="zh">韩国美容教育与技术合作对接</span></h3><p class="muted">교육기관 수강, 샵 견학, 기술 파트너 미팅을 연결합니다. 연수 일정이 필요하면 3–5일 투어로 묶어 드립니다.</p></article>
   </div>
+  <p class="note">국가별 화장품 수입·판매 규정, 인증(중국 NMPA 등), 통관, 표시사항은 거래 전에 별도로 확인합니다. · 各国化妆品进口与销售法规、认证、清关及标签要求需在交易前另行确认。</p>
   <form class="panel grid" id="buyer-form" style="gap:14px">
     <h3 class="bil">소싱 · 연수 요청서<span class="zh">采购 / 研修需求表</span></h3>
     <div class="grid g3">
       <label class="f" for="by-country"><span class="bil">국가·도시<span class="zh">国家 / 城市</span></span><input type="text" id="by-country" required placeholder="예: 上海 / 상하이"></label>
-      <label class="f" for="by-need"><span class="bil">필요한 것<span class="zh">需求类型</span></span><select id="by-need"><option>제품 소싱 · 产品采购</option><option>기술 연수 · 技术研修</option><option>현지 창업 라이선스 · 开店授权</option></select></label>
+      <label class="f" for="by-need"><span class="bil">필요한 것<span class="zh">需求类型</span></span><select id="by-need"><option>제조사 발굴 · 寻找厂商</option><option>교육·기술 파트너 · 教育与技术合作</option></select></label>
       <label class="f" for="by-qty"><span class="bil">예상 규모<span class="zh">预计规模</span></span><select id="by-qty"><option>테스트 주문 · 试单</option><option>정기 거래 · 长期合作</option><option>1–5명 연수 · 1–5人</option><option>6명 이상 연수 · 6人以上</option></select></label>
+      <label class="f" for="by-target"><span class="bil">주 고객층<span class="zh">目标客群</span></span><input type="text" id="by-target" placeholder="예: 30–40대 여성 · 30-40岁女性"></label>
+      <label class="f" for="by-pricerange"><span class="bil">희망 가격대<span class="zh">期望价位</span></span><select id="by-pricerange"><option>대중가 · 大众价位</option><option>중고가 · 中高端</option><option>프리미엄 · 高端</option></select></label>
+      <label class="f" for="by-channel"><span class="bil">판매 채널<span class="zh">销售渠道</span></span><select id="by-channel"><option>미용실·에스테틱 · 美容院</option><option>온라인 · 电商</option><option>오프라인 매장 · 线下门店</option><option>도매 · 批发</option></select></label>
     </div>
     <label class="f" for="by-memo"><span class="bil">상세 요청<span class="zh">具体需求</span></span><textarea id="by-memo" placeholder="예: 敏感肌修护类精华，小批量试单 / 민감 피부 진정 앰플, 소량 테스트 주문"></textarea></label>
     <div><button class="btn" type="submit">요청서 작성 · 提交</button></div>
@@ -428,13 +498,13 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
 <section class="view" id="v-transition" hidden>
   <div class="head">
     <p class="eyebrow">Shift · 전환 · 양도 · 정리</p>
-    <h2>사업 전환 · 샵인샵 · 양도양수</h2>
-    <p class="muted">정리하는 원장님의 공간과 장비는 다음 창업자에게 비용을 줄인 출발점이 됩니다. 나가는 쪽과 들어오는 쪽을 함께 상담해 연결합니다.</p>
+    <h2>폐업 · 업종 전환 · 사업 양도</h2>
+    <p class="muted">정리 과정의 부담을 줄이고, 폐업 대신 다른 길이 있는지 함께 찾습니다. 당장의 매출보다 오래 함께할 신뢰를 먼저 생각합니다.</p>
   </div>
   <div class="grid g3">
-    <article class="card"><h3>사업 전환 컨설팅</h3><p class="muted">정리할지, 업종을 바꿀지, 샵인샵으로 공간을 나눌지 숫자로 비교합니다.</p><span class="pill" style="justify-self:start">고객 부담 · 상담 후 견적</span></article>
-    <article class="card"><h3>샵인샵 · 양도양수 매칭</h3><p class="muted">공간을 내줄 샵, 자리를 찾는 창업자, 인수 희망자를 지역·업종 궁합으로 연결합니다.</p><span class="pill" style="justify-self:start">성사 시 성공보수</span></article>
-    <article class="card"><h3>장비 · 재고 재판매</h3><p class="muted">쓰던 장비와 남은 제품을 필요한 샵에 연결해 잔존 가치를 돌려받습니다.</p><span class="pill" style="justify-self:start">판매 시 재판매 수수료</span></article>
+    <article class="card"><h3>정리 전문가 연결</h3><p class="muted">장비 매각업체, 원상복구 업체, 세무사 등 정리에 필요한 전문가를 연결합니다.</p><span class="pill" style="justify-self:start">컨설팅 비용 · 적법한 제휴 수수료</span></article>
+    <article class="card"><h3>업종 전환 제안</h3><p class="muted">폐업 대신 전환을 원하면 새로운 제품과 사업 모델을 제안합니다.</p><span class="pill" style="justify-self:start">고객 부담 · 상담 후 견적</span></article>
+    <article class="card"><h3>사업 양도 · 샵인샵</h3><p class="muted">공간과 시설을 넘기거나 나눠 쓸 사람을 찾아, 남은 가치를 돌려받도록 돕습니다.</p><span class="pill" style="justify-self:start">성사 시 성공보수</span></article>
   </div>
   <div class="grid" style="gap:12px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h3>공간 매물 보드</h3><div class="chips" id="sp-filter"></div></div>
@@ -504,7 +574,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   /* ---------- 고객군 5 ---------- */
   const SEGS = [
     { k: 'A', name: '예비 창업자', title: '뷰티 창업을 준비해요', desc: '방향, 비용, 교육, 장비, 인테리어까지 한 번에', href: '#plan', go: '창업 플래너' },
-    { k: 'B', name: '기존 원장님', title: '추가 매출이 필요해요', desc: '업종 추가, 신규 기술·제품 도입, 운영 진단', href: '#services', go: '성장 서비스', filter: 'B' },
+    { k: 'B', name: '기존 원장님', title: '추가 매출이 필요해요', desc: '홈케어 제품, 신규 기술·장비, 협업 파트너', href: '#owner', go: '추가 매출 계산' },
     { k: 'C', name: '제조사·브랜드', title: '판로를 넓히고 싶어요', desc: '국내 샵 네트워크와 해외 바이어 연결', href: '#partners', go: '파트너 등록' },
     { k: 'D', name: '해외 바이어', title: '한국 제품·기술을 찾아요', desc: '소싱 대행 · 연수 투어 · 라이선스 · 韩中双语', href: '#global', go: '요청서 작성' },
     { k: 'E', name: '전환·정리', title: '사업 전환을 고민해요', desc: '업종 전환, 샵인샵, 양도양수, 장비 재판매', href: '#transition', go: '전환·양도' }
@@ -520,22 +590,22 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     ['A', 4, '창업 장비·제품 공급사 연결', '필요한 장비와 제품을 효율적으로 확보', '공급사 계약 수수료', 'p'],
     ['A', 5, '인테리어·간판·마케팅 업체 연결', '여러 업체를 직접 찾는 번거로움 감소', '협력업체 소개 수수료', 'p'],
     ['A', 6, '창업 패키지 구성', '창업 준비 과정을 한 번에 진행', '창업 패키지 운영 수익', 'c'],
-    ['B', 7, '업종 추가·신규 메뉴 컨설팅', '기존 고객으로 추가 매출', '컨설팅 비용', 'c'],
-    ['B', 8, '신규 기술 교육 연결 (두피·헤드스파 등)', '검증된 교육을 빠르게 도입', '교육기관 제휴 수수료', 'p'],
-    ['B', 9, '신규 제품·장비 도입 연결', '좋은 조건으로 비교 도입', '공급사 계약 수수료', 'p'],
-    ['B', 10, '매장 운영 진단 (객단가·재방문·마케팅)', '매출이 새는 곳을 숫자로 확인', '진단비 · 월 자문료', 'c'],
-    ['C', 11, '국내 샵·유통 판로 연결', '검증된 샵 네트워크에 납품', '판매·납품 수수료', 'p'],
-    ['C', 12, '원장님 대상 제품 설명회·샘플링', '실사용 후기와 초도 주문 확보', '행사 운영비', 'c'],
-    ['C', 13, '해외 바이어 매칭·수출 상담', '새로운 수출 기회', '수출 중개 수수료', 's'],
-    ['C', 14, '브랜드 교육 자료·콘텐츠 제작', '판매하는 샵의 설명을 표준화', '제작비', 'c'],
-    ['D', 15, '한국 제품 소싱 대행', '검증된 제조사를 빠르게 확보', '소싱 수수료', 'c'],
-    ['D', 16, '한국 뷰티 기술 연수 투어', '기술·현장·공급사를 한 번에', '투어 패키지 수익', 'c'],
-    ['D', 17, '현지 창업·라이선스 패키지', '검증된 프로그램으로 현지 창업', '라이선스비 · 로열티', 'c'],
-    ['E', 18, '사업 전환 컨설팅', '손실을 줄이고 새 방향 설정', '컨설팅 비용', 'c'],
-    ['E', 19, '샵인샵·양도양수 매칭', '공간·시설 가치 회수', '매칭 성공보수', 's'],
-    ['E', 20, '장비·재고 재판매 연결', '남은 장비와 재고의 잔존 가치 회수', '재판매 수수료', 's']
+    ['B', 7, '신규 수익 아이템 추천', '기존 고객을 활용한 추가 매출 기회', '제품 공급 수수료', 'p'],
+    ['B', 8, '화장품 공급사 연결', '적합한 제품 확보, 판매 품목 확대', '반복 발주 수수료', 'p'],
+    ['B', 9, '신규 뷰티 기술 교육 연결', '새로운 서비스 도입', '교육 연결 수수료', 'p'],
+    ['B', 10, '뷰티 장비 공급사 연결', '신규 관리 프로그램 구성', '장비 판매 연결 수수료', 'p'],
+    ['B', 11, '사업 확장 컨설팅', '매출 구조 개선, 확장 방향 설정', '컨설팅 비용', 'c'],
+    ['B', 12, '협업 파트너 연결', '다른 업종 고객과 교차 소개', '제휴·협업 운영 수익', 'p'],
+    ['C', 13, '국내 유통망 연결', '새로운 판매처 확보', '매출 연동 수수료', 'p'],
+    ['C', 14, '해외 바이어 연결', '해외 시장 진출 기회', '수출 거래 성사 수수료', 's'],
+    ['C', 15, '뷰티샵·병원 등 B2B 거래처 연결', '신규 거래처와 매출 확대', '공급 계약 수수료', 'p'],
+    ['C', 16, '제품 설명회·세미나 기획', '제품 인지도 향상, 잠재 고객 확보', '행사 기획·운영비', 'c'],
+    ['C', 17, '브랜드 협업 파트너 연결', '공동 마케팅, 신규 판매 채널', '협업 프로젝트 수수료', 's'],
+    ['D', 18, '한국 화장품 제조사 발굴·연결', '원하는 제품과 제조사를 빠르게 탐색', '소싱 수수료 · 거래 수수료', 's'],
+    ['D', 19, '한국 뷰티 교육·기술 파트너 연결', '한국 뷰티 기술 도입', '교육·파트너 연결 수수료', 'p'],
+    ['E', 20, '폐업·업종 전환·사업 양도 전문가 연결', '정리 부담 감소, 새로운 사업 기회 탐색', '컨설팅 비용 · 적법한 제휴 수수료', 'c']
   ];
-  const GROUP = { A: '신규 창업자', B: '기존 원장님', C: '제조사·브랜드', D: '해외 바이어', E: '전환·폐업 준비' };
+  const GROUP = { A: '신규 창업자', B: '기존 뷰티샵 원장님', C: '화장품 제조사·브랜드', D: '해외 바이어·유통사', E: '사업 전환·폐업 준비 고객' };
   let svcSel = 'all';
   $('#svc-filter').innerHTML = chip('sf', 'all', 'radio', true, '전체 20') + Object.entries(GROUP).map(([k, v]) => chip('sf', k, 'radio', false, `${k} · ${v}`)).join('');
   function renderSvcs() {
@@ -597,7 +667,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   });
 
   /* ---------- 파트너 등록 ---------- */
-  $('#pa-want').innerHTML = ['국내 샵 판로', '원장님 설명회', '해외 바이어', '창업자 연결', '교육 자료 제작'].map((w, i) => chip('pwant', w, 'checkbox', i === 0)).join('');
+  $('#pa-want').innerHTML = ['국내 유통망', '뷰티샵·병원 거래처', '해외 바이어', '제품 설명회·세미나', '브랜드 협업', '교육생 모집', '장비 판매처'].map((w, i) => chip('pwant', w, 'checkbox', i === 0)).join('');
   $('#partner-form').addEventListener('submit', e => {
     e.preventDefault();
     const list = store.get('partners', []);
@@ -608,7 +678,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   /* ---------- 해외 바이어 ---------- */
   $('#buyer-form').addEventListener('submit', e => {
     e.preventDefault();
-    const txt = `[해외 바이어 요청 · 海外买家需求]\n지역 · 地区: ${$('#by-country').value}\n유형 · 类型: ${$('#by-need').value}\n규모 · 规模: ${$('#by-qty').value}\n내용 · 内容: ${$('#by-memo').value}`;
+    const txt = `[해외 바이어 요청 · 海外买家需求]\n지역 · 地区: ${$('#by-country').value}\n유형 · 类型: ${$('#by-need').value}\n규모 · 规模: ${$('#by-qty').value}\n고객층 · 客群: ${$('#by-target').value}\n가격대 · 价位: ${$('#by-pricerange').value}\n채널 · 渠道: ${$('#by-channel').value}\n내용 · 内容: ${$('#by-memo').value}`;
     location.hash = 'consult';
     setTimeout(() => { const d = $('#cf').querySelector('[name=seg][value="D"]'); if (d) { d.checked = true; prep(); } $('#cf-memo').value = txt; $('#cf-ch').value = '위챗 · WeChat'; }, 0);
     toast('요청 내용을 상담 신청서에 옮겼습니다 · 已转入咨询表');
@@ -633,10 +703,10 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   /* ---------- 상담 신청 ---------- */
   const PREP = {
     A: ['생각 중인 업종과 지역', '준비 가능한 총 자금 (대출 포함 여부)', '자격증·경력, 교육 필요 여부', '희망 오픈 시기'],
-    B: ['최근 3개월 월평균 매출과 객단가', '주 고객층과 재방문 비율', '추가하고 싶은 메뉴나 기술', '남는 공간·시간대'],
+    B: ['최근 3개월 월평균 매출과 객단가', '주 고객층(연령·피부 고민)과 방문 주기', '지금 판매 중인 제품', '추가하고 싶은 메뉴나 기술'],
     C: ['제품 라인과 전성분표', '화장품책임판매업 등록, 수출 등록 진행 상황', '희망 공급가와 최소 주문 수량', '원하는 판로 (국내 샵 / 해외)'],
     D: ['찾는 제품 카테고리 또는 기술', '예상 수량·인원과 일정', '현지 수입·판매 자격 · 当地进口资质', '선호 소통 채널 · 沟通方式'],
-    E: ['현재 계약 조건 (임대 기간·보증금)', '보유 장비·재고 목록', '정리 희망 시기', '전환·양도·샵인샵 중 생각하는 방향']
+    E: ['현재 계약 조건 (임대 기간·보증금·원상복구 조항)', '보유 장비·재고 목록', '정리 희망 시기', '폐업·전환·양도 중 생각하는 방향']
   };
   $('#cf-seg').innerHTML = SEGS.map((s, i) => chip('seg', s.k, 'radio', i === 0, `${s.k} · ${s.name}`)).join('');
   function prep() {
@@ -657,7 +727,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   copyBtn('#cf-copy', '#cf-text');
 
   /* ---------- 라우팅 ---------- */
-  const VIEWS = ['home', 'services', 'plan', 'partners', 'global', 'transition', 'consult'];
+  const VIEWS = ['home', 'services', 'plan', 'owner', 'partners', 'global', 'transition', 'consult'];
   function route() {
     const h = location.hash.slice(1); const v = VIEWS.includes(h) ? h : 'home';
     VIEWS.forEach(x => { $('#v-' + x).hidden = x !== v; });
@@ -670,6 +740,21 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     svcSel = a.dataset.filter; const r = $('#svc-filter').querySelector(`[value="${svcSel}"]`); if (r) r.checked = true; renderSvcs();
   });
 
-  renderSvcs(); plan(); renderSpaces(); prep(); route();
+  /* ---------- 원장님 추가 매출 ---------- */
+  const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+  const owIds = ['ow-cust', 'ow-rate', 'ow-price', 'ow-margin', 'ow-repeat'];
+  function owner() {
+    const v = Object.fromEntries(owIds.map(id => [id, Math.max(0, parseFloat(String($('#' + id).value).replace(/[^0-9.]/g, '')) || 0)]));
+    const newBuyers = v['ow-cust'] * v['ow-rate'] / 100, rr = Math.min(v['ow-repeat'], 95) / 100, price = v['ow-price'], mg = v['ow-margin'] / 100;
+    const m1 = newBuyers * price;
+    let buyers = 0, yearRev = 0, m6 = 0;
+    for (let m = 1; m <= 12; m++) { buyers = buyers * rr + newBuyers; yearRev += buyers * price; if (m === 6) m6 = buyers * price; }
+    $('#ow-out').innerHTML = [['첫 달 홈케어 매출', won(m1)], ['6개월 차 월 매출', won(m6)], ['1년 홈케어 매출', won(yearRev)], ['1년 원장님 이익 (마진)', won(yearRev * mg)]]
+      .map(([l, x], i) => `<div class="kpi"${i === 3 ? ' style="border-color:var(--gold)"' : ''}><div class="l">${l}</div><div class="v"${i === 3 ? ' style="color:var(--gold)"' : ''}>${x}</div></div>`).join('');
+  }
+  owIds.forEach(id => $('#' + id).addEventListener('input', owner));
+  $('#ow-cta').addEventListener('click', () => setTimeout(() => { const b = $('#cf').querySelector('[name=seg][value="B"]'); if (b) { b.checked = true; prep(); } $('#cf-memo').value = `홈케어 추가 매출 상담: 월 방문 ${$('#ow-cust').value}명 · 평균 판매가 ${$('#ow-price').value}원`; }, 0));
+
+  renderSvcs(); plan(); renderSpaces(); prep(); owner(); route();
 })();
 </script>

@@ -171,6 +171,7 @@ td select { padding: 6px 8px; width: auto; }
 .phase ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
 .phase .kpi-line { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); border-top: 1px dashed var(--line); padding-top: 8px; }
 .risk li { margin-bottom: 6px; }
+.stars { color: var(--rose); letter-spacing: 1px; white-space: nowrap; }
 .life { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .stage { padding: 14px; display: grid; gap: 6px; align-content: start; border-left: 1px solid var(--line); background: var(--surface); }
 .stage:first-child { border-left: 0; }
@@ -563,6 +564,51 @@ td select { padding: 6px 8px; width: auto; }
   </div>
 
   <div class="panel rev" style="display:grid;gap:12px">
+    <div><h3>수익 유형별 전략 우선순위 (대표 기준)</h3><p class="muted">별표는 시장 검증 순위가 아니라 현재 사업 방향에 따른 전략적 우선순위입니다. 장기 최우선은 원장님 화장품 공급의 <strong>반복 발주 수수료</strong>입니다.</p></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>수익 유형</th><th>발생 방식</th><th>특징</th><th>우선순위</th></tr></thead>
+        <tbody>
+          <tr><td><strong>창업 컨설팅</strong></td><td>상담·컨설팅 비용</td><td>단기 매출</td><td class="stars">★★★★★</td></tr>
+          <tr><td><strong>창업 패키지</strong></td><td>창업 준비 통합 지원</td><td>건별 고액 매출 가능</td><td class="stars">★★★★★</td></tr>
+          <tr><td><strong>화장품 유통 연결</strong></td><td>제품 판매액의 일정 비율</td><td><span class="pill r">반복 수익</span></td><td class="stars">★★★★★</td></tr>
+          <tr><td><strong>해외 바이어 연결</strong></td><td>수출 거래액의 일정 비율</td><td>거래 규모 확대 가능</td><td class="stars">★★★★★</td></tr>
+          <tr><td><strong>제조사 판로 개척</strong></td><td>신규 거래처 매출 수수료</td><td><span class="pill r">반복 수익</span></td><td class="stars">★★★★★</td></tr>
+          <tr><td><strong>교육기관 연결</strong></td><td>교육 등록 제휴 수수료</td><td>건별 수익</td><td class="stars">★★★★☆</td></tr>
+          <tr><td><strong>뷰티 장비 연결</strong></td><td>장비 판매 계약 수수료</td><td>건별 수익</td><td class="stars">★★★★☆</td></tr>
+          <tr><td><strong>사업 확장 컨설팅</strong></td><td>컨설팅 계약 비용</td><td>전문 서비스 수익</td><td class="stars">★★★★☆</td></tr>
+          <tr><td><strong>세미나 기획</strong></td><td>기획·운영 비용</td><td>프로젝트 수익</td><td class="stars">★★★☆☆</td></tr>
+          <tr><td><strong>폐업·전환 지원</strong></td><td>컨설팅·제휴 수수료</td><td>건별 수익 · 장기 신뢰</td><td class="stars">★★★☆☆</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid g2" style="align-items:start">
+    <div class="panel grid" style="gap:10px">
+      <span class="pill r" style="justify-self:start">반복 수익 설계</span>
+      <h3>공급사 계약에 꼭 넣을 조항</h3>
+      <ul class="risk">
+        <li><strong>최초 + 재주문 수수료</strong>: 소개한 거래처의 첫 거래뿐 아니라 이후 반복 발주에도 수수료 발생</li>
+        <li><strong>거래처 귀속 정의</strong>: 어떤 샵·바이어가 "뉴뷰티넥서스 소개 거래처"인지 명단으로 확정</li>
+        <li><strong>수수료 기간</strong>: 거래 유지 기간 전체 또는 최소 24개월 등 기간 명시</li>
+        <li><strong>직거래 우회 방지</strong>: 소개 후 직접 거래로 바꿔도 수수료 유지</li>
+        <li><strong>매출 자료 제공·정산 주기</strong>: 월별 거래처별 매출 자료 제공, 월 1회 정산</li>
+      </ul>
+    </div>
+    <div class="panel grid" style="gap:10px">
+      <span class="pill g" style="justify-self:start">자동화</span>
+      <h3>반복 수수료가 저절로 쌓이게</h3>
+      <ul class="risk">
+        <li>공급사 월 매출 자료(엑셀) 수신 → 거래처 명단과 자동 대조 → 정산서 생성</li>
+        <li>원장님 홈케어 소진 시점 알림 → 재주문 링크 발송 (원장님·공급사 모두 이득)</li>
+        <li>거래처별 월 매출 추이 대시보드 → 주문이 끊긴 샵에 먼저 연락</li>
+        <li>신규 거래처 연결 시 귀속 명단에 자동 등록, 공급사에 확인 메일</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel rev" style="display:grid;gap:12px">
     <div><h3>서비스 라인 · 상품화</h3><p class="muted">명함의 다섯 가지 업무에 샵인샵·이전 매칭을 더해 팔 수 있는 상품으로 바꿨습니다. 가격은 가정치이며 첫 3건의 계약으로 검증합니다.</p></div>
     <div class="tablewrap">
       <table>
@@ -718,6 +764,8 @@ td select { padding: 6px 8px; width: auto; }
       <li><strong>병원 네트워킹</strong>: 병원과의 제휴·창업 컨설팅·제품 공급은 가능하지만, 환자를 보내고 건당 소개비를 받는 구조는 피합니다. 중국 고객의 한국 시술 연결을 하려면 외국인환자 유치업 등록이 먼저입니다.</li>
       <li><strong>중국 수출</strong>: 중국에 화장품을 팔려면 NMPA 등록·비안(备案)이 필요합니다. 등록을 마친 브랜드부터 연결합니다.</li>
       <li><strong>샵인샵</strong>: 임차한 공간을 다시 빌려주는 전대는 건물주 동의가 필요합니다. 한 공간에서 두 사업자가 영업신고를 할 수 있는지 시설 기준을 관할 구청에 먼저 확인합니다.</li>
+      <li><strong>전문자격사 연결</strong>: 세무사·변호사 등은 관련 법에서 사건 소개 대가를 주고받는 것을 금지하므로 소개비 없는 무료 연결로 운영합니다. 장비 매각·원상복구 업체처럼 자격사가 아닌 곳과만 제휴 수수료를 계약합니다.</li>
+      <li><strong>반복 수수료 고지</strong>: 원장님에게 공급사가 재주문 수수료를 지급한다는 사실을 계약 전에 알려, 추천의 신뢰를 지킵니다.</li>
       <li><strong>양도양수 연결</strong>: 영업(시설·고객·노하우) 양도 중개는 가능하지만, 상가 임대차·부동산 중개에 해당하는 부분은 공인중개사와 협업합니다.</li>
       <li><strong>컨설팅 계약</strong>: 성과 보장 문구를 쓰지 말고, 범위·착수금·성공보수 조건을 서면 계약으로 남깁니다. 해외 계약은 통화·분쟁 해결 조항을 넣습니다.</li>
     </ul>
