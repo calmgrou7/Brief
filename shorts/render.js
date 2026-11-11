@@ -9,6 +9,9 @@ const { charSVG } = require("./characters.js");
 const W = 1080, H = 1920;
 const epDir = path.resolve(process.argv[2] || path.join(__dirname, "ep01"));
 const ep = JSON.parse(fs.readFileSync(path.join(epDir, "slides.json"), "utf8"));
+// voice.py가 만든 timing.json이 있으면 내레이션 길이에 맞춘 슬라이드 길이 사용
+const timingPath = path.join(epDir, "timing.json");
+if (fs.existsSync(timingPath)) JSON.parse(fs.readFileSync(timingPath, "utf8")).durs.forEach((d, i) => (ep.slides[i].dur = d));
 const FPS = ep.fps || 24;
 const fontDir = path.join(__dirname, "assets", "fonts");
 

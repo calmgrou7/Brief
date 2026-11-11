@@ -8,6 +8,9 @@ import numpy as np
 SR = 44100
 ep_dir = Path(sys.argv[1] if len(sys.argv) > 1 else Path(__file__).parent / "ep01")
 slides = json.loads((ep_dir / "slides.json").read_text())["slides"]
+if (ep_dir / "timing.json").exists():  # 내레이션 길이에 맞춘 슬라이드 길이
+    for s, d in zip(slides, json.loads((ep_dir / "timing.json").read_text())["durs"]):
+        s["dur"] = d
 durs = [s["dur"] for s in slides]
 TOTAL = sum(durs)
 BPM = 116
