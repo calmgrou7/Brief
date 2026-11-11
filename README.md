@@ -5,7 +5,8 @@
 - 기획서: [`docs/PLAN.md`](docs/PLAN.md)
 - 사이트: [`web/index.html`](web/index.html) (빌드 없는 단일 페이지, 정적 호스팅은 `web/` 폴더만 공개)
 - DB 스키마: [`supabase/migrations/`](supabase/migrations/)
-- 초기 회원명부: [`data/members_seed.csv`](data/members_seed.csv) (DB에 이관 완료)
+- 회원명부: 2026-11-11 엑셀 명부(87명) DB 반영 완료. 이후 명부는 사이트 **관리 → 회원 일괄 등록**에 엑셀(.xlsx)을 그대로 업로드
+  (NO로 동명이인 구분, 추천인 칸 '창립'은 창립회원, 빈 칸은 기존 값 유지)
 
 ## 구조
 | 구성 | 내용 |

@@ -155,7 +155,7 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID()
 function blankMember(name){
   return {id:'', name, birthYear:'', company:'', title:'', products:'', industry:'',
     phone:'', email:'', address:'', joined:'', guardianId:'', status:'active', memo:'',
-    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:''};
+    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:'', isFounder:false, rosterNo:''};
 }
 
 const IMG_KEYS = {photo:'photoPath', companyImage:'companyImagePath', cardImage:'cardImagePath'};
@@ -163,11 +163,12 @@ const fromMember = r => ({id:r.id, name:r.name, birthYear:r.birth_year||'', comp
   products:r.products||'', industry:r.industry||'', phone:r.phone||'', email:r.email||'', address:r.address||'',
   joined:r.joined||'', guardianId:r.guardian_id||'', status:r.status||'active', memo:r.memo||'',
   photoPath:r.photo_path||'', companyImagePath:r.company_image_path||'', cardImagePath:r.card_image_path||'',
-  photo:'', companyImage:'', cardImage:''});
+  photo:'', companyImage:'', cardImage:'', isFounder:!!r.is_founder, rosterNo:r.roster_no ?? ''});
 const toMember = m => ({name:m.name, birth_year:m.birthYear||'', company:m.company||'', title:m.title||'',
   products:m.products||'', industry:m.industry||'', phone:m.phone||'', email:(m.email||'').trim().toLowerCase(),
   address:m.address||'', joined:m.joined||'', guardian_id:m.guardianId||null, status:m.status||'active', memo:m.memo||'',
-  photo_path:m.photoPath||'', company_image_path:m.companyImagePath||'', card_image_path:m.cardImagePath||''});
+  photo_path:m.photoPath||'', company_image_path:m.companyImagePath||'', card_image_path:m.cardImagePath||'',
+  is_founder:!!m.isFounder});
 const fromTerm = r => ({id:r.id, memberId:r.member_id, positionId:r.position_id, start:r.started_on, end:r.ended_on||''});
 const fromEvent = r => ({id:r.id, title:r.title, category:r.category||'', date:r.event_date, location:r.location||'',
   host:r.host_id||'', attendees:r.attendees ?? '', text:r.body||'', docs:r.docs||[], memo:r.memo||''});
@@ -229,24 +230,88 @@ async function uploadImage(memberId, kind, dataUrl){
   return path;
 }
 
-/* 엑셀(CSV) 일괄 등록: 이름으로 매칭, 명단에 없는 추천인은 '기존회원'으로 자동 생성 */
+/* 엑셀/CSV 일괄 등록
+   - 이름으로 매칭, 빈 칸은 기존 값 유지
+   - 추천인 칸 '창립' → 창립회원, '창립(홍길동)' → 창립회원 + 추천인 홍길동
+   - 명부에 없는 추천인은 '휴면' 회원으로 자동 생성 */
 async function importRows(rows){
   rows = rows.filter(r=>r.name);
-  const byName = n => D().members.find(m=>m.name===n);
-  const need = [...new Set(rows.flatMap(r=>[r.name, r.guardian]).filter(n=>n && !byName(n)))];
-  if(need.length){
-    const created = await q(sb.from('jw_members').insert(need.map(name=>({name}))).select('*'));
-    D().members.push(...created.map(fromMember));
+  rows.forEach(r=>{
+    const g = (r.guardian||'').trim();
+    r.founder = g.startsWith('창립');
+    r.guardian = g.startsWith('창립(') ? g.slice(3).replace(/[()]/g,'').trim() : (r.founder ? '' : g);
+  });
+  const M = () => D().members;
+  // 같은 이름이 여럿이면 명부 번호(NO)로 구분
+  const target = r => M().find(m=>r.no && String(m.rosterNo)===String(r.no) && m.name===r.name)
+    || M().find(m=>m.name===r.name && (!r.no || !m.rosterNo || String(m.rosterNo)===String(r.no)));
+  const guardianOf = n => M().filter(m=>m.name===n)
+    .sort((a,b)=>(a.status==='inactive')-(b.status==='inactive') || (a.rosterNo||9999)-(b.rosterNo||9999))[0];
+  let added = 0, guardians = 0;
+  for(const r of rows){
+    if(target(r)) continue;
+    const [row] = await q(sb.from('jw_members').insert({name:r.name, roster_no:+r.no||null}).select('*'));
+    M().push(fromMember(row)); added++;
+  }
+  const missing = [...new Set(rows.map(r=>r.guardian).filter(n=>n && !guardianOf(n)))];
+  if(missing.length){
+    const created = await q(sb.from('jw_members').insert(missing.map(name=>({name, status:'inactive', memo:'명부에 없는 추천인 (전 회원 추정)'}))).select('*'));
+    M().push(...created.map(fromMember)); guardians = missing.length;
   }
   for(const r of rows){
-    const patch = {};
+    const patch = {is_founder:r.founder};
     if(r.joined) patch.joined = r.joined;
-    [['company','company'],['products','products'],['birthYear','birth_year'],['phone','phone'],['title','title']]
+    if(+r.no) patch.roster_no = +r.no;
+    [['company','company'],['products','products'],['birthYear','birth_year'],['phone','phone'],
+     ['title','title'],['address','address'],['memo','memo'],['industry','industry']]
       .forEach(([k,c])=>{ if(r[k]) patch[c] = r[k]; });
-    if(r.guardian) patch.guardian_id = byName(r.guardian).id;
-    if(Object.keys(patch).length) await q(sb.from('jw_members').update(patch).eq('id', byName(r.name).id));
+    if(r.guardian) patch.guardian_id = guardianOf(r.guardian).id;
+    else if(r.founder) patch.guardian_id = null;
+    const t = target(r);
+    await q(sb.from('jw_members').update(patch).eq('id', t.id));
+    t.rosterNo = patch.roster_no ?? t.rosterNo;
   }
-  return {added:need.length, total:rows.length};
+  return {added, guardians, total:rows.length};
+}
+
+/* 표(2차원 배열) → 회원 행. 머리글 줄을 자동으로 찾음 (제목 줄이 있어도 됨) */
+function rowsFromTable(table){
+  const norm = v => String(v ?? '').replace(/\s+/g,' ').trim();
+  const hi = table.findIndex(r=>r.some(c=>/^(성명|회원명|이름)$/.test(norm(c))));
+  if(hi < 0) throw new Error('"성명" 또는 "회원명" 머리글을 찾을 수 없습니다.');
+  const head = table[hi].map(norm);
+  const col = (...names) => head.findIndex(h=>names.some(n=>h.includes(n)));
+  const ix = {no:head.findIndex(h=>/^(NO|번호|순번)$/i.test(h)), joined:col('입회'), name:head.findIndex(h=>/^(성명|회원명|이름)$/.test(h)),
+    guardian:col('추천'), phone:col('전화','연락처','휴대'), company:col('근무처','회사','상호'), address:col('주소'),
+    products:col('업종','제품','서비스'), birthYear:col('출생'), title:col('직함','직위'), memo:col('비고','메모')};
+  const toJoined = v => {
+    if(v === '' || v == null) return '';
+    const t = typeof v === 'number' ? v.toFixed(2) : norm(v).replace(/[.\/-]+$/,'');
+    const m = t.match(/^(\d{4})[.\/-](\d{1,2})/); return m ? `${m[1]}-${m[2].padStart(2,'0')}` : '';
+  };
+  return table.slice(hi+1).map(r=>{
+    const o = {}; for(const k in ix) o[k] = ix[k] >= 0 ? norm(r[ix[k]]) : '';
+    o.joined = ix.joined >= 0 ? toJoined(r[ix.joined]) : '';
+    return o;
+  }).filter(o=>o.name);
+}
+let xlsxLib = null;
+function loadXLSX(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  return xlsxLib ||= new Promise((res,rej)=>{
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = ()=>res(window.XLSX); sc.onerror = ()=>rej(new Error('엑셀 모듈을 불러오지 못했습니다.'));
+    document.head.appendChild(sc);
+  });
+}
+async function readTableFile(f){
+  if(/\.xlsx?$/i.test(f.name)){
+    const X = await loadXLSX();
+    const wb = X.read(await f.arrayBuffer(), {type:'array'});
+    return X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, raw:true, defval:''});
+  }
+  return parseCSV(await f.text());
 }
 
 /* ===================== 조회 헬퍼 ===================== */
@@ -288,7 +353,7 @@ function typeTag(m){
   if(m.status==='inactive') return '<span class="tag gray">휴면</span>';
   return t ? `<span class="tag off">${esc(position(t.positionId)?.name||'임원')}</span>` : '<span class="tag">일반회원</span>';
 }
-const joinedLabel = m => m.joined ? m.joined.replace('-', '.') : '<span class="muted">기존회원</span>';
+const joinedLabel = m => m.joined ? m.joined.replace('-', '.') : m.isFounder ? '<span class="tag off">창립</span>' : '<span class="muted">기존회원</span>';
 const memberLink = m => m ? `<a href="#/member/${m.id}">${esc(m.name)}</a>` : '<span class="muted">-</span>';
 
 function readImage(file, max=520){
@@ -494,8 +559,9 @@ function filteredMembers(){
     if(ui.type==='officer' && !isOfficer(m.id)) return false;
     if(ui.type==='regular' && (isOfficer(m.id) || m.status==='inactive')) return false;
     if(ui.type==='inactive' && m.status!=='inactive') return false;
-    if(ui.year==='old' && m.joined) return false;
-    if(ui.year && ui.year!=='old' && !m.joined.startsWith(ui.year)) return false;
+    if(ui.year==='old' && (m.joined || m.isFounder)) return false;
+    if(ui.year==='founder' && !m.isFounder) return false;
+    if(ui.year && ui.year!=='old' && ui.year!=='founder' && !m.joined.startsWith(ui.year)) return false;
     return true;
   }).sort((a,b)=>(b.joined||'0').localeCompare(a.joined||'0') || a.name.localeCompare(b.name,'ko'));
 }
@@ -513,7 +579,7 @@ function Members(){
     <select class="input" id="type">
       <option value="">전체 구분</option><option value="officer">임원</option><option value="regular">일반회원</option><option value="inactive">휴면</option>
     </select>
-    <select class="input" id="year"><option value="">전체 입회연도</option>${years.map(y=>`<option>${y}</option>`).join('')}<option value="old">기존회원</option></select>
+    <select class="input" id="year"><option value="">전체 입회연도</option>${years.map(y=>`<option>${y}</option>`).join('')}<option value="founder">창립회원</option><option value="old">기존회원</option></select>
     <div class="row"><button class="btn sm ${ui.view==='table'?'pri':''}" data-v="table">표</button><button class="btn sm ${ui.view==='card'?'pri':''}" data-v="card">카드</button></div>
   </div></div>
   <div id="mlist">${memberList(list)}</div>`;
@@ -556,7 +622,7 @@ function MemberDetail(id){
       <table class="pc-table">
         <tr><th>회사</th><td colspan="3">${esc(m.company)||'-'} ${m.title?`· ${esc(m.title)}`:''}</td></tr>
         <tr><th>제품<br>(서비스)</th><td colspan="3" class="prod">${esc(m.products)||'-'}</td></tr>
-        <tr><th>입회연도</th><td>${m.joined?esc(m.joined.slice(0,4)):'기존회원'}</td><th>추천회원</th><td>${memberLink(member(m.guardianId))}</td></tr>
+        <tr><th>입회연도</th><td>${m.joined?esc(m.joined.slice(0,4)):m.isFounder?'창립회원':'기존회원'}</td><th>추천회원</th><td>${memberLink(member(m.guardianId))}</td></tr>
       </table>
     </div>
     <div class="grid" style="align-content:start">
@@ -595,6 +661,7 @@ function memberForm(m){
       ${f('industry','업종')}${f('phone','전화','tel')}
       ${f('email','로그인 이메일','email','',lock)}${f('joined','입회월 (비우면 기존회원)','month','',lock)}
       ${f('address','주소','text','full')}
+      <label class="full" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="isFounder" ${m.isFounder?'checked':''} ${lock}> 창립회원</label>
       <label>추천인<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
       <label>상태<select class="input" name="status" ${lock}><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
       ${imgf('photo','인물 사진')}${imgf('companyImage','회사 이미지')}${imgf('cardImage','명함 이미지')}
@@ -612,6 +679,7 @@ function memberForm(m){
       root.querySelector('#mf').onsubmit = async e=>{
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.target));
+        if(can.admin()) data.isFounder = 'isFounder' in data;
         if(!data.name.trim()) return toast('이름을 입력해주세요.');
         if(D().members.some(x=>x.name===data.name.trim() && x.id!==m.id) && !confirm('같은 이름의 회원이 있습니다. 그래도 저장할까요?')) return;
         const btn = e.submitter; if(btn){ btn.disabled = true; btn.textContent = '저장 중…'; }
@@ -844,11 +912,13 @@ function Settings(){
   return `
   <div class="head"><h1>관리·백업</h1></div>
   <div class="grid two">
-    <div class="panel"><h2>회원 일괄 등록 (엑셀 → CSV)</h2>
-      <p class="muted">엑셀에서 <b>CSV(UTF-8)</b>로 저장해 올리면 회원과 추천인 관계가 자동으로 만들어집니다. 같은 이름은 정보가 갱신됩니다.</p>
-      <pre class="text">입회월,회원명,추천인,회사,제품,출생연도,연락처
+    <div class="panel"><h2>회원 일괄 등록 (엑셀)</h2>
+      <p class="muted">회원명부 <b>엑셀(.xlsx)</b> 또는 CSV를 그대로 올리면 회원과 추천인 관계가 자동으로 만들어집니다.
+      같은 이름은 정보가 갱신되고, 빈 칸은 기존 값을 유지합니다. 추천인 칸의 <b>'창립'</b>은 창립회원으로 표시됩니다.</p>
+      <p class="muted" style="font-size:13px">인식하는 머리글: NO · 입회년월 · 성명 · 추천인 · 전화번호 · 근무처 · 주소 · 업종 · 비고</p>
+      <pre class="text" style="font-size:13px">NO,입회년월,성명,추천인,전화번호,근무처,주소,업종,비고
 2026-08,박홍진,김상원,영진종합유통,위생용품,1981,</pre>
-      <div class="row"><input type="file" id="csv" accept=".csv,text/csv" class="input"><button class="btn sm" id="tpl">양식 받기</button></div>
+      <div class="row"><input type="file" id="csv" accept=".xlsx,.xls,.csv" class="input"><button class="btn sm" id="tpl">양식 받기</button></div>
     </div>
     <div class="panel"><h2>회원 로그인 허용</h2>
       <p class="muted">회원 상세 → <b>정보 수정</b>에서 <b>로그인 이메일</b>을 입력하면 그 회원이 이메일 링크로 로그인할 수 있습니다.
@@ -886,8 +956,8 @@ const bind = {
     document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ ui.view=b.dataset.v; render(); });
     if($('#add')) $('#add').onclick = ()=>memberForm();
     if($('#exp')) $('#exp').onclick = ()=>{
-      const head = ['입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','추천인','추천횟수'];
-      const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.joined||'기존회원', m.name, t?'임원':'일반회원',
+      const head = ['NO','입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','추천인','추천횟수'];
+      const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.rosterNo, m.joined||(m.isFounder?'창립':'기존회원'), m.name, t?'임원':'일반회원',
         t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address,
         member(m.guardianId)?.name||'', recruits(m.id).length]; });
       download(`정우회_회원명부_${today()}.csv`, '﻿'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv');
@@ -928,18 +998,16 @@ const bind = {
   settings(){
     $('#csv').onchange = async e=>{
       const f = e.target.files[0]; if(!f) return;
-      const rows = parseCSV(await f.text());
-      const head = rows.shift().map(h=>h.trim());
-      const col = (...names) => head.findIndex(h=>names.some(n=>h.includes(n)));
-      const ix = {joined:col('입회'), name:col('회원명','이름','회원'), guardian:col('추천'), company:col('회사'),
-                  products:col('제품'), birthYear:col('출생'), phone:col('연락처','전화')};
-      if(ix.name<0) return toast('"회원명" 열을 찾을 수 없습니다.');
-      const data = rows.map(r=>{ const o={}; for(const k in ix) o[k] = ix[k]>=0 ? (r[ix[k]]||'').trim() : '';
-        o.joined = o.joined.replace(/[.\/]/g,'-').replace(/-$/,'').replace(/^(\d{4})-(\d)$/,'$1-0$2'); return o; });
-      try{ const res = await importRows(data); toast(`${res.total}행 처리 · 신규 ${res.added}명 생성`); }
-      finally{ Store.refresh(); }
+      let data;
+      try{ data = rowsFromTable(await readTableFile(f)); }
+      catch(err){ e.target.value = ''; return toast(err.message || '파일을 읽지 못했습니다.'); }
+      if(!data.length){ e.target.value = ''; return toast('등록할 회원 행이 없습니다.'); }
+      if(!confirm(`${data.length}명의 정보를 반영할까요? (같은 이름은 갱신)`)){ e.target.value = ''; return; }
+      try{ const res = await importRows(data);
+        toast(`${res.total}명 반영 · 신규 ${res.added}명${res.guardians?` · 명부 외 추천인 ${res.guardians}명(휴면)`:''}`); }
+      finally{ e.target.value = ''; Store.refresh(); }
     };
-    $('#tpl').onclick = ()=>download('정우회_회원등록양식.csv', '﻿입회월,회원명,추천인,회사,제품,출생연도,연락처\n', 'text/csv');
+    $('#tpl').onclick = ()=>download('정우회_회원등록양식.csv', '﻿NO,입회년월,성명,추천인,전화번호,근무처,주소,업종,비고\n', 'text/csv');
     $('#setcode').onclick = async ()=>{
       const v = $('#newcode').value.trim();
       if(v.length < 8) return toast('접속 코드는 8자 이상으로 정해주세요.');
