@@ -1,0 +1,376 @@
+<title>NBN 뉴뷰티넥서스</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 화장품 브랜드 원페이지. 히어로 제품 진열 → 라인업 5 → 상자 뒷면 라벨(전성분·주의사항) → 사용법 → 상담 */
+:root {
+  --bg: #f6eeec;            /* 블러시 포슬린 */
+  --surface: #fffaf8;
+  --shelf: #ead8d5;
+  --ink: #1b1618;
+  --ink-2: #6b5d60;
+  --line: #dcc8c5;
+  --gold: #a5813f;
+  --gold-2: #c9a964;
+  --rose: #d9a9a8;
+  --glass: rgba(255,255,255,.55);
+  --p1: #f2dcd8; --p2: #1b1618; --p3: #e7c9a8; --p4: #cfd9d3; --p5: #d9c2d6;  /* 제품 바디 색 */
+  --f-mark: "Marcellus", "Gowun Batang", serif;
+  --f-display: "Gowun Batang", "Noto Serif KR", serif;
+  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121012; --surface: #1b181a; --shelf: #2a2326; --ink: #f1e9e6; --ink-2: #b3a4a6; --line: #3a3135;
+  --gold: #d4b26c; --gold-2: #e2c88f; --rose: #9a6a6c; --glass: rgba(255,255,255,.08);
+  --p1: #e9cfca; --p2: #0a0809; --p3: #d9b88f; --p4: #b9c8bf; --p5: #c9afc6; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121012; --surface: #1b181a; --shelf: #2a2326; --ink: #f1e9e6; --ink-2: #b3a4a6; --line: #3a3135;
+  --gold: #d4b26c; --gold-2: #e2c88f; --rose: #9a6a6c; --glass: rgba(255,255,255,.08);
+  --p1: #e9cfca; --p2: #0a0809; --p3: #d9b88f; --p4: #b9c8bf; --p5: #c9afc6; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.7; font-weight: 400; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 700; line-height: 1.3; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.kicker { font-family: var(--f-mono); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
+.muted { color: var(--ink-2); }
+
+/* 상단 */
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.bar { display: flex; align-items: center; gap: 16px; padding-block: 14px; }
+.logo { text-decoration: none; display: flex; align-items: baseline; gap: 10px; }
+.logo b { font-family: var(--f-mark); font-weight: 400; font-size: 24px; letter-spacing: .28em; }
+.logo span { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--ink-2); }
+nav { margin-left: auto; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+nav a { text-decoration: none; font-size: 13.5px; padding: 6px 12px; border-radius: 999px; color: var(--ink-2); white-space: nowrap; }
+nav a:hover { color: var(--ink); background: var(--shelf); }
+nav a.on { color: var(--ink); background: var(--shelf); }
+nav a.cta { color: var(--surface); background: var(--ink); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+section { padding-block: clamp(56px, 9vw, 104px); }
+section + section { border-top: 1px solid var(--line); }
+.sec-head { display: grid; gap: 10px; text-align: center; justify-items: center; margin-bottom: 40px; }
+.sec-head h2 { font-size: clamp(24px, 3.4vw, 34px); }
+.sec-head p { max-width: 34em; }
+
+/* 히어로 */
+.hero { padding-block: clamp(40px, 7vw, 80px) 0; text-align: center; display: grid; gap: 18px; justify-items: center; }
+.hero h1 { font-family: var(--f-mark); font-weight: 400; font-size: clamp(54px, 11vw, 120px); letter-spacing: .3em; line-height: 1; padding-left: .3em; }
+.hero .sub { font-family: var(--f-mono); font-size: 12px; letter-spacing: .32em; color: var(--ink-2); }
+.hero .slogan { font-family: var(--f-display); font-size: clamp(19px, 2.6vw, 26px); }
+.hero .lead { max-width: 30em; color: var(--ink-2); }
+.hero .btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+.btn { font: inherit; font-weight: 500; font-size: 14px; letter-spacing: .04em; border: 1px solid var(--ink); background: var(--ink); color: var(--surface); padding: 12px 26px; border-radius: 999px; text-decoration: none; cursor: pointer; }
+.btn.line { background: transparent; color: var(--ink); }
+
+.shelf { width: 100%; margin-top: 28px; position: relative; display: flex; justify-content: center; align-items: flex-end; gap: clamp(6px, 3vw, 40px); padding: 0 8px; }
+.shelf::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18px; background: var(--shelf); border-radius: 4px 4px 0 0; z-index: 0; }
+.shelf a { position: relative; z-index: 1; display: grid; justify-items: center; text-decoration: none; padding-bottom: 18px; }
+.shelf svg { width: clamp(52px, 11vw, 112px); height: auto; filter: drop-shadow(0 10px 14px rgba(40,20,25,.12)); }
+.shelf a:nth-child(odd) svg { width: clamp(58px, 12.5vw, 128px); }
+.shelf a span { font-family: var(--f-mono); font-size: 10px; letter-spacing: .18em; color: var(--ink-2); margin-top: 8px; }
+@media (prefers-reduced-motion: no-preference) {
+  .shelf a { transition: transform .3s ease; }
+  .shelf a:hover { transform: translateY(-8px); }
+}
+
+/* 제품 SVG 공통 */
+.pd .body { fill: var(--body); }
+.pd .cap { fill: var(--cap, var(--gold)); }
+.pd .lbl { fill: var(--glass); }
+.pd .shine { fill: #fff; opacity: .35; }
+.pd .tx { font-family: var(--f-mark); font-size: 9px; letter-spacing: 2px; fill: var(--txt, #1b1618); }
+.pd .tx2 { font-family: var(--f-mono); font-size: 5.5px; letter-spacing: 1px; fill: var(--txt, #1b1618); opacity: .75; }
+
+/* 라인업 */
+.lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.prod { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 22px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.prod .art { display: grid; place-items: center; aspect-ratio: 1 / 1; max-width: 100%; border-radius: 50%; background: radial-gradient(circle at 50% 60%, var(--shelf), transparent 70%); }
+.prod .art svg { height: 78%; width: auto; }
+.prod .no { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .2em; color: var(--gold); }
+.prod h3 { font-size: 19px; }
+.prod h3 small { display: block; font-family: var(--f-mark); font-weight: 400; font-size: 13px; letter-spacing: .14em; color: var(--ink-2); }
+.prod .for { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 10px; }
+.prod ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 13.5px; }
+.prod ul li::before { content: "✓ "; color: var(--gold); }
+.prod .inci { font-size: 11.5px; color: var(--ink-2); line-height: 1.6; }
+.prod .inci b { font-family: var(--f-mono); font-weight: 500; letter-spacing: .1em; font-size: 10px; color: var(--ink); margin-right: 4px; }
+
+/* 라벨(상자 뒷면) */
+.label { background: var(--surface); border: 1.5px solid var(--ink); border-radius: 6px; display: grid; grid-template-columns: 1.1fr 1fr; max-width: 920px; margin: 0 auto; }
+.label > div { padding: 24px; display: grid; gap: 16px; align-content: start; min-width: 0; }
+.label > div + div { border-left: 1.5px solid var(--ink); }
+.lb-row { display: grid; gap: 6px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
+.lb-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.lb-row dt, .lb-k { font-family: var(--f-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 500; }
+.lb-row dd { margin: 0; font-size: 14px; }
+.inci-big { font-family: var(--f-display); font-size: clamp(20px, 2.6vw, 26px); line-height: 1.5; }
+.inci-big em { font-style: normal; color: var(--gold); }
+.warn ol { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; }
+.warn li::marker { font-family: var(--f-mono); font-size: 12px; }
+.barcode { display: flex; gap: 2px; height: 34px; align-items: stretch; }
+.barcode i { background: var(--ink); display: block; }
+dl { margin: 0; display: grid; gap: 14px; }
+
+/* 사용법 */
+.howto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: s; border-top: 1px solid var(--ink); }
+.howto li { list-style: none; counter-increment: s; padding: 22px 18px 0; display: grid; gap: 6px; align-content: start; border-left: 1px solid var(--line); }
+.howto li:first-child { border-left: 0; }
+.howto li::before { content: "STEP 0" counter(s); font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; color: var(--gold); }
+.howto h3 { font-size: 18px; }
+.howto p { font-size: 14px; color: var(--ink-2); }
+.howto { padding: 0; margin: 0; }
+
+/* 상담 */
+.consult { display: grid; grid-template-columns: 1fr 1.2fr; gap: 28px; align-items: start; }
+.consult .side { display: grid; gap: 14px; }
+.consult .side h2 { font-size: clamp(24px, 3.2vw, 32px); }
+form.card, .done { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: grid; gap: 14px; min-width: 0; }
+label.f { display: grid; gap: 6px; font-size: 13.5px; font-weight: 500; }
+input[type=text], input[type=tel], select, textarea { font: inherit; font-size: 14.5px; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); width: 100%; }
+textarea { min-height: 90px; resize: vertical; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.agree { display: flex; gap: 8px; align-items: start; font-size: 12.5px; color: var(--ink-2); }
+.agree input { margin-top: 4px; }
+
+footer { border-top: 1px solid var(--line); padding-block: 36px 48px; text-align: center; display: grid; gap: 8px; justify-items: center; }
+footer b { font-family: var(--f-mark); font-weight: 400; letter-spacing: .3em; font-size: 20px; }
+footer p { font-size: 12.5px; color: var(--ink-2); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 20; }
+
+@media (max-width: 980px) { .lineup { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .lineup { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .label, .consult { grid-template-columns: 1fr; }
+  .label > div + div { border-left: 0; border-top: 1.5px solid var(--ink); }
+  .howto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .howto li:nth-child(3) { border-left: 0; }
+  .howto li:nth-child(n+3) { border-top: 1px solid var(--line); margin-top: 18px; }
+  .logo span { display: none; }
+}
+@media (max-width: 460px) {
+  .lineup { grid-template-columns: 1fr; }
+  .row2 { grid-template-columns: 1fr; }
+  .bar { flex-wrap: wrap; gap: 8px; }
+  nav { margin-left: 0; width: 100%; }
+}
+</style>
+
+<!-- 제품 실루엣 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="s-dropper" viewBox="0 0 80 170"><rect style="fill:var(--cap,var(--gold))" x="31" y="2" width="18" height="30" rx="9"/><rect style="fill:var(--cap,var(--gold))" x="25" y="30" width="30" height="16" rx="2"/><rect style="fill:var(--body)" x="14" y="44" width="52" height="124" rx="12"/><rect style="fill:var(--glass)" x="20" y="82" width="40" height="52" rx="2"/><rect style="fill:#fff;opacity:.35" x="20" y="52" width="5" height="100" rx="2.5"/></symbol>
+    <symbol id="s-pump" viewBox="0 0 80 170"><rect style="fill:var(--cap,var(--gold))" x="30" y="4" width="34" height="8" rx="3"/><rect style="fill:var(--cap,var(--gold))" x="34" y="10" width="12" height="20" rx="2"/><rect style="fill:var(--cap,var(--gold))" x="26" y="28" width="28" height="14" rx="3"/><rect style="fill:var(--body)" x="14" y="40" width="52" height="128" rx="22"/><rect style="fill:var(--glass)" x="20" y="80" width="40" height="54" rx="2"/><rect style="fill:#fff;opacity:.35" x="21" y="54" width="5" height="96" rx="2.5"/></symbol>
+    <symbol id="s-tube" viewBox="0 0 80 170"><rect style="fill:var(--cap,var(--gold))" x="12" y="4" width="56" height="8" rx="1"/><path style="fill:var(--body)" d="M12 12 H68 L60 138 H20 Z"/><rect style="fill:var(--cap,var(--gold))" x="24" y="136" width="32" height="32" rx="4"/><rect style="fill:var(--glass)" x="22" y="56" width="36" height="50" rx="2"/><path style="fill:#fff;opacity:.35" d="M18 18 h5 l-5 110 h-3 z"/></symbol>
+    <symbol id="s-mist" viewBox="0 0 80 170"><rect style="fill:var(--cap,var(--gold))" x="28" y="2" width="24" height="34" rx="6"/><rect style="fill:var(--cap,var(--gold))" x="26" y="34" width="28" height="10" rx="2"/><rect style="fill:var(--body)" x="18" y="42" width="44" height="126" rx="8"/><rect style="fill:var(--glass)" x="23" y="80" width="34" height="52" rx="2"/><rect style="fill:#fff;opacity:.35" x="24" y="50" width="4" height="108" rx="2"/></symbol>
+    <symbol id="s-jar" viewBox="0 0 80 170"><rect style="fill:var(--cap,var(--gold))" x="6" y="92" width="68" height="26" rx="5"/><rect style="fill:var(--body)" x="9" y="116" width="62" height="52" rx="12"/><rect style="fill:var(--glass)" x="18" y="126" width="44" height="30" rx="2"/><rect style="fill:#fff;opacity:.35" x="14" y="98" width="52" height="3" rx="1.5"/></symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#top" aria-label="NBN 맨 위로"><b>NBN</b><span>NEW BEAUTY NEXUS</span></a>
+    <nav aria-label="페이지 안 이동">
+      <a href="#lineup">라인업</a>
+      <a href="#ingredients">전성분</a>
+      <a href="#howto">사용법</a>
+      <a href="#contact" class="cta">상담 신청</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <p class="sub">NEW BEAUTY NEXUS · BEAUTY BUSINESS CONNECTOR</p>
+    <h1>NBN</h1>
+    <p class="slogan">뷰티의 모든 연결을, 더 쉽고 더 똑똑하게</p>
+    <p class="lead">창업부터 매출 확대, 판로 개척, 해외 진출, 사업 전환까지. 지금 필요한 사람·제품·기술·정보를 골라 연결해 드립니다.</p>
+    <div class="btns"><a class="btn" href="#contact">무료 상담 신청</a><a class="btn line" href="#lineup">서비스 라인업 보기</a></div>
+    <div class="shelf" aria-label="NBN 서비스 라인업 5종">
+      <a href="#p1" aria-label="No.01 START"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p1)"><use href="#s-dropper"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">START</text></svg><span>01 START</span></a>
+      <a href="#p2" aria-label="No.02 GROW"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p2);--txt:#e2c88f"><use href="#s-pump"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">GROW</text></svg><span>02 GROW</span></a>
+      <a href="#p3" aria-label="No.03 BRAND"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p3)"><use href="#s-tube"/><text class="tx" x="40" y="80" text-anchor="middle">NBN</text><text class="tx2" x="40" y="94" text-anchor="middle">BRAND</text></svg><span>03 BRAND</span></a>
+      <a href="#p4" aria-label="No.04 GLOBAL"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p4)"><use href="#s-mist"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">GLOBAL</text></svg><span>04 GLOBAL</span></a>
+      <a href="#p5" aria-label="No.05 SHIFT"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p5)"><use href="#s-jar"/><text class="tx" x="40" y="142" text-anchor="middle">NBN</text><text class="tx2" x="40" y="152" text-anchor="middle">SHIFT</text></svg><span>05 SHIFT</span></a>
+    </div>
+  </div>
+
+  <!-- 라인업 -->
+  <section id="lineup">
+    <div class="wrap">
+      <div class="sec-head"><p class="kicker">The Line-up</p><h2>상황에 맞게 고르는 다섯 가지 라인</h2><p class="muted">고객의 단계마다 필요한 연결이 다릅니다. 지금 내 상황에 맞는 라인부터 시작하세요.</p></div>
+      <div class="lineup">
+        <article class="prod" id="p1">
+          <div class="art"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p1)" aria-hidden="true"><use href="#s-dropper"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">START</text></svg></div>
+          <p class="no">No.01 · START</p>
+          <h3>창업 스타트 세럼<small>Start Serum</small></h3>
+          <p class="for">For 뷰티 창업을 준비하는 분</p>
+          <ul><li>나에게 맞는 창업 방향</li><li>비용과 시행착오 감소</li><li>준비 과정을 한 번에</li></ul>
+          <p class="inci"><b>INCI</b>창업 상담 · 맞춤 컨설팅 · 교육기관 · 장비·제품 공급사 · 인테리어·간판·마케팅 연결 · 창업 패키지</p>
+        </article>
+        <article class="prod" id="p2">
+          <div class="art"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p2);--txt:#e2c88f" aria-hidden="true"><use href="#s-pump"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">GROW</text></svg></div>
+          <p class="no">No.02 · GROW</p>
+          <h3>매출 성장 크림<small>Grow Cream</small></h3>
+          <p class="for">For 추가 매출이 필요한 원장님</p>
+          <ul><li>시술 외 매출원 확보</li><li>홈케어 재구매로 반복 매출</li><li>새 기술·서비스 도입</li></ul>
+          <p class="inci"><b>INCI</b>신규 수익 아이템 · 화장품 공급사 · 기술 교육 · 장비 공급사 · 사업 확장 컨설팅 · 협업 파트너</p>
+        </article>
+        <article class="prod" id="p3">
+          <div class="art"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p3)" aria-hidden="true"><use href="#s-tube"/><text class="tx" x="40" y="80" text-anchor="middle">NBN</text><text class="tx2" x="40" y="94" text-anchor="middle">BRAND</text></svg></div>
+          <p class="no">No.03 · BRAND</p>
+          <h3>판로 확장 에센스<small>Brand Essence</small></h3>
+          <p class="for">For 화장품 제조사·브랜드</p>
+          <ul><li>새로운 거래처 확보</li><li>영업 비용 절감</li><li>해외 시장 진출</li></ul>
+          <p class="inci"><b>INCI</b>국내 유통망 · 해외 바이어 · 뷰티샵·병원 B2B 거래처 · 제품 설명회·세미나 · 브랜드 협업</p>
+        </article>
+        <article class="prod" id="p4">
+          <div class="art"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p4)" aria-hidden="true"><use href="#s-mist"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">GLOBAL</text></svg></div>
+          <p class="no">No.04 · GLOBAL</p>
+          <h3>글로벌 소싱 미스트<small>Global Mist</small></h3>
+          <p class="for">For 해외 바이어·유통사 · 海外买家</p>
+          <ul><li>믿을 만한 한국 공급사</li><li>소싱 시간 절약</li><li>한국 뷰티 기술 도입</li></ul>
+          <p class="inci"><b>INCI</b>한국 화장품 제조사 발굴·연결 · 한국 뷰티 교육·기술 파트너 연결</p>
+        </article>
+        <article class="prod" id="p5">
+          <div class="art"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p5)" aria-hidden="true"><use href="#s-jar"/><text class="tx" x="40" y="142" text-anchor="middle">NBN</text><text class="tx2" x="40" y="152" text-anchor="middle">SHIFT</text></svg></div>
+          <p class="no">No.05 · SHIFT</p>
+          <h3>전환 케어 밤<small>Shift Balm</small></h3>
+          <p class="for">For 전환·정리를 고민하는 분</p>
+          <ul><li>정리 과정의 부담 감소</li><li>폐업 대신 다른 길 탐색</li><li>필요한 전문가 연결</li></ul>
+          <p class="inci"><b>INCI</b>폐업·업종 전환·사업 양도 전문가 연결 (장비 매각 · 원상복구 · 세무)</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 전성분 -->
+  <section id="ingredients">
+    <div class="wrap">
+      <div class="sec-head"><p class="kicker">Ingredients &amp; Precautions</p><h2>상자 뒷면까지 투명하게</h2><p class="muted">무엇으로 만들어졌는지, 비용은 누가 내는지. 화장품 라벨처럼 숨김없이 적었습니다.</p></div>
+      <div class="label">
+        <div>
+          <div class="lb-row"><span class="lb-k">전성분 · Ingredients</span><p class="inci-big"><em>사람</em> · <em>제품</em> · <em>기술</em> · <em>정보</em></p><p class="muted" style="font-size:13.5px">교육기관·원장님·바이어 / 제조사·브랜드·장비 / 한국 뷰티 기술 교육 / 창업 비용·상권·수출 절차</p></div>
+          <dl>
+            <div class="lb-row"><dt>주요 효능</dt><dd>불확실성 감소 · 시간 절약 · 새로운 매출 기회</dd></div>
+            <div class="lb-row"><dt>용량</dt><dd>1:1 맞춤 · 첫 상담 30분 무료</dd></div>
+            <div class="lb-row"><dt>제조원</dt><dd>NEW BEAUTY NEXUS · 대표 김은지 (리추얼 설계자 · 스칼피스트)</dd></div>
+          </dl>
+        </div>
+        <div class="warn">
+          <span class="lb-k">사용 시 주의사항 · 수수료 공개 정책</span>
+          <ol>
+            <li>모든 서비스에 <strong>고객 부담</strong>인지 <strong>파트너 부담</strong>인지 표시합니다.</li>
+            <li>파트너에게 수수료를 받는 연결은 계약 전에 미리 알려 드립니다.</li>
+            <li>항목마다 2곳 이상 비교안을 드리고, 조건이 더 좋은 곳을 추천합니다.</li>
+            <li>결정은 고객이 합니다. 추천을 따르지 않아도 컨설팅 결과는 그대로 드립니다.</li>
+          </ol>
+          <p class="muted" style="font-size:12.5px">고객은 연결 자체가 아니라 연결로 얻는 결과에 비용을 냅니다. 그래서 인맥의 숫자보다 문제를 얼마나 풀었는지로 평가받겠습니다.</p>
+          <div class="barcode" aria-hidden="true" id="barcode"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 사용법 -->
+  <section id="howto">
+    <div class="wrap">
+      <div class="sec-head"><p class="kicker">How to Use</p><h2>사용법</h2><p class="muted">네 단계면 충분합니다.</p></div>
+      <ol class="howto">
+        <li><h3>상담</h3><p>무료 30분 상담으로 지금 상황과 목표, 예산을 듣습니다.</p></li>
+        <li><h3>설계</h3><p>필요한 항목과 비용, 순서를 한 장의 계획서로 정리합니다.</p></li>
+        <li><h3>연결</h3><p>검증된 파트너를 조건과 함께 비교해 연결합니다.</p></li>
+        <li><h3>관리</h3><p>30·60·90일에 점검하고 다음 단계를 제안합니다.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 상담 -->
+  <section id="contact">
+    <div class="wrap consult">
+      <div class="side">
+        <p class="kicker">Free Consultation</p>
+        <h2>어떤 라인이 맞을지,<br>상담으로 찾아 드려요</h2>
+        <p class="muted">상황만 골라 주시면 상담 전에 준비할 것을 알려 드립니다. 중국어 상담도 가능합니다 · 可提供中文咨询</p>
+      </div>
+      <div style="display:grid;gap:14px">
+        <form class="card" id="cf">
+          <label class="f" for="cf-line">관심 라인
+            <select id="cf-line">
+              <option value="START">No.01 START · 뷰티 창업 준비</option>
+              <option value="GROW">No.02 GROW · 원장님 추가 매출</option>
+              <option value="BRAND">No.03 BRAND · 제조사·브랜드 판로</option>
+              <option value="GLOBAL">No.04 GLOBAL · 해외 바이어 · 海外买家</option>
+              <option value="SHIFT">No.05 SHIFT · 전환·정리</option>
+            </select></label>
+          <div class="row2">
+            <label class="f" for="cf-name">이름<input type="text" id="cf-name" required placeholder="홍길동"></label>
+            <label class="f" for="cf-phone">연락처<input type="tel" id="cf-phone" required placeholder="010-0000-0000"></label>
+          </div>
+          <label class="f" for="cf-memo">남기실 말씀 (선택)<textarea id="cf-memo" placeholder="예: 5,000만원으로 피부관리샵 창업을 준비하고 있어요."></textarea></label>
+          <label class="agree" for="cf-agree"><input type="checkbox" id="cf-agree" required> <span>[필수] 상담을 위한 개인정보(이름·연락처·상담 내용) 수집·이용에 동의합니다. 보관 기간 1년.</span></label>
+          <div><button class="btn" type="submit">상담 신청</button></div>
+        </form>
+        <div class="done" id="done" hidden>
+          <p class="kicker">Last step</p>
+          <h3>신청 내용을 보내 주세요</h3>
+          <p class="muted" style="font-size:13.5px">베타 운영 중이라 아래 내용을 복사해 카카오톡·문자·위챗으로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+          <textarea id="done-text" readonly rows="5"></textarea>
+          <div><button class="btn line" type="button" id="copy">내용 복사</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <b>NBN</b>
+  <p>NEW BEAUTY NEXUS · Connecting K-Beauty, Creating New Business Opportunities</p>
+  <p>K-Beauty Beyond Borders</p>
+</footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const toast = m => { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2000); };
+
+  // 바코드 장식
+  const w = [2,1,3,1,1,2,1,3,2,1,1,2,3,1,2,1,1,3,1,2,2,1,3,1,1,2,1,2,3,1,1,2];
+  $('#barcode').innerHTML = w.map((x, i) => `<i style="width:${x}px;${i % 2 ? 'background:transparent' : ''}"></i>`).join('');
+
+  // 스크롤 위치에 따라 메뉴 표시
+  const links = [...document.querySelectorAll('nav a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id && !a.classList.contains('cta')));
+    }), { rootMargin: '-45% 0px -50% 0px' });
+    secs.forEach(s => io.observe(s));
+  }
+
+  // 상담 신청
+  $('#cf').addEventListener('submit', e => {
+    e.preventDefault();
+    const line = $('#cf-line').selectedOptions[0].textContent.trim();
+    const txt = `[NBN 상담 신청]\n관심 라인: ${line}\n이름: ${$('#cf-name').value.trim()}\n연락처: ${$('#cf-phone').value.trim()}${$('#cf-memo').value.trim() ? '\n내용: ' + $('#cf-memo').value.trim() : ''}`;
+    try { const l = JSON.parse(localStorage.getItem('nbn:home') || '[]'); l.unshift({ txt, at: Date.now() }); localStorage.setItem('nbn:home', JSON.stringify(l)); } catch {}
+    $('#done-text').value = txt; $('#done').hidden = false; e.target.reset();
+    $('#done').scrollIntoView({ block: 'center' });
+  });
+  $('#copy').addEventListener('click', () => {
+    const t = $('#done-text');
+    navigator.clipboard.writeText(t.value).then(() => toast('복사했습니다'), () => { t.select(); toast('선택된 내용을 복사해 주세요'); });
+  });
+})();
+</script>

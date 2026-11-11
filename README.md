@@ -15,3 +15,7 @@
 ## 플랫폼 디자인 (NEW BEAUTY NEXUS)
 
 - `platform/index.html` — 대표 피드백을 반영한 비즈니스 솔루션 플랫폼 (5개 고객 입구, 서비스 20, 창업 플래너, 파트너·브랜드, 해외 바이어, 전환·양도, 상담 신청). `build-public.py`가 `public/platform/`으로 복사해 함께 배포한다.
+
+## NBN 홈페이지 (원페이지)
+
+- `nbn/index.html` — 화장품 라인업 콘셉트의 한 페이지 홈페이지 (라인업 5 · 전성분/주의사항 · 사용법 · 상담). `public/nbn/`으로 배포된다.

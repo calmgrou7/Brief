@@ -16,3 +16,10 @@ plat_page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n
 pathlib.Path('public/platform').mkdir(parents=True, exist_ok=True)
 pathlib.Path('public/platform/index.html').write_text(plat_page, encoding='utf-8')
 print('platform built')
+
+# NBN 원페이지 홈페이지 → public/nbn/index.html
+home = pathlib.Path('nbn/index.html').read_text(encoding='utf-8')
+home_page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="description" content="NBN 뉴뷰티넥서스 · 뷰티의 모든 연결을 더 쉽고 더 똑똑하게">\n' + home.replace('<svg width="0" height="0"', '</head>\n<body>\n<svg width="0" height="0"', 1) + '\n</body>\n</html>\n'
+pathlib.Path('public/nbn').mkdir(parents=True, exist_ok=True)
+pathlib.Path('public/nbn/index.html').write_text(home_page, encoding='utf-8')
+print('nbn built')
