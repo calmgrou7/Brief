@@ -23,3 +23,12 @@ home_page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n
 pathlib.Path('public/nbn').mkdir(parents=True, exist_ok=True)
 pathlib.Path('public/nbn/index.html').write_text(home_page, encoding='utf-8')
 print('nbn built')
+
+# 모바일 명함 → public/card/
+import shutil
+card = pathlib.Path('card/index.html').read_text(encoding='utf-8')
+card_page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="theme-color" content="#050405">\n<meta name="description" content="NEW BEAUTY NEXUS 대표 김은지 · 뷰티 비즈니스 컨설팅 & 커넥션 전문가">\n<meta property="og:title" content="김은지 · NEW BEAUTY NEXUS">\n<meta property="og:description" content="뷰티의 모든 연결을 더 쉽고, 더 똑똑하게">\n<meta property="og:image" content="https://beauty-connect-4gjp.onrender.com/card/photo.jpg">\n' + card.replace('<div class="page">', '</head>\n<body>\n<div class="page">', 1) + '\n</body>\n</html>\n'
+pathlib.Path('public/card').mkdir(parents=True, exist_ok=True)
+pathlib.Path('public/card/index.html').write_text(card_page, encoding='utf-8')
+shutil.copy('card/photo.jpg', 'public/card/photo.jpg')
+print('card built')

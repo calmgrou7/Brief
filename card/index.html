@@ -1,0 +1,194 @@
+<title>김은지 · NEW BEAUTY NEXUS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Great+Vibes&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 폰 한 화면 폭(최대 440px) 카드. 명함과 같은 블랙·골드 단일 테마 */
+:root {
+  --bg: #050405;
+  --card: #0e0c0d;
+  --raise: #171416;
+  --ink: #f4efe6;
+  --ink-2: #b9b0a3;
+  --gold: #d9b26a;
+  --gold-2: #f3d79a;
+  --gold-3: #9b7434;
+  --line: rgba(217,178,106,.28);
+  --f-mark: "Marcellus", serif;
+  --f-sign: "Great Vibes", cursive;
+  --f-body: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+.page { max-width: 440px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+p { margin: 0; }
+a { color: inherit; }
+.gold-text { background: linear-gradient(180deg, var(--gold-2), var(--gold) 55%, var(--gold-3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* 앞면 */
+.front { position: relative; overflow: hidden; border-radius: 26px; background: radial-gradient(120% 70% at 50% 18%, #2a1d0e 0%, var(--card) 55%); border: 1px solid var(--line); padding: 24px 22px 26px; display: grid; gap: 14px; justify-items: center; text-align: center; }
+.front::after { content: ""; position: absolute; inset: auto -40% -30% -40%; height: 160px; background: radial-gradient(50% 50% at 50% 50%, rgba(217,178,106,.18), transparent 70%); pointer-events: none; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand svg { width: 34px; height: 34px; flex: none; }
+.brand b { display: block; font-family: var(--f-mark); font-weight: 400; font-size: 19px; letter-spacing: .08em; line-height: 1.1; }
+.brand small { display: block; font-family: var(--f-mono); font-size: 8.5px; letter-spacing: .22em; color: var(--ink-2); margin-top: 3px; }
+.photo { position: relative; width: 168px; height: 168px; margin-top: 6px; }
+.photo::before { content: ""; position: absolute; inset: -7px; border-radius: 50%; background: conic-gradient(from 200deg, transparent 0 15%, var(--gold-2) 30%, var(--gold) 45%, transparent 60%, transparent 80%, var(--gold-3) 95%, transparent); filter: blur(.5px); }
+.photo img { position: relative; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 3px solid var(--card); display: block; }
+.sign { font-family: var(--f-sign); font-size: 30px; color: var(--gold); line-height: 1; margin-top: -2px; }
+.role { font-size: 12.5px; color: var(--ink-2); letter-spacing: .06em; }
+.name { display: flex; align-items: baseline; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.name h1 { margin: 0; font-size: 34px; font-weight: 900; letter-spacing: .3em; padding-left: .3em; line-height: 1.1; }
+.name span { font-family: var(--f-mark); font-size: 13px; letter-spacing: .18em; color: var(--ink-2); }
+.title1 { font-weight: 700; font-size: 16.5px; }
+.title2 { font-size: 14px; color: var(--ink); opacity: .9; }
+.quote { border-top: 1px solid var(--line); padding-top: 14px; width: 100%; display: grid; gap: 4px; }
+.quote p:first-child { font-weight: 700; font-size: 16px; }
+.quote p:last-child { font-size: 12.5px; color: var(--ink-2); }
+
+/* 버튼 */
+.actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.act { display: grid; justify-items: center; gap: 6px; padding: 12px 4px; border-radius: 16px; background: var(--raise); border: 1px solid var(--line); text-decoration: none; font: inherit; font-size: 12.5px; color: var(--ink); cursor: pointer; }
+.act svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.act.main { background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: #1a1209; border-color: transparent; font-weight: 700; }
+.act.main svg { stroke: #1a1209; }
+
+/* 패널 */
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 6px 16px; }
+.panel h2 { font-family: var(--f-mono); font-weight: 500; font-size: 11px; letter-spacing: .2em; color: var(--gold); margin: 12px 0 4px; }
+.row { display: grid; grid-template-columns: 22px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+.row:last-child { border-bottom: 0; }
+.row svg { width: 20px; height: 20px; stroke: var(--gold); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.row a { text-decoration: none; font-size: 15.5px; word-break: break-all; }
+.row a.big { font-size: 19px; font-weight: 700; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.copy { font: inherit; font-size: 12px; background: transparent; color: var(--ink-2); border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 4px 10px; cursor: pointer; }
+
+.svcs { display: grid; gap: 0; }
+.svc { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+.svc:last-child { border-bottom: 0; }
+.svc i { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(217,178,106,.1); }
+.svc svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.svc b { display: block; font-size: 15px; }
+.svc small { color: var(--ink-2); font-size: 12.5px; }
+
+.links { display: grid; gap: 8px; }
+.link { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 16px; text-decoration: none; background: var(--raise); border: 1px solid var(--line); }
+.link b { font-size: 15px; }
+.link small { display: block; color: var(--ink-2); font-size: 12px; font-weight: 400; }
+.link span.arr { color: var(--gold); font-size: 18px; }
+.link.hi { background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: #1a1209; border-color: transparent; }
+.link.hi small, .link.hi span.arr { color: #3d2c12; }
+
+.share { display: grid; grid-template-columns: 112px 1fr; gap: 14px; align-items: center; padding: 14px 0; }
+#qr { width: 112px; height: 112px; background: #fff; border-radius: 10px; padding: 7px; display: grid; place-items: center; }
+#qr svg { width: 98px; height: 98px; display: block; }
+.share p { font-size: 13px; color: var(--ink-2); }
+.share .btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.share .copy { color: var(--ink); }
+
+footer { text-align: center; font-size: 11.5px; color: var(--ink-2); display: grid; gap: 4px; padding-top: 6px; }
+footer b { font-family: var(--f-mark); font-weight: 400; letter-spacing: .14em; color: var(--gold); font-size: 13px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--gold); color: #1a1209; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; z-index: 20; }
+@media (max-width: 360px) { .name h1 { font-size: 28px; } .actions { gap: 6px; } .act { font-size: 11.5px; } }
+</style>
+
+<div class="page">
+  <section class="front" aria-label="명함 앞면">
+    <div class="brand">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3d79a"/><stop offset=".6" stop-color="#d9b26a"/><stop offset="1" stop-color="#9b7434"/></linearGradient></defs><path d="M7 35V6l13 16M33 5v29L20 18" fill="none" stroke="url(#g)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b class="gold-text">NEW BEAUTY NEXUS</b><small>BEAUTY BUSINESS CONNECTOR</small></span>
+    </div>
+    <div class="photo"><img src="photo.jpg" alt="김은지 대표 사진" width="168" height="168"></div>
+    <p class="sign">Kim Eunji</p>
+    <p class="role">대표 | CEO</p>
+    <div class="name"><h1>김은지</h1><span>KIM EUN JI</span></div>
+    <p class="title1 gold-text">리추얼 설계자 · 스칼피스트</p>
+    <p class="title2">뷰티 비즈니스 컨설팅 &amp; 커넥션 전문가</p>
+    <div class="quote">
+      <p class="gold-text">"뷰티의 모든 연결을 더 쉽고, 더 똑똑하게"</p>
+      <p>창업 · 사업확장 · 제품유통 · 교육 · 파트너 연결</p>
+    </div>
+  </section>
+
+  <nav class="actions" aria-label="바로 연락하기">
+    <a class="act main" href="tel:01067899291"><svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>전화</a>
+    <a class="act" href="sms:01067899291"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 10h8M8 13h5"/></svg>문자</a>
+    <a class="act" href="mailto:beautynexus@naver.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>이메일</a>
+    <button class="act" type="button" id="vcard"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/><path d="M19 3v6M16 6h6"/></svg>연락처 저장</button>
+  </nav>
+
+  <section class="panel" aria-label="연락처">
+    <h2>CONTACT</h2>
+    <div class="row"><svg viewBox="0 0 24 24"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg><a class="big" href="tel:01067899291">010-6789-9291</a><button class="copy" type="button" data-copy="010-6789-9291">복사</button></div>
+    <div class="row"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><a href="mailto:beautynexus@naver.com">beautynexus@naver.com</a><button class="copy" type="button" data-copy="beautynexus@naver.com">복사</button></div>
+    <div class="row"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><a href="https://www.newbeautynexus.com" target="_blank" rel="noopener">www.newbeautynexus.com</a><button class="copy" type="button" data-copy="www.newbeautynexus.com">복사</button></div>
+  </section>
+
+  <section class="panel" aria-label="서비스">
+    <h2>SERVICES</h2>
+    <div class="svcs">
+      <div class="svc"><i><svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11C12 6 8 4 4 4c0 5 3 7 8 7z"/><path d="M12 13c0-4 3-6 8-6 0 4-3 6-8 6z"/></svg></i><span><b>뷰티 창업지원</b><small>컨설팅 · 교육 · 매칭</small></span></div>
+      <div class="svc"><i><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-5M10 20v-8M14 20v-6M18 20v-11"/><path d="M5 11l5-4 4 3 6-6M16 4h4v4"/></svg></i><span><b>사업 확장 컨설팅</b><small>신규 아이템 · 수익모델</small></span></div>
+      <div class="svc"><i><svg viewBox="0 0 24 24"><path d="M3 8l9-4 9 4-9 4z"/><path d="M3 8v8l9 4 9-4V8"/><path d="M12 12v8"/></svg></i><span><b>제품 유통 연결</b><small>국내외 공급사 · 바이어</small></span></div>
+      <div class="svc"><i><svg viewBox="0 0 24 24"><path d="M2 12l4-4 4 2 3-2 4 1 5 3"/><path d="M6 8l-4 4 6 6 3-1 3 2 4-3 4-4"/><path d="M10 14l2 2M12 12l3 3"/></svg></i><span><b>파트너 네트워킹</b><small>병원 · 에스테틱 · 브랜드</small></span></div>
+      <div class="svc"><i><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14 5"/><path d="M4 12a8 8 0 0 1 14-5"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></i><span><b>사업 전환 지원</b><small>운영 · 성장 · 폐업 연계</small></span></div>
+    </div>
+  </section>
+
+  <div class="links">
+    <a class="link hi" href="https://beauty-connect-4gjp.onrender.com/nbn/#contact" target="_blank" rel="noopener"><span><b>무료 상담 신청</b><small>첫 상담 30분 무료 · 可提供中文咨询</small></span><span class="arr">→</span></a>
+    <a class="link" href="https://beauty-connect-4gjp.onrender.com/nbn/" target="_blank" rel="noopener"><span><b>NBN 홈페이지</b><small>서비스 라인업 한눈에 보기</small></span><span class="arr">→</span></a>
+    <a class="link" href="https://beauty-connect-4gjp.onrender.com/platform/#plan" target="_blank" rel="noopener"><span><b>창업 비용 미리 계산하기</b><small>창업 플래너</small></span><span class="arr">→</span></a>
+  </div>
+
+  <section class="panel" aria-label="명함 공유">
+    <h2>SHARE</h2>
+    <div class="share">
+      <div id="qr" role="img" aria-label="이 모바일 명함 주소 QR 코드"><svg width="98" height="98" viewBox="0 0 132 132" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg" class="segno"><path transform="scale(4)" class="qrline" stroke="#000" d="M0 0.5h7m1 0h2m1 0h1m4 0h1m2 0h1m1 0h1m1 0h1m2 0h7m-33 1h1m5 0h1m2 0h2m1 0h2m1 0h1m1 0h2m1 0h1m2 0h1m2 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h2m1 0h1m3 0h3m2 0h2m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m1 0h2m1 0h1m1 0h1m2 0h1m2 0h2m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m5 0h1m2 0h1m2 0h1m1 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h3m2 0h3m2 0h4m4 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m1 0h4m1 0h2m1 0h1m1 0h1m-21 1h1m1 0h1m1 0h5m2 0h1m2 0h2m1 0h1m2 0h3m1 0h3m1 0h2m1 0h1m-33 1h6m1 0h5m1 0h1m1 0h1m4 0h2m2 0h4m3 0h2m-33 1h4m1 0h2m1 0h2m1 0h4m1 0h2m1 0h1m1 0h1m3 0h4m1 0h1m1 0h1m-33 1h2m3 0h1m2 0h2m1 0h4m1 0h1m1 0h2m1 0h2m1 0h2m2 0h2m-30 1h7m1 0h5m3 0h1m1 0h1m2 0h1m3 0h3m1 0h1m1 0h2m-31 1h1m2 0h1m2 0h1m2 0h1m1 0h1m5 0h2m1 0h1m1 0h1m1 0h1m1 0h5m-30 1h5m1 0h2m6 0h2m1 0h1m2 0h1m1 0h2m2 0h1m1 0h1m-32 1h3m1 0h1m2 0h3m2 0h1m2 0h1m1 0h1m1 0h1m1 0h4m1 0h1m1 0h1m2 0h1m-32 1h2m2 0h3m1 0h1m4 0h1m1 0h1m1 0h6m3 0h1m1 0h2m1 0h1m-31 1h2m2 0h1m1 0h1m5 0h6m4 0h3m1 0h1m1 0h1m1 0h1m-32 1h1m1 0h2m2 0h1m2 0h3m1 0h1m2 0h2m2 0h2m3 0h2m3 0h3m-33 1h4m1 0h1m1 0h1m2 0h1m2 0h1m2 0h6m1 0h1m1 0h1m1 0h1m-27 1h3m2 0h2m2 0h1m1 0h1m1 0h1m1 0h2m1 0h1m1 0h1m1 0h3m5 0h1m-30 1h1m1 0h1m2 0h2m3 0h3m5 0h2m2 0h3m2 0h1m1 0h2m-33 1h2m1 0h4m3 0h1m1 0h2m1 0h1m1 0h3m1 0h1m2 0h5m1 0h1m1 0h1m-32 1h2m2 0h1m3 0h4m2 0h1m1 0h2m1 0h3m1 0h2m2 0h1m2 0h1m-32 1h1m1 0h5m2 0h1m2 0h1m1 0h2m2 0h1m1 0h2m2 0h5m2 0h1m-24 1h1m3 0h1m2 0h1m2 0h3m1 0h3m3 0h2m1 0h2m-33 1h7m1 0h3m2 0h1m1 0h1m8 0h1m1 0h1m1 0h3m-31 1h1m5 0h1m1 0h3m1 0h1m2 0h1m1 0h2m1 0h3m1 0h1m3 0h1m-29 1h1m1 0h3m1 0h1m10 0h2m1 0h2m2 0h6m-30 1h1m1 0h3m1 0h1m1 0h1m3 0h2m2 0h2m5 0h1m2 0h1m1 0h4m-32 1h1m1 0h3m1 0h1m6 0h2m2 0h2m2 0h1m1 0h2m3 0h1m3 0h1m-33 1h1m5 0h1m1 0h3m1 0h1m1 0h8m1 0h4m-27 1h7m4 0h1m7 0h1m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1"/></svg></div>
+      <div>
+        <p>상대방 휴대폰 카메라로 QR을 비추면 이 명함이 열립니다.</p>
+        <div class="btns"><button class="copy" type="button" id="share">명함 보내기</button><button class="copy" type="button" data-copy="https://beauty-connect-4gjp.onrender.com/card/">주소 복사</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>NEW BEAUTY NEXUS</b>
+    <p>Connecting K-Beauty, Creating New Business Opportunities</p>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const URL_CARD = 'https://beauty-connect-4gjp.onrender.com/card/';
+  const $ = s => document.querySelector(s);
+  const toast = m => { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 1800); };
+  const copy = txt => navigator.clipboard.writeText(txt).then(() => toast('복사했습니다'), () => toast(txt));
+
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => copy(b.dataset.copy)));
+
+  $('#share').addEventListener('click', async () => {
+    const data = { title: '김은지 · NEW BEAUTY NEXUS', text: '뷰티 비즈니스 컨설팅 & 커넥션 · 김은지 대표 모바일 명함', url: URL_CARD };
+    try { if (navigator.share) { await navigator.share(data); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    copy(URL_CARD);
+  });
+
+  $('#vcard').addEventListener('click', () => {
+    const v = ['BEGIN:VCARD', 'VERSION:3.0', 'N;CHARSET=UTF-8:김;은지;;;', 'FN;CHARSET=UTF-8:김은지', 'ORG;CHARSET=UTF-8:NEW BEAUTY NEXUS', 'TITLE;CHARSET=UTF-8:대표 · 리추얼 설계자 · 스칼피스트',
+      'TEL;TYPE=CELL:+82-10-6789-9291', 'EMAIL;TYPE=INTERNET:beautynexus@naver.com', 'URL:https://www.newbeautynexus.com', 'NOTE;CHARSET=UTF-8:뷰티 비즈니스 컨설팅 & 커넥션 전문가 · 창업·사업확장·제품유통·교육·파트너 연결', 'END:VCARD'].join('\r\n');
+    try {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([v], { type: 'text/vcard;charset=utf-8' }));
+      a.download = 'kim-eunji-newbeautynexus.vcf';
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('연락처 파일을 열어 저장하세요');
+    } catch { copy('김은지 010-6789-9291 beautynexus@naver.com'); }
+  });
+})();
+</script>
