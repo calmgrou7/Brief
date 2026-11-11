@@ -1,0 +1,79 @@
+{
+  "fps": 24,
+  "footer": "벤처 심사실 · 1인 대표를 위한 벤처 가이드",
+  "slides": [
+    {
+      "type": "lineup", "dur": 4.5,
+      "label": "벤처 심사실 EP.01",
+      "title": "벤처기업 인증,\n아직 남 얘기예요?",
+      "sub": "1인 대표도 받을 수 있어요",
+      "chars": ["ceo", "investor", "scientist", "innovator", "founder", "tax", "admin"]
+    },
+    {
+      "type": "speech", "dur": 4.5,
+      "char": "ceo",
+      "bubble": "벤처 = 스타트업\n아니에요?",
+      "title": "아니요!\n법으로 정한\n'확인 제도'예요",
+      "sub": "벤처기업법에 따라 확인기관이 심사해요"
+    },
+    {
+      "type": "cards", "dur": 5,
+      "host": "tax",
+      "label": "혜택 ①",
+      "title": "세금이\n줄어요",
+      "cards": [
+        { "t": "법인세·소득세 50% 감면", "d": "최대 5년 · 창업 3년 안에 확인받으면", "color": "#F7B267", "icon": "%" },
+        { "t": "취득세·재산세 감면", "d": "사업용 부동산을 살 때", "color": "#F4D35E", "icon": "₩" }
+      ]
+    },
+    {
+      "type": "cards", "dur": 5,
+      "host": "investor",
+      "label": "혜택 ②",
+      "title": "돈과 사람이\n모여요",
+      "cards": [
+        { "t": "보증·정책자금 우대", "d": "기술보증 한도와 조건에서 유리", "color": "#7FB3F5", "icon": "↑" },
+        { "t": "스톡옵션 부여", "d": "현금 대신 지분으로 인재 영입", "color": "#9AD1B6", "icon": "+" },
+        { "t": "지원사업·조달 가점", "d": "정부 사업 평가에서 플러스", "color": "#C7B6F5", "icon": "★" }
+      ]
+    },
+    {
+      "type": "cards", "dur": 6,
+      "label": "들어가는 문",
+      "title": "4개 중 하나만\n통과하면 OK",
+      "cards": [
+        { "t": "벤처투자 유형", "d": "투자 5천만 원 이상 받았다면", "color": "#2B3A67", "char": "investor" },
+        { "t": "연구개발 유형", "d": "연구소 + R&D 5천만 원 이상", "color": "#4F7FD1", "char": "scientist" },
+        { "t": "혁신성장 유형", "d": "기술·사업성 평가 통과", "color": "#2E9E6A", "char": "innovator" },
+        { "t": "예비벤처", "d": "창업 전에 미리 확인", "color": "#62CDB8", "char": "founder" }
+      ]
+    },
+    {
+      "type": "focus", "dur": 5,
+      "char": "innovator",
+      "label": "1인 대표라면?",
+      "title": "투자도, 연구소도\n없다면?",
+      "highlight": "혁신성장 유형부터",
+      "chips": ["기술 혁신성", "사업 성장성"],
+      "sub": "두 가지를 평가받아 벤처로 확인돼요"
+    },
+    {
+      "type": "cards", "dur": 5,
+      "host": "admin",
+      "label": "신청",
+      "title": "확인서 한 장,\n3년 동안 유효",
+      "cards": [
+        { "t": "온라인 신청", "d": "벤처확인종합관리시스템", "color": "#E57EA6", "icon": "✓" },
+        { "t": "서류 제출 + 평가", "d": "유형별 평가 뒤 위원회 심의", "color": "#E57EA6", "icon": "✓" },
+        { "t": "유효기간 3년", "d": "끝나기 전에 다시 확인받기", "color": "#E57EA6", "icon": "✓" }
+      ]
+    },
+    {
+      "type": "lineup", "dur": 5, "wave": true,
+      "label": "다음 편 예고",
+      "title": "1인 기업도 되는\n혁신성장 유형",
+      "sub": "팔로우하고 이어보기 →",
+      "chars": ["innovator", "ceo", "investor", "scientist", "founder", "tax", "admin"]
+    }
+  ]
+}
