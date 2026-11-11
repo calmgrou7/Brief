@@ -11,7 +11,9 @@ node shorts/render.js shorts/ep01 --preview   # 슬라이드별 PNG로 빠른 �
 - `characters.js` 오리지널 픽셀 캐릭터 7종 (대표·투자 매니저·연구소장·혁신 심사위원·예비 창업자·세무 담당·행정 담당)
 - `render.js` 슬라이드 HTML 생성 → Playwright 프레임 캡처 → ffmpeg 인코딩
 - `voice.py` 슬라이드별 `narration` → 한국어 TTS 음성 (오프라인·무료, sherpa-onnx + KSS 여성 음성). 슬라이드 길이를 음성에 맞춰 자동으로 늘리고, BGM은 음성 아래로 낮춤
-- `bgm.py` 오리지널 8비트 BGM + 전환 효과음 합성 (저작권 걱정 없음)
+- `bgm.py` 오리지널 BGM 합성 (기본 `soft` 이어지는 패드 / `"bgm": "8bit"`로 변경 가능, 저작권 걱정 없음)
+- 음성 다듬기: 치찰음 완화·압축·공간감, 말할 때만 음악 자동으로 줄이기(덕킹), 최종 -14 LUFS
+- 목소리 바꾸기: `slides.json` → `"voice": {"engine": "google", "name": "ko-KR-Chirp3-HD-Algieba"}` (Google TTS 키 필요). 후보 비교: `python3 shorts/voice.py shorts/ep01 --samples`
 - 슬라이드 타입: `lineup`(캐릭터 단체), `speech`(말풍선), `cards`(카드 목록), `focus`(강조)
 - 새 편: `shorts/ep01`을 복사해 `slides.json`과 `script.md`만 고치면 됩니다.
 - 폰트: Pretendard (SIL OFL 1.1, 상업적 이용 가능)

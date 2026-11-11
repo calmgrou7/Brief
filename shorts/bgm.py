@@ -1,4 +1,4 @@
-"""오리지널 8비트 BGM + 슬라이드 전환 효과음 생성 (저작권 걱정 없음).
+"""오리지널 BGM(soft 패드 / 8bit 선택) + 슬라이드 전환 효과음 생성 (저작권 걱정 없음).
 사용법: python3 shorts/bgm.py shorts/ep01  → shorts/ep01/bgm.wav
 """
 import json, sys, wave
@@ -42,42 +42,68 @@ def put(sig, at, gain):
     sig = sig[: n - i]
     mix[i : i + len(sig)] += sig * gain
 
-# 코드 진행 C - Am - F - G (밝고 가벼운 느낌), 1마디 = 4박
+def sine(hz, sec):
+    t = np.arange(int(sec * SR)) / SR
+    return np.sin(2 * np.pi * hz * t) + 0.25 * np.sin(4 * np.pi * hz * t)
+
+STYLE = json.loads((ep_dir / "slides.json").read_text()).get("bgm", "soft")  # "soft"(기본) 또는 "8bit"
+
+# 코드 진행 C - Am - F - G, 1마디 = 4박
 chords = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]]
 bass = [36, 33, 29, 31]
-melody = [  # (박 오프셋, MIDI, 길이(박)) — 2마디 모티프 x2 변형
+melody = [  # (박 오프셋, MIDI, 길이(박))
     (0, 72, .5), (.5, 76, .5), (1, 79, 1), (2, 76, .5), (2.5, 74, .5), (3, 72, 1),
     (4, 69, .5), (4.5, 72, .5), (5, 76, 1), (6, 74, 1), (7, 72, 1),
     (8, 77, .5), (8.5, 76, .5), (9, 74, 1), (10, 72, .5), (10.5, 74, .5), (11, 77, 1),
     (12, 79, 1), (13, 74, .5), (13.5, 76, .5), (14, 74, 2),
 ]
+soft_melody = [(0, 76, 2), (2, 74, 2), (4, 72, 3), (7, 74, 1), (8, 77, 2), (10, 76, 2), (12, 74, 4)]
 bar = 4 * beat
 loop = 4 * bar
 t0 = 0.0
 while t0 < TOTAL:
     for b in range(4):
         bt = t0 + b * bar
-        for k in range(4):  # 베이스 4분음표
-            put(triangle(note_hz(bass[b]), beat * .9) * env(int(beat * .9 * SR)), bt + k * beat, .32)
-        for k in range(8):  # 아르페지오 8분음표
-            m = chords[b][k % 3] + (12 if k >= 4 else 0)
-            put(square(note_hz(m), beat * .45, .125) * env(int(beat * .45 * SR), r=.05), bt + k * beat / 2, .05)
-        for k in range(8):  # 하이햇 노이즈
-            L = int(.03 * SR)
-            put(np.random.uniform(-1, 1, L) * np.linspace(1, 0, L), bt + k * beat / 2, .05 if k % 2 else .025)
-    for off, m, ln in melody:
-        sec = ln * beat * .92
-        put(square(note_hz(m), sec, .25) * env(int(sec * SR), r=.1), t0 + off * beat, .085)
+        if STYLE == "8bit":
+            for k in range(4):
+                put(triangle(note_hz(bass[b]), beat * .9) * env(int(beat * .9 * SR)), bt + k * beat, .32)
+            for k in range(8):
+                m = chords[b][k % 3] + (12 if k >= 4 else 0)
+                put(square(note_hz(m), beat * .45, .125) * env(int(beat * .45 * SR), r=.05), bt + k * beat / 2, .05)
+            for k in range(8):
+                L = int(.03 * SR)
+                put(np.random.uniform(-1, 1, L) * np.linspace(1, 0, L), bt + k * beat / 2, .05 if k % 2 else .025)
+        else:  # soft: 끊김 없이 이어지는 패드 + 부드러운 베이스 + 잔잔한 아르페지오
+            L = bar + .6  # 다음 마디와 살짝 겹쳐 이음새 없음
+            for m in chords[b]:
+                put(sine(note_hz(m), L) * env(int(L * SR), a=.25, r=.6), bt, .07)
+            put(sine(note_hz(bass[b] + 12), bar) * env(int(bar * SR), a=.05, r=.4), bt, .16)
+            for k in range(4):
+                m = chords[b][k % 3] + 12
+                sec = beat * 1.6
+                put(sine(note_hz(m), sec) * env(int(sec * SR), a=.01, r=sec * .9), bt + k * beat, .045)
+    if STYLE == "8bit":
+        for off, m, ln in melody:
+            sec = ln * beat * .92
+            put(square(note_hz(m), sec, .25) * env(int(sec * SR), r=.1), t0 + off * beat, .085)
+    else:
+        for off, m, ln in soft_melody:
+            sec = ln * beat
+            put(sine(note_hz(m), sec) * env(int(sec * SR), a=.08, r=sec * .5), t0 + off * beat, .06)
     t0 += loop
 
-# 슬라이드 전환 '뿅' 효과음
+# 슬라이드 전환 효과음 (soft: 부드러운 '띵', 8bit: '뿅')
 start = 0.0
 for d in durs:
-    sec = .09
-    t = np.arange(int(sec * SR)) / SR
-    hz = np.linspace(880, 1760, len(t))
-    blip = np.where((np.cumsum(hz) / SR) % 1 < .5, 1.0, -1.0) * np.linspace(1, 0, len(t))
-    put(blip, start + .02, .09)
+    if STYLE == "8bit":
+        sec = .09
+        t = np.arange(int(sec * SR)) / SR
+        hz = np.linspace(880, 1760, len(t))
+        sfx = np.where((np.cumsum(hz) / SR) % 1 < .5, 1.0, -1.0) * np.linspace(1, 0, len(t))
+        put(sfx, start + .02, .09)
+    else:
+        sec = .35
+        put(sine(1318.5, sec) * np.exp(-np.arange(int(sec * SR)) / SR * 12), start + .02, .06)
     start += d
 
 # 마스터: 끝 1.5초 페이드아웃, 정규화
