@@ -48,6 +48,40 @@
 - 공공데이터(물환경정보시스템의 조류경보와 수질 측정값, 기상청 수온·강수 자료)를 자동으로 모으는 파이프라인과 간단한 ML 예측 모델만 있으면, 녹조 조기경보 대시보드나 브리핑 서비스를 혼자서도 만들 수 있다.
 - 잠재 수요처: 지자체, 정수장, 양식·농업 용수 사용자, 환경 미디어.
 
+## 9. 녹조가 분해되면 어떻게 되나 (후속 질문)
+
+### A. 저절로 죽어 분해될 때: 2차 피해의 연쇄
+1. **산소 고갈**: 미생물이 죽은 남세균을 분해하면서 산소를 써 버린다. 물속이 저산소·무산소 상태가 되어 물고기가 집단 폐사한다. 다만 산소가 정상인데도 **암모니아와 pH 상승**으로 폐사한 사례도 있다 (NOAA).
+2. **독소 방출**: 세포가 터지면서 안에 있던 마이크로시스틴이 물에 녹아 나온다. 녹아 나온 독소는 정수 공정에서 세포째 걸러낼 수 없어 제거하기가 더 어렵다.
+3. **영양염 재방출(악순환)**: 유기 인이 무기화되고, 무산소 바닥에서 철·알루미늄에 붙어 있던 인이 풀려난다. 인 방출 속도는 녹조가 한창일 때 가장 높았다 (차오후 미소생태계 실험, Carbon Research). Clear Lake에서는 인 유입량의 70~95%가 이런 **내부 부하**에서 왔다. 즉, 썩은 녹조가 다음 녹조의 비료가 된다.
+4. **온실가스**: 무산소 환경에서 메탄 생성균이 활성화되어 메탄 배출이 최대 약 10배까지 늘어난 사례가 있다 (현장마다 편차가 큼).
+5. **악취·이취**: 황화수소, 암모니아, 지오스민·2-MIB(흙냄새·곰팡이 냄새) 같은 물질이 생겨 수돗물 민원으로 이어진다.
+
+### B. 사람이 약품으로 터뜨릴 때 (살조제)
+- 황산구리나 과산화수소를 쓰면 세포가 터지면서(용해) **독소가 한꺼번에 풀려날 수 있다**. 황산구리는 풀려난 독소를 분해하지 못한다.
+- Zamyadi et al. (2020, Water)은 살조제를 쓴 뒤 **최대 1주일 동안 독소 지연 방출을 모니터링해야 한다**고 권고했다.
+- 그래서 원칙은 "물속에서 터뜨리지 말고, **세포째 건져내서 처리**하라"이다. 수면에 뜬 녹조(스컴)를 빨리 걷어내고, 바닥에 산소를 공급하는 것도 대안으로 제시된다.
+
+### C. 건져서 통제된 환경에서 분해할 때 (자원화)
+- **바이오가스**: 타이후 호수 남조류를 혐기성으로 소화한 실험에서 메탄 약 190 mL/g VS를 얻었고, 마이크로시스틴은 1220에서 35 mg/L로 **약 97% 줄었다** (Energy & Environmental Science, 2011). 음식물쓰레기나 돈분과 섞어 탄소/질소 비율을 맞추는 공동소화 연구도 있다.
+- **비료·고형연료**: 녹조 슬러지에 들어 있는 질소와 인을 유기질 비료로 회수하는 연구, 톱밥과 섞어 고형연료로 만드는 특허가 있다. 다만 잘못 관리하면 2차 오염이 생길 수 있다.
+- **한계**: 대부분 실험실 규모이고, 상업 규모의 경제성 자료는 부족하다.
+
+**요약**: 녹조는 물속에서 분해되면 **독소, 산소 고갈, 영양염 재방출, 메탄**으로 이어지는 악순환을 만든다. 반대로 건져내서 통제된 환경에서 분해하면 **에너지와 비료 자원**이 된다.
+
+### 추가 참고문헌
+- Cyanobacterial bloom decline review (2022). *Toxins* 14, 658. https://mdpi.com/2072-6651/14/10/658
+- NOAA fish kill / bloom decomposition report. https://repository.library.noaa.gov/view/noaa/50798/noaa_50798_DS1.pdf
+- EPA ISOC-HAB monograph, Ch.31. https://webarchive.library.unt.edu/web/20090512190417/http://www.epa.gov/cyano_habs_symposium/monograph/Ch31.pdf
+- Bloom cycles & phosphorus release (Lake Chaohu). https://www.eurekalert.org/news-releases/1102554
+- Clear Lake internal loading. https://scholarworks.indianapolis.iu.edu/server/api/core/bitstreams/c440625b-aefe-4b9b-b5fd-df46e0e30e1e/content
+- Lake GHG during heatwaves and blooms. https://espace.inrs.ca/id/eprint/11770/1/P3879.pdf
+- Algal decay and GHG microcosm (2025). https://link.springer.com/article/10.1007/s44246-025-00253-1
+- Zamyadi et al. (2020). Impact of H2O2 and CuSO4 on the delayed release of microcystin. *Water* 12, 1105. https://mdpi.com/2073-4441/12/4/1105
+- Anaerobic digestion of Taihu blue algae (2011). *Energy Environ. Sci.* https://pubs.rsc.org/en/content/articlelanding/2011/ee/c0ee00452a/unauth
+- Harmless disposal and resource utilization of Taihu blue algae. https://www.semanticscholar.org/paper/Harmless-Disposal-and-Resources-Utilizations-of-Jian-ping/ff349b808f7bcff84843bb98389eaf1e93bf1b51
+- Refloated algal sludge as organic fertilizer. https://katalog.dhi-paris.fr/vufind/Record/NLM239445244/Holdings
+
 ---
 
 ## 참고문헌
