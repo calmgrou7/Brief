@@ -573,7 +573,7 @@ function Members(){
   return `
   <div class="head"><h1>회원명부 <span class="muted" style="font-size:15px">${list.length}명</span></h1>
     <div class="row">
-      ${can.officer()?'<button class="btn" id="exp">엑셀(CSV) 내보내기</button>':''}
+      ${can.officer()?'<button class="btn" id="vcf">📱 휴대폰 연락처 저장</button><button class="btn" id="exp">엑셀(CSV) 내보내기</button>':''}
       ${can.admin()?'<button class="btn pri" id="add">+ 회원 등록</button>':''}
     </div></div>
   <div class="panel" style="margin-bottom:14px"><div class="row">
@@ -605,6 +605,32 @@ function memberList(list){
 
 const webHref = u => /^https?:\/\//i.test(u) ? u : 'https://' + u;
 const webLabel = u => u.replace(/^https?:\/\//i,'').replace(/\/$/,'');
+
+/* ===================== 휴대폰 연락처 (vCard 3.0) =====================
+   .vcf 파일 하나에 여러 명을 담아 아이폰/갤럭시 연락처 앱에서 한 번에 추가 */
+const vEsc = v => String(v ?? '').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/([,;])/g,'\\$1');
+function vCard(m){
+  const g = member(m.guardianId), t = currentTerm(m.id);
+  const family = m.name.length >= 2 && m.name.length <= 4 ? m.name.slice(0,1) : '';
+  const given = family ? m.name.slice(1) : m.name;
+  const note = ['정우회' + (t ? ' ' + (position(t.positionId)?.name||'임원') : ''),
+    m.joined ? `입회 ${m.joined.replace('-','.')}` : m.isFounder ? '창립회원' : '',
+    g ? `추천인 ${g.name}` : '', m.products ? `제품·서비스: ${m.products}` : '', m.industry ? `업종: ${m.industry}` : '']
+    .filter(Boolean).join(' / ');
+  const L = ['BEGIN:VCARD', 'VERSION:3.0',
+    `N:${vEsc(family)};${vEsc(given)};;;`, `FN:${vEsc(m.name)}`];
+  if(m.company) L.push(`ORG:${vEsc(m.company)}`);
+  if(m.title) L.push(`TITLE:${vEsc(m.title)}`);
+  if(m.phone) L.push(`TEL;TYPE=CELL,VOICE:${m.phone.replace(/[^\d+]/g,'')}`);
+  if(m.email) L.push(`EMAIL;TYPE=INTERNET:${vEsc(m.email)}`);
+  if(m.website) L.push(`URL:${vEsc(webHref(m.website))}`);
+  if(m.address) L.push(`ADR;TYPE=WORK:;;${vEsc(m.address)};;;;`);
+  L.push(`NOTE:${vEsc(note)}`, 'CATEGORIES:정우회', 'END:VCARD');
+  return L.join('\r\n');
+}
+function downloadVcf(list, filename){
+  download(filename, list.map(vCard).join('\r\n') + '\r\n', 'text/vcard;charset=utf-8');
+}
 
 /* ===================== 프로필 PNG 저장 =====================
    화면 크기와 상관없이 같은 모양이 나오도록 저장 전용 레이아웃(폭 800px)을 만들어 캡처합니다.
@@ -695,7 +721,7 @@ function MemberDetail(id){
   const img = (src, label) => `<div class="pc-img">${src?`<img src="${src}" alt="">`:label}</div>`;
   return `
   <div class="head"><div class="row"><a class="btn sm" href="#/members">← 명부</a><h1>${esc(m.name)}</h1>${typeTag(m)}</div>
-    <div class="row"><button class="btn" id="png">PNG 저장</button>${can.edit(m)?`<button class="btn" id="edit">${m.id===Store.me.memberId?'내 정보 수정':'정보 수정'}</button>`:''}</div></div>
+    <div class="row">${m.phone?'<button class="btn" id="vcf1">📱 연락처 저장</button>':''}<button class="btn" id="png">PNG 저장</button>${can.edit(m)?`<button class="btn" id="edit">${m.id===Store.me.memberId?'내 정보 수정':'정보 수정'}</button>`:''}</div></div>
   <div class="grid two">
     <div class="panel profile">
       <div class="pc-top">
@@ -1041,6 +1067,14 @@ const bind = {
     $('#year').onchange = e=>{ ui.year=e.target.value; refresh(); };
     document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ ui.view=b.dataset.v; render(); });
     if($('#add')) $('#add').onclick = ()=>memberForm();
+    if($('#vcf')) $('#vcf').onclick = ()=>{
+      const list = filteredMembers().filter(m=>m.phone && m.status!=='inactive');
+      if(!list.length) return toast('전화번호가 있는 회원이 없습니다.');
+      const filtered = ui.q || ui.type || ui.year;
+      if(!confirm(`${filtered?'현재 검색·필터 결과 ':'전체 '}${list.length}명의 연락처를 휴대폰 저장용 파일(.vcf)로 받을까요?\n(전화번호가 없는 회원·휴면 회원은 제외)`)) return;
+      downloadVcf(list, `정우회_연락처_${list.length}명_${today()}.vcf`);
+      toast(`${list.length}명 연락처 파일을 저장했습니다.`);
+    };
     if($('#exp')) $('#exp').onclick = ()=>{
       const head = ['NO','입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','홈페이지','추천인','추천횟수'];
       const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.rosterNo, m.joined||(m.isFounder?'창립':'기존회원'), m.name, t?'임원':'일반회원',
@@ -1053,6 +1087,7 @@ const bind = {
     const m = member(id); if(!m) return;
     if($('#edit')) $('#edit').onclick = ()=>memberForm(m);
     $('#png').onclick = e=>saveProfilePng(m, e.currentTarget);
+    if($('#vcf1')) $('#vcf1').onclick = ()=>{ downloadVcf([m], `정우회_${m.name}.vcf`); toast('연락처 파일을 저장했습니다.'); };
   },
   officers(){
     if(!can.admin()) return;
