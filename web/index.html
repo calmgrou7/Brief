@@ -48,6 +48,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
 .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--brand-2)}
 .tag.off{background:#fbf3e2;color:#8a6a1c}
 .tag.gray{background:#f0f1f4;color:#6b7280}
+.nbadge{background:#e0533d;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:auto}
 .tag.new{background:#e7f6ee;color:#1e7a4c;font-weight:700}
 .av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;color:var(--brand);font-weight:700;flex:none}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
@@ -196,7 +197,7 @@ async function q(p){
 
 const Store = {
   ready:false,
-  db:{members:[], positions:[], terms:[], events:[], history:[]},
+  db:{members:[], positions:[], terms:[], events:[], history:[], applications:[]},
   me:{email:'', admin:false, officer:false, memberId:''},
   async loadMe(){
     const {data:{user}} = await sb.auth.getUser();
@@ -213,7 +214,8 @@ const Store = {
       q(sb.from('jw_history').select('*'))]);
     this.db = {members:ms.map(fromMember),
       positions:ps.map(r=>({id:r.id, name:r.name, single:r.single, order:r.sort_order})),
-      terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory)};
+      terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory), applications:[]};
+    if(this.me.admin) this.db.applications = await q(sb.from('jw_applications').select('*').eq('status','pending').order('created_at',{ascending:false}));
     await this.signImages();
   },
   /* 비공개 저장소 이미지 → 12시간짜리 서명 URL을 한 번에 발급 */
@@ -428,7 +430,7 @@ function render(){
   $('#who').innerHTML = `<div>${mine?`<a href="#/member/${mine.id}" style="color:#fff"><b>${esc(mine.name)}</b></a>`:''}
     <div>${esc(me.email)} · ${me.admin?'관리자':me.officer?'임원':'회원'}</div></div><button class="btn sm" id="logout">${keyMode?'잠그기':'로그아웃'}</button>`;
   $('#logout').onclick = ()=>{ if(keyMode){ writeKey(''); location.reload(); } else sb.auth.signOut(); };
-  $('#nav').innerHTML = ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}</a>`).join('');
+  $('#nav').innerHTML = ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('');
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
               officers:Officers, events:Events, history:History, settings:Settings}[page] || Dashboard;
   $('#view').innerHTML = fn();
@@ -533,6 +535,8 @@ function Dashboard(){
 
   return `
   <div class="head"><h1>대시보드</h1><span class="muted">${today().replace(/-/g,'.')} 기준</span></div>
+  ${can.admin() && pendingCount() ? `<a href="#/settings" class="panel" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-color:#f0b3a7;background:#fff7f5;color:var(--ink)">
+    <span>📝 새 회원 가입 신청 <b>${pendingCount()}건</b>이 승인을 기다리고 있습니다.</span><span class="btn sm pri">확인하기</span></a>` : ''}
   <div class="grid kpis">
     <div class="panel kpi"><div class="l">전체 회원</div><div class="n">${ms.length}</div><div class="l">기존회원 포함</div></div>
     <div class="panel kpi"><div class="l">${year}년 신규 입회</div><div class="n">${newThisYear}</div><div class="l">명</div></div>
@@ -1057,10 +1061,91 @@ function historyForm(h){
   });
 }
 
+/* ===================== 가입 신청 (join.html) 검토·승인 ===================== */
+const pendingCount = () => (D().applications||[]).length;
+const joinUrl = () => location.origin + location.pathname.replace(/[^/]*$/, '') + 'join.html';
+const APP_IMG = {photo:'photo_path', companyImage:'company_image_path', cardImage:'card_image_path'};
+async function reviewApplication(a){
+  const paths = Object.values(APP_IMG).map(k=>a[k]).filter(Boolean);
+  let urls = {};
+  if(paths.length){
+    const {data} = await sb.storage.from(BUCKET).createSignedUrls(paths, 3600);
+    urls = Object.fromEntries((data||[]).filter(x=>x.signedUrl).map(x=>[x.path, x.signedUrl]));
+  }
+  const matches = D().members.filter(m=>m.name===a.recommender && m.status!=='inactive');
+  const opts = D().members.filter(m=>m.status!=='inactive').sort((x,y)=>x.name.localeCompare(y.name,'ko'))
+    .map(m=>`<option value="${m.id}" ${matches.length===1&&matches[0].id===m.id?'selected':''}>${esc(m.name)}${m.company?` (${esc(m.company)})`:''}</option>`).join('');
+  const dup = D().members.filter(m=>m.name===a.name || (a.phone && m.phone && m.phone.replace(/\D/g,'')===a.phone.replace(/\D/g,'')));
+  const row = (k,v) => v ? `<tr><th style="width:90px">${k}</th><td style="white-space:pre-wrap">${esc(v)}</td></tr>` : '';
+  const thumb = (k,l) => a[APP_IMG[k]] && urls[a[APP_IMG[k]]] ? `<figure style="margin:0;text-align:center"><img src="${urls[a[APP_IMG[k]]]}" style="max-width:100%;max-height:160px;border-radius:8px;border:1px solid var(--line)"><figcaption class="muted" style="font-size:12px">${l}</figcaption></figure>` : '';
+  const ym = today().slice(0,7);
+  openModal(`<h2>가입 신청 검토 — ${esc(a.name)}</h2>
+    ${dup.length?`<div class="panel" style="background:#fff7f5;border-color:#f0b3a7;padding:10px 12px;margin-bottom:12px;font-size:13px">⚠️ 이름 또는 휴대폰이 같은 회원이 이미 있습니다: ${dup.map(m=>memberLink(m)).join(', ')}</div>`:''}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">${thumb('photo','인물 사진')}${thumb('companyImage','회사 이미지')}${thumb('cardImage','명함')}</div>
+    <table style="margin-bottom:14px">${row('휴대폰',a.phone)}${row('출생연도',a.birth_year)}${row('이메일',a.email)}${row('회사',a.company+(a.title?' · '+a.title:''))}
+      ${row('제품·서비스',a.products)}${row('업종',a.industry)}${row('홈페이지',a.website)}${row('주소',a.address)}${row('추천인(입력)',a.recommender)}${row('하고 싶은 말',a.message)}
+      ${row('신청 시각',a.created_at.slice(0,16).replace('T',' '))}</table>
+    <form class="form" id="apf">
+      <label>추천인 연결<select class="input" name="guardianId"><option value="">없음</option>${opts}</select></label>
+      <label>입회월<input class="input" type="month" name="joined" value="${ym}" required></label>
+      <label class="full" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="isNew" checked> 신입회원으로 표시</label>
+      <div class="full row" style="justify-content:space-between">
+        <button type="button" class="btn danger" id="aprej">반려(신청 삭제)</button>
+        <div class="row"><button type="button" class="btn" data-close>닫기</button><button class="btn pri">승인 → 회원 등록</button></div>
+      </div>
+    </form>`, root=>{
+    root.querySelector('#apf').onsubmit = async e=>{
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      const btn = e.submitter; btn.disabled = true; btn.textContent = '등록 중…';
+      try{
+        const memberId = await approveApplication(a, {guardianId:f.guardianId, joined:f.joined, isNew:'isNew' in f});
+        closeModal(); toast(`${a.name}님을 회원으로 등록했습니다.`);
+        await Store.load(); location.hash = '#/member/' + memberId;
+      }catch(err){ btn.disabled = false; btn.textContent = '승인 → 회원 등록'; }
+    };
+    root.querySelector('#aprej').onclick = async ()=>{
+      if(!confirm(`${a.name}님의 신청을 반려할까요? 신청 내용과 사진이 삭제됩니다.`)) return;
+      if(paths.length) await sb.storage.from(BUCKET).remove(paths);
+      await q(sb.from('jw_applications').delete().eq('id', a.id));
+      closeModal(); toast('신청을 반려했습니다.'); Store.refresh();
+    };
+  });
+}
+async function approveApplication(a, {guardianId, joined, isNew}){
+  const email = (a.email||'').trim().toLowerCase();
+  const emailTaken = email && D().members.some(m=>(m.email||'').toLowerCase()===email);
+  const memo = [a.message ? `가입 신청 메시지: ${a.message}` : '', emailTaken ? `신청 이메일(중복으로 로그인 이메일 미등록): ${email}` : '']
+    .filter(Boolean).join('\n');
+  const [row] = await q(sb.from('jw_members').insert({name:a.name.trim(), phone:a.phone, birth_year:a.birth_year||'', company:a.company,
+    title:a.title||'', products:a.products||'', industry:a.industry||'', website:a.website||'', address:a.address||'',
+    email:emailTaken ? '' : email, joined, guardian_id:guardianId||null, is_new:!!isNew, memo}).select('id'));
+  const patch = {};
+  for(const [kind, col] of Object.entries(APP_IMG)){
+    if(!a[col]) continue;
+    const to = `${row.id}/${kind}-${Date.now()}.jpg`;
+    const {error} = await sb.storage.from(BUCKET).move(a[col], to);
+    if(!error) patch[col] = to;
+  }
+  if(Object.keys(patch).length) await q(sb.from('jw_members').update(patch).eq('id', row.id));
+  await q(sb.from('jw_applications').delete().eq('id', a.id));   // 회원으로 옮긴 뒤 신청서는 삭제(개인정보 중복 보관 방지)
+  return row.id;
+}
+
 /* ===================== 화면: 관리·백업 ===================== */
 function Settings(){
   return `
   <div class="head"><h1>관리·백업</h1></div>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">가입 신청 ${pendingCount()?`<span class="nbadge" style="margin-left:6px">${pendingCount()}</span>`:''}</h2>
+      <div class="row"><input class="input" id="joinlink" readonly value="${esc(joinUrl())}" style="width:300px;max-width:60vw"><button class="btn sm" id="copyjoin">신청서 링크 복사</button></div></div>
+    <p class="muted" style="font-size:13px">신규 회원에게 위 링크를 보내면 본인 정보를 직접 입력합니다. 승인하면 <b>신입회원</b>으로 회원명부에 등록됩니다.</p>
+    ${D().applications.length ? `<div style="overflow-x:auto"><table><tr><th>신청일</th><th>성명</th><th>회사</th><th class="hide-m">휴대폰</th><th class="hide-m">추천인</th><th></th></tr>
+      ${D().applications.map(a=>`<tr><td>${a.created_at.slice(5,10).replace('-','.')}</td><td><b>${esc(a.name)}</b></td><td>${esc(a.company)}</td>
+        <td class="hide-m">${esc(a.phone)}</td><td class="hide-m">${esc(a.recommender)||'-'}</td>
+        <td style="text-align:right"><button class="btn sm pri" data-app="${a.id}">검토·승인</button></td></tr>`).join('')}</table></div>`
+      : '<div class="empty" style="padding:18px">대기 중인 가입 신청이 없습니다.</div>'}
+  </div>
   <div class="grid two">
     <div class="panel"><h2>회원 일괄 등록 (엑셀)</h2>
       <p class="muted">회원명부 <b>엑셀(.xlsx)</b> 또는 CSV를 그대로 올리면 회원과 추천인 관계가 자동으로 만들어집니다.
@@ -1159,6 +1244,11 @@ const bind = {
     document.querySelectorAll('[data-hedit]').forEach(b=>b.onclick=()=>historyForm(D().history.find(h=>h.id===b.dataset.hedit)));
   },
   settings(){
+    $('#copyjoin').onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(joinUrl()); toast('신청서 링크를 복사했습니다. 카톡 등으로 보내주세요.'); }
+      catch(e){ $('#joinlink').select(); toast('링크를 선택했습니다. 길게 눌러 복사해주세요.'); }
+    };
+    document.querySelectorAll('[data-app]').forEach(b=>b.onclick=()=>reviewApplication(D().applications.find(a=>a.id===b.dataset.app)));
     $('#csv').onchange = async e=>{
       const f = e.target.files[0]; if(!f) return;
       let data;
