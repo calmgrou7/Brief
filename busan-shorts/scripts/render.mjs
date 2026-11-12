@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Deterministic render of the shorts to MP4 (1080x1920, 30 fps) + narration SRT.
 //   node scripts/render.mjs                 -> out/busan_lineart_shorts.mp4
+//   node scripts/render.mjs --ep gamcheon        -> out/gamcheon_lineart_shorts.mp4
 //   node scripts/render.mjs --stills 1,5,9  -> out/still_<t>.png at those seconds (quick check)
 // Starts its own Vite server, drives the page in ?debug mode (window.__step), pipes PNG frames to ffmpeg.
 import { createServer } from 'vite';
@@ -17,12 +18,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = path.join(root, 'out');
 mkdirSync(outDir, { recursive: true });
 const args = process.argv.slice(2);
+const ep = args.includes('--ep') ? args[args.indexOf('--ep') + 1] : 'busan';
 const stillsArg = args.includes('--stills') ? args[args.indexOf('--stills') + 1] : null;
 const FPS = 30;
 
 const server = await createServer({ root, configFile: path.join(root, 'vite.config.ts'), server: { port: 5199, strictPort: false }, logLevel: 'error' });
 await server.listen();
-const url = `http://127.0.0.1:${server.config.server.port}/?debug&capture`;
+const url = `http://127.0.0.1:${server.config.server.port}/?debug&capture&ep=${ep}`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
 const errors = [];
@@ -39,12 +41,12 @@ if (stillsArg) {
   let now = 0;
   for (const s of stillsArg.split(',').map(Number).sort((a, b) => a - b)) {
     await page.evaluate((d) => window.__step(d), s - now); now = s;
-    await frame.screenshot({ path: path.join(outDir, `still_${s}.png`) });
+    await frame.screenshot({ path: path.join(outDir, `still_${ep}_${s}.png`) });
   }
   console.log(`stills done (total ${total.toFixed(2)}s)`);
 } else {
   const n = Math.round(total * FPS);
-  const out = path.join(outDir, 'busan_lineart_shorts.mp4');
+  const out = path.join(outDir, `${await page.evaluate(() => window.__ep)}.mp4`);
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-',
     '-f', 'lavfi', '-t', total.toFixed(3), '-i', 'anullsrc=r=44100:cl=stereo',
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-tune', 'animation', '-pix_fmt', 'yuv420p',

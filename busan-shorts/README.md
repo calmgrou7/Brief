@@ -20,6 +20,14 @@ node scripts/render.mjs --stills 1,4,8       # 특정 초의 스틸컷 → out/
 node scripts/render.mjs                      # out/busan_lineart_shorts.mp4 + .srt
 ```
 
+## 에피소드
+| ep | 내용 | 브랜드 | 출력 |
+|---|---|---|---|
+| `busan` | 부산 5대 명소 하루 산책 | HERITAGE STUDIO B | `out/busan_lineart_shorts.mp4` |
+| `gamcheon` | 감천문화마을 아침→밤 (전경·계단 골목·물고기 골목·지붕 위 노을·밤) | HERITAGE STUDIO B × NOWRO KOREA | `out/gamcheon_lineart_shorts.mp4` |
+
+`node scripts/render.mjs --ep gamcheon` · 미리보기 `npm run dev` 후 `/?ep=gamcheon` · 에피소드 추가는 `src/episodes.ts`.
+
 ## 결과물
 - `out/busan_lineart_shorts.mp4` — 1080×1920, 30fps, 30.8초, 무음
 - `out/busan_lineart_shorts.srt` — 자막 타이밍 기준 내레이션 SRT

@@ -6,13 +6,11 @@ import { el, inkDefs, run, f } from '../lib/ink.ts';
 import { palette, rgb, type Palette } from '../lib/daynight.ts';
 import { W, H, glowDefs, clamp, ease, lerp } from './kit.ts';
 import type { Scene } from './scene.ts';
-import { gamcheon } from './scenes/gamcheon.ts';
-import { jagalchi } from './scenes/jagalchi.ts';
-import { yeongdo } from './scenes/yeongdo.ts';
-import { haeundae } from './scenes/haeundae.ts';
-import { gwangan } from './scenes/gwangan.ts';
+import { EPISODES } from './episodes.ts';
 
 const q = new URLSearchParams(location.search);
+const EP = EPISODES[q.get('ep') ?? 'busan'] ?? EPISODES.busan;
+(window as any).__ep = EP.out;
 if (q.has('capture')) document.body.classList.add('capture');
 const frame = document.querySelector<HTMLDivElement>('#frame')!;
 const fit = () => { if (!q.has('capture')) frame.style.transform = `scale(${Math.min(innerWidth / 1080, innerHeight / 1920) * 0.98})`; };
@@ -24,9 +22,8 @@ glowDefs(svg);
 document.querySelector('#stage')!.appendChild(svg);
 
 const XF = 0.7;            // crossfade seconds
-const OUTRO = 2.6;         // CTA hold after the last scene's captions
-const makers = [gamcheon, jagalchi, yeongdo, haeundae, gwangan];
-const scenes: Scene[] = makers.map((m) => m(svg, filter));
+const OUTRO = EP.outro ?? 2.6;   // CTA hold after the last scene's captions
+const scenes: Scene[] = EP.makers.map((m) => m(svg, filter));
 const starts: number[] = [];
 { let acc = 0; scenes.forEach((s, i) => { starts.push(acc); acc += s.dur - (i < scenes.length - 1 ? XF : 0); }); }
 const TOTAL = starts[starts.length - 1] + scenes[scenes.length - 1].dur + OUTRO;
@@ -35,9 +32,10 @@ const TOTAL = starts[starts.length - 1] + scenes[scenes.length - 1].dur + OUTRO;
 
 // ---------------------------------------------------------------- HUD (captions)
 const hud = document.querySelector<HTMLDivElement>('#hud')!;
+for (const k of ['top', 'bottom']) { const d = document.createElement('div'); d.className = `scrim ${k}`; hud.appendChild(d); }
 const chip = document.createElement('div');
 chip.className = 'chip';
-chip.innerHTML = '<b>HERITAGE STUDIO B</b> · 부산 라인아트';
+chip.innerHTML = EP.chip;
 hud.appendChild(chip);
 
 interface Cap { at: number; until: number; el: HTMLDivElement; spans: HTMLElement[] }
@@ -58,7 +56,8 @@ const huds = scenes.map((s, i) => {
 });
 const cta = document.createElement('div');
 cta.className = 'cap cta';
-cta.innerHTML = '<span>부산, 낮부터 밤까지</span><span>선 하나로 걸어봤어요</span><span class="sub">저장해두고 여행 갈 때 따라 걸어보세요</span>';
+cta.innerHTML = EP.cta.lines.map((l) => `<span>${l}</span>`).join('') + (EP.cta.sub ? `<span class="sub">${EP.cta.sub}</span>` : '')
+  + (EP.credit ? `<span class="credit"><i>${EP.credit.by}</i>${EP.credit.names}</span>` : '');
 cta.style.opacity = '0';
 hud.appendChild(cta);
 const ctaSpans = Array.from(cta.querySelectorAll('span')) as HTMLElement[];
@@ -76,6 +75,7 @@ const setText = (Pl: Palette) => {
   const night = Pl.inkT > 0.5;
   frame.style.setProperty('--ink', night ? '#f6eedb' : '#1c1c1c');
   frame.style.setProperty('--paper', night ? 'rgba(14,18,36,.85)' : 'rgba(253,252,248,.95)');
+  frame.style.setProperty('--scrim', night ? 'rgba(14,18,36,.58)' : 'rgba(253,252,248,.66)');
   frame.style.setProperty('--accent', Pl.inkT > 0.5 ? '#f2b766' : '#d9772b');
 };
 
@@ -126,4 +126,4 @@ run((_t, dt) => {
   a: starts[i] + c.at,
   b: starts[i] + (k < s.caps.length - 1 ? s.caps[k + 1].at : s.dur),
   text: c.lines.join('\n'),
-}))).concat([{ a: starts[scenes.length - 1] + scenes[scenes.length - 1].dur, b: TOTAL, text: '부산, 낮부터 밤까지\n저장해두고 여행 갈 때 따라 걸어보세요' }]);
+}))).concat([{ a: starts[scenes.length - 1] + scenes[scenes.length - 1].dur, b: TOTAL, text: EP.cta.lines.join(' ') + (EP.cta.sub ? '\n' + EP.cta.sub : '') }]);

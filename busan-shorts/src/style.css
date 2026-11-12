@@ -36,3 +36,12 @@ body.capture #frame { transform: none !important; }
 .cap span { display: block; }
 .cap .sub { font-size: 40px; font-weight: 700; color: var(--accent); margin-top: 16px; letter-spacing: 0; }
 .cta { position: absolute; left: 62px; right: 150px; top: 1290px; }
+.cap .credit {
+  margin-top: 54px; font-size: 34px; font-weight: 900; letter-spacing: 3px; color: var(--ink);
+  padding-top: 22px; border-top: 3px solid var(--accent); display: inline-block;
+}
+.cap .credit i { display: block; font-style: normal; font-size: 22px; letter-spacing: 6px; opacity: .6; margin-bottom: 6px; }
+#frame { --scrim: rgba(253,252,248,.7); }
+.scrim { position: absolute; left: 0; right: 0; pointer-events: none; }
+.scrim.bottom { top: 1180px; height: 560px; background: linear-gradient(transparent, var(--scrim) 22%, var(--scrim) 78%, transparent); }
+.scrim.top { top: 200px; height: 360px; background: linear-gradient(transparent, var(--scrim) 30%, var(--scrim) 70%, transparent); opacity: .7; }
