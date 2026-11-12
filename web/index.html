@@ -79,6 +79,12 @@ tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
 .tl{border-left:3px solid var(--line);margin-left:8px;padding-left:18px}
 .tl .it{position:relative;padding:8px 0 14px}
 .tl .it:before{content:"";position:absolute;left:-26px;top:13px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #fff}
+.tl .it.future:before{background:#fff;border:2px solid var(--brand-2)}
+.tl .when{display:inline-block;min-width:92px;color:var(--sub);font-variant-numeric:tabular-nums}
+.tl .desc{color:var(--sub);margin-top:6px;white-space:pre-wrap;line-height:1.6;font-size:14px}
+.tl-today{position:relative;margin:2px 0 10px -18px;padding-left:18px;font-size:12px;color:var(--warn);font-weight:700}
+.tl-today:before{content:"";position:absolute;left:-6px;top:50%;width:calc(100% + 6px);border-top:1px dashed var(--warn)}
+.tl-today span{position:relative;background:var(--panel);padding-right:8px}
 /* tree */
 .tree ul{list-style:none;margin:0;padding-left:22px;border-left:1px dashed var(--line)}
 .tree>ul{border:none;padding-left:0}
@@ -177,7 +183,7 @@ const fromEvent = r => ({id:r.id, title:r.title, category:r.category||'', date:r
 const toEvent = e => ({title:e.title, category:e.category||'', event_date:e.date, location:e.location||'',
   host_id:e.host||null, attendees:(e.attendees===''||e.attendees==null) ? null : +e.attendees,
   body:e.text||'', docs:e.docs||[], memo:e.memo||''});
-const fromHistory = r => ({id:r.id, date:r.happened_on, title:r.title, desc:r.description||'', source:r.source});
+const fromHistory = r => ({id:r.id, date:r.happened_on, title:r.title, desc:r.description||'', source:r.source, created:r.created_at||''});
 const toHistory = h => ({happened_on:h.date, title:h.title, description:h.desc||'', source:h.source||'manual'});
 
 /* Supabase 호출 결과에서 오류를 토스트로 알리고 예외로 던짐 */
@@ -983,16 +989,40 @@ function eventForm(e){
 }
 
 /* ===================== 화면: 연혁 ===================== */
+const WEEK = ['일','월','화','수','목','금','토'];
+/* 연혁: 날짜 최신순(위) → 같은 날짜면 나중에 등록한 것이 위 */
+const historySorted = () => [...D().history].sort((a,b)=>b.date.localeCompare(a.date) || (b.created||'').localeCompare(a.created||''));
 function History(){
-  const items = [...D().history].sort((a,b)=>b.date.localeCompare(a.date));
+  const items = historySorted();
+  const now = today();
   const byYear = {};
   items.forEach(h=>(byYear[h.date.slice(0,4)] ||= []).push(h));
+  const item = h => {
+    const d = new Date(h.date + 'T00:00:00');
+    const diff = Math.round((d - new Date(now + 'T00:00:00')) / 864e5);
+    const badge = diff > 0 ? `<span class="tag">예정 D-${diff}</span>` : diff === 0 ? '<span class="tag off">오늘</span>' : '';
+    return `<div class="it${diff > 0 ? ' future' : ''}"><div class="row" style="justify-content:space-between;align-items:flex-start">
+      <div><span class="when">${h.date.slice(5).replace('-','.')} (${WEEK[d.getDay()]})</span> <b>${esc(h.title)}</b> ${badge}
+        ${h.source==='officer'?'<span class="tag gray">자동</span>':''}</div>
+      ${can.officer()?`<button class="btn sm" data-hedit="${h.id}">수정</button>`:''}</div>
+      ${h.desc?`<div class="desc">${esc(h.desc)}</div>`:''}</div>`;
+  };
+  // 예정(미래)과 지난 기록 사이에 '오늘' 구분선
+  const yearBlock = y => {
+    const list = byYear[y]; let out = '', marked = false;
+    list.forEach((h,i)=>{
+      if(!marked && h.date <= now && i > 0 && list[i-1].date > now){
+        out += `<div class="tl-today"><span>오늘 ${now.slice(5).replace('-','.')}</span></div>`; marked = true;
+      }
+      out += item(h);
+    });
+    return out;
+  };
   return `
-  <div class="head"><h1>연혁·히스토리</h1>${can.officer()?'<button class="btn pri" id="hadd">+ 연혁 추가</button>':''}</div>
+  <div class="head"><div><h1>연혁·히스토리</h1><div class="muted" style="font-size:13px;margin-top:4px">최신 날짜가 위에 표시됩니다 · 예정 일정은 빈 점(○)으로 표시</div></div>
+    ${can.officer()?'<button class="btn pri" id="hadd">+ 연혁 추가</button>':''}</div>
   ${items.length?Object.keys(byYear).sort().reverse().map(y=>`<div class="panel" style="margin-bottom:14px"><h2>${y}</h2><div class="tl">
-    ${byYear[y].map(h=>`<div class="it"><div class="row" style="justify-content:space-between"><div><span class="muted">${h.date.slice(5).replace('-','.')}</span> <b>${esc(h.title)}</b>
-      ${h.source==='officer'?'<span class="tag gray">자동</span>':''}</div>${can.officer()?`<button class="btn sm" data-hedit="${h.id}">수정</button>`:''}</div>
-      ${h.desc?`<div class="muted" style="margin-top:4px">${esc(h.desc)}</div>`:''}</div>`).join('')}
+    ${yearBlock(y)}
   </div></div>`).join('')
   :'<div class="empty">창립, 회장 취임, 주요 행사 등을 기록하세요.<br>임원 직책을 지정하면 취임 기록이 자동으로 추가됩니다.</div>'}`;
 }
