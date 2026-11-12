@@ -109,6 +109,8 @@ pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:
   .two{grid-template-columns:1fr}
   .form{grid-template-columns:1fr}
   .hide-m{display:none}
+  .pc-table th{width:72px;font-size:13px;padding:8px 4px}
+  .pc-table td{word-break:keep-all;padding:8px 6px}
 }
 </style>
 </head>
@@ -154,18 +156,18 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID()
 
 function blankMember(name){
   return {id:'', name, birthYear:'', company:'', title:'', products:'', industry:'',
-    phone:'', email:'', address:'', joined:'', guardianId:'', status:'active', memo:'',
+    phone:'', email:'', address:'', website:'', joined:'', guardianId:'', status:'active', memo:'',
     photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:'', isFounder:false, rosterNo:''};
 }
 
 const IMG_KEYS = {photo:'photoPath', companyImage:'companyImagePath', cardImage:'cardImagePath'};
 const fromMember = r => ({id:r.id, name:r.name, birthYear:r.birth_year||'', company:r.company||'', title:r.title||'',
-  products:r.products||'', industry:r.industry||'', phone:r.phone||'', email:r.email||'', address:r.address||'',
+  products:r.products||'', industry:r.industry||'', phone:r.phone||'', email:r.email||'', address:r.address||'', website:r.website||'',
   joined:r.joined||'', guardianId:r.guardian_id||'', status:r.status||'active', memo:r.memo||'',
   photoPath:r.photo_path||'', companyImagePath:r.company_image_path||'', cardImagePath:r.card_image_path||'',
   photo:'', companyImage:'', cardImage:'', isFounder:!!r.is_founder, rosterNo:r.roster_no ?? ''});
 const toMember = m => ({name:m.name, birth_year:m.birthYear||'', company:m.company||'', title:m.title||'',
-  products:m.products||'', industry:m.industry||'', phone:m.phone||'', email:(m.email||'').trim().toLowerCase(),
+  products:m.products||'', industry:m.industry||'', phone:m.phone||'', website:(m.website||'').trim(), email:(m.email||'').trim().toLowerCase(),
   address:m.address||'', joined:m.joined||'', guardian_id:m.guardianId||null, status:m.status||'active', memo:m.memo||'',
   photo_path:m.photoPath||'', company_image_path:m.companyImagePath||'', card_image_path:m.cardImagePath||'',
   is_founder:!!m.isFounder});
@@ -263,7 +265,7 @@ async function importRows(rows){
     if(r.joined) patch.joined = r.joined;
     if(+r.no) patch.roster_no = +r.no;
     [['company','company'],['products','products'],['birthYear','birth_year'],['phone','phone'],
-     ['title','title'],['address','address'],['memo','memo'],['industry','industry']]
+     ['title','title'],['address','address'],['memo','memo'],['industry','industry'],['website','website']]
       .forEach(([k,c])=>{ if(r[k]) patch[c] = r[k]; });
     if(r.guardian) patch.guardian_id = guardianOf(r.guardian).id;
     else if(r.founder) patch.guardian_id = null;
@@ -282,7 +284,7 @@ function rowsFromTable(table){
   const head = table[hi].map(norm);
   const col = (...names) => head.findIndex(h=>names.some(n=>h.includes(n)));
   const ix = {no:head.findIndex(h=>/^(NO|번호|순번)$/i.test(h)), joined:col('입회'), name:head.findIndex(h=>/^(성명|회원명|이름)$/.test(h)),
-    guardian:col('추천'), phone:col('전화','연락처','휴대'), company:col('근무처','회사','상호'), address:col('주소'),
+    guardian:col('추천'), phone:col('전화','연락처','휴대'), company:col('근무처','회사','상호'), address:col('주소'), website:col('홈페이지','웹사이트','URL'),
     products:col('업종','제품','서비스'), birthYear:col('출생'), title:col('직함','직위'), memo:col('비고','메모')};
   const toJoined = v => {
     if(v === '' || v == null) return '';
@@ -601,6 +603,88 @@ function memberList(list){
   </table></div>`;
 }
 
+const webHref = u => /^https?:\/\//i.test(u) ? u : 'https://' + u;
+const webLabel = u => u.replace(/^https?:\/\//i,'').replace(/\/$/,'');
+
+/* ===================== 프로필 PNG 저장 =====================
+   화면 크기와 상관없이 같은 모양이 나오도록 저장 전용 레이아웃(폭 800px)을 만들어 캡처합니다.
+   이미지는 비공개 저장소에서 직접 내려받아(blob) 사용하므로 다른 사이트 이미지 제한(CORS)에 걸리지 않습니다. */
+let h2cLib = null;
+function loadH2C(){
+  if(window.html2canvas) return Promise.resolve(window.html2canvas);
+  return h2cLib ||= new Promise((res,rej)=>{
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    sc.onload = ()=>res(window.html2canvas); sc.onerror = ()=>{ h2cLib = null; rej(new Error('이미지 모듈을 불러오지 못했습니다.')); };
+    document.head.appendChild(sc);
+  });
+}
+async function blobUrl(path){
+  if(!path) return '';
+  const {data, error} = await sb.storage.from(BUCKET).download(path);
+  return (error || !data) ? '' : URL.createObjectURL(data);
+}
+function profileExportHTML(m, img){
+  const t = currentTerm(m.id), g = member(m.guardianId);
+  const F = "font-family:'Noto Sans KR',sans-serif;";
+  const C = {ink:'#1b2333', sub:'#5d6b82', line:'#dfe5ee', soft:'#eef3fb', brand:'#1f3a68', prod:'#1d4fd1'};
+  const pic = (src, fallback) => src
+    ? `<div style="width:100%;height:410px;border-radius:12px;background:url('${src}') center/cover no-repeat ${C.soft};border:1px solid ${C.line}"></div>`
+    : `<div style="width:100%;height:410px;border-radius:12px;background:${C.soft};border:1px solid ${C.line};display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;box-sizing:border-box;color:${C.brand};font-size:34px;font-weight:700;line-height:1.3">${fallback}</div>`;
+  const TH = `background:${C.soft};width:120px;padding:12px 10px;border-bottom:1px solid ${C.line};font-weight:700;font-size:16px;text-align:center;color:${C.ink}`;
+  const TD = `padding:12px 14px;border-bottom:1px solid ${C.line};font-size:17px;color:${C.ink};`;
+  const row = (k, v, extra='', span=1) => `<tr><th style="${TH}">${k}</th><td colspan="${span}" style="${TD}${extra}">${v || '-'}</td></tr>`;
+  return `<div style="${F}width:800px;background:#fff;color:${C.ink};padding:32px;box-sizing:border-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;background:${C.brand};color:#fff;border-radius:12px;padding:14px 20px;margin-bottom:20px">
+      <div style="font-size:22px;font-weight:700">정우회 <span style="font-size:14px;font-weight:400;opacity:.8">기업가 대표 모임</span></div>
+      <div style="font-size:15px">${t ? esc(position(t.positionId)?.name||'임원') : m.isFounder ? '창립회원' : '회원'}</div>
+    </div>
+    <div style="display:flex;gap:16px">
+      <div style="flex:1">${pic(img.photo, esc(m.name.slice(0,1)))}<div style="text-align:center;font-size:28px;font-weight:700;padding:10px 0">${esc(m.name)}</div></div>
+      <div style="flex:1">${pic(img.comp, esc(m.company) || '회사')}<div style="text-align:center;font-size:28px;font-weight:700;padding:10px 0">${esc(m.birthYear) || '&nbsp;'}</div></div>
+    </div>
+    ${img.card ? `<div style="border:1px solid ${C.line};border-radius:12px;overflow:hidden;margin-top:6px"><img src="${img.card}" style="width:100%;display:block"></div>` : ''}
+    <table style="width:100%;border-collapse:collapse;margin-top:18px;border:1px solid ${C.line};border-radius:12px;overflow:hidden">
+      ${row('회사', `${esc(m.company)}${m.title ? ` · ${esc(m.title)}` : ''}`, '', 3)}
+      ${row('제품<br>(서비스)', esc(m.products), `color:${C.prod};font-weight:700`, 3)}
+      <tr><th style="${TH}">입회연도</th><td style="${TD}">${m.joined ? esc(m.joined.slice(0,4)) : m.isFounder ? '창립회원' : '기존회원'}</td>
+        <th style="${TH}">추천회원</th><td style="${TD}">${g ? esc(g.name) : '-'}</td></tr>
+    </table>
+    <table style="width:100%;border-collapse:collapse;margin-top:14px;border:1px solid ${C.line}">
+      ${row('전화', esc(m.phone))}${row('이메일', esc(m.email))}${row('홈페이지', esc(m.website ? webLabel(m.website) : ''))}
+      ${row('주소', esc(m.address))}${row('업종', esc(m.industry))}
+    </table>
+    <div style="margin-top:16px;font-size:13px;color:${C.sub};text-align:right">정우회 회원 프로필 · ${today().replace(/-/g,'.')}</div>
+  </div>`;
+}
+async function saveProfilePng(m, btn){
+  const label = btn.textContent; btn.disabled = true; btn.textContent = '이미지 만드는 중…';
+  const urls = [];
+  try{
+    const [H, photo, comp, card] = await Promise.all([loadH2C(), blobUrl(m.photoPath), blobUrl(m.companyImagePath), blobUrl(m.cardImagePath)]);
+    urls.push(photo, comp, card);
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;left:-10000px;top:0;z-index:-1';
+    box.innerHTML = profileExportHTML(m, {photo, comp, card});
+    document.body.appendChild(box);
+    await Promise.all([...box.querySelectorAll('img')].map(i=>i.decode().catch(()=>{})));
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    const canvas = await H(box.firstElementChild, {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
+    box.remove();
+    const blob = await new Promise(r=>canvas.toBlob(r, 'image/png'));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = `정우회_${m.name}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+    toast('프로필을 PNG로 저장했습니다.');
+  }catch(err){
+    console.error(err); toast(err.message || '이미지 저장에 실패했습니다.');
+  }finally{
+    setTimeout(()=>urls.forEach(u=>u && URL.revokeObjectURL(u)), 3000);
+    btn.disabled = false; btn.textContent = label;
+  }
+}
+
 /* ===================== 화면: 회원 상세 (프로필 카드) ===================== */
 function MemberDetail(id){
   const m = member(id);
@@ -611,7 +695,7 @@ function MemberDetail(id){
   const img = (src, label) => `<div class="pc-img">${src?`<img src="${src}" alt="">`:label}</div>`;
   return `
   <div class="head"><div class="row"><a class="btn sm" href="#/members">← 명부</a><h1>${esc(m.name)}</h1>${typeTag(m)}</div>
-    <div class="row">${can.edit(m)?`<button class="btn" id="edit">${m.id===Store.me.memberId?'내 정보 수정':'정보 수정'}</button>`:''}</div></div>
+    <div class="row"><button class="btn" id="png">PNG 저장</button>${can.edit(m)?`<button class="btn" id="edit">${m.id===Store.me.memberId?'내 정보 수정':'정보 수정'}</button>`:''}</div></div>
   <div class="grid two">
     <div class="panel profile">
       <div class="pc-top">
@@ -630,6 +714,7 @@ function MemberDetail(id){
         <table>
           <tr><th style="width:80px">전화</th><td>${m.phone?`<a href="tel:${esc(m.phone)}">${esc(m.phone)}</a>`:'-'}</td></tr>
           <tr><th>이메일</th><td>${m.email?`<a href="mailto:${esc(m.email)}">${esc(m.email)}</a>`:'-'}</td></tr>
+          <tr><th>홈페이지</th><td>${m.website?`<a href="${esc(webHref(m.website))}" target="_blank" rel="noopener">${esc(webLabel(m.website))}</a>`:'-'}</td></tr>
           <tr><th>주소</th><td>${esc(m.address)||'-'}</td></tr>
           <tr><th>업종</th><td>${esc(m.industry)||'-'}</td></tr>
         </table>
@@ -661,6 +746,7 @@ function memberForm(m){
       ${f('industry','업종')}${f('phone','전화','tel')}
       ${f('email','로그인 이메일','email','',lock)}${f('joined','입회월 (비우면 기존회원)','month','',lock)}
       ${f('address','주소','text','full')}
+      ${f('website','홈페이지','text','full')}
       <label class="full" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="isFounder" ${m.isFounder?'checked':''} ${lock}> 창립회원</label>
       <label>추천인<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
       <label>상태<select class="input" name="status" ${lock}><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
@@ -956,14 +1042,18 @@ const bind = {
     document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ ui.view=b.dataset.v; render(); });
     if($('#add')) $('#add').onclick = ()=>memberForm();
     if($('#exp')) $('#exp').onclick = ()=>{
-      const head = ['NO','입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','추천인','추천횟수'];
+      const head = ['NO','입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','홈페이지','추천인','추천횟수'];
       const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.rosterNo, m.joined||(m.isFounder?'창립':'기존회원'), m.name, t?'임원':'일반회원',
-        t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address,
+        t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address, m.website,
         member(m.guardianId)?.name||'', recruits(m.id).length]; });
       download(`정우회_회원명부_${today()}.csv`, '﻿'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv');
     };
   },
-  member(id){ const m = member(id); if(m && $('#edit')) $('#edit').onclick = ()=>memberForm(m); },
+  member(id){
+    const m = member(id); if(!m) return;
+    if($('#edit')) $('#edit').onclick = ()=>memberForm(m);
+    $('#png').onclick = e=>saveProfilePng(m, e.currentTarget);
+  },
   officers(){
     if(!can.admin()) return;
     $('#assign').onclick = assignForm;
