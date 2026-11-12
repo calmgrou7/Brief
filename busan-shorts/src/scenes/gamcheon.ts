@@ -29,14 +29,18 @@ export function gamcheon(svg: SVGSVGElement, filter: string): Scene {
   for (let x = 312; x < 392; x += 9) P(far, `M${x} 306 l0 -6 l8 0 l0 6`, SP * 0.5);
   const farWater = P(far, '', SP * 0.5);
 
+  // the hillside itself
+  S(L.ink, 'M-40 560 Q60 420 150 352 Q250 300 330 330 Q430 360 480 420 Q530 470 580 470 L580 1100 L-40 1100Z', SP);
   // terraces of houses, back (high) to front (low)
   const wins: Win[] = [];
   const rows = [380, 470, 560, 650, 740, 830, 920, 1010];
   const stairX = 318;
   rows.forEach((base, r) => {
     const g = G(L.ink);
-    let x = -14 + srnd(-10, 10);
-    while (x < W + 10) {
+    // the hill narrows toward the top: fewer houses on the upper terraces
+    const lo = -14 + Math.max(0, 3 - r) * 52 + srnd(-10, 10), hi = W + 10 - Math.max(0, 2 - r) * 64;
+    let x = lo;
+    while (x < hi) {
       const w = srnd(38, 66), h = srnd(46, 74) + (r % 2) * 6;
       if (x + w > stairX - 14 && x < stairX + 26) { x = stairX + 26; continue; }
       const col = PASTEL[Math.floor(srnd(0, PASTEL.length))];
@@ -70,9 +74,10 @@ export function gamcheon(svg: SVGSVGElement, filter: string): Scene {
       x += w + srnd(-2, 3);
     }
     // terrace walkway + railing in front of the row
-    S(g, `M-20 ${base} L${W + 20} ${base} L${W + 20} ${base + 8} L-20 ${base + 8}Z`, SP * 0.8);
-    const rail: string[] = [`M-20 ${base - 9} Q${W / 2} ${base - 10} ${W + 20} ${base - 9}`];
-    for (let rx = -10; rx < W + 20; rx += 14) if (rx < stairX - 6 || rx > stairX + 24) rail.push(`M${rx} ${base - 9} L${rx} ${base}`);
+    const ex0 = Math.max(-20, lo - 12), ex1 = Math.min(W + 20, hi + 12);
+    S(g, `M${f(ex0)} ${base} L${f(ex1)} ${base} L${f(ex1)} ${base + 8} L${f(ex0)} ${base + 8}Z`, SP * 0.8);
+    const rail: string[] = [`M${f(ex0)} ${base - 9} Q${W / 2} ${base - 10} ${f(ex1)} ${base - 9}`];
+    for (let rx = ex0 + 8; rx < ex1; rx += 14) if (rx < stairX - 6 || rx > stairX + 24) rail.push(`M${rx} ${base - 9} L${rx} ${base}`);
     P(g, rail.join(' '), SP * 0.5);
   });
 
@@ -97,7 +102,7 @@ export function gamcheon(svg: SVGSVGElement, filter: string): Scene {
   // people on the terraces
   const pg = G(L.ink);
   const people: Person[] = [];
-  const add = (row: number, kind: any, x: number, dir: 1 | -1, o = {}) => people.push(new Person(pg, kind, x, rows[row] + 4, dir, FS, o));
+  const add = (row: number, kind: any, x: number, dir: 1 | -1, o = {}) => people.push(new Person(pg, kind, x, rows[row] + 4, dir, 0.56, o));
   add(6, 'tourist', 40, 1, { stopAt: 190, action: 'photo', actionFor: 2.4 });
   add(4, 'coat', 470, -1, { shirt: '#c96f5b' });
   add(7, 'kid', -10, 1);

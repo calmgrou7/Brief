@@ -72,8 +72,10 @@ const reveal = (spans: HTMLElement[], t: number, out: number) => {
 };
 
 const setText = (Pl: Palette) => {
-  frame.style.setProperty('--ink', rgb(Pl.ink));
-  frame.style.setProperty('--paper', rgb(Pl.paper));
+  // captions never sit in the low-contrast ink flip: dark on light, or light on dark
+  const night = Pl.inkT > 0.5;
+  frame.style.setProperty('--ink', night ? '#f6eedb' : '#1c1c1c');
+  frame.style.setProperty('--paper', night ? 'rgba(14,18,36,.85)' : 'rgba(253,252,248,.95)');
   frame.style.setProperty('--accent', Pl.inkT > 0.5 ? '#f2b766' : '#d9772b');
 };
 
@@ -101,9 +103,10 @@ run((_t, dt) => {
     }
     // HUD
     const H = huds[i];
-    const hop = t < 0 ? 0 : clamp(Math.min(ease(t / 0.4), 1 - ease((t - (s.dur - XF * 0.6)) / (XF * 0.6))), 0, 1);
+    const tin = i === 0 ? t / 0.4 : (t - XF * 0.5) / 0.35;
+    const hop = t < 0 ? 0 : clamp(Math.min(ease(tin), 1 - ease((t - (s.dur - XF)) / (XF * 0.45))), 0, 1);
     const last = i === scenes.length - 1;
-    H.box.style.opacity = f(last ? (t < 0 ? 0 : ease(t / 0.4)) : hop);
+    H.box.style.opacity = f(last ? (t < 0 ? 0 : ease(tin)) : hop);
     H.label.style.transform = `translateY(${f((1 - ease((t - 0.1) / 0.6)) * 20)}px)`;
     H.label.style.opacity = f(ease((t - 0.1) / 0.5) * (last ? 1 - ease((t - s.dur - 0.2) / 0.5) : 1));
     H.bar.style.width = `${f(ease((t - 0.4) / 0.8) * 210)}px`;
