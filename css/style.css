@@ -58,38 +58,58 @@ h3{font-size:19px;letter-spacing:-.02em;font-weight:700}
 .note{margin-top:28px;color:var(--ink2);font-size:14px}
 @media(max-width:700px){.sec{padding-top:84px;padding-bottom:84px}.sec__head{margin-bottom:36px}}
 
-/* hero */
-.hero{max-width:var(--max);margin:auto;min-height:100vh;padding:120px 20px 80px;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
-.hero__lead{margin-top:24px;font-size:18px;color:var(--ink2)}
+/* hero — 전체 화면 배경 미디어 (영상 / Vimeo / 사진 켄번스 슬라이드) */
+.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;color:#fff;overflow:hidden;background:#1b1c1e}
+.hero__bg{position:absolute;inset:0}
+.hero__bg video,.hero__bg iframe{position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;width:auto;height:auto;transform:translate(-50%,-50%);object-fit:cover;border:0}
+.hero__bg iframe{width:177.78vh;height:56.25vw;pointer-events:none}
+.hero__shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.25) 45%,rgba(0,0,0,0) 75%),linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.05) 35%,rgba(0,0,0,.5) 100%)}
+.hero__copy{position:relative;z-index:2;width:100%;max-width:var(--max);margin:auto;padding:140px 20px 96px}
+.hero .eyebrow{color:var(--accent2)}
+.hero h1{text-shadow:0 2px 30px rgba(0,0,0,.25)}
+.hero__lead{margin-top:24px;font-size:18px;color:rgba(255,255,255,.85);max-width:620px}
 .hero__btns{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap}
-.hero__facts{list-style:none;display:flex;gap:36px;margin-top:52px;padding-top:28px;border-top:1px solid var(--line)}
+.btn--light{background:#fff;color:var(--ink);border-color:#fff}
+.btn--ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.7)}
+.btn--ghost:hover{background:#fff;color:var(--ink)}
+.hero__facts{list-style:none;display:flex;gap:40px;margin-top:56px;padding-top:26px;border-top:1px solid rgba(255,255,255,.25);max-width:620px}
 .hero__facts b{display:block;font-size:22px;letter-spacing:-.02em}
-.hero__facts span{font-size:13px;color:var(--ink2)}
-.hero__caption{text-align:center;margin-top:12px;font-size:12px;color:#a19d95}
+.hero__facts span{font-size:13px;color:rgba(255,255,255,.7)}
+.hero__ctrl{position:absolute;z-index:3;right:max(20px,calc((100% - var(--max))/2 + 20px));top:96px;display:flex;align-items:center;gap:14px;font-size:13px;letter-spacing:.08em}
+.hero__bar{width:120px;height:2px;background:rgba(255,255,255,.3);overflow:hidden}
+.hero__bar i{display:block;height:100%;width:0;background:#fff}
+.hero__bar i.run{animation:bar var(--dur,6s) linear forwards}
+@keyframes bar{to{width:100%}}
+.hero__label{position:absolute;z-index:3;left:max(20px,calc((100% - var(--max))/2 + 20px));top:84px;font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.6)}
 @media(max-width:900px){
-  .hero{grid-template-columns:1fr;min-height:auto;padding-top:104px;gap:40px}
-  .hero__visual{order:-1}
+  .hero__copy{padding-bottom:84px}
   .hero__facts{gap:20px;justify-content:space-between}
   .hero__facts b{font-size:18px}
+  .hero__ctrl{top:84px}
+  .hero__label{top:auto;bottom:16px}
+  .hero__shade{background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.6) 100%)}
+  .hero__bar{width:72px}
 }
 
-/* folding door illustration */
-.scene{position:relative;aspect-ratio:4/3.4;border-radius:22px;overflow:hidden;background:#e9e5dd;perspective:1400px;box-shadow:0 30px 60px -30px rgba(30,25,15,.35)}
-.scene__sky{position:absolute;inset:0 0 28%;background:linear-gradient(180deg,#c9dbe3 0%,#e8e2d2 70%,#efe4cf 100%)}
-.scene__sky::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:34%;background:radial-gradient(ellipse at 30% 100%,#8fa889 0 40%,transparent 41%),radial-gradient(ellipse at 75% 100%,#7b9676 0 45%,transparent 46%)}
-.scene__floor{position:absolute;inset:72% 0 0;background:linear-gradient(180deg,#cdbfa8,#b9a98f)}
-.frame{position:absolute;inset:8% 6% 26%;border:10px solid #2a2c30;border-radius:3px;pointer-events:none}
-.door{position:absolute;inset:calc(8% + 10px) calc(6% + 10px) calc(26% + 10px);display:flex;transform-style:preserve-3d}
-.panel{flex:1;height:100%;background:linear-gradient(115deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.08) 38%,rgba(255,255,255,.22) 60%,rgba(255,255,255,.04) 100%);border:5px solid #2a2c30;border-top-width:7px;border-bottom-width:7px;transform-origin:left center;animation:fold 7s ease-in-out infinite;backdrop-filter:blur(1px)}
-.panel:nth-child(odd){transform-origin:right center}
-.p1{animation-delay:.0s}.p2{animation-delay:.08s}.p3{animation-delay:.16s}.p4{animation-delay:.24s}.p5{animation-delay:.32s}
-@keyframes fold{
-  0%,15%{transform:rotateY(0)}
-  45%,70%{transform:rotateY(var(--a,62deg))}
-  100%{transform:rotateY(0)}
-}
-.panel:nth-child(odd){--a:-62deg}
-@media(prefers-reduced-motion:reduce){.panel{animation:none}}
+/* 사진 → 영상처럼: 켄 번스(천천히 확대·이동) + 크로스페이드 */
+.kb{position:absolute;inset:0;opacity:0;transition:opacity 1.8s ease;overflow:hidden}
+.kb.on{opacity:1}
+.kb img{width:100%;height:100%;object-fit:cover;transform:scale(1.04);will-change:transform}
+.kb.on img,.kb.out img{animation:kb var(--kbdur,9s) ease-out forwards}
+.kb:nth-child(4n+1) img{--from:scale(1.04) translate(0,0);--to:scale(1.18) translate(-2%,-1.5%)}
+.kb:nth-child(4n+2) img{--from:scale(1.18) translate(2%,0);--to:scale(1.04) translate(-1%,1%)}
+.kb:nth-child(4n+3) img{--from:scale(1.06) translate(-2%,1%);--to:scale(1.2) translate(2%,-1%)}
+.kb:nth-child(4n+4) img{--from:scale(1.2) translate(0,-2%);--to:scale(1.06) translate(0,1.5%)}
+@keyframes kb{from{transform:var(--from)}to{transform:var(--to)}}
+@media(prefers-reduced-motion:reduce){.kb img,.kb.on img{animation:none}.hero__bar i.run{animation:none;width:100%}}
+
+/* header: 히어로 위에서는 투명 + 흰 글씨 */
+.hd.on-hero:not(.is-scrolled){background:transparent;backdrop-filter:none}
+.hd.on-hero:not(.is-scrolled) .logo,.hd.on-hero:not(.is-scrolled) .gnb a{color:#fff}
+.hd.on-hero:not(.is-scrolled) .logo__mark{background:#fff;color:var(--ink)}
+.hd.on-hero:not(.is-scrolled) .gnb__cta{background:#fff;color:var(--ink)!important}
+.hd.on-hero:not(.is-scrolled) .burger span{background:#fff}
+@media(max-width:860px){.hd.on-hero:not(.is-scrolled) .gnb.is-open a{color:var(--ink)}.hd.on-hero:not(.is-scrolled) .gnb.is-open .gnb__cta{background:var(--ink);color:#fff!important}}
 
 /* tabs & product */
 .tabs{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}

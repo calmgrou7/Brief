@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <!-- 샘플: 거실에서 정원으로 열린 폴딩도어 (실제 시공 사진으로 교체) -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fbfcf"/><stop offset=".65" stop-color="#e6dcc6"/><stop offset="1" stop-color="#f0dfc0"/></linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d9d1c3"/><stop offset=".5" stop-color="#ece6da"/><stop offset="1" stop-color="#cfc6b6"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b59a77"/><stop offset="1" stop-color="#7d6448"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".4" stop-color="#fff" stop-opacity=".05"/><stop offset=".6" stop-color="#fff" stop-opacity=".2"/><stop offset="1" stop-color="#fff" stop-opacity=".02"/></linearGradient>
+    <radialGradient id="sun" cx=".72" cy=".35" r=".5"><stop offset="0" stop-color="#fff6e0" stop-opacity=".9"/><stop offset="1" stop-color="#fff6e0" stop-opacity="0"/></radialGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3d6" stop-opacity=".35"/><stop offset="1" stop-color="#fff3d6" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#wall)"/>
+  <!-- opening -->
+  <rect x="260" y="150" width="1400" height="640" fill="url(#sky)"/>
+  <rect x="260" y="150" width="1400" height="640" fill="url(#sun)"/>
+  <ellipse cx="520" cy="700" rx="420" ry="190" fill="#7f9b78"/>
+  <ellipse cx="1300" cy="720" rx="520" ry="210" fill="#6d8a67"/>
+  <ellipse cx="900" cy="760" rx="700" ry="120" fill="#8fa984"/>
+  <rect x="260" y="740" width="1400" height="50" fill="#c9b79a"/>
+  <g fill="#5a7653" opacity=".9"><circle cx="420" cy="560" r="90"/><circle cx="500" cy="520" r="70"/><circle cx="1480" cy="540" r="110"/><circle cx="1380" cy="590" r="80"/></g>
+  <rect x="455" y="600" width="14" height="140" fill="#5b4a3a"/><rect x="1450" y="620" width="16" height="120" fill="#5b4a3a"/>
+  <!-- folded panels stacked left & right -->
+  <g stroke="#2a2c30" stroke-width="12" fill="url(#glass)">
+    <polygon points="266,156 360,186 360,760 266,784"/>
+    <polygon points="360,186 440,156 440,784 360,760"/>
+    <polygon points="440,156 520,186 520,760 440,784"/>
+    <polygon points="1654,156 1560,186 1560,760 1654,784"/>
+    <polygon points="1560,186 1480,156 1480,784 1560,760"/>
+  </g>
+  <rect x="254" y="144" width="1412" height="652" fill="none" stroke="#2a2c30" stroke-width="18"/>
+  <!-- floor & light -->
+  <polygon points="0,796 1920,796 1920,1080 0,1080" fill="url(#floor)"/>
+  <polygon points="520,796 1480,796 1900,1080 160,1080" fill="url(#beam)"/>
+  <!-- sofa -->
+  <rect x="160" y="850" width="520" height="120" rx="26" fill="#efe9de"/>
+  <rect x="160" y="800" width="520" height="80" rx="26" fill="#e3dccf"/>
+  <rect x="1300" y="900" width="320" height="22" rx="11" fill="#3a3530"/>
+  <rect x="1330" y="922" width="12" height="70" fill="#3a3530"/><rect x="1578" y="922" width="12" height="70" fill="#3a3530"/>
+  <circle cx="1460" cy="880" r="26" fill="#a9c39f"/>
+</svg>

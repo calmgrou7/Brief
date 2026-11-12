@@ -2,6 +2,7 @@
   var S = window.SITE || {};
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) { return String(s || "").replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   /* 1. 설정값 바인딩 */
   $$("[data-bind]").forEach(function (el) {
@@ -17,6 +18,56 @@
     }
     if (v) el.textContent = v;
   });
+
+  /* 1-1. 메인 배경: Vimeo > mp4 > 사진 켄번스 슬라이드 */
+  (function () {
+    var H = S.hero || {}, bg = $("#heroBg");
+    if (!bg) return;
+    var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var mobile = matchMedia("(max-width: 760px)").matches;
+
+    if (H.vimeo) {
+      bg.innerHTML = '<iframe src="https://player.vimeo.com/video/' + encodeURIComponent(H.vimeo) +
+        '?background=1&autoplay=1&loop=1&muted=1&playsinline=1" allow="autoplay; fullscreen" title="배경 영상"></iframe>';
+      return;
+    }
+
+    var src = (mobile && H.videoMobile) || H.video;
+    if (src && !reduce) {
+      var v = document.createElement("video");
+      v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
+      v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+      v.preload = "auto"; if (H.poster) v.poster = H.poster;
+      v.src = src; bg.appendChild(v);
+      var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+      return;
+    }
+
+    var photos = (H.photos || []).filter(function (x) { return x && x.src; });
+    if (!photos.length && H.poster) photos = [{ src: H.poster }];
+    if (!photos.length) return;
+    var sec = Math.max(3, +H.interval || 6);
+    bg.style.setProperty("--kbdur", (sec + 2.5) + "s");
+    bg.innerHTML = photos.map(function (ph, i) {
+      return '<div class="kb"><img src="' + esc(ph.src) + '" alt="" ' + (i ? 'loading="lazy"' : 'fetchpriority="high"') + '></div>';
+    }).join("");
+    var slides = $$(".kb", bg), label = $("#heroLabel"), ctrl = $("#heroCtrl");
+    var bar = $(".hero__bar i"), now = $("#heroNow"), cur = -1;
+    $("#heroAll").textContent = ("0" + photos.length).slice(-2);
+    if (photos.length > 1) ctrl.hidden = false;
+    ctrl.style.setProperty("--dur", sec + "s");
+    function go(n) {
+      var prev = cur;
+      if (prev >= 0) { slides[prev].classList.remove("on"); slides[prev].classList.add("out"); setTimeout(function () { slides[prev].classList.remove("out"); }, 1900); }
+      cur = n % slides.length;
+      slides[cur].classList.add("on");
+      var lb = photos[cur].label; label.hidden = !lb; label.textContent = lb || "";
+      now.textContent = ("0" + (cur + 1)).slice(-2);
+      bar.classList.remove("run"); void bar.offsetWidth; bar.classList.add("run");
+    }
+    go(0);
+    if (photos.length > 1 && !reduce) setInterval(function () { if (!document.hidden) go(cur + 1); }, sec * 1000);
+  })();
 
   /* 2. 헤더 / 모바일 메뉴 */
   var hd = $(".hd"), burger = $(".burger"), gnb = $(".gnb");
@@ -39,7 +90,6 @@
   var grad = { home: "linear-gradient(135deg,#8a7a63,#c2ab88)", shop: "linear-gradient(135deg,#5f8090,#a9c3cc)", sun: "linear-gradient(135deg,#4d5a4b,#8d9c88)" };
   var label = { home: "주택 · 아파트", shop: "카페 · 상가", sun: "썬룸" };
   var grid = $("#caseGrid");
-  function esc(s) { return String(s || "").replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function render(f) {
     grid.innerHTML = (window.CASES || []).filter(function (c) { return f === "all" || c.type === f; }).map(function (c) {
       return '<article class="case"><div class="case__img" style="background:' + grad[c.type] + '">' +

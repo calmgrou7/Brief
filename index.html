@@ -16,7 +16,7 @@
 <body>
 
 <!-- ============ HEADER ============ -->
-<header class="hd" id="top">
+<header class="hd on-hero" id="top">
   <div class="hd__in">
     <a href="#top" class="logo" aria-label="예스시스템 홈">
       <span class="logo__mark">YES</span><span class="logo__txt">예스시스템</span>
@@ -35,14 +35,18 @@
 <main>
 
 <!-- ============ HERO ============ -->
+<!-- 배경: js/config.js 의 hero 설정 (Vimeo / mp4 영상 / 사진 켄번스 슬라이드) -->
 <section class="hero">
+  <div class="hero__bg" id="heroBg" aria-hidden="true"></div>
+  <div class="hero__shade"></div>
+  <p class="hero__label" id="heroLabel" hidden></p>
   <div class="hero__copy">
     <p class="eyebrow">VATON FOLDING DOOR · AUTHORIZED PARTNER</p>
     <h1>열면 공간이 되고,<br>닫으면 풍경이 됩니다.</h1>
-    <p class="hero__lead">바튼 프리미엄 폴딩도어를 예스시스템이 직접 상담하고, 실측하고, 시공합니다.<br class="pc">끝난 뒤의 A/S까지 같은 팀이 책임집니다.</p>
+    <p class="hero__lead">바튼 프리미엄 폴딩도어를 예스시스템이 직접 상담하고, 실측하고, 시공합니다. 끝난 뒤의 A/S까지 같은 팀이 책임집니다.</p>
     <div class="hero__btns">
-      <a href="#contact" class="btn btn--dark">무료 실측 견적 신청</a>
-      <a href="#product" class="btn btn--line">제품 둘러보기</a>
+      <a href="#contact" class="btn btn--light">무료 실측 견적 신청</a>
+      <a href="#product" class="btn btn--ghost">제품 둘러보기</a>
     </div>
     <ul class="hero__facts">
       <li><b>1:1</b><span>현장 실측 상담</span></li>
@@ -50,19 +54,8 @@
       <li><b>VATON</b><span>정품 자재 시공</span></li>
     </ul>
   </div>
-
-  <!-- 폴딩도어 일러스트 (실제 시공 사진으로 교체 가능) -->
-  <div class="hero__visual" aria-hidden="true">
-    <div class="scene">
-      <div class="scene__sky"></div>
-      <div class="scene__floor"></div>
-      <div class="door">
-        <div class="panel p1"></div><div class="panel p2"></div><div class="panel p3"></div>
-        <div class="panel p4"></div><div class="panel p5"></div>
-      </div>
-      <div class="frame"></div>
-    </div>
-    <p class="hero__caption">메인 영상·시공 사진 교체 영역</p>
+  <div class="hero__ctrl" id="heroCtrl" hidden>
+    <span id="heroNow">01</span><span class="hero__bar"><i></i></span><span id="heroAll">03</span>
   </div>
 </section>
 

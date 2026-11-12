@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <!-- 샘플: 해질녘 카페 전면 글라스 폴딩도어 (실제 시공 사진으로 교체) -->
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3a52"/><stop offset=".55" stop-color="#9a6f6a"/><stop offset="1" stop-color="#e3a873"/></linearGradient>
+    <linearGradient id="inside" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5c98a"/><stop offset="1" stop-color="#b9773f"/></linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".45" stop-color="#fff" stop-opacity=".03"/><stop offset="1" stop-color="#fff" stop-opacity=".12"/></linearGradient>
+    <radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffe2a8"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient>
+    <linearGradient id="walk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b5a52"/><stop offset="1" stop-color="#3b3230"/></linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#dusk)"/>
+  <!-- building -->
+  <rect x="140" y="160" width="1640" height="720" fill="#2a2726"/>
+  <rect x="140" y="160" width="1640" height="90" fill="#1f1d1c"/>
+  <text x="960" y="220" text-anchor="middle" font-family="sans-serif" font-size="40" letter-spacing="14" fill="#e9d3b0">CAFE</text>
+  <rect x="220" y="290" width="1480" height="560" fill="url(#inside)"/>
+  <g fill="url(#lamp)"><circle cx="480" cy="380" r="160"/><circle cx="960" cy="360" r="180"/><circle cx="1440" cy="380" r="160"/></g>
+  <g stroke="#3a2a1e" stroke-width="3"><line x1="480" y1="290" x2="480" y2="360"/><line x1="960" y1="290" x2="960" y2="340"/><line x1="1440" y1="290" x2="1440" y2="360"/></g>
+  <g fill="#ffeccb"><circle cx="480" cy="370" r="16"/><circle cx="960" cy="350" r="18"/><circle cx="1440" cy="370" r="16"/></g>
+  <rect x="220" y="700" width="1480" height="150" fill="#8a5631" opacity=".55"/>
+  <g fill="#3d2a1d"><rect x="380" y="690" width="220" height="16" rx="8"/><rect x="860" y="690" width="220" height="16" rx="8"/><rect x="1320" y="690" width="220" height="16" rx="8"/></g>
+  <g fill="#3d2a1d"><rect x="484" y="706" width="12" height="110"/><rect x="964" y="706" width="12" height="110"/><rect x="1424" y="706" width="12" height="110"/></g>
+  <!-- glass folding panels, partly folded open on right -->
+  <g stroke="#1b1b1c" stroke-width="10" fill="url(#g)">
+    <rect x="220" y="290" width="246" height="560"/><rect x="466" y="290" width="246" height="560"/>
+    <rect x="712" y="290" width="246" height="560"/><rect x="958" y="290" width="246" height="560"/>
+    <polygon points="1204,290 1330,320 1330,820 1204,850"/>
+    <polygon points="1330,320 1450,290 1450,850 1330,820"/>
+    <polygon points="1450,290 1575,320 1575,820 1450,850"/>
+    <polygon points="1575,320 1700,290 1700,850 1575,820"/>
+  </g>
+  <rect x="214" y="284" width="1492" height="572" fill="none" stroke="#1b1b1c" stroke-width="14"/>
+  <!-- street -->
+  <rect x="0" y="880" width="1920" height="200" fill="url(#walk)"/>
+  <polygon points="220,880 1700,880 1900,1080 20,1080" fill="#ffd79a" opacity=".16"/>
+  <g fill="#3f5a3c"><ellipse cx="90" cy="860" rx="90" ry="60"/><ellipse cx="1840" cy="860" rx="90" ry="60"/></g>
+</svg>
