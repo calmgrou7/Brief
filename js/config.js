@@ -27,9 +27,9 @@ window.SITE = {
     videoMobile: "",
     poster: "",
     photos: [
-      { src: "images/hero/sample-1.svg", label: "샘플 이미지 · 거실 폴딩도어" },
-      { src: "images/hero/sample-2.svg", label: "샘플 이미지 · 카페 글라스 폴딩도어" },
-      { src: "images/hero/sample-3.svg", label: "샘플 이미지 · 테라스 썬룸" }
+      { src: "images/real/living.jpg", label: "AI 생성 샘플 이미지 · 거실 폴딩도어" },
+      { src: "images/real/cafe.jpg", label: "AI 생성 샘플 이미지 · 카페 글라스 폴딩도어" },
+      { src: "images/real/sunroom.jpg", label: "AI 생성 샘플 이미지 · 테라스 썬룸" }
     ],
     interval: 6        // 사진 한 장당 보여주는 시간(초)
   },
