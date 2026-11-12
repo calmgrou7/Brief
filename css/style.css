@@ -266,3 +266,27 @@ h3{font-size:19px;letter-spacing:-.02em;font-weight:700}
 @keyframes kbloop{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(-2%,-1.2%)}}
 @keyframes kbloop2{from{transform:scale(1.12) translate(2%,0)}to{transform:scale(1) translate(0,1%)}}
 @media(prefers-reduced-motion:reduce){.show__bg,.show__bg img,.case__img img{animation:none;transform:none}}
+
+/* ============ 부드러운 전환 v2 ============
+   1) Lenis 부드러운 스크롤 사용 시 브라우저 기본 smooth 와 충돌하지 않게
+   2) 덮이는 화면의 글자·번호도 위로 밀려나며 흐려짐 (같이 따라오는 느낌)
+   3) 전환 중에는 상담 버튼이 아래로 내려갔다가, 화면이 자리 잡으면 다시 올라옴 */
+html.lenis,html.lenis body{height:auto}
+html.lenis{scroll-behavior:auto}
+.lenis.lenis-stopped{overflow:clip}
+
+.hero__bg,.show__bg{backface-visibility:hidden}
+.hero__bg{transform:translate3d(0,0,0) scale(calc(1 + var(--out,0) * .06))}
+.show__bg{transform:translate3d(0,calc(var(--out,0) * -6%),0) scale(calc(1.08 - var(--in,1) * .06 + var(--out,0) * .04))}
+
+.hero__copy{transform:translate3d(0,calc(var(--out,0) * -140px),0);opacity:calc(1 - var(--out,0) * 1.6);will-change:transform,opacity}
+.hero__ctrl,.hero__label{opacity:calc(1 - var(--out,0) * 2.5)}
+.show__copy{
+  transform:translate3d(0,calc((1 - var(--in,1)) * 70px - var(--out,0) * 140px),0);
+  opacity:min(clamp(0, calc((var(--in,1) - .4) * 2), 1), calc(1 - var(--out,0) * 1.6));
+  will-change:transform,opacity}
+.show__no{transform:translate3d(0,calc(var(--out,0) * -80px),0);opacity:min(calc(var(--in,1) * 1.2 - .2), calc(1 - var(--out,0) * 2.5))}
+
+.dock{transition:transform .55s cubic-bezier(.2,.7,.2,1),opacity .4s ease}
+body.is-moving .dock{transform:translate3d(0,calc(100% + 32px),0);opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.hero__copy,.show__copy,.show__no{transform:none;opacity:1}}

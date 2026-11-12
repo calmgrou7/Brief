@@ -64,3 +64,8 @@ GitHub Pages: 저장소 Settings → Pages → Branch 선택 → `https://<계�
 - 짧은 영상이 있으면: 쇼케이스는 `<div class="show__bg" data-video="images/show/파일.mp4">`, 시공사례는 `js/cases.js` 에 `video: "경로"` 추가.
 - 영상은 화면에 처음 보일 때 불러오고, 화면 밖으로 나가면 멈춰서 휴대폰 데이터·배터리를 아낍니다.
 - 영상 압축은 `tools/make-hero-video.sh` 를 그대로 쓰면 됩니다.
+
+## 부드러운 스크롤 옵션 (js/main.js)
+- Lenis(`js/vendor/lenis.min.js`, MIT): PC 휠 스크롤에 관성을 줘서 끊김 없이. `lerp`(기본 0.09)를 낮추면 더 미끄럽고, 높이면 더 즉각적.
+- 스택 전환 보정 `EASE`(기본 0.16): 사진 확대·글자 이동이 스크롤을 부드럽게 따라가는 정도.
+- 전환 중에는 상담 버튼이 아래로 숨고, 멈추면 다시 나타납니다.

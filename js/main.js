@@ -19,6 +19,14 @@
     if (v) el.textContent = v;
   });
 
+  /* 0. 부드러운 스크롤 (Lenis) — PC 마우스 휠의 '뚝뚝' 끊김을 관성 있는 스크롤로.
+        휴대폰 터치 스크롤은 기본 그대로(이미 부드러움). 움직임 줄이기 설정 시 끔. */
+  if (window.Lenis && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.9, smoothWheel: true, anchors: { offset: -72 } });
+    (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
+    window.__lenis = lenis;
+  }
+
   /* 1-1. 메인 배경: Vimeo > mp4 > 사진 켄번스 슬라이드 */
   (function () {
     var H = S.hero || {}, bg = $("#heroBg");
@@ -192,27 +200,62 @@
     }).then(function () { btn.disabled = false; });
   });
 
-  /* 5-1. 스티키 스택: 각 화면의 들어오는 정도(--in)와 덮이는 정도(--out) 계산 */
+  /* 5-1. 스티키 스택: 각 화면의 들어오는 정도(--in)와 덮이는 정도(--out)
+     - 목표값을 바로 넣지 않고 매 프레임 조금씩 따라가게(lerp) 해서 휠 스크롤이 끊겨도 부드럽게
+     - 전환이 진행 중이면 body.is-moving → 상담 버튼이 잠시 내려감 */
   (function () {
     var panes = $$(".stack > .hero, .stack > .show");
     if (!panes.length) return;
     var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
-    var ticking = false;
-    function update() {
-      ticking = false;
+    var EASE = 0.16;                                   // 클수록 즉각, 작을수록 더 부드럽고 느림
+    var target = panes.map(function () { return { i: 1, o: 0 }; });
+    var cur = null, running = false, hideTimer = null;
+
+    function measure() {
       var vh = innerHeight;
-      // 스티키라서 고정된 화면의 rect.top 은 항상 0 → 들어오는 정도는 '스택 안에서의 원래 위치'로 계산
+      // 스티키라서 고정된 화면의 rect.top 은 항상 0 → '스택 안에서의 원래 위치'로 계산
       var stackTop = panes[0].parentNode.getBoundingClientRect().top;
-      panes.forEach(function (el, i) {
-        var natural = stackTop + i * vh;               // 스티키가 아니었다면 이 화면의 top
-        el.style.setProperty("--in", clamp(1 - natural / vh).toFixed(3));
-        el.style.setProperty("--out", clamp(-natural / vh).toFixed(3));
+      var moving = false;
+      panes.forEach(function (el, k) {
+        var natural = stackTop + k * vh;              // 스티키가 아니었다면 이 화면의 top
+        target[k].i = clamp(1 - natural / vh);
+        target[k].o = clamp(-natural / vh);
+        if (k > 0 && target[k].i > 0.04 && target[k].i < 0.96) moving = true;
       });
+      setMoving(moving);
     }
-    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    function setMoving(m) {
+      if (m) {
+        document.body.classList.add("is-moving");
+        // 전환 도중 멈춰도 0.9초 뒤엔 상담 버튼 다시 표시
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () { document.body.classList.remove("is-moving"); }, 900);
+      }
+      else if (document.body.classList.contains("is-moving")) {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () { document.body.classList.remove("is-moving"); }, 250);
+      }
+    }
+    function frame() {
+      var still = true;
+      if (!cur) cur = target.map(function (t) { return { i: t.i, o: t.o }; });
+      panes.forEach(function (el, k) {
+        var c = cur[k], t = target[k];
+        c.i += (t.i - c.i) * EASE; c.o += (t.o - c.o) * EASE;
+        if (Math.abs(t.i - c.i) < 0.0008) c.i = t.i; else still = false;
+        if (Math.abs(t.o - c.o) < 0.0008) c.o = t.o; else still = false;
+        el.style.setProperty("--in", c.i.toFixed(4));
+        el.style.setProperty("--out", c.o.toFixed(4));
+      });
+      if (still) running = false; else requestAnimationFrame(frame);
+    }
+    function onScroll() {
+      measure();
+      if (!running) { running = true; requestAnimationFrame(frame); }
+    }
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onScroll);
-    update();
+    onScroll();
   })();
 
   /* 쇼케이스 '제품 보기' → 해당 제품 탭 열기 */
