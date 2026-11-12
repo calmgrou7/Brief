@@ -35,6 +35,11 @@
 <main>
 
 <!-- ============ HERO ============ -->
+<!-- ============ STACK: 고정 배경 + 스티키 섹션 전환 ============
+     .stack 안의 화면들은 한 장씩 화면에 고정되고, 다음 장이 위로 올라오며 덮습니다.
+     (모바일 사파리 호환을 위해 background-attachment:fixed 대신 position:sticky 사용) -->
+<div class="stack">
+
 <!-- 배경: js/config.js 의 hero 설정 (Vimeo / mp4 영상 / 사진 켄번스 슬라이드) -->
 <section class="hero">
   <div class="hero__bg" id="heroBg" aria-hidden="true"></div>
@@ -58,6 +63,42 @@
     <span id="heroNow">01</span><span class="hero__bar"><i></i></span><span id="heroAll">03</span>
   </div>
 </section>
+
+<!-- 쇼케이스: 사진(src)만 실제 시공 사진으로 바꾸면 됩니다 -->
+<section class="show" aria-label="글라스 폴딩도어">
+  <div class="show__bg"><img src="images/hero/sample-2.svg" alt="" loading="lazy"></div>
+  <div class="show__copy">
+    <p class="show__en">GLASS<br>FOLDING DOOR</p>
+    <h2>투명함으로 완성하는<br>공간의 첫인상</h2>
+    <p class="show__desc">세로 프레임을 덜어낸 글라스 폴딩도어. 카페 · 쇼룸의 전면을 하나의 풍경으로 만듭니다.</p>
+    <a href="#product" class="show__more" data-tab-go="folding">제품 보기 <span>→</span></a>
+  </div>
+  <span class="show__no">01 / 03</span>
+</section>
+
+<section class="show" aria-label="폴딩도어">
+  <div class="show__bg"><img src="images/hero/sample-1.svg" alt="" loading="lazy"></div>
+  <div class="show__copy">
+    <p class="show__en">FRAME<br>FOLDING DOOR</p>
+    <h2>머물고 싶은 거실,<br>열면 정원이 됩니다</h2>
+    <p class="show__desc">거실과 테라스의 경계를 지우는 폴딩도어. 슬림 · 단열 · PVC 라인까지 현장에 맞춰 추천합니다.</p>
+    <a href="#product" class="show__more" data-tab-go="folding">제품 보기 <span>→</span></a>
+  </div>
+  <span class="show__no">02 / 03</span>
+</section>
+
+<section class="show" aria-label="썬룸">
+  <div class="show__bg"><img src="images/hero/sample-3.svg" alt="" loading="lazy"></div>
+  <div class="show__copy">
+    <p class="show__en">ALUMINUM<br>SUNROOM</p>
+    <h2>마당을 365일<br>쓰는 공간으로</h2>
+    <p class="show__desc">여름엔 활짝 열고, 겨울엔 닫아 따뜻하게. 폴딩도어와 함께 설계하는 알루미늄 썬룸.</p>
+    <a href="#product" class="show__more" data-tab-go="sunroom">제품 보기 <span>→</span></a>
+  </div>
+  <span class="show__no">03 / 03</span>
+</section>
+
+</div><!-- /.stack -->
 
 <!-- ============ PRODUCT ============ -->
 <section class="sec" id="product">

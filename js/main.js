@@ -71,7 +71,14 @@
 
   /* 2. 헤더 / 모바일 메뉴 */
   var hd = $(".hd"), burger = $(".burger"), gnb = $(".gnb");
-  addEventListener("scroll", function () { hd.classList.toggle("is-scrolled", scrollY > 10); }, { passive: true });
+  // 어두운 스택(히어로·쇼케이스) 위에서는 투명 헤더 유지, 벗어나면 밝은 헤더
+  var stackEl = $(".stack");
+  function hdState() {
+    var past = stackEl ? stackEl.getBoundingClientRect().bottom < 70 : scrollY > 10;
+    hd.classList.toggle("is-scrolled", past);
+  }
+  addEventListener("scroll", hdState, { passive: true });
+  hdState();
   burger.addEventListener("click", function () {
     var open = gnb.classList.toggle("is-open");
     burger.setAttribute("aria-expanded", open);
@@ -150,6 +157,37 @@
     }).catch(function () {
       say("전송에 실패했습니다. 전화(" + S.tel + ")로 문의해주세요.", "err");
     }).then(function () { btn.disabled = false; });
+  });
+
+  /* 5-1. 스티키 스택: 각 화면의 들어오는 정도(--in)와 덮이는 정도(--out) 계산 */
+  (function () {
+    var panes = $$(".stack > .hero, .stack > .show");
+    if (!panes.length) return;
+    var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var vh = innerHeight;
+      // 스티키라서 고정된 화면의 rect.top 은 항상 0 → 들어오는 정도는 '스택 안에서의 원래 위치'로 계산
+      var stackTop = panes[0].parentNode.getBoundingClientRect().top;
+      panes.forEach(function (el, i) {
+        var natural = stackTop + i * vh;               // 스티키가 아니었다면 이 화면의 top
+        el.style.setProperty("--in", clamp(1 - natural / vh).toFixed(3));
+        el.style.setProperty("--out", clamp(-natural / vh).toFixed(3));
+      });
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    update();
+  })();
+
+  /* 쇼케이스 '제품 보기' → 해당 제품 탭 열기 */
+  $$("[data-tab-go]").forEach(function (a) {
+    a.addEventListener("click", function () {
+      var t = $('.tab[data-tab="' + a.getAttribute("data-tab-go") + '"]');
+      if (t) t.click();
+    });
   });
 
   /* 6. 스크롤 등장 효과 */

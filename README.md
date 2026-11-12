@@ -51,3 +51,10 @@ tools/make-hero-video.sh 원본영상.mp4 0 12
 ## 배포 (도메인 없이)
 GitHub Pages: 저장소 Settings → Pages → Branch 선택 → `https://<계정>.github.io/<저장소>/` 로 공개.
 도메인이 생기면 같은 화면에서 Custom domain만 연결하면 됩니다.
+
+## 스크롤 효과 (패럴랙스 고정 배경 + 스티키 섹션 전환)
+- `index.html` 의 `<div class="stack">` 안에 있는 화면(메인 + 쇼케이스 3장)이 한 장씩 화면에 고정되고, 다음 장이 위로 올라오며 덮습니다.
+- 덮이는 화면은 살짝 확대·어두워지고, 들어오는 화면은 글자가 아래에서 떠오릅니다.
+- 모바일 사파리에서도 동작하도록 `background-attachment: fixed` 대신 `position: sticky` + 가벼운 JS(스크롤 진행도 계산)로 구현했습니다. 외부 라이브러리 없음.
+- 쇼케이스 화면 추가: `<section class="show">…</section>` 블록을 복사해 사진(src)과 문구만 바꾸면 됩니다.
+- 움직임 줄이기 설정을 켠 사용자에게는 확대·이동 효과가 꺼집니다.
