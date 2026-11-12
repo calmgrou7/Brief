@@ -48,6 +48,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
 .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;background:var(--soft);color:var(--brand-2)}
 .tag.off{background:#fbf3e2;color:#8a6a1c}
 .tag.gray{background:#f0f1f4;color:#6b7280}
+.tag.new{background:#e7f6ee;color:#1e7a4c;font-weight:700}
 .av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;color:var(--brand);font-weight:700;flex:none}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 .mcard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;box-shadow:var(--shadow)}
@@ -163,7 +164,7 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID()
 function blankMember(name){
   return {id:'', name, birthYear:'', company:'', title:'', products:'', industry:'',
     phone:'', email:'', address:'', website:'', joined:'', guardianId:'', status:'active', memo:'',
-    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:'', isFounder:false, rosterNo:''};
+    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:'', isFounder:false, isNew:false, rosterNo:''};
 }
 
 const IMG_KEYS = {photo:'photoPath', companyImage:'companyImagePath', cardImage:'cardImagePath'};
@@ -171,12 +172,12 @@ const fromMember = r => ({id:r.id, name:r.name, birthYear:r.birth_year||'', comp
   products:r.products||'', industry:r.industry||'', phone:r.phone||'', email:r.email||'', address:r.address||'', website:r.website||'',
   joined:r.joined||'', guardianId:r.guardian_id||'', status:r.status||'active', memo:r.memo||'',
   photoPath:r.photo_path||'', companyImagePath:r.company_image_path||'', cardImagePath:r.card_image_path||'',
-  photo:'', companyImage:'', cardImage:'', isFounder:!!r.is_founder, rosterNo:r.roster_no ?? ''});
+  photo:'', companyImage:'', cardImage:'', isFounder:!!r.is_founder, isNew:!!r.is_new, rosterNo:r.roster_no ?? ''});
 const toMember = m => ({name:m.name, birth_year:m.birthYear||'', company:m.company||'', title:m.title||'',
   products:m.products||'', industry:m.industry||'', phone:m.phone||'', website:(m.website||'').trim(), email:(m.email||'').trim().toLowerCase(),
   address:m.address||'', joined:m.joined||'', guardian_id:m.guardianId||null, status:m.status||'active', memo:m.memo||'',
   photo_path:m.photoPath||'', company_image_path:m.companyImagePath||'', card_image_path:m.cardImagePath||'',
-  is_founder:!!m.isFounder});
+  is_founder:!!m.isFounder, is_new:!!m.isNew});
 const fromTerm = r => ({id:r.id, memberId:r.member_id, positionId:r.position_id, start:r.started_on, end:r.ended_on||''});
 const fromEvent = r => ({id:r.id, title:r.title, category:r.category||'', date:r.event_date, location:r.location||'',
   host:r.host_id||'', attendees:r.attendees ?? '', text:r.body||'', docs:r.docs||[], memo:r.memo||''});
@@ -359,8 +360,13 @@ function avatar(m, size){
 function typeTag(m){
   const t = currentTerm(m.id);
   if(m.status==='inactive') return '<span class="tag gray">휴면</span>';
-  return t ? `<span class="tag off">${esc(position(t.positionId)?.name||'임원')}</span>` : '<span class="tag">일반회원</span>';
+  const base = t ? `<span class="tag off">${esc(position(t.positionId)?.name||'임원')}</span>` : `<span class="tag">${m.isNew?'신입회원':'일반회원'}</span>`;
+  return (t && m.isNew ? '<span class="tag new">신입</span> ' : '') + (m.isNew && !t ? base.replace('class="tag"','class="tag new"') : base);
 }
+/* 글자 구분 (CSV·PNG·연락처 메모용) */
+const typeText = m => { const t = currentTerm(m.id);
+  if(m.status==='inactive') return '휴면';
+  return t ? (m.isNew ? '신입 · ' : '') + (position(t.positionId)?.name||'임원') : (m.isNew ? '신입회원' : '일반회원'); };
 const joinedLabel = m => m.joined ? m.joined.replace('-', '.') : m.isFounder ? '<span class="tag off">창립</span>' : '<span class="muted">기존회원</span>';
 const memberLink = m => m ? `<a href="#/member/${m.id}">${esc(m.name)}</a>` : '<span class="muted">-</span>';
 
@@ -567,6 +573,7 @@ function filteredMembers(){
     if(ui.type==='officer' && !isOfficer(m.id)) return false;
     if(ui.type==='regular' && (isOfficer(m.id) || m.status==='inactive')) return false;
     if(ui.type==='inactive' && m.status!=='inactive') return false;
+    if(ui.type==='new' && (!m.isNew || m.status==='inactive')) return false;
     if(ui.year==='old' && (m.joined || m.isFounder)) return false;
     if(ui.year==='founder' && !m.isFounder) return false;
     if(ui.year && ui.year!=='old' && ui.year!=='founder' && !m.joined.startsWith(ui.year)) return false;
@@ -585,7 +592,7 @@ function Members(){
   <div class="panel" style="margin-bottom:14px"><div class="row">
     <input class="input" id="q" placeholder="이름·회사·제품 검색 (예: 위생용품)" value="${esc(ui.q)}" style="flex:1;min-width:200px">
     <select class="input" id="type">
-      <option value="">전체 구분</option><option value="officer">임원</option><option value="regular">일반회원</option><option value="inactive">휴면</option>
+      <option value="">전체 구분</option><option value="officer">임원</option><option value="new">신입회원</option><option value="regular">일반회원</option><option value="inactive">휴면</option>
     </select>
     <select class="input" id="year"><option value="">전체 입회연도</option>${years.map(y=>`<option>${y}</option>`).join('')}<option value="founder">창립회원</option><option value="old">기존회원</option></select>
     <div class="row"><button class="btn sm ${ui.view==='table'?'pri':''}" data-v="table">표</button><button class="btn sm ${ui.view==='card'?'pri':''}" data-v="card">카드</button></div>
@@ -619,7 +626,7 @@ function vCard(m){
   const g = member(m.guardianId), t = currentTerm(m.id);
   const family = m.name.length >= 2 && m.name.length <= 4 ? m.name.slice(0,1) : '';
   const given = family ? m.name.slice(1) : m.name;
-  const note = ['정우회' + (t ? ' ' + (position(t.positionId)?.name||'임원') : ''),
+  const note = ['정우회 ' + typeText(m),
     m.joined ? `입회 ${m.joined.replace('-','.')}` : m.isFounder ? '창립회원' : '',
     g ? `추천인 ${g.name}` : '', m.products ? `제품·서비스: ${m.products}` : '', m.industry ? `업종: ${m.industry}` : '']
     .filter(Boolean).join(' / ');
@@ -669,7 +676,7 @@ function profileExportHTML(m, img){
   return `<div style="${F}width:800px;background:#fff;color:${C.ink};padding:32px;box-sizing:border-box">
     <div style="display:flex;justify-content:space-between;align-items:center;background:${C.brand};color:#fff;border-radius:12px;padding:14px 20px;margin-bottom:20px">
       <div style="font-size:22px;font-weight:700">정우회 <span style="font-size:14px;font-weight:400;opacity:.8">기업가 대표 모임</span></div>
-      <div style="font-size:15px">${t ? esc(position(t.positionId)?.name||'임원') : m.isFounder ? '창립회원' : '회원'}</div>
+      <div style="font-size:15px">${esc(typeText(m))}${m.isFounder ? ' · 창립회원' : ''}</div>
     </div>
     <div style="display:flex;gap:16px">
       <div style="flex:1">${pic(img.photo, esc(m.name.slice(0,1)))}<div style="text-align:center;font-size:28px;font-weight:700;padding:10px 0">${esc(m.name)}</div></div>
@@ -752,7 +759,7 @@ function MemberDetail(id){
         </table>
       </div>
       <div class="panel"><h2>정우회 활동</h2>
-        <div>현재: ${t?`<b>${esc(position(t.positionId)?.name)}</b> <span class="muted">(${t.start}~)</span>`:'일반회원'}</div>
+        <div>현재: ${t?`${m.isNew?'신입 · ':''}<b>${esc(position(t.positionId)?.name)}</b> <span class="muted">(${t.start}~)</span>`:esc(typeText(m))}</div>
         ${past.length?`<div class="muted" style="margin-top:6px">이전 직책: ${past.map(p=>`${esc(position(p.positionId)?.name)} (${p.start}~${p.end})`).join(', ')}</div>`:''}
         <div style="margin-top:12px"><b>이 회원이 추천한 회원 (${rec.length})</b></div>
         <div class="row" style="margin-top:6px">${rec.length?rec.map(r=>`<a class="tag" href="#/member/${r.id}">${esc(r.name)}</a>`).join(''):'<span class="muted">없음</span>'}</div>
@@ -779,7 +786,8 @@ function memberForm(m){
       ${f('email','로그인 이메일','email','',lock)}${f('joined','입회월 (비우면 기존회원)','month','',lock)}
       ${f('address','주소','text','full')}
       ${f('website','홈페이지','text','full')}
-      <label class="full" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="isFounder" ${m.isFounder?'checked':''} ${lock}> 창립회원</label>
+      <label class="full" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="isFounder" ${m.isFounder?'checked':''} ${lock}> 창립회원
+        <input type="checkbox" name="isNew" ${m.isNew?'checked':''} ${lock} style="margin-left:18px"> 신입회원</label>
       <label>추천인<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
       <label>상태<select class="input" name="status" ${lock}><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
       ${imgf('photo','인물 사진')}${imgf('companyImage','회사 이미지')}${imgf('cardImage','명함 이미지')}
@@ -797,7 +805,7 @@ function memberForm(m){
       root.querySelector('#mf').onsubmit = async e=>{
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.target));
-        if(can.admin()) data.isFounder = 'isFounder' in data;
+        if(can.admin()){ data.isFounder = 'isFounder' in data; data.isNew = 'isNew' in data; }
         if(!data.name.trim()) return toast('이름을 입력해주세요.');
         if(D().members.some(x=>x.name===data.name.trim() && x.id!==m.id) && !confirm('같은 이름의 회원이 있습니다. 그래도 저장할까요?')) return;
         const btn = e.submitter; if(btn){ btn.disabled = true; btn.textContent = '저장 중…'; }
@@ -1107,7 +1115,7 @@ const bind = {
     };
     if($('#exp')) $('#exp').onclick = ()=>{
       const head = ['NO','입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','홈페이지','추천인','추천횟수'];
-      const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.rosterNo, m.joined||(m.isFounder?'창립':'기존회원'), m.name, t?'임원':'일반회원',
+      const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.rosterNo, m.joined||(m.isFounder?'창립':'기존회원'), m.name, typeText(m),
         t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address, m.website,
         member(m.guardianId)?.name||'', recruits(m.id).length]; });
       download(`정우회_회원명부_${today()}.csv`, '﻿'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv');
