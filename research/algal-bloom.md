@@ -239,6 +239,51 @@
 - Floc & Sink / Floc & Lock. https://pmc.ncbi.nlm.nih.gov/articles/PMC5466316
 - Critical assessment of chitosan as coagulant. https://research.wur.nl/en/publications/critical-assessment-of-chitosan-as-coagulant-to-remove-cyanobacte
 
+## 13. 산소 공급으로 녹조 잡기: 방법별 비교와 최선의 선택
+
+### 먼저 알아야 할 원리
+- **산소는 남세균을 직접 죽이지 않는다.** 산소 공급이 녹조를 줄이는 원리는 **바닥 퇴적물을 산소가 있는 상태로 유지해 인이 다시 풀려나오지 못하게 막는 것**이다. 산소가 있으면 철과 결합한 인이 퇴적물에 묶여 있다. 무산소가 되면 이 인이 풀려나 녹조의 비료가 된다 (내부 부하, 9절 참고).
+- 따라서 **내부 부하가 녹조의 주원인인 수체**에서만 효과가 크다.
+
+### 방법별 비교
+| 방법 | 원리 | 근거 | 평가 |
+|---|---|---|---|
+| **심층 산소 공급(순산소, hypolimnetic oxygenation)**: Speece cone, 라인 디퓨저 | 성층을 유지한 채 바닥층에만 순산소를 공급함 | Camanche 저수지 남세균 95% 이상 감소. 중국 Aha 저수지 취수구 구역 남세균 종수 33~100% 감소. 최적화하면 용존산소 증가, 내부 부하 감소, 환원성 이온(철·망간·황화수소) 감소가 보고됨 | **최선**. 성층이 생기는 깊은 저수지에서 근거가 가장 강함 |
+| 심층 폭기(공기) | 바닥층에 공기를 주입하되 성층은 유지함 | 바닥 산소는 효과적으로 올리지만, "녹조 억제 효과는 일관되게 입증되지 않음" (Manitoba 리뷰) | 차선. 순산소보다 효율이 낮음 |
+| 인공 혼합·성층 파괴(공기 방울 기둥) | 물 전체를 섞어 부력이 있는 남세균의 이점을 없앰 | 혼합이 **충분히 강하고 깊으면** 녹조·규조로 종이 바뀐다. 반대로 약하면 영양염이 풍부한 바닥물이 위로 올라와 **역효과**가 난다. Planktothrix는 오히려 유리해짐 (Visser 2016). 여러 현장에서 실패한 기작도 규명됨 | 조건부. 설계를 잘못하면 악화됨 |
+| 표층 폭기·분수 | 수면 근처에 산소를 넣음 | 바닥 무산소를 해결하지 못함 | 미관용. 녹조 대책으로는 부적합 |
+| 태양광 순환기(SolarBee 등) | 표층을 순환시킴 | 근거 대부분이 제조사 자료이고, 독립 검증이 부족함 | 근거 약함 |
+| 산소 나노버블 + 천연 광물(제올라이트·흙) 피복 | 산소를 머금은 입자로 퇴적물 표면을 덮어 산소층을 형성함 | 칼럼·메조코즘 실험에서 퇴적물 표면 산소층 형성, 비소 저감 확인. 현장 피복 시험은 상세 결과 미확인 (Pan Gang 연구팀) | 신기술. 설비 없이 쓸 수 있어 얕은 수체에 유망하나 검증 단계 |
+
+### 효과가 떨어지는 조건 (실패 요인)
+- **외부 유입이 내부 부하보다 클 때**: 바닥을 막아도 강에서 계속 영양염이 들어온다.
+- **퇴적물의 철/인 비율이 낮을 때**: 산소가 있어도 인을 붙잡을 철이 부족하다.
+- **유기물 침강이 과도할 때**: 산소 소비량이 공급량을 압도한다.
+- **성층이 약한 얕고 흐르는 하천**: 심층 산소 공급의 대상이 아니다. 이런 곳은 유속 관리가 우선이다.
+
+### 결론
+1. **깊은 저수지(상수원)라면 순산소 심층 공급이 최선이다.** 근거, 효과 크기, 부작용 모두에서 가장 낫다. 수돗물 냄새, 철·망간 문제도 함께 줄어든다.
+2. **얕은 호수·연못이라면** 강한 혼합을 제대로 설계해 적용하거나, 산소 나노버블 피복(신기술)을 시도할 수 있다. 표층 분수는 효과가 없다.
+3. **낙동강 같은 보 하천이라면** 산소 공급보다 유속 확보가 먼저다. 다만 보 직상류의 깊은 정체 구간에서는 바닥 무산소를 국소적으로 관리하는 방안을 검토할 여지가 있다.
+
+### 자동화 포인트
+- 순산소 공급의 가장 큰 단점은 **운영비(산소 비용)**이다.
+- 바닥 용존산소 센서, 수온 성층 센서, 기상 예보를 결합해 **무산소가 시작되기 직전에만 가동**하는 스마트 제어로 운영비를 줄일 수 있다. 녹조 예측 모델과 결합하는 것도 가능하다.
+
+### 추가 참고문헌
+- Bormans et al. (2016). Controlling internal phosphorus loading in lakes by physical methods: a review. https://agris.fao.org/search/en/records/65dfd6f30f3e94b9e5dcacd8
+- Visser et al. (2016). Artificial mixing to control cyanobacterial blooms: a review. *Aquatic Ecology* 50, 423–441. https://link.springer.com/article/10.1007/s10452-015-9537-0
+- Synopsis on trait–method matching (2016). https://springerlink.bibliotecabuap.elogim.com/10.1007/s10452-016-9596-x
+- ITRC – Management and control strategies. https://hcb-1.itrcweb.org/management-and-control-strategies-for-hcbs/?print=pdf
+- ITRC – Artificial circulation and mechanical mixers. https://hcb-1.itrcweb.org/artificial-circulation-and-mechanical-mixers/?print=pdf
+- Evaluation of mixing mechanisms (AGU 2021). https://ui.adsabs.harvard.edu/abs/2021AGUFMEP45A1512T
+- Manitoba prairie lakes remediation review. https://stg.iisd.org/system/files/publications/manitoba-prairie-lakes-remediation-literature-review.pdf
+- ECCC fine-bubble diffuser oxygenation report. https://publications.gc.ca/collections/collection_2019/eccc/en13-5/En13-5-99-264-eng.pdf
+- Pan Gang – Modified local soil technology. https://irep.ntu.ac.uk/id/eprint/36684
+- Surface oxygen nanobubbles for hypoxia remediation. https://irep.ntu.ac.uk/id/eprint/34241/
+- Multifunctional geoengineering material (2020). https://dspace.lib.cranfield.ac.uk/bitstream/1826/15860/4/multifunctional_geoengineering_material_for_eutrophication_remediation-2020.pdf
+- Hudnell et al. – solar powered circulation (vendor-affiliated). https://ixomwatercare.com/documents/white-paper-peer-reviewed-freshwater-harmful-algal-bloom-suppression-solar-powered/download
+
 ---
 
 ## 참고문헌
