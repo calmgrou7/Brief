@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;900&family=Noto+Sans+KR:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0c1828;--navy:#13263c;--ivory:#f4ead7;--gold:#d6b37a;--teal:#5fb3a6;--muted:#9fb0c2}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:1240px;height:1754px;background:var(--ink)}
+  .p{position:relative;width:1240px;height:1754px;overflow:hidden;color:var(--ivory);
+     background:radial-gradient(1200px 900px at 78% 22%,#24405e 0%,#15283f 45%,#0c1828 100%);font-family:'Noto Sans KR',sans-serif}
+  svg.bg{position:absolute;inset:0}
+  .top{position:absolute;left:84px;top:78px;right:84px;display:flex;justify-content:space-between;align-items:flex-start}
+  .eyebrow{font-family:'Cormorant Garamond',serif;letter-spacing:.32em;font-size:22px;color:var(--gold);font-weight:600}
+  .eyebrow b{display:block;font-family:'Noto Sans KR';letter-spacing:.18em;font-size:17px;color:var(--muted);font-weight:400;margin-top:10px}
+  .ed{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--muted);text-align:right;letter-spacing:.12em}
+  .ed i{display:block;font-size:52px;color:var(--ivory);letter-spacing:.04em;font-style:normal;font-weight:500;line-height:1}
+  .title{position:absolute;left:80px;top:310px}
+  .title h1{font-family:'Noto Serif KR',serif;font-weight:900;font-size:112px;line-height:1.1;letter-spacing:-.02em}
+  .title h1 span{color:var(--gold)}
+  .title .en{margin-top:22px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:44px;color:var(--ivory);opacity:.92}
+  .title .en em{font-style:normal;letter-spacing:.2em;font-size:22px;color:var(--teal);display:block;margin-top:6px}
+  .lead{position:absolute;left:84px;top:780px;width:660px}
+  .lead p.k{font-family:'Noto Serif KR',serif;font-size:34px;font-weight:600;line-height:1.45}
+  .lead p.s{margin-top:16px;font-size:19px;line-height:1.75;color:#c9d4df;font-weight:300}
+  .c3{position:absolute;left:84px;top:1000px;display:flex;gap:12px}
+  .c3 div{border:1px solid rgba(214,179,122,.55);padding:10px 18px;font-size:17px;letter-spacing:.04em;color:var(--ivory)}
+  .c3 div b{color:var(--gold);font-weight:500;margin-right:8px;font-family:'Cormorant Garamond',serif;font-size:20px;letter-spacing:.08em}
+  .spk{position:absolute;left:84px;right:84px;top:1092px}
+  .spk h3{font-family:'Cormorant Garamond',serif;letter-spacing:.3em;font-size:18px;color:var(--gold);font-weight:600;display:flex;align-items:center;gap:16px}
+  .spk h3:after{content:"";flex:1;height:1px;background:rgba(214,179,122,.4)}
+  .grid{margin-top:20px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .card{background:rgba(12,24,40,.58);border-top:2px solid var(--gold);padding:20px 16px 22px;min-height:236px;backdrop-filter:blur(2px)}
+  .card.tba{border-top-color:rgba(159,176,194,.5);background:rgba(12,24,40,.35)}
+  .tag{font-size:12.5px;letter-spacing:.18em;color:var(--teal);font-weight:500}
+  .nm{margin-top:10px;font-family:'Noto Serif KR',serif;font-size:22px;font-weight:600;line-height:1.25;white-space:nowrap}
+  .nm small{display:block;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--muted);margin-top:3px;letter-spacing:.02em}
+  .rl{margin-top:10px;font-size:13.5px;line-height:1.55;color:#b9c6d3}
+  .tp{margin-top:12px;font-size:15px;line-height:1.5;color:var(--ivory);font-family:'Noto Serif KR',serif}
+  .card.tba .nm{color:#c6d0da}
+  .info{position:absolute;left:84px;right:84px;top:1388px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(244,234,215,.25);border-bottom:1px solid rgba(244,234,215,.25)}
+  .info div{padding:22px 0 22px 0}
+  .info div+div{padding-left:24px;border-left:1px solid rgba(244,234,215,.15)}
+  .info span{display:block;font-family:'Cormorant Garamond',serif;letter-spacing:.24em;font-size:15px;color:var(--gold);font-weight:600}
+  .info b{display:block;margin-top:8px;font-size:22px;font-weight:500}
+  .info i{display:block;font-style:normal;font-size:14px;color:var(--muted);margin-top:4px}
+  .prog{position:absolute;left:84px;right:84px;top:1520px;display:flex;align-items:center;gap:0;font-size:16px;color:#c9d4df}
+  .prog div{display:flex;align-items:center}
+  .prog div:not(:last-child):after{content:"";width:42px;height:1px;background:var(--gold);opacity:.6;margin:0 14px}
+  .prog b{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:19px;margin-right:6px;font-weight:600}
+  .foot{position:absolute;left:84px;right:84px;bottom:58px;display:flex;justify-content:space-between;align-items:flex-end;font-size:16px;color:#c9d4df}
+  .foot p{line-height:1.9}
+  .foot p em{font-style:normal;color:var(--gold);margin-right:10px;font-size:14px;letter-spacing:.1em}
+  .draft{font-size:12px;letter-spacing:.2em;color:rgba(159,176,194,.75);text-align:right}
+</style></head>
+<body><div class="p">
+<svg class="bg" viewBox="0 0 1240 1754" width="1240" height="1754">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#f4ead7" stop-opacity=".35"/><stop offset="1" stop-color="#f4ead7" stop-opacity="0"/></radialGradient>
+    <radialGradient id="moon" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="#fbf4e6"/><stop offset=".7" stop-color="#efe1c6"/><stop offset="1" stop-color="#d9c39c"/></radialGradient>
+    <linearGradient id="arc" x1="0" x2="1"><stop offset="0" stop-color="#d6b37a" stop-opacity="0"/><stop offset=".6" stop-color="#d6b37a" stop-opacity=".75"/><stop offset="1" stop-color="#f4ead7" stop-opacity=".95"/></linearGradient>
+  </defs>
+  <circle cx="975" cy="430" r="300" fill="url(#glow)"/>
+  <!-- moon jar silhouette: slightly irregular -->
+  <g transform="translate(975 432) scale(.82) translate(-930 -430)"><path d="M930 215 C1050 213 1128 300 1130 418 C1133 530 1062 628 935 640 C808 646 728 552 730 430 C732 305 812 217 930 215 Z" fill="url(#moon)"/>
+  <ellipse cx="930" cy="222" rx="70" ry="9" fill="#e6d4b3" opacity=".9"/>
+  <path d="M770 470 C840 520 1010 530 1100 470" stroke="#d8c29d" stroke-width="2" fill="none" opacity=".55"/></g>
+  <!-- story routes converging to Busan -->
+  <g fill="none" stroke="url(#arc)" stroke-width="1.6">
+    <path d="M-20 230 C 300 190, 640 200, 975 440"/>
+    <path d="M-20 262 C 360 250, 700 280, 975 440"/>
+    <path d="M1260 900 C 1160 760, 1040 620, 975 440"/>
+  </g>
+  <g font-family="Cormorant Garamond" font-size="15" letter-spacing="4" fill="#9fb0c2">
+    <text x="380" y="198">EDINBURGH</text>
+    <text x="470" y="236">NOVI SAD</text>
+    <text x="1120" y="820">ASIA</text>
+  </g>
+  <circle cx="975" cy="440" r="7" fill="#0c1828"/><circle cx="975" cy="440" r="3" fill="#d6b37a"/>
+  <text x="925" y="660" text-anchor="middle" font-family="Cormorant Garamond" font-size="17" letter-spacing="6" fill="#d6b37a">BUSAN · 35.1°N 129.0°E</text>
+  <!-- sea -->
+  <g fill="none" stroke="#5fb3a6" stroke-opacity=".18" stroke-width="1.2">
+    <path d="M0 1690 C 160 1670, 320 1710, 480 1690 S 800 1670, 960 1690 S 1160 1705, 1240 1690"/>
+    <path d="M0 1715 C 180 1700, 340 1735, 520 1715 S 840 1700, 1000 1716 S 1180 1728, 1240 1716"/>
+    <path d="M0 1740 C 200 1728, 360 1758, 560 1740 S 880 1728, 1040 1742 S 1200 1750, 1240 1742"/>
+  </g>
+</svg>
+
+<div class="top">
+  <div class="eyebrow">INTERNATIONAL FORUM 2026<b>부산 스토리관광 국제포럼</b></div>
+  <div class="ed"><i>No.1</i>BUSAN STORY CROSSING</div>
+</div>
+
+<div class="title">
+  <h1>부산의<br><span>스토리텔러</span>들</h1>
+  <div class="en">The Storytellers of Busan<em>WORLD STORIES · BUSAN JOURNEYS</em></div>
+</div>
+
+<div class="lead">
+  <p class="k">세계의 여행 이야기,<br>부산에서 다시 쓰다</p>
+  <p class="s">에든버러, 노비사드, 그리고 아시아. 다른 도시에서 이야기를 여행으로 만들어 본 사람들과 부산의 이야기꾼이 만나, 부산 관광에 더 넓고 단단한 이야기를 입힙니다.</p>
+</div>
+
+<div class="c3">
+  <div><b>COMPARE</b>그 도시는 어떻게 했나</div>
+  <div><b>CONTRAST</b>부산은 무엇이 다른가</div>
+  <div><b>CONNECT</b>무엇을 부산에 더할까</div>
+</div>
+
+<div class="spk">
+  <h3>SPEAKERS</h3>
+  <div class="grid">
+    <div class="card"><div class="tag">KEYNOTE</div>
+      <div class="nm">박철호<small>Chris Park</small></div>
+      <div class="rl">한국관광공사<br>부산울산경남지사 선임차장</div>
+      <div class="tp">공공과 민간의 이야기를 잇는 스토리 관광</div></div>
+    <div class="card"><div class="tag">SCOTLAND → BUSAN</div>
+      <div class="nm">로라 맥러키<small>Laura McLuckie</small></div>
+      <div class="rl">IESF 미디어 디렉터<br>한·영 방송인, 한국 15년</div>
+      <div class="tp">에든버러에서 부산까지, 축제 도시의 이야기</div></div>
+    <div class="card"><div class="tag">SERBIA → BUSAN</div>
+      <div class="nm">밀레타 포스티치<small>Mileta Postić</small></div>
+      <div class="rl">세르비아 코믹스·<br>애니메이션 센터장</div>
+      <div class="tp">만화와 애니메이션이 도시의 이야기가 될 때</div></div>
+    <div class="card tba"><div class="tag">ASIA · TBA</div>
+      <div class="nm">아시아 연사<small>To be announced</small></div>
+      <div class="rl">부산에 사는<br>아시아권 스토리텔러</div>
+      <div class="tp">아시아 여행자가 부산에서 찾는 이야기</div></div>
+    <div class="card tba"><div class="tag">BUSAN · TBA</div>
+      <div class="nm">로컬 브랜드<small>To be announced</small></div>
+      <div class="rl">부산 로컬 브랜드<br>대표</div>
+      <div class="tp">가게의 이야기가 부산의 여행이 되다</div></div>
+  </div>
+</div>
+
+<div class="info">
+  <div><span>DATE</span><b>2026. 12.</b><i>세부 일정 추후 공지</i></div>
+  <div><span>VENUE</span><b>부산</b><i>장소 추후 공지</i></div>
+  <div><span>LANGUAGE</span><b>한국어 · English</b><i>통역 지원</i></div>
+  <div><span>ENTRY</span><b>사전 신청</b><i>신청 오픈 예정</i></div>
+</div>
+
+<div class="prog">
+  <div><b>01</b>기조발표</div>
+  <div><b>02</b>세계의 이야기</div>
+  <div><b>03</b>부산의 이야기</div>
+  <div><b>04</b>라운드테이블</div>
+  <div><b>05</b>스토리 살롱으로</div>
+</div>
+
+<div class="foot">
+  <p><em>주최</em>부산여자대학교 RISE사업단<br><em>주관</em>아트뱅가드<br><em>협력</em>한국관광공사 부산울산경남지사 (협의 중)</p>
+  <div class="draft">DRAFT v1 · 시안<br>연사·일정은 확정 전 내용입니다</div>
+</div>
+</div></body></html>
