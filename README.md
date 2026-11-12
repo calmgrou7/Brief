@@ -58,3 +58,9 @@ GitHub Pages: 저장소 Settings → Pages → Branch 선택 → `https://<계�
 - 모바일 사파리에서도 동작하도록 `background-attachment: fixed` 대신 `position: sticky` + 가벼운 JS(스크롤 진행도 계산)로 구현했습니다. 외부 라이브러리 없음.
 - 쇼케이스 화면 추가: `<section class="show">…</section>` 블록을 복사해 사진(src)과 문구만 바꾸면 됩니다.
 - 움직임 줄이기 설정을 켠 사용자에게는 확대·이동 효과가 꺼집니다.
+
+## 살아있는 이미지 (쇼케이스·시공사례)
+- 사진만 넣어도 천천히 확대·이동을 반복해 영상처럼 보입니다.
+- 짧은 영상이 있으면: 쇼케이스는 `<div class="show__bg" data-video="images/show/파일.mp4">`, 시공사례는 `js/cases.js` 에 `video: "경로"` 추가.
+- 영상은 화면에 처음 보일 때 불러오고, 화면 밖으로 나가면 멈춰서 휴대폰 데이터·배터리를 아낍니다.
+- 영상 압축은 `tools/make-hero-video.sh` 를 그대로 쓰면 됩니다.

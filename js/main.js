@@ -101,7 +101,8 @@
     grid.innerHTML = (window.CASES || []).filter(function (c) { return f === "all" || c.type === f; }).map(function (c) {
       return '<article class="case"><div class="case__img" style="background:' + grad[c.type] + '">' +
         '<span class="case__tag">' + label[c.type] + '</span>' +
-        (c.img ? '<img loading="lazy" src="' + esc(c.img) + '" alt="' + esc(c.title) + '">' : "시공 사진") +
+        (c.video ? '<video muted loop playsinline preload="none" data-src="' + esc(c.video) + '"' + (c.img ? ' poster="' + esc(c.img) + '"' : "") + '></video>'
+          : c.img ? '<img loading="lazy" src="' + esc(c.img) + '" alt="' + esc(c.title) + '">' : "시공 사진") +
         '</div><div class="case__body"><h3>' + esc(c.title) + '</h3><p>' + esc(c.place) + '</p></div></article>';
     }).join("");
   }
@@ -110,8 +111,40 @@
     c.addEventListener("click", function () {
       $$(".chip").forEach(function (x) { x.classList.toggle("is-on", x === c); });
       render(c.getAttribute("data-f"));
+      watchMedia();
     });
   });
+
+  /* 4-1. 살아있는 이미지: 쇼케이스에 영상 지정 시 교체 + 화면에 보일 때만 재생 */
+  var reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $$(".show__bg[data-video]").forEach(function (bgEl) {
+    var src = bgEl.getAttribute("data-video");
+    if (!src || reduceMotion) return;
+    var img = $("img", bgEl);
+    var v = document.createElement("video");
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = "none";
+    v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+    v.setAttribute("data-src", src);
+    if (img) { v.poster = img.getAttribute("src"); img.remove(); }
+    bgEl.appendChild(v);
+  });
+  var mediaIO = "IntersectionObserver" in window ? new IntersectionObserver(function (ents) {
+    ents.forEach(function (en) {
+      var el = en.target, vid = $("video", el);
+      el.classList.toggle("in-view", en.isIntersecting);
+      if (!vid || reduceMotion) return;
+      if (en.isIntersecting) {
+        if (!vid.src && vid.dataset.src) vid.src = vid.dataset.src;   // 처음 보일 때 로딩
+        var pr = vid.play(); if (pr && pr.catch) pr.catch(function () {});
+      } else vid.pause();
+    });
+  }, { rootMargin: "10% 0px" }) : null;
+  function watchMedia() {
+    $$(".show, .case").forEach(function (el) {
+      if (mediaIO) mediaIO.observe(el); else el.classList.add("in-view");
+    });
+  }
+  watchMedia();
 
   /* 5. 견적 문의 폼 → Supabase 자동 접수 */
   var form = $("#leadForm"), msg = $(".form__msg", form);

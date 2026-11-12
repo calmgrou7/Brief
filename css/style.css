@@ -250,3 +250,19 @@ h3{font-size:19px;letter-spacing:-.02em;font-weight:700}
   .show__bg img,.hero__bg{transform:none}
   .show__copy{opacity:1;transform:none}
 }
+
+/* ============ 살아있는 이미지: 쇼케이스·시공사례 사진도 영상처럼 ============
+   - 사진: 천천히 확대·이동을 무한 반복 (켄 번스 루프)
+   - 영상: data-video / cases.js 의 video 지정 시 소리 없이 반복 재생
+   - 화면 밖에서는 애니메이션·영상 일시정지 (성능) */
+.show__bg{transform:scale(calc(1.12 - var(--in,1) * .1 + var(--out,0) * .06));will-change:transform}
+.show__bg img{transform:none;animation:kbloop 18s ease-in-out infinite alternate}
+.show:nth-of-type(even) .show__bg img{animation-name:kbloop2}
+.show__bg video,.case__img video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.case__img{overflow:hidden}
+.case__img img{animation:kbloop 16s ease-in-out infinite alternate}
+.case:nth-child(even) .case__img img{animation-name:kbloop2}
+.show:not(.in-view) .show__bg img,.case:not(.in-view) .case__img img{animation-play-state:paused}
+@keyframes kbloop{from{transform:scale(1) translate(0,0)}to{transform:scale(1.12) translate(-2%,-1.2%)}}
+@keyframes kbloop2{from{transform:scale(1.12) translate(2%,0)}to{transform:scale(1) translate(0,1%)}}
+@media(prefers-reduced-motion:reduce){.show__bg,.show__bg img,.case__img img{animation:none;transform:none}}
