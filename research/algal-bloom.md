@@ -183,6 +183,62 @@
 - **가장 큰 남은 과제**: 농업(6), 축산(5), 비점(4, 7). 감축은 가능하지만 삭제는 불가능하고, 수천 명의 행동 변화가 필요하다.
 - **통제 불가 변수**는 줄이는 게 아니라 **예측해서 위의 레버를 미리 당기는 데 쓴다**.
 
+## 12. 화학 처리를 뺀 녹조 제거법: 미생물·물리·생태 방법 비교
+
+**평가 기준**: 현장 근거의 강도 · 효과 크기 · 부작용(독소 방출 등) · 적용 규모
+
+### 종합 랭킹
+| 등급 | 방법 | 분류 | 핵심 근거 | 적합한 수체 | 주의점 |
+|---|---|---|---|---|---|
+| **S** | 심층 산소 공급(hypolimnetic oxygenation) | 물리 | Camanche 저수지(미국 캘리포니아): 남세균 **95% 이상 감소**, 투명도 약 10배, 표층 인 약 58% 감소 (Horne & Beutel 2019) | 성층이 생기는 깊은 저수지·호수 | 설비비와 운영비가 듦. 장소마다 결과가 다름 (Bormans 리뷰) |
+| **S** | 유속·체류시간 관리(보 운영) | 수리 | 금강 완전 개방 구간 녹조 최대 85% 감소(논쟁 있음). 낙동강 체류시간 r=0.67 | 보가 있는 하천 | 용수 공급과 충돌함. 정치적 쟁점 |
+| **S** | 스컴 물리 수거 + 혐기 소화 자원화 | 물리+미생물 | 소화 과정에서 마이크로시스틴 약 97% 분해, 메탄 약 190 mL/g VS (타이후 호수) | 모든 수체(응급 대응) | 수거 타이밍이 중요함(분해 전에 걷어야 함) |
+| **A** | 생물학적 여과(독소 분해 미생물 바이오필름) | 미생물 | 바이오 모래여과에서 MC-LR·LA가 4일 만에 불검출. mlrA 유전자를 가진 Sphingomonas 계열이 분해 (Ho et al. 2006). **외부 접종 없이 토착 미생물만으로 충분** | 정수장·취수장 | 실험실·파일럿 위주. 상수도 실규모 자료는 부족 |
+| **A** | 생물조작(어류 제거) + 침수식물 복원 | 생태 | 덴마크 36개 호수에서 수질 개선과 수생식물 증가. 70여 개 프로젝트 리뷰에서는 8~10년 후 되돌아가는 경우가 많음 (Søndergaard 2007, 2008) | 얕은 호수·저수지 | 반복 시행이 필요함. 영양염 감축과 병행해야 함 |
+| **A-** | 부유습지(floating treatment wetland) | 생태 | 식물을 수확해 인 약 2 g/m²/년 제거. 혼합 식재가 더 효과적이고 독소 감소도 관찰됨 | 소규모 연못·도시 하천·조정지 | 대형 수체에서는 면적 대비 효과가 미미함 |
+| **B** | 살조 세균(algicidal bacteria) 투입 | 미생물 | 1000 L 메조코즘에서 Microcystis **2일 만에 90.7% 감소**, 독소는 4일 뒤 대조군 수준으로 회복 (Paucibacter DH15, 2022) | 현재는 연구 단계 | **현장 검증이 거의 없음**. 세포가 터지면서 독소가 방출되고 미생물 군집이 교란됨. 국내 메조코즘 연구는 대형 호수 적용이 부적합하다고 결론 냄. 외래 미생물 방류는 규제 대상 |
+| **B** | 토착 살조 세균 육성(수생식물 부착 생물막) | 미생물+생태 | 배양균을 투입하는 것보다 수생식물 표면의 토착 살조 세균을 키우는 쪽이 유망함 (Kang et al. 2024 리뷰) | 수생식물 복원지 | 아직 원리 검증 단계 |
+| **B-** | 보릿짚 | 생태(천연 물질) | 영국 소규모 저수지에서 감소 사례가 있으나 결과가 일관되지 않음. 이미 생긴 녹조 치료가 아닌 **예방용** | 소규모 연못 | 효과가 나기까지 1.5~10개월 걸림. 과다 투입 시 산소 고갈 |
+| **C** | 초음파 | 물리 | 대형 저수지 통제 실험에서 **유의한 차이 없음**, 독소/엽록소 비율은 오히려 증가. ITRC는 "현장 근거 제한적"으로 평가 | — | 업체 자료 위주. 비추천 |
+| **D** | EM 흙공 | 미생물 | 대조군 대비 효과 없음, 오히려 남세균 증가(52 vs 20 µg/L). 네덜란드는 중금속 함유를 이유로 사용 금지 | — | **사용 금지 권고** |
+
+*참고: 점토+키토산 응집 침강("Floc & Sink")은 천연 재료지만 응집제를 쓰기 때문에 화학 처리의 경계에 있어 별도로 분류했다. 수질 조건(높은 pH, 알칼리도)에 따라 효과가 크게 달라진다.*
+
+### 핵심 통찰
+1. **미생물은 "강에 뿌리는 것"이 아니라 "통제된 시설 안에서 쓰는 것"일 때 가장 잘 작동한다**: 정수장 바이오필터(독소 분해), 혐기 소화조(수거한 녹조 처리). 개방 수역에 투입하는 방식은 아직 현장에서 입증되지 않았다.
+2. **외부 접종보다 토착 미생물 군집을 키우는 쪽이 낫다**: 바이오필터에서도, 수생식물 생물막에서도 공통된 결과다.
+3. **물리적 조건 제거(산소, 유속)가 미생물 투입보다 근거가 훨씬 강하다.**
+
+### 수체 유형별 베스트 조합
+| 수체 | 1순위 | 2순위 | 보조 |
+|---|---|---|---|
+| 보가 있는 하천(낙동강형) | 보 운영(체류시간 단축) | 스컴 조기 수거 + 소화 자원화 | 취수장 바이오필터 |
+| 깊은 저수지(상수원) | 심층 산소 공급 | 취수 심도 조절 | 바이오필터 |
+| 얕은 호수·농업용 저수지 | 생물조작 + 침수식물 복원 | 부유습지 | 토착 살조 세균 육성 |
+| 소규모 연못·공원 | 부유습지 | 보릿짚(예방) | 순환 펌프 |
+
+### 추가 참고문헌
+- Paucibacter aquatile DH15 mesocosm (2022). https://pubmed.ncbi.nlm.nih.gov/35952989/
+- Kang et al. (2024) Biotechnological control of cyanobacterial blooms, review. https://rcastoragev2.blob.core.windows.net/02ee086e4786bc612ae7f4afc98f0fe0/253_2024_Article_13260.PMC11405451.pdf
+- Algicidal bacteria & microcystin release. https://frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2024.1430097/pdf
+- Xanthobacter mesocosm (Korea, 2005). https://koreascience.kr/article/JAKO200518317184555.pdf
+- Ho et al. – biological sand filtration of microcystins. https://eres.library.adelaide.edu.au/dspace/handle/2440/57622
+- USGS (2023) Biodegradation of microcystins in Lake Erie source waters and filters. https://pubs.usgs.gov/publication/sir20235137/full
+- Silva et al. (2019) Gravity-driven membrane biofilms degrade microcystin. https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2019.00843/pdf
+- Horne & Beutel (2019) Hypolimnetic oxygenation 3: Camanche Reservoir. https://sites.ucmerced.edu/beutellab/publications/hypolimnetic-oxygenation-3-engineered-switch-eutrophic-meso-oligotrophic-state
+- Aha Reservoir oxygenation. https://www.pjoes.com/Water-Quality-Restoration-of-a-Drinking-Water-nOutlet-Area-in-a-Eutrophic-Reservoir,124776,0,2.html
+- Bormans et al. – physical methods for internal loading. https://springerlink.bibliotecabuap.elogim.com/content/pdf/10.1007/s10452-015-9564-x.pdf
+- Søndergaard et al. (2007) Lake restoration: successes, failures and long-term effects. https://conservationevidencejournal.com/individual-study/789
+- Søndergaard et al. (2008) Fish removal in 36 Danish lakes. https://link.springer.com/doi/10.1007/s10021-008-9193-5
+- Floating wetlands in degraded urban waters. https://thecharles.org/wp-content/uploads/2023/03/Application-of-floating-wetlands-for-the-improvement-of-degraded-urban-waters_full-article.pdf
+- Ultrasound field study (AUB thesis). https://scholarworks.aub.edu.lb/handle/10938/22113
+- ITRC – Ultrasound. https://hcb-1.itrcweb.org/ultrasound/?print=pdf
+- ITRC – Barley and rice straw. https://hcb-1.itrcweb.org/barley-and-rice-straw/
+- Teagasc barley straw review. https://teagasc.ie/wp-content/uploads/media/website/publications/2010/5721.pdf
+- Lürling et al. – EM mudballs ineffective. https://link.springer.com/article/10.1007/s10452-015-9563-y
+- Floc & Sink / Floc & Lock. https://pmc.ncbi.nlm.nih.gov/articles/PMC5466316
+- Critical assessment of chitosan as coagulant. https://research.wur.nl/en/publications/critical-assessment-of-chitosan-as-coagulant-to-remove-cyanobacte
+
 ---
 
 ## 참고문헌
