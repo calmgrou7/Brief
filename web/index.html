@@ -215,7 +215,13 @@ const Store = {
     this.db = {members:ms.map(fromMember),
       positions:ps.map(r=>({id:r.id, name:r.name, single:r.single, order:r.sort_order})),
       terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory), applications:[]};
-    if(this.me.admin) this.db.applications = await q(sb.from('jw_applications').select('*').eq('status','pending').order('created_at',{ascending:false}));
+    if(this.me.admin){   // 가입 신청 목록은 실패해도 나머지 화면은 열리도록
+      try{
+        const {data, error} = await sb.from('jw_applications').select('*').eq('status','pending').order('created_at',{ascending:false});
+        if(error) throw error;
+        this.db.applications = data || [];
+      }catch(e){ console.warn('가입 신청 목록을 불러오지 못했습니다', e); }
+    }
     await this.signImages();
   },
   /* 비공개 저장소 이미지 → 12시간짜리 서명 URL을 한 번에 발급 */
