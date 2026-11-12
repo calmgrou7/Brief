@@ -82,6 +82,53 @@
 - Harmless disposal and resource utilization of Taihu blue algae. https://www.semanticscholar.org/paper/Harmless-Disposal-and-Resources-Utilizations-of-Jian-ping/ff349b808f7bcff84843bb98389eaf1e93bf1b51
 - Refloated algal sludge as organic fertilizer. https://katalog.dhi-paris.fr/vufind/Record/NLM239445244/Holdings
 
+## 10. 녹조를 처음부터 막는 방법론 (예방)
+
+녹조 예방의 핵심 공식은 **녹조 = 영양염 × 수온 × 정체**이다. 수온은 단기적으로 통제할 수 없으므로, 실제로 다룰 수 있는 것은 **영양염과 정체**이다.
+
+### 레벨 1. 원천 차단: 유역에서 영양염 줄이기 (가장 근본적, 가장 느림)
+- **질소와 인 동시 감축**: Conley, Paerl 외 (2009, *Science*)는 인만 줄이면 질소고정 남세균이 살아남고, 하류 연안에서는 부영양화가 오히려 악화된다고 지적했다. 이리호에 대한 후속 연구(2024, *L&O*)는 **질소와 인을 연중 40%씩 함께 줄여야** 한다고 결론 냈다.
+- **점오염원**(하수처리장·산업폐수): 고도처리로 총인을 제거하는 것은 상대적으로 쉽고 효과가 빠르다. 대표 사례로 미국 워싱턴호(1960년대 하수를 우회시킨 뒤 수질 회복)가 자주 인용된다.
+- **비점오염원**(농경지·축산): 정밀 시비(4R), 완충 식생대, 인공습지, 피복작물, 가축분뇨 관리 등이 있다. 가장 어렵고 가장 중요한 부분이다.
+- **현실 점검(이리호 Annex 4)**: 2025년까지 인 40% 감축이 목표지만 아직 크게 못 미친다. 2020년 중간목표(20%)도 달성하지 못했다. EPA 모델은 **농경지의 50% 이상**에 보전 관행을 적용해야 목표에 닿는다고 본다. 시뮬레이션에서도 용존 반응성 인(DRP) 목표를 달성한 시나리오는 없었다.
+
+### 레벨 2. 수체 내부: 쌓인 인(레거시) 봉쇄
+- 퇴적물에 쌓인 인은 수십 년 뒤에도 풀려나올 수 있다. 외부 유입을 줄여도 수질 회복이 늦어지는 주원인이다.
+- **인 불활성화제**: 알럼(황산알루미늄), 란타넘 개질 벤토나이트(Phoslock)가 있다. LMB는 전 세계 약 200곳에 적용됐고 인 결합 효율이 높다. 다만 18개 호수 분석에서 엽록소 개선 효과는 "약하지만 유의" 수준이었다. 알럼보다 비싸고, 알칼리도가 낮은 물에서는 란타넘이 녹아 나올 위험이 있다.
+- **준설, 수면 스컴 조기 제거, 바닥층 산소 공급**도 대안이다.
+
+### 레벨 3. 물리·수리적 조건 관리
+- **유속 확보·체류시간 단축**: 보 개방, 펄스 방류 등. 환경부 4대강조사평가단(2017~2021) 조사에서 금강 완전 개방 구간의 녹조가 **최대 85% 감소**했고 체류시간은 최대 88% 줄었다. 다만 2018년 중간 결과(약 40% 감소)는 기상 요인을 보정하면 약 20%로 낮아졌다. BOD와 총인은 오히려 증가한 지표도 있어 해석에 논란이 있다.
+- **인공 혼합·폭기**: 깊은 호수에서 성층을 깨 부력이 있는 남세균의 이점을 없앤다. 충분히 강하게 혼합하지 않으면 효과가 없거나 오히려 역효과가 날 수 있다.
+
+### 레벨 4. 생태적 방법
+- **생물조작**: 플랑크톤을 먹는 어류를 제거하고, 동물플랑크톤과 수생식물을 회복시키는 방법이다. 얕은 호수에서 효과가 보고되지만, 영양염을 함께 줄이지 않으면 효과가 오래가지 않는 경우가 많다.
+- **수변 식생·수생식물 복원**: 영양염을 흡수하고 그늘을 만들어 경쟁 효과를 낸다.
+
+### 레벨 5. 기후 적응
+- 온난화로 같은 영양염 수준에서도 녹조가 더 쉽게 생긴다. 따라서 **영양염 목표치를 더 엄격하게** 잡아야 한다 (Paerl & Huisman 2008; Ho et al. 2019).
+
+### 레벨 6. 예측 기반 선제 운영 (자동화의 영역)
+- 위성, 센서, 기상 예보, ML을 결합해 **녹조 발생 1~2주 전**에 보 방류, 취수원 전환, 스컴 제거, 살포 일정을 잡는다.
+- 예방 대책은 효과가 나기까지 수년에서 수십 년이 걸린다. 그 공백을 메우는 것이 예측 기반 선제 대응이다.
+
+**결론**: 단일한 해법은 없다. **유역 영양염 감축(근본) + 레거시 인 봉쇄(가속) + 유속 확보(조건 제거) + 예측 운영(공백 메우기)**을 함께 쓰는 통합 접근이 연구들의 공통된 결론이다.
+
+### 추가 참고문헌
+- Conley, D.J., Paerl, H.W. et al. (2009). Controlling eutrophication: nitrogen and phosphorus. *Science* 323, 1014–1015. https://biomar.fciencias.unam.mx/Sobretiros/2019/Informacion%20algas/Algas/General/Conley_et_al_2009%5b1%5d_controling_euthrophication.pdf
+- Paerl, H.W. (2009). Controlling eutrophication along the freshwater–marine continuum. *Estuaries and Coasts*. https://springerlink.bibliotecabuap.elogim.com/content/pdf/10.1007/s12237-009-9158-8.pdf
+- Lake Erie dual N&P reduction (2024). https://par.nsf.gov/servlets/purl/10555049
+- US EPA – GLWQA Status and Progress. https://epa.gov/glwqa/status-and-progress
+- US EPA – Recommended binational phosphorus targets. https://www.epa.gov/glwqa/recommended-binational-phosphorus-targets
+- Ohio State 2019 Lake Erie BMP modeling. https://www.feedstuffs.com/news/ohio-state-explores-reducing-lake-erie-algal-blooms
+- U. Michigan – Cost to meet water quality goals in W. Lake Erie. https://graham.umich.edu/media/files/Cost-to-Meet-Water-Quality-Goals-in-the-Western-Basin-of-Lake-Erie.pdf
+- Copetti et al. (2016). Eutrophication management using lanthanum modified bentonite: a review. *Water Research*. https://portal.findresearcher.sdu.dk/da/publications/eutrophication-management-in-surface-waters-using-lanthanum-modif/
+- H2Ohio Technology Assessment – Phoslock (2022). https://dam.assets.ohio.gov/image/upload/h2.ohio.gov/TAP/H2Ohio-Technology-Assessment-Final-Report-Phoslock-Jan-2022.pdf
+- In-situ sediment P control in shallow lakes: a review (2025). https://journal.hep.com.cn/jes/EN/1160319987191701710
+- 4대강 보 개방 녹조 85% 감소 보도. https://newstomato.com/ReadNews.aspx?no=1106973
+- 2018 보 개방 중간결과. https://www.newsis.com/view/NISX20180629_0000349953
+- 보 개방 수질지표 엇갈림. https://pressian.com/pages/articles/2021062114050591299
+
 ---
 
 ## 참고문헌
