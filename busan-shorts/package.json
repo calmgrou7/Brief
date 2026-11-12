@@ -1,0 +1,19 @@
+{
+  "name": "busan-line-art-shorts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "부산 관광 명소 라인아트 애니메이션 쇼츠 (1080x1920)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json",
+    "render": "node scripts/render.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/noto-sans-kr": "^5.1.0",
+    "@fontsource/noto-serif-kr": "^5.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
+  }
+}

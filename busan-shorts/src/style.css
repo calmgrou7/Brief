@@ -1,0 +1,38 @@
+@import '@fontsource/noto-sans-kr/700.css';
+@import '@fontsource/noto-sans-kr/900.css';
+@import '@fontsource/noto-serif-kr/700.css';
+
+html, body { margin: 0; height: 100%; background: #ebe8e2; overflow: hidden; }
+body { display: grid; place-items: center; }
+#frame {
+  position: relative; width: 1080px; height: 1920px; overflow: hidden;
+  transform-origin: center; background: #fdfcf8;
+  --ink: #1c1c1c; --paper: #fdfcf8; --accent: #e0893a;
+  font-family: 'Noto Sans KR', sans-serif; color: var(--ink);
+}
+body.capture #frame { transform: none !important; }
+#stage, #stage svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.pp { fill: var(--paper); }
+
+#hud { position: absolute; inset: 0; pointer-events: none; }
+.chip {
+  position: absolute; left: 60px; top: 236px; padding: 10px 24px; border-radius: 40px;
+  background: rgba(20, 22, 34, .78); color: #fff; font-size: 30px; font-weight: 700; letter-spacing: .5px;
+}
+.chip b { color: #f2b766; }
+.label { position: absolute; left: 62px; top: 336px; }
+.label .han { font-family: 'Noto Serif KR', serif; font-size: 34px; letter-spacing: 8px; color: var(--accent); font-weight: 700; }
+.label .num { font-size: 26px; margin-left: 14px; opacity: .55; font-weight: 700; letter-spacing: 2px; }
+.label h1 {
+  margin: 4px 0 0; font-size: 96px; font-weight: 900; letter-spacing: -2px; line-height: 1.12;
+  text-shadow: 0 0 18px var(--paper), 0 0 6px var(--paper);
+}
+.label .bar { height: 5px; width: 0; background: var(--accent); margin-top: 14px; border-radius: 3px; }
+.cap {
+  position: absolute; left: 62px; right: 150px; top: 1290px; font-size: 66px; font-weight: 900;
+  line-height: 1.32; letter-spacing: -1px;
+  text-shadow: 0 0 22px var(--paper), 0 0 8px var(--paper), 0 0 3px var(--paper);
+}
+.cap span { display: block; }
+.cap .sub { font-size: 40px; font-weight: 700; color: var(--accent); margin-top: 16px; letter-spacing: 0; }
+.cta { position: absolute; left: 62px; right: 150px; top: 1290px; }
