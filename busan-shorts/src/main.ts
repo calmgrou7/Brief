@@ -72,11 +72,11 @@ const reveal = (spans: HTMLElement[], t: number, out: number) => {
 
 const setText = (Pl: Palette) => {
   // captions never sit in the low-contrast ink flip: dark on light, or light on dark
-  const night = Pl.inkT > 0.5;
+  const night = Pl.lamp > 0.5;   // by paper brightness, which darkens before the ink flips
   frame.style.setProperty('--ink', night ? '#f6eedb' : '#1c1c1c');
   frame.style.setProperty('--paper', night ? 'rgba(14,18,36,.85)' : 'rgba(253,252,248,.95)');
   frame.style.setProperty('--scrim', night ? 'rgba(14,18,36,.58)' : 'rgba(253,252,248,.66)');
-  frame.style.setProperty('--accent', Pl.inkT > 0.5 ? '#f2b766' : '#d9772b');
+  frame.style.setProperty('--accent', night ? '#f2b766' : '#d9772b');
 };
 
 // ---------------------------------------------------------------- loop
