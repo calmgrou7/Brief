@@ -72,10 +72,21 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparen
 .next{font-size:12.5px;overflow-wrap:anywhere}
 .next b{font-weight:600}
 /* 지시창 */
-.order{padding:14px;display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
-.order input,.order select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
-.hint{grid-column:1/-1;color:var(--muted);font-size:12px;margin:0}
-@media (max-width:640px){.order{grid-template-columns:1fr}}
+.order{padding:16px;display:flex;flex-direction:column;gap:10px;border-color:var(--accent)}
+.order-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.order-head h2{margin:0}
+.order-row{display:flex;gap:10px;align-items:stretch}
+.order-row2{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.order textarea,.order select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.order textarea{flex:1;resize:vertical;min-height:52px;font-size:15px}
+.mic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:96px;padding:8px 12px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);font-weight:600;font-size:12.5px}
+.mic[aria-pressed="true"]{background:var(--accent);color:var(--panel)}
+.mic:disabled{opacity:.5;cursor:default}
+.mic[hidden]{display:none}
+.partial{margin:0;min-height:1.2em;color:var(--muted);font-style:italic;font-size:13px;overflow-wrap:anywhere}
+.hint{color:var(--muted);font-size:12px;margin:0}
+@media (max-width:520px){.order-row{flex-direction:column}.mic{flex-direction:row;min-height:48px}.order-row2 select{flex:1}}
+@media (prefers-reduced-motion:no-preference){.mic[aria-pressed="true"] svg{animation:pulse 1.2s ease-in-out infinite}}
 /* 직원 */
 .staff{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 @media (max-width:360px){.staff{grid-template-columns:1fr}}
@@ -138,6 +149,22 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparen
     <div class="sync" id="sync">연결 중…</div>
   </header>
 
+  <section aria-label="대표 지시">
+    <form class="panel order" id="orderForm">
+      <div class="order-head"><h2 id="orderH">대표 지시</h2><span class="muted" id="voiceHint">말로 하셔도 되고, 직접 쓰셔도 돼요.</span></div>
+      <div class="order-row">
+        <button type="button" class="mic" id="micBtn" aria-labelledby="micLabel" hidden><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 1 0-7 0v6A3.5 3.5 0 0 0 12 15Zm6-3.5a1 1 0 1 0-2 0 4 4 0 0 1-8 0 1 1 0 1 0-2 0 6 6 0 0 0 5 5.91V20H9a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-2v-2.59a6 6 0 0 0 5-5.91Z"/></svg><span id="micLabel">말로 지시하기</span></button>
+        <textarea id="orderText" rows="2" placeholder="예) Stay B 정보 카드에 은행 계좌 개설 순서 추가해줘" maxlength="500" aria-labelledby="orderH"></textarea>
+      </div>
+      <p class="partial" id="partial" aria-live="polite"></p>
+      <div class="order-row2">
+        <select id="orderWho" aria-label="담당 직원"><option value="">담당: 실장이 배정</option></select>
+        <button class="btn" id="orderBtn" type="submit">지시 등록</button>
+      </div>
+      <p class="hint">등록한 지시는 아래 '업무 파이프라인'의 '지시' 칸에 쌓여요. 채팅방에서 "지시함 처리해"라고 하시면 실장(Claude)이 직원에게 배정해 진행합니다.</p>
+    </form>
+  </section>
+
   <section aria-label="오늘 요약">
     <div class="kpis">
       <div class="panel kpi" id="k-approval"><span class="v">–</span><span class="l">대표 승인 대기</span></div>
@@ -157,15 +184,6 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparen
     <div class="projects" id="projects"><p class="muted">프로젝트를 불러오는 중이에요.</p></div>
   </section>
 
-  <section>
-    <h2>대표 지시</h2>
-    <form class="panel order" id="orderForm">
-      <input id="orderText" type="text" placeholder="예) Stay B 파트너 페이지에 행정사 소개 칸 추가해줘" maxlength="300" autocomplete="off" aria-label="지시 내용">
-      <select id="orderWho" aria-label="담당 직원"><option value="">담당: 실장이 배정</option></select>
-      <button class="btn" id="orderBtn" type="submit">지시 등록</button>
-      <p class="hint">등록한 지시는 '지시' 칸에 쌓이고, 채팅방에서 "지시함 처리해"라고 하면 실장(Claude)이 직원에게 배정해 진행합니다.</p>
-    </form>
-  </section>
 
   <section>
     <h2>직원 현황</h2>
@@ -332,6 +350,39 @@ $("orderForm").addEventListener("submit",async e=>{
   catch(err){showError("지시를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.")}
   finally{$("orderBtn").disabled=false}
 });
+
+$("orderText").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();$("orderForm").requestSubmit()}});
+
+/* 음성 지시: 마이크 버튼 → 받아쓰기 → 입력칸에 채움 → 대표가 확인 후 등록 */
+(async()=>{
+  const d=await (window.claude?.use?.("dictation")??Promise.resolve(null));
+  const btn=$("micBtn"),lab=$("micLabel"),part=$("partial"),ta=$("orderText");
+  if(!d){$("voiceHint").textContent="이 화면에서는 음성 입력을 쓸 수 없어요. Chrome·Edge나 Claude 데스크톱 앱에서 열면 말로 지시할 수 있어요.";return}
+  btn.hidden=false;
+  const LABEL={idle:"말로 지시하기",starting:"준비 중…",listening:"듣는 중 · 누르면 끝",finishing:"정리 중…"};
+  d.onState(({state,reason})=>{
+    lab.textContent=LABEL[state]||LABEL.idle;
+    btn.setAttribute("aria-pressed",state==="listening"?"true":"false");
+    btn.disabled=state==="starting"||state==="finishing";
+    if(state==="idle"){
+      part.textContent="";
+      if(reason==="unavailable"||reason==="not_granted"){btn.hidden=true;$("voiceHint").textContent=reason==="not_granted"?"음성 입력이 꺼져 있어요. 이 페이지의 권한 메뉴에서 켤 수 있어요.":"이 계정이나 언어에서는 음성 입력을 쓸 수 없어요.";}
+      else if(reason==="rate_limited")showError("음성 입력 요청이 많아요. 잠시 후 다시 눌러 주세요.");
+      else if(reason==="upstream_error")showError("마이크나 음성 인식에 문제가 생겼어요. 다시 눌러 주세요.");
+      if(ta.value.trim()){$("voiceHint").textContent="받아쓴 내용을 확인하고 '지시 등록'을 눌러 주세요.";$("orderBtn").focus()}
+    }
+  });
+  d.onPartial(({text})=>{part.textContent=text?("듣는 중: "+text):""});
+  d.onFinal(({text})=>{ta.value=(ta.value+text).replace(/^\s+/,"");});
+  btn.addEventListener("click",()=>{
+    if(d.active()){d.stop().catch(()=>{});return}
+    d.start().catch(e=>{
+      if(e&&e.code==="dismissed")$("voiceHint").textContent="마이크 사용을 허용해야 말로 지시할 수 있어요.";
+      else if(e&&e.code==="not_granted"){btn.hidden=true;$("voiceHint").textContent="음성 입력이 꺼져 있어요. 이 페이지의 권한 메뉴에서 켤 수 있어요."}
+      else if(e&&e.code!=="stopped")showError("음성 입력을 시작하지 못했어요. 다시 눌러 주세요.");
+    });
+  });
+})();
 
 (async()=>{
   db=await (window.claude?.use?.("db")??Promise.resolve(null));
