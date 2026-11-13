@@ -307,7 +307,7 @@ function renderBoard(){
 function renderLog(){
   const ol=$("log");ol.replaceChildren();
   const items=[...logEntries].sort((a,b)=>(b.t||"").localeCompare(a.t||"")).slice(0,40);
-  if(!items.length){const li=el("li","blank muted",db?"아직 기록이 없어요.":waitText());ol.append(li);return}
+  if(!items.length){const li=el("li","blank muted",(db&&!offline)?"아직 기록이 없어요.":waitText());ol.append(li);return}
   items.forEach(x=>{const li=el("li");li.append(el("time",null,hm(x.t)),el("span","lw",x.who||""),el("span","lt",x.text||""));ol.append(li)});
 }
 function renderAll(){renderKpis();renderDecisions();renderProjects();renderStaff();renderBoard()}
@@ -337,7 +337,7 @@ $("orderForm").addEventListener("submit",async e=>{
   renderBoard();
   let timer=setTimeout(()=>{$("sync").textContent="응답 대기 중 · 내용이 최신이 아닐 수 있어요"},10000);
   const live=snap=>{if(!snap.metadata.fromCache){clearTimeout(timer);$("sync").textContent="실시간 연결됨 · "+hm(new Date().toISOString())}};
-  const fail=()=>{clearTimeout(timer);offline=true;$("sync").textContent="연결 끊김 · 새로고침해 주세요";showOffline("실시간 연결이 끊겼어요. 새로고침하면 다시 연결됩니다.");renderAll()};
+  const fail=()=>{clearTimeout(timer);offline=true;$("sync").textContent="연결 끊김 · 새로고침해 주세요";showOffline("실시간 연결이 끊겼어요. 새로고침하면 다시 연결됩니다.");renderAll();renderLog()};
   db.collection("staff").onSnapshot(s=>{loaded.staff=true;staff={};s.docs.forEach(d=>staff[d.id]=d.data());renderAll();live(s)},fail);
   db.collection("tasks").orderBy("updatedAt","desc").limit(300).onSnapshot(s=>{loaded.tasks=true;tasks=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
   db.collection("projects").onSnapshot(s=>{loaded.projects=true;projects=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
