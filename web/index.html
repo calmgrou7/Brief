@@ -143,21 +143,28 @@ pre.text{white-space:pre-wrap;background:var(--soft);padding:12px;border-radius:
 const SUPABASE_URL = 'https://ltnwbinctflmczqnhuii.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bndiaW5jdGZsbWN6cW5odWlpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxMzkwMjUsImV4cCI6MjEwOTcxNTAyNX0.UL6jWktHRze0K6W6cw21uaoRp3i2lgVIe7aAAV_g5gg';
 const BUCKET = 'jw-media';
-/* 접속 방식 2가지
-   1) 접속 코드: 코드를 요청 헤더(x-jw-key)로 보내면 DB가 관리자 권한으로 판정 — 지금 사용하는 방식
-   2) 이메일 로그인 링크: 회원별 권한(관리자/임원/일반) — 회원에게 열 때 사용 */
+/* 접속 방식 3가지
+   1) 회원 로그인: 이름 + 비밀번호(처음엔 휴대폰 뒷 4자리) → 로그인 토큰을 헤더(x-jw-member)로 보냄
+      → 회원명부 열람 + 본인 정보 수정 (임원이면 비밀번호 초기화 등 임원 기능)
+   2) 관리자 접속 코드: 코드를 헤더(x-jw-key)로 보내면 DB가 관리자 권한으로 판정
+   3) 이메일 로그인 링크: 회원별 권한 (선택 사항) */
 const KEY_STORE = 'jungwoo-access-code';
 const readKey = () => { try{ return localStorage.getItem(KEY_STORE) || ''; }catch(e){ return ''; } };
 const writeKey = v => { try{ v ? localStorage.setItem(KEY_STORE, v) : localStorage.removeItem(KEY_STORE); }catch(e){} };
-function makeClient(key){
-  return key
-    ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {global:{headers:{'x-jw-key':key}},
-        auth:{persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey:'jungwoo-key-mode'}})
+const MEMBER_STORE = 'jungwoo-member-token';
+const readMemberToken = () => { try{ return localStorage.getItem(MEMBER_STORE) || ''; }catch(e){ return ''; } };
+const writeMemberToken = v => { try{ v ? localStorage.setItem(MEMBER_STORE, v) : localStorage.removeItem(MEMBER_STORE); }catch(e){} };
+function makeClient(key, memberToken){
+  const headers = key ? {'x-jw-key':key} : memberToken ? {'x-jw-member':memberToken} : null;
+  return headers
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {global:{headers},
+        auth:{persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey: key ? 'jungwoo-key-mode' : 'jungwoo-member-mode'}})
     : supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
         auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'jungwoo-auth'}});
 }
 let keyMode = !!readKey();
-let sb = makeClient(readKey());
+let memberMode = !keyMode && !!readMemberToken();
+let sb = makeClient(readKey(), keyMode ? '' : readMemberToken());
 
 const uid = () => (crypto.randomUUID ? crypto.randomUUID()
   : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{ const r=Math.random()*16|0; return (c==='x'?r:(r&3|8)).toString(16); }));
@@ -215,6 +222,10 @@ const Store = {
     this.db = {members:ms.map(fromMember),
       positions:ps.map(r=>({id:r.id, name:r.name, single:r.single, order:r.sort_order})),
       terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory), applications:[]};
+    this.db.pwStates = {};
+    if(this.me.officer){  // 비밀번호 상태 (회원 로그인 기능이 설치된 경우)
+      try{ const {data} = await sb.rpc('jw_password_states'); (data||[]).forEach(r=>this.db.pwStates[r.member_id] = r); }catch(e){}
+    }
     if(this.me.admin){   // 가입 신청 목록은 실패해도 나머지 화면은 열리도록
       try{
         const {data, error} = await sb.from('jw_applications').select('*').eq('status','pending').order('created_at',{ascending:false});
@@ -608,18 +619,24 @@ const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().ge
 
 function render(){
   if(!Store.ready) return;
-  let [, page='dashboard', id] = location.hash.split('/');
+  let [, page='dashboard', id, sub] = location.hash.split('/').map(x=>{ try{ return decodeURIComponent(x); }catch(e){ return x; } });
   if(page==='settings' && !can.admin()) page = 'dashboard';
   const navKey = page==='member' ? 'members' : page;
   const me = Store.me, mine = member(me.memberId);
   $('#who').innerHTML = `<div>${mine?`<a href="#/member/${mine.id}" style="color:#fff"><b>${esc(mine.name)}</b></a>`:''}
-    <div>${esc(me.email)} · ${me.admin?'관리자':me.officer?'임원':'회원'}</div></div><button class="btn sm" id="logout">${keyMode?'잠그기':'로그아웃'}</button>`;
-  $('#logout').onclick = ()=>{ if(keyMode){ writeKey(''); location.reload(); } else sb.auth.signOut(); };
-  $('#nav').innerHTML = ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('');
+    <div>${memberMode ? '' : esc(me.email) + ' · '}${me.admin?'관리자':me.officer?'임원':'회원'}</div></div>
+    <div class="row" style="gap:6px">${memberMode?'<button class="btn sm" id="chpw">비밀번호 변경</button>':''}<button class="btn sm" id="logout">${keyMode?'잠그기':'로그아웃'}</button></div>`;
+  $('#logout').onclick = async ()=>{
+    if(keyMode){ writeKey(''); location.reload(); }
+    else if(memberMode){ try{ await sb.rpc('jw_member_logout'); }catch(e){} writeMemberToken(''); location.reload(); }
+    else sb.auth.signOut(); };
+  if($('#chpw')) $('#chpw').onclick = ()=>passwordForm(false);
+  const meLink = mine ? `<a href="#/member/${mine.id}/edit" class="${page==='member'&&id===mine.id?'on':''}" style="${page==='member'&&id===mine.id?'':'background:rgba(255,255,255,.12);color:#fff'}"><span>✏️</span>내 정보 수정</a>` : '';
+  $('#nav').innerHTML = meLink + ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('');
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
               officers:Officers, events:Events, history:History, settings:Settings}[page] || Dashboard;
   $('#view').innerHTML = fn();
-  bind[page]?.(id);
+  bind[page]?.(id, sub);
   window.scrollTo(0,0);
 }
 window.addEventListener('hashchange', render);
@@ -630,16 +647,59 @@ function renderGate(html){
   $('#view').innerHTML = `<div class="gate-box panel"><div class="logo" style="color:var(--brand);margin:0 0 18px">정우회
     <small style="color:var(--sub);opacity:1">기업가 대표 모임 · 회원 전용</small></div>${html}</div>`;
 }
-function renderLogin(msg=''){
-  renderGate(`<form id="kf"><label class="muted" style="font-size:13px">접속 코드</label>
-    <input class="input" type="password" name="code" required autocomplete="current-password" placeholder="접속 코드 입력" style="width:100%;margin:6px 0 12px">
-    <button class="btn pri" style="width:100%">들어가기</button></form>
-    <p class="muted" style="font-size:13px;margin:12px 0 0">한 번 입력하면 이 기기에서는 다음부터 바로 열립니다.</p>
-    <details ${msg?'open':''} style="margin-top:18px;border-top:1px solid var(--line);padding-top:14px"><summary class="muted" style="cursor:pointer;font-size:13px">회원 이메일로 로그인</summary>
+function renderLogin(msg='', note=''){
+  renderGate(`<h2 style="margin-bottom:6px">회원 로그인</h2>
+    ${note?`<p style="font-size:13px;color:var(--warn);margin:0 0 10px">${note}</p>`:''}
+    <form id="mf1"><label class="muted" style="font-size:13px">이름</label>
+      <div class="row" style="margin:6px 0 10px;flex-wrap:nowrap"><input class="input" name="name" required autocomplete="name" placeholder="예: 홍길동" style="flex:1">
+      <button class="btn" id="findme" type="submit">찾기</button></div></form>
+    <div id="mpick"></div>
+    <form id="mf2" style="display:none"><label class="muted" style="font-size:13px">비밀번호</label>
+      <input class="input" type="password" name="pw" required autocomplete="current-password" placeholder="처음이면 휴대폰 번호 뒷 4자리" style="width:100%;margin:6px 0 12px">
+      <button class="btn pri" style="width:100%">로그인</button></form>
+    <p class="muted" style="font-size:12.5px;margin:10px 0 0;line-height:1.6">처음 비밀번호는 <b>휴대폰 번호 뒷 4자리</b>입니다. 처음 로그인하면 새 비밀번호로 바꿔 주세요.<br>비밀번호를 잊으셨으면 운영진에게 초기화를 요청하세요.</p>
+    <details style="margin-top:18px;border-top:1px solid var(--line);padding-top:14px"><summary class="muted" style="cursor:pointer;font-size:13px">관리자 접속 코드</summary>
+    <form id="kf" style="margin-top:12px"><input class="input" type="password" name="code" required autocomplete="off" placeholder="접속 코드 입력" style="width:100%;margin:0 0 10px">
+    <button class="btn" style="width:100%">관리자로 들어가기</button></form></details>
+    <details ${msg?'open':''} style="margin-top:12px;border-top:1px solid var(--line);padding-top:14px"><summary class="muted" style="cursor:pointer;font-size:13px">회원 이메일로 로그인</summary>
     <form id="lf" style="margin-top:12px"><label class="muted" style="font-size:13px">등록된 이메일</label>
     <input class="input" type="email" name="email" required autocomplete="email" placeholder="name@company.com" style="width:100%;margin:6px 0 12px">
     <button class="btn pri" style="width:100%">로그인 링크 받기</button></form>
     <p class="muted" style="font-size:13px;margin:14px 0 0">${msg || '이메일로 받은 링크를 누르면 바로 로그인됩니다.'}</p></details>`);
+  let picked = null;
+  const pick = c => {
+    picked = c;
+    document.querySelectorAll('[data-pick]').forEach(b=>b.classList.toggle('pri', b.dataset.pick===c.id));
+    $('#mf2').style.display = ''; $('#mf2 input').focus();
+  };
+  $('#mf1').onsubmit = async e=>{
+    e.preventDefault();
+    const name = new FormData(e.target).get('name').trim();
+    picked = null; $('#mf2').style.display = 'none'; $('#mpick').innerHTML = '';
+    if(name.length < 2) return toast('이름을 정확히 입력해 주세요.');
+    const {data, error} = await sb.rpc('jw_login_candidates', {p_name:name});
+    if(error) return toast('지금은 회원 로그인을 사용할 수 없습니다. 운영진에게 문의해 주세요.');
+    if(!data || !data.length) return toast('등록된 회원 이름이 아닙니다. 이름을 확인해 주세요.');
+    const label = c => [c.company, c.joined ? c.joined.replace('-','.') + ' 입회' : c.is_founder ? '창립회원' : ''].filter(Boolean).join(' · ');
+    if(data.length === 1){
+      $('#mpick').innerHTML = `<p style="margin:0 0 10px"><b>${esc(data[0].name)}</b> <span class="muted">${esc(label(data[0]))}</span></p>`;
+      return pick(data[0]);
+    }
+    $('#mpick').innerHTML = `<p class="muted" style="font-size:13px;margin:0 0 6px">같은 이름이 ${data.length}명입니다. 본인을 골라 주세요.</p>
+      <div class="grid" style="gap:6px;margin-bottom:10px">${data.map(c=>`<button type="button" class="btn" data-pick="${c.id}" style="text-align:left">${esc(c.name)} <span class="muted">${esc(label(c))}</span></button>`).join('')}</div>`;
+    document.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>pick(data.find(c=>c.id===b.dataset.pick)));
+  };
+  $('#mf2').onsubmit = async e=>{
+    e.preventDefault();
+    if(!picked) return;
+    const btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = '확인 중…';
+    const {data, error} = await sb.rpc('jw_member_login', {p_member:picked.id, p_password:new FormData(e.target).get('pw')});
+    btn.disabled = false; btn.textContent = '로그인';
+    if(error) return toast('로그인에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    if(!data || !data.ok) return toast(data?.error || '비밀번호가 맞지 않습니다.');
+    writeMemberToken(data.token); writeKey('');
+    location.hash = '#/dashboard'; location.reload();
+  };
   $('#kf').onsubmit = async e=>{
     e.preventDefault();
     const code = new FormData(e.target).get('code').trim();
@@ -648,7 +708,7 @@ function renderLogin(msg=''){
       const trial = makeClient(code);
       const {data, error} = await trial.rpc('jw_check_key');
       if(error || !data){ btn.disabled = false; btn.textContent = '들어가기'; return toast('접속 코드가 맞지 않습니다.'); }
-      writeKey(code); location.reload();
+      writeKey(code); writeMemberToken(''); location.reload();
     }catch(err){ btn.disabled = false; btn.textContent = '들어가기'; toast('연결에 실패했습니다. 잠시 후 다시 시도해주세요.'); }
   };
   $('#lf').onsubmit = async e=>{
@@ -673,6 +733,10 @@ async function enter(){
     if(keyMode){
       if(!await q(sb.rpc('jw_check_key'))){ writeKey(''); keyMode = false; sb = makeClient(''); return renderLogin(); }
       Store.me = {email:'접속 코드', admin:true, officer:true, memberId:''};
+    } else if(memberMode){
+      const [mid, officer] = await Promise.all([q(sb.rpc('jw_my_member_id')), q(sb.rpc('jw_is_officer'))]);
+      if(!mid){ writeMemberToken(''); memberMode = false; sb = makeClient(''); return renderLogin('', '로그인이 만료되었습니다. 다시 로그인해 주세요.'); }
+      Store.me = {email:'', admin:false, officer:!!officer, memberId:mid};
     } else await Store.loadMe();
     if(!Store.me.admin && !Store.me.memberId){
       renderGate(`<p><b>${esc(Store.me.email)}</b> 계정은 정우회 회원으로 등록되어 있지 않습니다.</p>
@@ -684,12 +748,16 @@ async function enter(){
     Store.ready = true; document.body.classList.remove('gate');
     if(!location.hash.startsWith('#/')) history.replaceState(null, '', location.pathname + '#/dashboard');
     render();
+    if(memberMode){   // 첫 로그인(초기 비밀번호)이면 비밀번호 변경을 먼저
+      const st = await sb.rpc('jw_my_password_state');
+      if(st.data && st.data.must_change) passwordForm(true);
+    }
   }catch(e){
     renderGate('<p>데이터를 불러오지 못했습니다.</p><button class="btn" onclick="location.reload()">다시 시도</button>');
   }finally{ entering = false; }
 }
 function boot(){
-  if(keyMode) return enter();
+  if(keyMode || memberMode) return enter();
   sb.auth.onAuthStateChange((ev, session)=>{
   if(ev === 'SIGNED_OUT'){ Store.ready = false; return renderLogin(); }
   if(session && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION')) return setTimeout(enter);
@@ -698,6 +766,41 @@ function boot(){
     renderLogin(err ? '로그인 링크가 만료되었거나 이미 사용되었습니다. 다시 요청해주세요.' : '');
   }
   });
+}
+
+/* ===================== 회원 비밀번호 ===================== */
+function passwordForm(forced){
+  openModal(`<h2>${forced ? '새 비밀번호를 정해 주세요' : '비밀번호 변경'}</h2>
+    ${forced ? '<p class="muted" style="margin-top:-6px;font-size:13px;line-height:1.6">지금은 처음 비밀번호(휴대폰 뒷 4자리)로 들어오셨습니다.<br>다른 사람이 내 정보를 바꾸지 못하도록 새 비밀번호로 바꿔 주세요.</p>' : ''}
+    <form class="form" id="pwf">
+      <label class="full">현재 비밀번호${forced ? ' (휴대폰 뒷 4자리)' : ''}<input class="input" type="password" name="cur" required autocomplete="current-password"></label>
+      <label>새 비밀번호 (6자 이상)<input class="input" type="password" name="pw1" required minlength="6" autocomplete="new-password"></label>
+      <label>새 비밀번호 확인<input class="input" type="password" name="pw2" required minlength="6" autocomplete="new-password"></label>
+      <div class="full row" style="justify-content:flex-end">${forced ? '' : '<button type="button" class="btn" data-close>취소</button>'}<button class="btn pri">변경</button></div>
+    </form>`, root=>{
+    if(forced){ const mask = root; mask.onclick = null; mask.addEventListener('click', e=>e.stopImmediatePropagation(), true); }
+    root.querySelector('#pwf').onsubmit = async e=>{
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      if(f.pw1 !== f.pw2) return toast('새 비밀번호가 서로 다릅니다.');
+      const {data, error} = await sb.rpc('jw_change_password', {p_current:f.cur, p_new:f.pw1});
+      if(error) return toast('변경하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      if(!data.ok) return toast(data.error);
+      $('#modal-root').innerHTML = ''; toast('비밀번호를 변경했습니다. 다음부터 새 비밀번호로 로그인하세요.');
+    };
+  });
+}
+async function resetPassword(m){
+  const digits = (m.phone||'').replace(/\D/g,'');
+  let temp = null;
+  if(digits.length < 4){
+    temp = prompt(`${m.name} 님은 휴대폰 번호가 없습니다.\n임시 비밀번호(4자 이상)를 정해 주세요. 회원에게 알려 주시면 첫 로그인 때 바꾸게 됩니다.`);
+    if(!temp) return;
+  }else if(!confirm(`${m.name} 님의 비밀번호를 초기화할까요?\n처음 비밀번호(휴대폰 뒷 4자리: ${digits.slice(-4)})로 돌아가고, 접속 중인 기기는 모두 로그아웃됩니다.`)) return;
+  const {data, error} = await sb.rpc('jw_reset_member_password', {p_member:m.id, p_temp:temp});
+  if(error) return toast('초기화하지 못했습니다. (회원 로그인 기능 설치 여부를 확인해 주세요)');
+  if(!data.ok) return toast(data.error);
+  toast(`${m.name} 님 비밀번호를 초기화했습니다.`); Store.refresh();
 }
 
 /* ===================== 화면: 대시보드 ===================== */
@@ -1016,7 +1119,7 @@ function MemberDetail(id){
   const img = (src, label) => `<div class="pc-img">${src?`<img src="${src}" alt="">`:label}</div>`;
   return `
   <div class="head"><div class="row"><a class="btn sm" href="#/members">← 명부</a><h1>${esc(m.name)}</h1>${typeTag(m)}</div>
-    <div class="row">${m.phone?'<button class="btn" id="vcf1">📱 연락처 저장</button>':''}<button class="btn" id="png">PNG 저장</button>${can.edit(m)?`<button class="btn" id="edit">${m.id===Store.me.memberId?'내 정보 수정':'정보 수정'}</button>`:''}</div></div>
+    <div class="row">${m.phone?'<button class="btn" id="vcf1">📱 연락처 저장</button>':''}<button class="btn" id="png">PNG 저장</button>${can.officer() && m.id!==Store.me.memberId && m.status!=='inactive'?'<button class="btn" id="pwreset">🔑 비밀번호 초기화</button>':''}${can.edit(m)?`<button class="btn ${m.id===Store.me.memberId?'pri':''}" id="edit">${m.id===Store.me.memberId?'✏️ 내 정보 수정':'정보 수정'}</button>`:''}</div></div>
   <div class="grid two">
     <div class="panel profile">
       <div class="pc-top">
@@ -1043,6 +1146,9 @@ function MemberDetail(id){
       <div class="panel"><h2>정우회 활동</h2>
         <div>현재: ${t?`${m.isNew?'신입 · ':''}<b>${esc(position(t.positionId)?.name)}</b> <span class="muted">(${t.start}~)</span>`:esc(typeText(m))}</div>
         ${past.length?`<div class="muted" style="margin-top:6px">이전 직책: ${past.map(p=>`${esc(position(p.positionId)?.name)} (${p.start}~${p.end})`).join(', ')}</div>`:''}
+        ${can.officer() && m.status!=='inactive' ? (()=>{ const ps = D().pwStates?.[m.id];
+          const st = !ps ? '처음 비밀번호 (휴대폰 뒷 4자리, 아직 로그인 안 함)' : ps.locked ? '<span style="color:var(--warn)">잠김 (5회 오류)</span>' : ps.self_set ? '본인이 설정함' : '처음 비밀번호 사용 중';
+          return `<div class="muted" style="margin-top:6px;font-size:13px">🔑 비밀번호: ${st}${ps?.last_login ? ` · 최근 로그인 ${ps.last_login.slice(0,10).replace(/-/g,'.')}` : ''}</div>`; })() : ''}
         <div style="margin-top:12px"><b>이 회원이 추천한 회원 (${rec.length})</b></div>
         <div class="row" style="margin-top:6px">${rec.length?rec.map(r=>`<a class="tag" href="#/member/${r.id}">${esc(r.name)}</a>`).join(''):'<span class="muted">없음</span>'}</div>
         ${m.memo?`<div style="margin-top:12px"><b>메모</b><pre class="text">${esc(m.memo)}</pre></div>`:''}
@@ -1061,7 +1167,7 @@ function memberForm(m){
     ${m[k]?`<span class="row"><img src="${m[k]}" style="height:40px;border-radius:4px"><button type="button" class="btn sm danger" data-rmimg="${k}">삭제</button></span>`:''}</label>`;
   openModal(`<h2>${isNew?'회원 등록':'회원 정보 수정'}</h2>
     <form class="form" id="mf">
-      ${f('name','이름 *')}${f('birthYear','출생연도','number')}
+      ${f('name','이름 *','text','',isNew?'':lock)}${f('birthYear','출생연도','number')}
       ${f('company','회사명')}${f('title','회사 직함')}
       ${f('products','제품(서비스)','text','full')}
       ${f('industry','업종')}${f('phone','전화','tel')}
@@ -1088,6 +1194,7 @@ function memberForm(m){
         e.preventDefault();
         const data = Object.fromEntries(new FormData(e.target));
         if(can.admin()){ data.isFounder = 'isFounder' in data; data.isNew = 'isNew' in data; }
+        if(data.name === undefined) data.name = m.name;   // 잠긴 이름 칸(회원 본인 수정)
         if(!data.name.trim()) return toast('이름을 입력해주세요.');
         if(D().members.some(x=>x.name===data.name.trim() && x.id!==m.id) && !confirm('같은 이름의 회원이 있습니다. 그래도 저장할까요?')) return;
         const btn = e.submitter; if(btn){ btn.disabled = true; btn.textContent = '저장 중…'; }
@@ -1488,9 +1595,11 @@ const bind = {
       exportMembersXlsx(list, `정우회_회원명부_${list.length}명_${today()}.xlsx`).catch(err=>toast(err.message));
     };
   },
-  member(id){
+  member(id, sub){
     const m = member(id); if(!m) return;
     if($('#edit')) $('#edit').onclick = ()=>memberForm(m);
+    if($('#pwreset')) $('#pwreset').onclick = ()=>resetPassword(m);
+    if(sub === 'edit' && can.edit(m)){ history.replaceState(null, '', '#/member/' + m.id); memberForm(m); }
     $('#png').onclick = e=>saveProfilePng(m, e.currentTarget);
     if($('#vcf1')) $('#vcf1').onclick = ()=>{ downloadVcf([m], `정우회_${m.name}.vcf`); toast('연락처 파일을 저장했습니다.'); };
   },
