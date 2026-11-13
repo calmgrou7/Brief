@@ -134,6 +134,19 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparen
 .log li.blank{display:block}
 .board-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:10px}
 .muted{color:var(--muted);font-size:12.5px}
+.dec-form{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.dec-form input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.dec-btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+.btn.ghost{background:var(--panel);color:var(--accent);border:1px solid var(--accent)}
+.relay{display:flex;flex-wrap:wrap;gap:4px;align-items:center;list-style:none;margin:0;padding:0;font-size:12px}
+.relay li{display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.relay li.done{color:var(--ok);border-color:var(--ok)}
+.relay li.doing{color:var(--panel);background:var(--accent);border-color:var(--accent);font-weight:600}
+.relay li.back{color:var(--warn);border-color:var(--warn)}
+.relay .arr{border:0;padding:0;color:var(--muted)}
+.wait{background:var(--warn-soft);color:var(--warn);border-radius:5px;padding:1px 7px;font-weight:600}
+
 @media (prefers-reduced-motion:no-preference){.pill.s-busy::before{animation:pulse 1.6s ease-in-out infinite}}
 @keyframes pulse{50%{opacity:.3}}
 </style>
@@ -250,7 +263,18 @@ function renderDecisions(){
     c.append(el("div","q",d.question||""));
     if(d.why)c.append(el("div","w",d.why));
     if(d.recommend)c.append(el("div","rec","추천: "+d.recommend));
-    const m=el("div","meta");if(d.project)m.append(el("span","ptag",projName(d.project)||d.project));m.append(el("span",null,"채팅방에서 답해 주세요"));c.append(m);
+    const m=el("div","meta");if(d.project)m.append(el("span","ptag",projName(d.project)||d.project));c.append(m);
+    if(db){
+      const f=el("form","dec-form");
+      const inp=el("input");inp.type="text";inp.maxLength=300;inp.placeholder="직접 답하기 (예: 무료로 해)";inp.setAttribute("aria-label","답변: "+(d.question||""));
+      const row=el("div","dec-btns");
+      const save=el("button","btn sm","답변 저장");save.type="submit";
+      row.append(save);
+      if(d.recommend){const ok=el("button","btn sm ghost","추천대로");ok.type="button";ok.onclick=()=>decide(d,"추천대로: "+d.recommend,[ok,save]);row.prepend(ok)}
+      f.append(inp,row);
+      f.onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(!v){inp.focus();return}decide(d,v,[save])};
+      c.append(f);
+    }
     box.append(c);
   });
 }
@@ -269,6 +293,11 @@ function renderProjects(){
     const ol=el("ol","steps");ol.setAttribute("aria-label","진행 단계");
     PSTEPS.forEach((s,i)=>{const li=el("li",i<(p.step??0)?"done":(i===(p.step??0)?"now":""),s);if(i===(p.step??0))li.setAttribute("aria-current","step");ol.append(li)});
     c.append(ol);
+    if(Array.isArray(p.relay)&&p.relay.length){
+      const r=el("ol","relay");r.setAttribute("aria-label","담당자 릴레이");
+      p.relay.forEach((x,i)=>{if(i)r.append(el("li","arr","→"));const li=el("li",x.status||"todo",(x.label||nameOf(x.who))+(x.status==="done"?" ✓":x.status==="back"?" ↺":""));if(x.status==="doing")li.setAttribute("aria-current","step");r.append(li)});
+      c.append(r);
+    }
     if(p.next){const n=el("div","next");n.append(el("b",null,"다음: "),document.createTextNode(p.next));c.append(n)}
     const open=tasks.filter(t=>t.project===p._id&&t.stage!=="done");
     if(open.length){const m=el("div","meta");open.forEach(t=>m.append(el("span","tag",nameOf(t.assignee)+" · "+(STAGES.find(s=>s[0]===t.stage)?.[1]||""))));c.append(m)}
@@ -309,6 +338,7 @@ function renderBoard(){
       c.append(el("div","t",t.title||"(제목 없음)"));
       if(t.detail)c.append(el("div","d",t.detail));
       const m=el("div","meta");m.append(el("span","tag",nameOf(t.assignee)));
+      if(key==="todo"&&t.source==="dashboard"&&!t.assignee)m.append(el("span","wait","실장 확인 대기"));
       if(t.project&&projName(t.project))m.append(el("span","ptag",projName(t.project)));
       if(t.updatedAt)m.append(el("span",null,stamp(t.updatedAt)));
       c.append(m);
@@ -334,6 +364,11 @@ function renderAll(){renderKpis();renderDecisions();renderProjects();renderStaff
 function showOffline(msg){const n=$("offline");n.textContent=msg;n.hidden=false}
 let errTimer=null;
 function showError(msg){const n=$("errbox");n.textContent=msg;n.hidden=false;clearTimeout(errTimer);errTimer=setTimeout(()=>{n.hidden=true},8000)}
+async function decide(d,answer,btns){
+  if(!db)return;btns.forEach(b=>b.disabled=true);
+  try{await db.doc("decisions/"+d._id).update({status:"decided",answer,decidedAt:new Date().toISOString()});addLog("대표","결정: "+(d.question||"")+" → "+answer)}
+  catch(e){btns.forEach(b=>b.disabled=false);showError("결정을 저장하지 못했어요. 잠시 후 다시 눌러 주세요.")}
+}
 async function addLog(who,text){
   if(!db)return;
   const ref=db.doc("log/"+today());

@@ -40,7 +40,7 @@
 3. 사이트 성격은 **포트폴리오 컨셉 시안**. 상단 안내띠와 푸터의 "가칭" 표기 유지.
    - 안내띠: EN `BRIDGENODE portfolio · Concept demo · Not a live service (demo forms do not send anything)` / KO `BRIDGENODE 포트폴리오 · 컨셉 시안 · 실제 운영 서비스 아님 (데모 폼은 전송되지 않습니다)`
    - 푸터: `Stay B is a working name.` / `Stay B는 가칭입니다.`
-4. 무료 여부는 미정 → 비용이 들어갈 자리는 모두 `[자리표시]`.
+4. **(2026-11-14 대표 결정) '질문 남기기'는 무료로 표기한다.** 오프라인 생활지원(공항 픽업·정착 동행 등) 비용은 아직 미정 → 그 자리만 `[자리표시]`.
 5. 시안은 공개 상태 유지(`noindex` 유지).
 
 ### 0-3. 표기 규칙 (디자이너·코더 공통)
@@ -530,7 +530,7 @@
 
 ### 10. 자주 묻는 질문 (`faq`) — 7개, 답은 짧게
 1. Q EN `Is Stay B free?` / KO `Stay B는 무료인가요?`
-   - A EN `The guides on this site are free to read. [자리표시: 질문 접수·오프라인 지원 비용 정책]` / KO `이 사이트의 정보는 누구나 무료로 볼 수 있어요. [자리표시]`
+   - A EN `The guides on this site are free to read, and asking us a question is free. [자리표시: 선택형 오프라인 생활지원 비용]` / KO `이 사이트의 정보는 누구나 무료로 볼 수 있고, 질문 남기기도 무료예요. [자리표시: 선택형 오프라인 생활지원 비용]`
 2. Q EN `Is Stay B a government office or an administrative agent?` / KO `Stay B는 관공서나 행정사 사무소인가요?`
    - A EN `Neither. Stay B is a private information, support and community service for international students. See How we work.` / KO `둘 다 아니에요. 유학생을 위한 민간 정보·지원·커뮤니티 서비스예요. "이렇게 일해요"를 참고하세요.` (`#trust` 링크)
 3. Q EN `Can you tell me if my visa will be approved?` / KO `제 비자가 나올지 알려 줄 수 있나요?`
