@@ -1,0 +1,28 @@
+1
+00:00:00,000 --> 00:00:03,000
+"Start tomorrow!" Wait.
+
+2
+00:00:03,000 --> 00:00:06,500
+Your friend says
+no permission needed.
+
+3
+00:00:06,500 --> 00:00:10,000
+True?
+
+4
+00:00:10,000 --> 00:00:13,000
+Get permission first.
+
+5
+00:00:13,000 --> 00:00:16,000
+Then work safely.
+
+6
+00:00:16,000 --> 00:00:18,000
+Rules on Stay B.
+
+7
+00:00:18,000 --> 00:00:20,000
+Questions are free.
