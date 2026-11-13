@@ -7,7 +7,7 @@
 - 규격: 9:16, 1080×1920, 30fps, 25초
 - 내용 출처: 기획안 v2 `work/planning/20261114-stayb-homepage-v2.md` 카드 2-1 문구만 사용(새 사실 추가 없음)
 - 금지: "대신 신청해 드려요"로 읽히는 말, 실제 서류 실물, 수치 단정
-- 화면 상시 문구: `Concept · Stay B is a working name` + 2~18초 구간 오른쪽 위 작은 `To be confirmed`
+- 화면 상시 문구: `Concept · Stay B is a working name` + 그 아래 `Not an official government or school service.` + 2~18초 구간 오른쪽 위 작은 `To be confirmed` (하이코리아 화면이 나와도 공식 서비스로 오인되지 않게)
 - 음악: 없음(무음)
 
 ## 장면표
@@ -17,14 +17,14 @@
 | 1 | 0:00~0:02 | 책상 위 빈 종이 더미 앞에서 손이 머리를 짚거나 펜을 톡톡 | `Just arrived? Do this first.` | 막 도착했나요? / 이것부터. | भर्खरै आइपुग्नुभयो? पहिले यो गर्नुहोस्। | **책상 탑뷰.** 흰 A4 5~6장(아무것도 안 쓰인 종이 또는 "SAMPLE"이라고 크게 쓴 종이), 클리어 파일, 펜. 휴대폰을 책상 위 50~60cm에서 수평으로 내려다보고 4초. 손이 종이를 넘기다 멈추는 동작. **여권·외국인등록증 실물 금지.** |
 | 2 | 0:02~0:04.5 | 제목 카드 | `Alien registration (ARC): what to bring` | 외국인등록 / 준비물 | विदेशी दर्ता (ARC): के के लैजाने | 촬영 없음(그래픽). |
 | 3 | 0:04.5~0:07.5 | 체크리스트 1줄 체크 | `Staying over 90 days? Register.` + `(to be confirmed)` | 90일 넘게 머물면 / 외국인등록 [확인 필요] | ९० दिनभन्दा बढी बस्ने? दर्ता गर्नुहोस्। | 그래픽. 배경으로 1번 탑뷰 화면을 흐리게 깔 수 있게 **같은 구도로 손 없이 빈 책상 10초** 추가 촬영. |
-| 4 | 0:07.5~0:10.5 | 체크리스트 2줄 | `Book a visit online on HiKorea.` + `(to be confirmed)` | 하이코리아에서 / 방문 예약 [확인 필요] | HiKorea मा अनलाइन भेटको समय लिनुहोस्। | 그래픽. (선택) 휴대폰으로 하이코리아 첫 화면만 화면 녹화 5초 — 로그인·개인정보 화면 금지. |
-| 5 | 0:10.5~0:13.5 | 체크리스트 3줄 | `Bring: form, passport, 1 photo` | 신청서, 여권, / 사진 1장 | फारम, राहदानी, १ फोटो | 그래픽(여권은 아이콘으로만). |
+| 4 | 0:07.5~0:10.5 | 체크리스트 2줄 | `Book a visit online on HiKorea.` + `(to be confirmed)` | 하이코리아에서 / 방문 예약 [확인 필요] | HiKorea मा अनलाइन भेटको समय लिनुहोस्। | 그래픽. (선택) 휴대폰으로 하이코리아 첫 화면만 화면 녹화 5초 — 로그인·개인정보 화면 금지. 녹화 화면 위에 `HiKorea = official government site · Stay B is not` 작은 글자를 넣는다. |
+| 5 | 0:10.5~0:13.5 | 체크리스트 3줄 | `Usually: form, passport, 1 photo` + `(to be confirmed)` | 보통: 신청서, 여권, / 사진 1장 [확인 필요] | सामान्यतया: फारम, राहदानी, १ फोटो (पुष्टि हुन बाँकी) | 그래픽(여권은 아이콘으로만). |
 | 6 | 0:13.5~0:16 | 체크리스트 4줄 | `Proof of school, address, fee` + `(to be confirmed)` | 재학증명서, 거주지 증빙, / 수수료 [확인 필요] | विद्यालयको प्रमाण, ठेगाना, शुल्क | 그래픽. |
 | 7 | 0:16~0:18 | 체크리스트 5줄 | `Keep your receipt until your card arrives.` | 카드 나올 때까지 / 접수증 보관 | कार्ड नआउन्जेल रसिद राख्नुहोस्। | **손 클로즈업.** 빈 영수증 크기 종이(직접 만든 것, 글씨 없음)를 클리어 파일에 넣는 손, 탑뷰 4초. |
-| 8 | 0:18~0:22 | 정보 카드 2-1 화면 + 작은 `To be confirmed by a qualified agent` | `Full checklist on Stay B.` | 전체 체크리스트는 Stay B에서. / 행정사 확인 예정 | पूरा सूची Stay B मा। | **화면 녹화.** Stay B 시안 → `Just arrived` → 카드 2-1 스크롤 6초(사이트 v2 공개 후). |
+| 8 | 0:18~0:22 | 정보 카드 2-1 화면 + 작은 `To be confirmed by a licensed immigration administrative agent` | `Full checklist on Stay B.` | 전체 체크리스트는 Stay B에서. / 행정사 확인 예정 | पूरा सूची Stay B मा। | **화면 녹화.** Stay B 시안 → `Just arrived` → 카드 2-1 스크롤 6초(사이트 v2 공개 후). |
 | 9 | 0:22~0:25 | 엔드카드(1편과 같은 틀) | `Free to read. Free to ask.` | 정보 무료, 질문 무료. | पढ्न नि:शुल्क। सोध्न नि:शुल्क। | 촬영 없음. |
 
 ## 감수 후 바꿀 것
 - `(to be confirmed)` 표기 제거 또는 확정 수치로 교체(행정사 확인 문구 그대로).
-- 8번 장면의 `To be confirmed by a qualified agent` → 감수 완료 표기 방식은 행정사와 협의(광고 규정).
+- 8번 장면의 `To be confirmed by a licensed immigration administrative agent` → 감수 완료 표기 방식은 행정사와 협의(광고 규정).
 - 촬영본은 `work/video/inbox/stayb-02/`에.

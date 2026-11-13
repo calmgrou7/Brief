@@ -3,7 +3,7 @@
 > **행정사 감수 전 게시 금지.** 허용 시간·제한 업종 수치는 넣지 않음. 지금은 내부 초안.
 
 - 파일: `captions_en.srt` · `captions_ko.srt` · `captions_ne_draft_needs-native-review.srt` · `thumbnail.png`(DRAFT 도장 포함) · 영상은 촬영본 대기
-- 음악: 사용 안 함. 폰트 Inter(OFL).
+- 음악: 사용 안 함. 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, v2 디자인 명세 글꼴, 라이선스 `stayb-shorts-01/fonts/`). 썸네일 색 v2(청록·노랑·흙빛·크림).
 - 썸네일 문구: `Before your first part-time job` / 보조 `Get permission first`
 - 출처 꼬리표 `?src=shorts03`
 - 모든 플랫폼 설명 끝에 필수 한 줄: `Stay B shares general job information. Job introductions are made by registered employment agencies and job centers.`
@@ -17,7 +17,7 @@
   ```
   A part-time job offer is exciting. But get permission first, then work safely.
   The basic rules and a 5-point checklist are on Stay B [링크 자리]
-  General information, to be confirmed by a qualified agent.
+  General information, to be confirmed by a licensed immigration administrative agent.
   Stay B shares general job information. Job introductions are made by registered employment agencies and job centers.
   Concept · Stay B is a working name
   ```
@@ -26,7 +26,7 @@
 
 ## TikTok
 - 제목 3안: ① `Your friend says no permission needed. True?` ② `Before your first part-time job in Korea` ③ `Part-time work in Korea: permission first`
-- 설명: `Get permission first. Work safely. Rules on Stay B [링크 자리]. General info only. Job introductions are made by registered agencies and job centers. · Concept, Stay B is a working name`
+- 설명: `Get permission first. Work safely. Rules on Stay B [링크 자리]. General info only. Stay B shares general job information. Job introductions are made by registered employment agencies and job centers. · Concept, Stay B is a working name`
 - 해시태그: `#PartTimeJob #StudyInKorea #NepaliInKorea #KoreaLife #Busan`
 - 고정 댓글: 인스타와 동일
 
@@ -52,5 +52,6 @@
 Get permission first. Then work safely.
 Rules and a 5-point checklist on Stay B.
 [링크 자리]
+Stay B shares general job information. Job introductions are made by registered employment agencies and job centers.
 ```
 - 해시태그: `#StudyInKorea`

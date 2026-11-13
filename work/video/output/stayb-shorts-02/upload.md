@@ -3,7 +3,7 @@
 > **행정사 감수 전 게시 금지.** 아래 문구도 감수 후 수치·표현 확정. 지금은 내부 초안.
 
 - 파일: `captions_en.srt` · `captions_ko.srt` · `captions_ne_draft_needs-native-review.srt` · `thumbnail.png`(DRAFT 도장 포함, 게시 땐 도장 없는 판으로 재생성) · 영상은 촬영본 대기
-- 음악: 사용 안 함. 폰트 Inter(OFL).
+- 음악: 사용 안 함. 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, v2 디자인 명세 글꼴, 라이선스 `stayb-shorts-01/fonts/`). 썸네일 색 v2(청록·노랑·흙빛·크림).
 - 썸네일 문구: `Just arrived? Do this first.` / 보조 `Alien registration checklist`
 - 출처 꼬리표 `?src=shorts02`
 
@@ -17,7 +17,8 @@
   Just arrived in Korea? Alien registration (ARC) comes first.
   What people usually bring, and how to book a visit. Save this for later.
   Full checklist on Stay B [링크 자리]
-  General information only. To be confirmed by a qualified agent. We do not apply for you.
+  General information only. To be confirmed by a licensed immigration administrative agent. We do not apply for you.
+  Not an official government or school service.
   Concept · Stay B is a working name
   ```
 - 해시태그: `#ARC #AlienRegistration #StudyInKorea #NepaliInKorea #NewInKorea #Busan #유학생 #외국인등록`
@@ -25,7 +26,7 @@
 
 ## TikTok
 - 제목 3안: ① `Just arrived in Korea? Do this first` ② `ARC checklist for students` ③ `What to bring for alien registration`
-- 설명: `ARC: what people usually bring. General info, to be confirmed by a qualified agent. Full checklist [링크 자리] · Concept, Stay B is a working name`
+- 설명: `ARC: what people usually bring. General info, to be confirmed by a licensed immigration administrative agent. Full checklist [링크 자리] · Not an official government or school service. We do not apply for you. · Concept, Stay B is a working name`
 - 해시태그: `#ARC #StudyInKorea #NepaliInKorea #KoreaLife #Busan`
 - 고정 댓글: 인스타와 동일
 
@@ -39,7 +40,8 @@
   Book your visit early through HiKorea (to be confirmed).
   Full checklist and official sources: [링크 자리]
 
-  General information only, not legal advice. Stay B does not apply on your behalf. For your own case, ask a qualified administrative agent.
+  General information only, not legal advice. Stay B does not apply on your behalf. For your own case, ask a licensed immigration administrative agent.
+  Not an official government or school service.
   Concept · Stay B is a working name.
   ```
 - 고정 댓글: `Never share your passport or ARC number in comments.`
@@ -48,7 +50,8 @@
 ```
 Just arrived in Korea? Alien registration comes first.
 Here's what students usually bring. Save it.
-(General info, to be confirmed by a qualified agent.)
+(General info, to be confirmed by a licensed immigration administrative agent.)
+We do not apply for you.
 [링크 자리]
 ```
 - 해시태그: `#StudyInKorea`

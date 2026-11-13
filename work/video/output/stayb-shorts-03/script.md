@@ -7,6 +7,8 @@
 - 규격: 9:16, 1080×1920, 30fps, 20초
 - 금지: 일자리 소개·알선으로 읽히는 장면·문구("일자리 연결해 드려요" X), 실제 상호·얼굴, 허용 시간 등 수치, 겁주기("추방")
 - 필수 문구(일자리 문맥, 10~16초 화면 하단 작게): `Stay B shares general job information. Job introductions are made by registered employment agencies and job centers.` (기획안 v2 카드 3-2 하단 문구)
+  - 한국어 srt: 4·5번 자막(10~16초)에 KO 원문 `Stay B는 일반 일자리 정보만 안내해요. 일자리 소개는 등록된 직업소개소와 고용센터가 합니다.`를 이어서 넣음(4번 끝 = 앞 문장, 5번 = 뒷 문장). 네팔어 초안도 같은 위치(원어민 검수 필요). 플랫폼에 따라 겹치는 자막 두 개를 동시에 못 보여 주는 경우가 있어, 별도 자막 대신 같은 자막 안에 줄을 더했다.
+  - Threads·TikTok·Reels·YouTube 설명 끝에도 EN 원문 그대로(축약 없음).
 - 화면 상시 문구: `Concept · Stay B is a working name`
 - 음악: 없음(무음)
 

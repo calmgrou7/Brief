@@ -102,3 +102,25 @@
 - **다음 담당자가 할 일**: 검토자 — M-1·M-2 반영 여부만 재검토(편집자 V-1~V-4는 편집자 메모 기준으로 별도)
 - **스스로 정한 가정**: 2주차 외국인등록 숏폼도 체류 절차 주제라 감수 표시 대상에 포함. 행정사 명의 영문 예시는 검토자 권장 V-10 표기(`licensed haengjeongsa`)에 맞춤. 공지의 네팔어판은 원어민 검수 후 추가
 - **대표 결정이 필요한 것**: 없음(문서 수정 단계). 실제 공지 게시는 그룹 개설·공개 여부 결정 후
+
+## 2026-11-14 영상 편집자 → 검토자 (재검토 요청: 필수 V-1~V-4 + 권장 V-5~V-10 반영)
+
+- **한 일**
+  - V-1 `stayb-shorts-03/upload.md`: Threads 본문 끝에 필수 한 줄 원문 추가(본문 229자, 500자 이내), TikTok 축약문을 원문 `Stay B shares general job information. Job introductions are made by registered employment agencies and job centers.`로 교체. 이제 4개 플랫폼 모두 같은 원문
+  - V-2 1편 `draft.mp4`·`storyboard/`·썸네일 3장을 v2 토큰으로 다시 생성: 바탕 크림 `#FBF7F0`, 제목·버튼·선택 탭 청록 `#0B6B66`, 밑줄·형광펜 노랑 `#F4B942`(위 글자는 ink `#16302F`만), 오프라인 장면·`Free guides · Free to ask` 흙빛 `#A9481F`. 글꼴도 명세대로 Bricolage Grotesque(제목)·Figtree(본문), Google Fonts 원본+OFL 라이선스를 `stayb-shorts-01/fonts/`에 보관. 엔드카드·썸네일에 명세의 '노선 선'(점선+정거장 점) 추가. 2·3편 DRAFT 도장 유지(빨강 대신 흙빛 테두리+warm-tint 바탕, 명세상 빨강은 폼 오류 전용)
+  - V-3 2번 장면: 휴대폰 화면을 별도 층에 그려 화면 모양으로 잘라 붙임 → 카드가 휴대폰 밖으로 안 나옴. 휴대폰 아래 끝 1440px / 하단 문구 1520px(80px 간격). 단계 버튼 폭 416px·글자 32px, `Visa & after graduation` 좌 32px·우 49px 여백. 체크리스트 카드는 버튼 아래 빈 칸으로만 올라와 버튼도 안 가림. 확인 근거 `storyboard/storyboard_06_check_4.5-5.5s.png`(3.5·4.5·5.0·5.5초), 인코딩된 mp4에서 같은 시각 프레임을 직접 뽑아 확인함
+  - V-4 3편 `captions_ko.srt` 4·5번(10~16초)에 KO 원문(기획안 카드 3-2) 추가, 네팔어 초안도 같은 위치 추가(검수 표기 유지). 겹치는 자막을 못 보여 주는 플랫폼이 있어 같은 자막 안에 줄을 더함
+  - V-5 2편 5번 장면·자막 EN/KO/NE: `Usually: form, passport, 1 photo (to be confirmed)` / `보통: 신청서, 여권, 사진 1장 [확인 필요]`
+  - V-6 2편 Reels·TikTok·YouTube 설명에 `Not an official government or school service.`, TikTok·Threads 끝에 `We do not apply for you.` 추가. 화면 상시 문구에도 같은 문장 추가, 하이코리아 녹화 장면 위에 `HiKorea = official government site · Stay B is not` 표기 지시
+  - V-7 1편 촬영 지시 "집 현관" → "사무실 문 앞 또는 무늬 없는 벽 앞", 금지 목록에 문패·호수·창밖 풍경 추가, "대표 자택에서는 촬영하지 않는다" 명시
+  - V-8 1편 YouTube 단계 표기를 사이트 버튼 이름 그대로 `(Before I arrive / Just arrived / Study, life & work / Visa & after graduation)`
+  - V-9 1편 Reels·TikTok·Threads 오프라인 서비스 문장 끝에 `(coming soon)`, 게시 전 체크에 "운영 중이면 삭제" 항목 추가
+  - V-10 2·3편 "qualified agent" → `licensed immigration administrative agent`로 통일
+- **결과물 경로**: `work/video/output/stayb-shorts-01/`(draft.mp4, storyboard/01~06, thumbnail.png, make_draft.py, make_thumbs.py, fonts/, script.md, upload.md), `stayb-shorts-02/`(script.md, upload.md, 자막 3종, thumbnail.png), `stayb-shorts-03/`(script.md, upload.md, captions_ko.srt, 네팔어 초안, thumbnail.png)
+- **규격**: `draft.mp4` H.264 1080×1920, 30fps, yuv420p, 20.0초, AAC 48kHz 스테레오 무음, 436KB. 모든 파일 5MB 이하(가장 큰 파일 글꼴 408KB)
+- **다음 담당자(검토자)가 할 일**: 필수 V-1~V-4 확인(재검토 범위). 마케터 M-1·M-2는 마케터 몫이라 손대지 않음
+- **스스로 정한 가정**
+  - 1편 강조 문장 `Get simple guides.`는 노랑 글자 대신 ink 글자 + 노랑 형광펜 띠(명세: 노랑 위 글자는 ink만, 노랑 글자는 대비 부족)
+  - 오프라인 장면(3·5번)은 명세의 "오프라인 = 흙빛 글자 + 노랑 포인트" 규칙을 따름
+  - 3편 KO 자막 5번이 3줄로 길어짐(12자 원칙보다 필수 문구 원문 유지를 우선)
+- **대표 결정이 필요한 것**: 없음
