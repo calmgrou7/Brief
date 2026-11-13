@@ -53,6 +53,8 @@ BRIDGE NODE는 대표 1명과 AI 직원 5명으로 일하는 1인 회사다. 대
   - `tasks/{taskId}`: `{title, detail, assignee, stage: todo|doing|review|approval|done, output, source: chat|dashboard, createdAt, updatedAt}`
     - taskId 형식: `t-YYYYMMDD-짧은영문`
   - `log/{YYYY-MM-DD}`(한국 날짜): `{entries: [{t, who, text}]}` — 하루 한 문서에 누적
+  - `projects/{slug}`: `{name, summary, step: 0기획|1제작|2검토|3대표승인|4공개|5완료, next, blocked, links:[{label,url}], order, updatedAt}` — 업무 카드에 `project: slug`를 달면 프로젝트 카드에 담당자가 표시된다
+  - `decisions/{id}`: `{question, why, recommend, project, status: open|decided, answer, order, createdAt}` — 대표가 정할 일. 답을 받으면 `status: decided`, `answer` 기록
 - 대표가 현황판에서 직접 등록한 지시는 `source: "dashboard"`, `stage: "todo"`로 들어온다.
   대표가 "지시함 처리해"라고 하면 `tasks`에서 `stage == todo`를 읽어 배정한다.
 
