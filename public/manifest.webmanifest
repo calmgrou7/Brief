@@ -1,0 +1,9 @@
+{
+  "name": "Brief · 미팅 음성메모",
+  "short_name": "Brief",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f4ef",
+  "theme_color": "#1f3a5f",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

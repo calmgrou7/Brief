@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Brief · 미팅 음성메모</title>
+  <meta name="theme-color" content="#1f3a5f" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Brief" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="logo">B</span> Brief</div>
+    <button class="ghost small" id="historyBtn" type="button">최근 기록</button>
+  </header>
+  <div id="demoBanner" class="banner" hidden></div>
+
+  <main>
+    <!-- 1. 녹음 화면 -->
+    <section id="screen-record" class="screen active">
+      <h1>미팅 끝나셨나요?</h1>
+      <p class="sub">1~3분만 말하면 상담기록이 정리돼요.</p>
+
+      <div class="field">
+        <label for="clientHint">고객명 <span class="muted">(선택)</span></label>
+        <input id="clientHint" type="text" placeholder="예: ○○식품 김대표" autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <span class="label">미팅 유형</span>
+        <div class="chips" id="typeChips" role="radiogroup" aria-label="미팅 유형"></div>
+      </div>
+
+      <div class="recorder">
+        <button id="recBtn" class="rec-btn" type="button" aria-label="녹음 시작">
+          <span class="rec-dot"></span>
+        </button>
+        <div id="recTimer" class="timer">00:00</div>
+        <div id="recHint" class="muted">버튼을 눌러 녹음 시작</div>
+        <canvas id="meter" class="meter" width="280" height="40" aria-hidden="true"></canvas>
+      </div>
+
+      <label class="upload">
+        <input id="fileInput" type="file" accept="audio/*,video/mp4,.m4a,.mp3,.wav,.webm" hidden />
+        이미 녹음한 파일 올리기
+      </label>
+
+      <details class="guide">
+        <summary>이렇게 말하면 더 정확해요</summary>
+        <ol>
+          <li>고객명 · 미팅 종류 · 회차</li>
+          <li>오늘 논의한 내용</li>
+          <li>고객이 말한 문제·니즈</li>
+          <li>내가 제안한 것</li>
+          <li>누가 · 언제까지 · 무엇을</li>
+          <li>다음 미팅 날짜, 느낀 점</li>
+        </ol>
+        <p class="example">“○○식품 김대표님, 컨설팅 3회차. 온라인 판매 확대랑 운전자금 얘기했고, 재고관리가 엑셀이라 실수가 많대요. 정책자금 사전 진단 제안했고, 대표님이 20일까지 재무제표 보내주기로. 다음 미팅 27일.”</p>
+      </details>
+    </section>
+
+    <!-- 2. 처리 중 -->
+    <section id="screen-progress" class="screen">
+      <h1>정리하고 있어요</h1>
+      <p class="sub">보통 30초~1분 걸려요. 화면을 켜두세요.</p>
+      <ul class="steps">
+        <li data-step="upload"><span class="dot"></span>음성 올리는 중</li>
+        <li data-step="transcribing"><span class="dot"></span>받아쓰는 중 <span class="muted">· AssemblyAI</span></li>
+        <li data-step="structuring"><span class="dot"></span>항목별로 정리하는 중 <span class="muted">· Claude</span></li>
+      </ul>
+    </section>
+
+    <!-- 3. 확인·수정 -->
+    <section id="screen-review" class="screen">
+      <h1>내용을 확인해 주세요</h1>
+      <p class="sub">틀린 부분은 바로 고쳐서 저장하면 돼요.</p>
+      <form id="reviewForm" class="card form"></form>
+      <details class="card transcript">
+        <summary>원본 받아쓰기 보기</summary>
+        <p id="transcriptText"></p>
+      </details>
+      <div class="actions">
+        <button id="saveBtn" class="primary" type="button">Notion에 저장</button>
+        <button id="copyBtn" class="secondary" type="button">텍스트로 복사</button>
+        <button id="retryBtn" class="ghost" type="button">다시 녹음</button>
+      </div>
+    </section>
+
+    <!-- 4. 완료 -->
+    <section id="screen-done" class="screen">
+      <div class="done-icon">✓</div>
+      <h1>저장했어요</h1>
+      <p class="sub" id="doneSub"></p>
+      <div class="actions">
+        <a id="notionLink" class="primary" href="#" target="_blank" rel="noopener">Notion에서 보기</a>
+        <button id="newBtn" class="secondary" type="button">새 음성메모</button>
+      </div>
+    </section>
+
+    <!-- 최근 기록 -->
+    <section id="screen-history" class="screen">
+      <h1>최근 기록</h1>
+      <p class="sub">이 기기에서 저장한 최근 20건이에요.</p>
+      <ul id="historyList" class="history"></ul>
+      <div class="actions"><button id="backBtn" class="secondary" type="button">돌아가기</button></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "brief-voice-memo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "미팅 직후 음성메모를 받아쓰고 항목별로 정리해 Notion에 저장하는 미니 앱",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.9"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "express": "^5.3.0",
+    "zod": "^4.6.7"
+  }
+}

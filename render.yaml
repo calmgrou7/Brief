@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: brief-voice-memo
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    envVars:
+      - key: ASSEMBLYAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: NOTION_TOKEN
+        sync: false
+      - key: NOTION_DATABASE_ID
+        value: fcec98f5f1e84e7184261efe659f9905
+      - key: APP_PASSCODE
+        sync: false
+      - key: WORD_BOOST
+        value: 중진공,소진공,정책자금,기보,신보,스마트스토어
