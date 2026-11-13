@@ -161,7 +161,7 @@
 | 1 | `Before you arrive` / `입국 전` | Arrival guide · Housing list · Info sessions at partner language schools | 입국 가이드 · 숙소 목록 · 어학원 설명회 | 없음 |
 | 2 | `Settling in` / `정착` | Settling-in checklist · Welcome kit · Alien registration guide | 정착 체크리스트 · 웰컴 키트 · 외국인등록 안내 | 있음 |
 | 3 | `Study & life` / `학업·생활` | Member discounts · Communities by country · Local events | 멤버십 할인 · 국가별 커뮤니티 · 지역 행사 | 없음 |
-| 4 | `Getting ready for work` / `취업 준비` | Part-time work rules · Job info and student work-hour rules · Career talks | 시간제취업 규칙 · 일자리 정보·근무 시간 규칙 · 취업 특강 | 있음 |
+| 4 | `Getting ready for work` / `취업 준비` | Part-time work rules · General job information · Career talks | 시간제취업 규칙 · 일반 일자리 정보 · 취업 특강 | 있음 |
 | 5 | `Visa & stay` / `비자·체류` | Expiry date reminders · Document checklists · Consultation requests | 만료일 알림 · 서류 체크리스트 · 상담 접수 | 있음 |
 | 6 | `Marriage & long-term stay` / `결혼·장기정착` | Guide: status change after marriage · Guide: inviting family · Permanent residency guide | 결혼 후 체류자격 변경 안내 · 가족 초청 절차 안내 · 영주 준비 안내 | 있음 |
 
