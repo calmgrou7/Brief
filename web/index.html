@@ -913,6 +913,99 @@ async function saveProfilePng(m, btn){
   }
 }
 
+/* HTML 조각 → PNG 파일 저장 (프로필·조직도 공용) */
+async function htmlToPng(html, filename){
+  const H = await loadH2C();
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed;left:-20000px;top:0;z-index:-1';
+  box.innerHTML = html;
+  document.body.appendChild(box);
+  try{
+    await Promise.all([...box.querySelectorAll('img')].map(i=>i.decode().catch(()=>{})));
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    const canvas = await H(box.firstElementChild, {scale:2, backgroundColor:'#ffffff', useCORS:true, logging:false});
+    const blob = await new Promise(r=>canvas.toBlob(r, 'image/png'));
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+  }finally{ box.remove(); }
+}
+
+/* ===================== 조직도 이미지 =====================
+   단 구성: 1단 = 첫 번째 직책(회장) · 2단 = 두 번째 직책(부회장)
+            3단 = 그 밖의 직책(총무·재무 등) · 4단 = 이름에 '위원'이 들어간 직책(위원장)
+   직책 순서는 임원진 → 직책 설정의 순서를 따릅니다. */
+function orgTiers(includeVacant){
+  const pos = [...D().positions].sort((a,b)=>a.order-b.order);
+  const cur = D().terms.filter(t=>!t.end);
+  const tiers = [[],[],[],[]];
+  pos.forEach((p,i)=>{
+    const people = cur.filter(t=>t.positionId===p.id).map(t=>({p, m:member(t.memberId)})).filter(x=>x.m)
+      .sort((a,b)=>a.m.name.localeCompare(b.m.name,'ko'));
+    const boxes = people.length ? people : includeVacant ? [{p, m:null}] : [];
+    tiers[i===0 ? 0 : i===1 ? 1 : /위원/.test(p.name) ? 3 : 2].push(...boxes);
+  });
+  return tiers.filter(t=>t.length);
+}
+function orgChartHTML(tiers, photos){
+  const C = {ink:'#1b2333', sub:'#5d6b82', line:'#c3cddd', soft:'#eef3fb', brand:'#1f3a68', accent:'#c8a24a'};
+  const F = "font-family:'Noto Sans KR',sans-serif;";
+  const W = 168, G = 14;
+  const maxRow = Math.max(...tiers.map(t=>t.length*W + (t.length-1)*G));
+  const width = Math.max(900, maxRow + 80);
+  const box = ({p, m}, top) => {
+    const w = top ? 210 : W, ph = top ? 88 : 66;
+    const photo = m && photos[m.id]
+      ? `<div style="width:${ph}px;height:${ph}px;border-radius:50%;margin:0 auto 10px;background:url('${photos[m.id]}') center/cover no-repeat ${C.soft};border:2px solid #fff;box-shadow:0 0 0 1px ${C.line}"></div>`
+      : `<div style="width:${ph}px;height:${ph}px;border-radius:50%;margin:0 auto 10px;background:${m ? C.soft : '#f6f7f9'};color:${m ? C.brand : '#aab2bf'};display:flex;align-items:center;justify-content:center;font-size:${top?34:26}px;font-weight:700">${m ? esc(m.name.slice(0,1)) : '?'}</div>`;
+    const pname = p.name.length > 7 && /위원장$/.test(p.name) ? esc(p.name.slice(0,-3)) + '<br>위원장' : esc(p.name);
+    return `<div style="width:${w}px;flex:1;border:${m ? `1px solid ${C.line}` : `1.5px dashed ${C.line}`};border-radius:16px;background:${top ? '#fbf8ef' : '#fff'};padding:16px 10px 14px;text-align:center;box-sizing:border-box">
+      ${photo}
+      <div style="display:inline-block;background:${top ? C.accent : C.brand};color:#fff;border-radius:999px;padding:3px 12px;font-size:${p.name.length > 6 ? 12 : 13}px;font-weight:700;margin-bottom:8px;line-height:1.4;word-break:keep-all">${pname}</div>
+      <div style="font-size:${top?22:19}px;font-weight:700;color:${m ? C.ink : '#aab2bf'}">${m ? esc(m.name) : '공석'}</div>
+      <div style="font-size:12.5px;color:${C.sub};margin-top:3px;min-height:18px">${m ? esc(m.company||'') : ''}</div>
+    </div>`;
+  };
+  const row = (t, i) => {
+    const span = (t.length - 1) * (W + G);
+    const connector = i === 0 ? '' : `<div style="display:flex;flex-direction:column;align-items:center">
+        <div style="width:2px;height:22px;background:${C.line}"></div>
+        ${t.length > 1 ? `<div style="height:2px;width:${span}px;background:${C.line}"></div>` : ''}
+      </div>`;
+    const stub = i === 0 ? '' : `<div style="width:2px;height:16px;background:${C.line};margin:0 auto"></div>`;
+    return `${connector}<div style="display:flex;justify-content:center;align-items:stretch;gap:${G}px">
+      ${t.map(b=>`<div style="flex:none;display:flex;flex-direction:column;align-items:center">${stub}${box(b, i === 0)}</div>`).join('')}</div>`;
+  };
+  const year = today().slice(0,4);
+  return `<div style="${F}width:${width}px;background:#fff;color:${C.ink};padding:36px 40px 28px;box-sizing:border-box">
+    <div style="text-align:center;margin-bottom:26px">
+      <div style="font-size:30px;font-weight:700;color:${C.brand};letter-spacing:2px">정우회 조직도</div>
+      <div style="font-size:14px;color:${C.sub};margin-top:6px">기업가 대표 모임 · ${year}년 임원진</div>
+    </div>
+    ${tiers.map(row).join('')}
+    <div style="margin-top:26px;text-align:right;font-size:12.5px;color:${C.sub}">${today().replace(/-/g,'.')} 기준</div>
+  </div>`;
+}
+async function saveOrgPng(btn, includeVacant){
+  const label = btn.textContent; btn.disabled = true; btn.textContent = '이미지 만드는 중…';
+  const urls = [];
+  try{
+    const tiers = orgTiers(includeVacant);
+    if(!tiers.length) throw new Error('지정된 임원이 없습니다.');
+    const people = tiers.flat().map(b=>b.m).filter(m=>m && m.photoPath);
+    const photos = {};
+    await Promise.all(people.map(async m=>{ const u = await blobUrl(m.photoPath); if(u){ photos[m.id] = u; urls.push(u); } }));
+    await htmlToPng(orgChartHTML(tiers, photos), `정우회_조직도_${today()}.png`);
+    toast('조직도를 PNG로 저장했습니다.');
+  }catch(err){
+    console.error(err); toast(err.message || '이미지 저장에 실패했습니다.');
+  }finally{
+    setTimeout(()=>urls.forEach(u=>URL.revokeObjectURL(u)), 3000);
+    btn.disabled = false; btn.textContent = label;
+  }
+}
+
 /* ===================== 화면: 회원 상세 (프로필 카드) ===================== */
 function MemberDetail(id){
   const m = member(id);
@@ -1053,7 +1146,11 @@ function Officers(){
   const past = D().terms.filter(t=>t.end).sort((a,b)=>b.end.localeCompare(a.end));
   return `
   <div class="head"><h1>임원진</h1>
-    ${can.admin()?'<div class="row"><button class="btn" id="pos">직책 설정</button><button class="btn pri" id="assign">+ 직책 지정·변경</button></div>':''}</div>
+    <div class="row">
+      <label class="row muted" style="font-size:13px;gap:4px"><input type="checkbox" id="orgVacant" ${ui.orgVacant!==false?'checked':''}> 공석 포함</label>
+      <button class="btn" id="orgpng">🖼 조직도 이미지 저장</button>
+      ${can.admin()?'<button class="btn" id="pos">직책 설정</button><button class="btn pri" id="assign">+ 직책 지정·변경</button>':''}
+    </div></div>
   <div class="cards">
     ${pos.map(p=>{ const hs = current.filter(t=>t.positionId===p.id);
       return `<div class="panel"><div class="muted" style="font-size:13px">${esc(p.name)}${p.single?'':' · 복수'}</div>
@@ -1398,6 +1495,8 @@ const bind = {
     if($('#vcf1')) $('#vcf1').onclick = ()=>{ downloadVcf([m], `정우회_${m.name}.vcf`); toast('연락처 파일을 저장했습니다.'); };
   },
   officers(){
+    $('#orgVacant').onchange = e=>{ ui.orgVacant = e.target.checked; };
+    $('#orgpng').onclick = e=>saveOrgPng(e.currentTarget, $('#orgVacant').checked);
     if(!can.admin()) return;
     $('#assign').onclick = assignForm;
     $('#pos').onclick = positionsForm;
