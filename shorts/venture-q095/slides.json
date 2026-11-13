@@ -1,0 +1,70 @@
+{
+  "template": "infographic",
+  "fps": 24,
+  "pill": "지금 벤처의 기준",
+  "bgm": "soft",
+  "source": "Notion · 벤처의 기준 Q4 원천 콘텐츠 DB · Q095 (11월 2주, 우선순위 A)",
+  "slides": [
+    {
+      "dur": 4.6, "pose": "stand",
+      "kicker": "연말 실적이 닫히기 전에",
+      "title": "벤처인증 있으면\n지원사업 [무조건 유리]?",
+      "blocks": [
+        { "type": "question", "t": "벤처확인 = 자동 가점?", "d": "대표님들이 가장 많이 묻는 질문" }
+      ],
+      "narration": "벤처인증만 있으면, 정부지원사업에서 무조건 유리할까요?"
+    },
+    {
+      "dur": 4.8, "pose": "talk",
+      "kicker": "가장 많이 틀리는 생각",
+      "title": "이렇게 생각하셨다면\n[다시] 보세요",
+      "blocks": [
+        { "type": "wrong", "t": "모든 공고에서 가점이 붙는다" },
+        { "type": "wrong", "t": "벤처만 있으면 선정된다" }
+      ],
+      "narration": "모든 공고에서 가점이 붙는다고 생각하셨다면, 다시 보셔야 합니다."
+    },
+    {
+      "dur": 5.4, "pose": "stand",
+      "kicker": "사실은",
+      "title": "혜택은\n[공고마다] 다릅니다",
+      "blocks": [
+        { "type": "compare", "label": "공고 A", "mark": "○", "color": "#2747C9", "t": "가점 항목에 있음" },
+        { "type": "compare", "label": "공고 B", "mark": "△", "color": "#F26B3A", "t": "우대 조건으로만 반영" },
+        { "type": "compare", "label": "공고 C", "mark": "—", "color": "#9AA0B4", "t": "해당 항목 없음" },
+        { "type": "note", "t": "※ 이해를 돕기 위한 예시입니다" }
+      ],
+      "narration": "벤처확인이 얼마나 반영되는지는 공고마다 다릅니다."
+    },
+    {
+      "dur": 5.6, "pose": "talk",
+      "kicker": "체크 포인트",
+      "title": "공고문에서\n[딱 3곳]만 보세요",
+      "blocks": [
+        { "type": "step", "t": "신청자격", "d": "벤처확인이 조건인지" },
+        { "type": "step", "t": "우대사항", "d": "우대 대상에 들어가는지" },
+        { "type": "step", "t": "평가·가점표", "d": "몇 점, 어떤 항목인지" }
+      ],
+      "narration": "공고문에서 신청자격, 우대사항, 가점표, 딱 세 곳만 확인하세요."
+    },
+    {
+      "dur": 5.0, "pose": "talk",
+      "kicker": "핵심 정리",
+      "title": "벤처확인은\n[출발선]입니다",
+      "blocks": [
+        { "type": "stat", "label": "벤처확인", "value": "자격·가점", "unit": "의 재료" },
+        { "type": "stat", "label": "선정을 가르는 것", "value": "사업계획", "unit": "과 준비도" }
+      ],
+      "narration": "벤처확인은 출발선이고, 선정은 결국 사업계획과 준비도가 가릅니다."
+    },
+    {
+      "dur": 5.4, "pose": "stand",
+      "kicker": "우리 회사는 어디에 해당할까?",
+      "title": "벤처 [실익]부터\n확인하세요",
+      "blocks": [
+        { "type": "cta", "label": "DM으로 보내주세요", "value": "'기준'", "d": "유형별 자가진단표를 보내드려요" }
+      ],
+      "narration": "우리 회사에 맞는 실익이 궁금하다면, DM으로 기준을 보내주세요."
+    }
+  ]
+}

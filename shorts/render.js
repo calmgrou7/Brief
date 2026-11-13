@@ -131,7 +131,10 @@ window.seek=(t)=>{
 
 (async () => {
   const htmlPath = path.join(epDir, "slides.html");
-  fs.writeFileSync(htmlPath, html);
+  const pageHTML = ep.template === "infographic"
+    ? require("./infographic.js").buildHTML(ep, { fontDir, hostDir: path.join(__dirname, "assets", "host"), W, H })
+    : html;
+  fs.writeFileSync(htmlPath, pageHTML);
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
   await page.goto("file://" + htmlPath);
