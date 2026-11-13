@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stay Busan (working name) · Concept</title>
+<meta name="description" content="A concept for one trusted place where international students in Busan and Gyeongnam can ask about settling in, student life, work rules, visas and long-term stay.">
+<meta property="og:title" content="Stay Busan: one place to ask">
+<meta property="og:description" content="A concept for one trusted place where international students in Busan and Gyeongnam can ask about settling in, student life, work rules, visas and long-term stay.">
+<meta property="og:type" content="website">
+<!-- og:image: [자리표시] og-image 1200×630 (기획안 16번, 이미지 확정 후 추가) -->
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='10' r='6' fill='%23F28C38'/%3E%3Crect x='2' y='17' width='20' height='3' rx='1.5' fill='%231F4E79'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#1F4E79; --brand-strong:#163A5C; --brand-tint:#DCE8F3;
+  --accent:#F28C38; --accent-hover:#E57B24; --on-accent:#16222F;
+  --bg:#FBFAF7; --surface:#FFFFFF; --muted-bg:#EEF4F9;
+  --text:#1B2430; --text-muted:#5B6675; --line:#E4E2DB; --line-strong:#C9CED6;
+  --yes-bg:#1F4E79; --yes-text:#FFFFFF;
+  --no-bg:#ECEDEF; --no-text:#4C5562;
+  --mid-bg:#FFFFFF; --mid-text:#1F4E79; --mid-line:#9DB7D1;
+  --demo-bg:#FFF3C9; --demo-text:#634500; --demo-line:#EBD58E;
+  --error:#B42318; --error-bg:#FDECEA;
+  --ph-bg:#EEEEEB; --ph-line:#8C939B; --ph-text:#454B53;
+  --wave:#C9DBEA; --footer-bg:#132F4A; --footer-text:#DCE6EF; --footer-muted:#A9BDD0;
+  --shadow:0 1px 2px rgba(20,38,58,.06),0 6px 20px rgba(20,38,58,.06);
+  --radius:16px; --radius-sm:10px; --header-h:64px;
+  --body:1.0625rem;
+  --font:"Plus Jakarta Sans","Noto Sans KR","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --brand:#8FBCE4; --brand-strong:#BCD6EE; --brand-tint:#1B3650;
+    --accent:#F39A50; --accent-hover:#F6AE6F; --on-accent:#14202C;
+    --bg:#0E1823; --surface:#142230; --muted-bg:#172A3B;
+    --text:#E8EDF2; --text-muted:#A8B4C1; --line:#24364A; --line-strong:#38506A;
+    --yes-bg:#8FBCE4; --yes-text:#0E1823;
+    --no-bg:#24323F; --no-text:#C2CBD5;
+    --mid-bg:#142230; --mid-text:#BCD6EE; --mid-line:#4D6A88;
+    --demo-bg:#3A3013; --demo-text:#F2D98C; --demo-line:#5E4E1E;
+    --error:#FF9A8F; --error-bg:#3A1B1A;
+    --ph-bg:#22303D; --ph-line:#6E7C8A; --ph-text:#CBD3DB;
+    --wave:#233B52; --footer-bg:#0A131C; --footer-text:#D6E0EA; --footer-muted:#97A8BA;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:var(--body);line-height:1.6;overflow-x:hidden}
+html[lang="ko"] body{word-break:keep-all}
+img,svg{display:block;max-width:100%}
+a{color:var(--brand)}
+a:hover{color:var(--brand-strong)}
+h1,h2,h3{line-height:1.25;margin:0;letter-spacing:-.015em}
+p{margin:0}
+ul,ol{margin:0;padding:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+[id]{scroll-margin-top:calc(var(--header-h) + 12px)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--surface);color:var(--text);padding:10px 14px;border-radius:8px;box-shadow:var(--shadow);text-decoration:none;font-weight:600}
+.skip:focus{top:12px}
+
+/* language: body copy follows the switch, pairs always show both */
+html[lang="en"] [data-l="ko"], html[lang="ko"] [data-l="en"]{display:none!important}
+.pair{display:inline-flex;flex-direction:column;gap:.2em}
+.pair>[lang]{display:block}
+html[lang="en"] .pair>[lang="ko"], html[lang="ko"] .pair>[lang="en"]{order:2;font-size:calc(var(--body)*.85);font-weight:500;color:var(--text-muted);letter-spacing:0;line-height:1.45}
+.pair.inline{display:inline-flex;flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:0 .35em}
+.pair.inline>[lang]{display:inline}
+html[lang="en"] .pair.inline>[lang="ko"]::before, html[lang="ko"] .pair.inline>[lang="en"]::before{content:"· "}
+
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+@media (min-width:768px){.wrap{padding:0 28px}}
+
+/* placeholder */
+.ph{display:inline-block;padding:0 .4em;border:1.5px dashed var(--ph-line);background:var(--ph-bg);color:var(--ph-text);border-radius:6px;font-size:.92em;font-weight:600;line-height:1.5;white-space:normal}
+
+/* concept bar */
+#concept-bar{background:var(--brand-strong);color:#fff;font-size:.8125rem;line-height:1.45}
+@media (prefers-color-scheme: dark){#concept-bar{background:#05101A;color:var(--text)}}
+#concept-bar .wrap{display:flex;align-items:flex-start;gap:10px;padding-top:8px;padding-bottom:8px}
+#concept-bar .cb-text{flex:1;min-width:0}
+#concept-bar strong{font-weight:700;letter-spacing:.02em;margin-right:6px}
+#concept-bar a{color:inherit;text-underline-offset:2px;white-space:nowrap}
+#concept-bar .cb-close{flex:none;width:44px;height:44px;margin:-10px -12px -10px 0;border:0;background:transparent;color:inherit;border-radius:8px;cursor:pointer;display:grid;place-items:center}
+#concept-bar .cb-close:hover{background:rgba(255,255,255,.12)}
+#concept-bar[hidden]{display:none}
+
+/* header */
+#header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+#header .wrap{height:var(--header-h);display:flex;align-items:center;gap:10px}
+.logo{display:flex;flex-direction:column;text-decoration:none;color:var(--text);line-height:1.1;margin-right:auto;min-height:44px;justify-content:center}
+.logo b{white-space:nowrap;font-size:1.15rem;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:7px}
+.logo b svg{width:22px;height:22px;flex:none}
+.logo small{white-space:nowrap;font-size:.6875rem;font-weight:600;color:var(--text-muted);margin-top:3px;letter-spacing:.02em}
+.nav{display:none}
+.nav a{color:var(--text);text-decoration:none;font-weight:600;font-size:.9375rem;padding:10px 4px;display:inline-flex}
+.nav a:hover{color:var(--brand)}
+.lang{display:inline-flex;border:1px solid var(--line-strong);border-radius:999px;padding:2px;flex:none}
+.lang button{border:0;background:transparent;min-width:40px;height:38px;padding:0 10px;border-radius:999px;font-size:.8125rem;font-weight:700;cursor:pointer;color:var(--text-muted)}
+.lang button[aria-pressed="true"]{background:var(--brand);color:var(--yes-text)}
+.menu-btn{width:44px;height:44px;border:1px solid var(--line-strong);background:var(--surface);border-radius:12px;display:grid;place-items:center;cursor:pointer;flex:none}
+.mobile-nav{border-top:1px solid var(--line);background:var(--bg)}
+.mobile-nav ul{list-style:none;padding:8px 16px 16px}
+.mobile-nav a{display:flex;min-height:48px;align-items:center;text-decoration:none;color:var(--text);font-weight:600;border-bottom:1px solid var(--line)}
+.mobile-nav a .pair>[lang]{display:block}
+.btn.head-ask{display:none;white-space:nowrap}
+@media (min-width:480px){.btn.head-ask{display:inline-flex}}
+@media (min-width:960px){
+  .nav{display:flex;gap:14px;margin-right:4px}
+  .nav a{font-size:.875rem}
+  .menu-btn,.mobile-nav{display:none!important}
+}
+@media (min-width:1120px){.nav{gap:22px;margin-right:8px}.nav a{font-size:.9375rem}}
+
+/* buttons */
+.btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:52px;padding:10px 22px;border-radius:999px;font-weight:700;font-size:1rem;line-height:1.25;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:background-color .15s,border-color .15s,transform .15s}
+.btn .pair{align-items:center}
+.btn .pair>[lang]{color:inherit!important}
+html[lang="en"] .btn .pair>[lang="ko"], html[lang="ko"] .btn .pair>[lang="en"]{font-size:.8rem;font-weight:600;opacity:.82}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-hover);color:var(--on-accent)}
+.btn-outline{background:transparent;color:var(--brand);border-color:var(--brand)}
+.btn-outline:hover{background:var(--brand-tint);color:var(--brand-strong)}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--line-strong)}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+.btn-sm{min-height:44px;padding:6px 16px;font-size:.9375rem}
+.btn:active{transform:translateY(1px)}
+
+/* sections */
+section{padding:64px 0}
+@media (min-width:960px){section{padding:96px 0}}
+.eyebrow{display:inline-flex;align-items:flex-start;gap:10px;font-size:.8125rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:14px}
+.eyebrow::before{content:"";flex:none;margin-top:.62em;width:22px;height:2px;background:var(--accent);border-radius:2px}
+.eyebrow .pair>[lang="ko"]{text-transform:none;letter-spacing:.02em}
+html[lang="ko"] .eyebrow .pair>[lang="ko"]{font-size:.875rem}
+.sec-head{max-width:720px;margin-bottom:32px}
+.sec-head h2{font-size:clamp(1.6rem,4.6vw,2.4rem);font-weight:800}
+.sec-head h2 .pair{gap:.4em}
+.sec-head .lead{margin-top:14px;color:var(--text-muted);font-size:var(--body)}
+.alt{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* hero */
+#hero{position:relative;padding:36px 0 56px;overflow:hidden;background:linear-gradient(180deg,var(--muted-bg) 0%,var(--bg) 78%)}
+#hero .waves{position:absolute;left:0;right:0;bottom:0;height:120px;width:100%;color:var(--wave);pointer-events:none}
+#hero .grid{position:relative;display:grid;gap:40px;align-items:center}
+#hero .eyebrow{margin-bottom:16px}
+#hero h1{font-size:clamp(1.75rem,7.4vw,3.05rem);font-weight:800;letter-spacing:-.025em}
+#hero h1 .pair{gap:.55em}
+html[lang="en"] #hero h1 .pair>[lang="ko"], html[lang="ko"] #hero h1 .pair>[lang="en"]{font-size:1rem;font-weight:500;letter-spacing:0}
+.hero-sub{margin-top:18px;color:var(--text-muted);max-width:600px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.hero-ctas .btn{flex:1 1 180px}
+@media (min-width:600px){.hero-ctas .btn{flex:0 0 auto;min-width:200px}}
+.trust{margin-top:16px;font-size:.875rem;color:var(--text-muted);display:flex;gap:8px;align-items:flex-start}
+.trust svg{flex:none;width:18px;height:18px;margin-top:2px;color:var(--brand)}
+.route{display:none}
+@media (min-width:960px){
+  #hero{padding:48px 0 112px}
+  #hero .grid{grid-template-columns:1.25fr 1fr;gap:56px}
+  .route{display:block}
+}
+.route-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:26px;position:relative}
+.route-card .sun{position:absolute;top:-26px;right:28px;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 40% 40%,#FFC38A,var(--accent));box-shadow:0 0 0 10px color-mix(in srgb,var(--accent) 14%,transparent)}
+.route-step{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:14px;background:var(--muted-bg)}
+.route-step .n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--brand);color:var(--yes-text);font-weight:800;font-size:.9rem}
+.route-step b{display:block;font-size:1rem}
+.route-line{width:2px;height:20px;background:var(--line-strong);margin:4px 0 4px 32px}
+.route-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.route-split div{border:1.5px dashed var(--mid-line);border-radius:14px;padding:12px;font-size:.875rem;color:var(--text-muted)}
+.route-split div b{display:block;color:var(--text);font-size:.9375rem;margin-bottom:2px}
+
+/* problems */
+.cards{display:grid;gap:14px}
+@media (min-width:640px){.cards.c2{grid-template-columns:1fr 1fr}}
+@media (min-width:960px){.cards.c3{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.alt .card{background:var(--bg)}
+.card h3{font-size:1.1875rem;font-weight:700;margin-bottom:8px}
+.card p{color:var(--text-muted)}
+.prob-card{border-left:4px solid var(--brand)}
+.prob-card .num{font-size:.8125rem;font-weight:800;color:var(--accent);letter-spacing:.05em;margin-bottom:8px;display:block}
+@media (prefers-color-scheme: dark){.prob-card .num{color:var(--accent)}}
+@media (max-width:959px){.js .prob-more:not(.shown){display:none}}
+.more-btn{margin-top:16px}
+@media (min-width:960px){.more-btn{display:none!important}}
+
+/* journey */
+.journey{list-style:none;display:grid;gap:10px}
+.journey details{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.journey summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px;min-height:64px}
+.journey summary::-webkit-details-marker{display:none}
+.journey summary .n{flex:none;width:38px;height:38px;border-radius:50%;border:2px solid var(--brand);color:var(--brand);display:grid;place-items:center;font-weight:800}
+.journey details[open] summary .n{background:var(--brand);color:var(--yes-text)}
+.journey summary h3{font-size:1.125rem;font-weight:700;flex:1;overflow-wrap:break-word;hyphens:auto}
+.journey summary .chev{flex:none;width:22px;height:22px;color:var(--text-muted);transition:transform .2s}
+.journey details[open] summary .chev{transform:rotate(180deg)}
+.j-body{padding:0 18px 20px 70px}
+.j-label{font-size:.8125rem;font-weight:700;color:var(--text-muted);margin-bottom:8px}
+.j-label .pair>[lang]{font-size:.8125rem!important}
+.j-list{list-style:none;display:grid;gap:6px}
+.j-list li{position:relative;padding-left:18px}
+.j-list li::before{content:"";position:absolute;left:0;top:.68em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 11px;font-size:.8125rem;font-weight:700;line-height:1.3}
+.badge .pair>[lang]{font-size:inherit!important;color:inherit!important;font-weight:inherit!important}
+.badge-link{background:var(--brand-tint);color:var(--brand-strong);margin-top:14px;border-radius:12px;padding:7px 12px}
+html[lang="en"] .badge-link .pair>[lang="ko"],html[lang="ko"] .badge-link .pair>[lang="en"]{font-weight:600!important;opacity:.85}
+.badge-link svg{width:15px;height:15px;flex:none}
+.j-note{margin-top:14px;font-size:.875rem;color:var(--text-muted);border-top:1px dashed var(--line-strong);padding-top:12px}
+.sec-cta{margin-top:28px}
+@media (min-width:960px){
+  .journey{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;position:relative}
+  .journey details{height:100%;display:flex;flex-direction:column}
+  .journey summary{flex-direction:column;align-items:flex-start;cursor:default;padding:20px 18px 6px;min-height:0;gap:12px}
+  .journey summary .chev{display:none}
+  .journey summary .n{background:var(--brand);color:var(--yes-text)}
+  .j-body{padding:6px 18px 20px}
+  .j-list{font-size:1rem}
+}
+
+/* how it works */
+.steps{list-style:none;display:grid;gap:12px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:grid;grid-template-columns:auto 1fr;column-gap:14px;row-gap:6px;position:relative}
+.step .n{grid-row:span 3;width:40px;height:40px;border-radius:50%;background:var(--brand);color:var(--yes-text);display:grid;place-items:center;font-weight:800}
+.step h3{font-size:1.125rem;font-weight:700}
+.step p{color:var(--text-muted);font-size:1rem}
+.owner{justify-self:start;font-size:.75rem;font-weight:700;letter-spacing:.02em;border-radius:999px;padding:3px 10px;border:1.5px solid}
+.owner.sb{color:var(--brand);border-color:var(--brand)}
+.owner.pa{color:var(--on-accent);background:var(--accent);border-color:var(--accent)}
+.owner.tg{color:var(--text-muted);border-color:var(--line-strong);border-style:dashed}
+@media (min-width:960px){
+  .steps{grid-template-columns:repeat(6,minmax(0,1fr));gap:22px}
+  .step{grid-template-columns:1fr;padding:20px 16px;align-content:start}
+  .step .n{grid-row:auto;margin-bottom:6px}
+  .step:not(:last-child)::after{content:"";position:absolute;right:-17px;top:38px;width:12px;height:12px;border-top:2.5px solid var(--line-strong);border-right:2.5px solid var(--line-strong);transform:rotate(45deg)}
+}
+.boundary{margin-top:24px;background:var(--muted-bg);border-radius:var(--radius);padding:22px;display:flex;gap:16px;align-items:flex-start;border:1px solid color-mix(in srgb,var(--brand) 18%,transparent)}
+.boundary .ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--surface);display:grid;place-items:center;color:var(--brand)}
+.boundary .ic svg{width:24px;height:24px}
+.boundary h3{font-size:1.125rem;font-weight:700;margin-bottom:6px}
+.boundary p{color:var(--text)}
+
+/* who does what */
+.roles{width:100%;border-collapse:separate;border-spacing:0}
+.roles th,.roles td{text-align:left;vertical-align:middle}
+.roles thead th{font-size:.8125rem;font-weight:700;color:var(--text-muted);padding:0 16px 12px;letter-spacing:.02em}
+.roles tbody th{font-weight:600}
+.r-badge{display:inline-flex;border-radius:999px;padding:5px 12px;font-size:.875rem;font-weight:700;line-height:1.3}
+.r-badge .pair>[lang]{color:inherit!important}
+.r-yes{background:var(--yes-bg);color:var(--yes-text)}
+.r-no{background:var(--no-bg);color:var(--no-text)}
+.r-mid{background:var(--mid-bg);color:var(--mid-text);border:1.5px solid var(--mid-line)}
+html[lang="en"] .r-badge .pair>[lang="ko"], html[lang="ko"] .r-badge .pair>[lang="en"]{font-size:.75rem;opacity:.85}
+@media (max-width:767px){
+  .roles,.roles tbody,.roles tr,.roles th,.roles td{display:block}
+  .roles thead{display:none}
+  .roles tr{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:12px}
+  .alt .roles tr{background:var(--bg)}
+  .roles tbody th{font-size:1.0625rem;margin-bottom:12px}
+  .roles td{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+  .roles td::before{content:attr(data-label);font-size:.8125rem;font-weight:700;color:var(--text-muted);flex:none}
+  .roles td .r-badge{text-align:right}
+  .roles td .r-badge .pair{align-items:flex-end}
+}
+@media (min-width:768px){
+  .roles{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .roles thead th{padding:16px;background:var(--muted-bg)}
+  .roles tbody th,.roles tbody td{padding:16px;border-top:1px solid var(--line)}
+  .roles tbody th{width:44%}
+}
+
+/* form */
+.ask-grid{display:grid;gap:32px}
+@media (min-width:960px){.ask-grid{grid-template-columns:.85fr 1.15fr;gap:56px;align-items:start}.ask-intro{position:sticky;top:calc(var(--header-h) + 32px)}}
+.demo-badge{display:flex;gap:10px;align-items:flex-start;background:var(--demo-bg);color:var(--demo-text);border:1px solid var(--demo-line);border-radius:12px;padding:12px 14px;font-size:.9375rem;font-weight:600;line-height:1.45}
+.demo-badge svg{flex:none;width:20px;height:20px;margin-top:1px}
+.form-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+@media (min-width:768px){.form-card{padding:32px}}
+.field{margin-top:22px}
+.field>label,.field legend{display:block;font-weight:700;font-size:1rem;margin-bottom:8px;padding:0}
+.field legend .pair,.field>label .pair{gap:.1em}
+.req{color:var(--error);margin-left:2px}
+.help{font-size:.875rem;color:var(--text-muted);margin-top:6px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+input[type=text],input[type=email],input[type=tel],input[type=date],select,textarea{width:100%;min-height:50px;padding:12px 14px;border:1.5px solid var(--line-strong);border-radius:12px;background:var(--bg);color:var(--text);font-size:1rem}
+textarea{min-height:130px;resize:vertical;line-height:1.5}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%235B6675' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:42px}
+input:focus,select:focus,textarea:focus{border-color:var(--brand)}
+[aria-invalid="true"]{border-color:var(--error)!important}
+.choices{display:grid;gap:10px}
+.choices.c2{grid-template-columns:1fr 1fr}
+@media (min-width:768px){.choices.c3{grid-template-columns:repeat(3,1fr)}}
+.choice{position:relative;display:block}
+.choice input{position:absolute;opacity:0;width:1px;height:1px}
+.choice .box{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border:1.5px solid var(--line-strong);border-radius:12px;background:var(--bg);cursor:pointer;font-weight:600;font-size:.9375rem;line-height:1.3}
+.choice .box::before{content:"";flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface)}
+.choice input:checked+.box{border-color:var(--brand);background:var(--brand-tint)}
+.choice input:checked+.box::before{border-color:var(--brand);background:radial-gradient(circle,var(--brand) 0 4px,var(--surface) 5px)}
+.choice input:focus-visible+.box{outline:3px solid var(--accent);outline-offset:2px}
+.choice input:disabled+.box{cursor:not-allowed;opacity:.6;border-style:dashed}
+.choice .box .pair>[lang]{font-size:.9375rem}
+html[lang="en"] .choice .box .pair>[lang="ko"],html[lang="ko"] .choice .box .pair>[lang="en"]{font-size:.8rem}
+.choices.invalid .box{border-color:var(--error)}
+.consent{display:flex;gap:12px;align-items:flex-start;margin-top:24px;padding:14px;border-radius:12px;background:var(--muted-bg)}
+.consent input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:var(--brand)}
+.consent label{font-size:.9375rem;line-height:1.5}
+.err{color:var(--error);font-size:.875rem;font-weight:600;margin-top:6px;display:flex;gap:6px}
+.err[hidden]{display:none}
+.warn{margin-top:8px;font-size:.875rem;font-weight:600;color:var(--demo-text);background:var(--demo-bg);border:1px solid var(--demo-line);border-radius:10px;padding:8px 12px}
+.warn:empty{display:none}
+.submit-row{margin-top:26px}
+.submit-row .btn{width:100%}
+@media (min-width:768px){.submit-row .btn{width:auto;min-width:240px}}
+.fine{margin-top:12px;font-size:.875rem;color:var(--text-muted)}
+.result{outline:none}
+.result h3{font-size:1.375rem;font-weight:800;margin:18px 0 14px}
+.res-badge{display:inline-flex;border-radius:999px;padding:6px 14px;font-size:.875rem;font-weight:700}
+.res-badge.faq{background:var(--brand-tint);color:var(--brand-strong)}
+.res-badge.agent{background:var(--accent);color:var(--on-accent)}
+.res-badge .pair>[lang]{color:inherit!important;font-size:inherit!important}
+.result .msg{margin-top:12px}
+.result .expiry{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--muted-bg)}
+.result .expiry.past{background:var(--demo-bg);color:var(--demo-text);border:1px solid var(--demo-line)}
+.result .demo-end{margin-top:18px;font-size:.875rem;color:var(--text-muted);font-weight:600}
+.res-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.res-actions .btn{flex:1 1 200px}
+
+/* community */
+.chan{display:flex;flex-direction:column;gap:12px}
+.chan .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--muted-bg);color:var(--brand)}
+.chan .ic svg{width:24px;height:24px}
+.chan h3{margin:0}
+.chan .btn{margin-top:auto;align-self:flex-start}
+.note{margin-top:20px;font-size:.875rem;color:var(--text-muted);max-width:720px}
+
+/* promise */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (min-width:960px){.metrics{grid-template-columns:repeat(4,1fr);gap:16px}}
+.metric{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.target{display:inline-flex;font-size:.75rem;font-weight:700;letter-spacing:.03em;border:1.5px dashed var(--brand);color:var(--brand);border-radius:999px;padding:2px 9px}
+.metric .big{display:block;font-size:clamp(1.9rem,7vw,2.6rem);font-weight:800;letter-spacing:-.03em;color:var(--text);margin:10px 0 6px;line-height:1.05}
+.metric p{font-size:.9375rem;color:var(--text-muted);line-height:1.45}
+
+/* faq */
+.faq{display:grid;gap:10px;max-width:820px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.faq summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:flex-start;padding:18px 18px;min-height:56px;font-weight:700;font-size:1.0625rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .pair{flex:1}
+.faq summary .plus{flex:none;width:24px;height:24px;margin-top:2px;color:var(--brand);transition:transform .2s}
+.faq details[open] summary .plus{transform:rotate(45deg)}
+.faq .ans{padding:0 18px 20px;color:var(--text-muted)}
+
+/* partners */
+#partners{background:var(--brand-strong);color:#fff}
+@media (prefers-color-scheme: dark){#partners{background:#10263A;color:var(--text)}}
+#partners .eyebrow{color:#FFD2A8}
+#partners .sec-head h2 .pair>[lang]{color:inherit}
+html[lang="en"] #partners .sec-head h2 .pair>[lang="ko"],html[lang="ko"] #partners .sec-head h2 .pair>[lang="en"]{color:#C9D9E8}
+#partners .lead{color:#D5E2EE}
+#partners .card{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+#partners .card h3 .pair>[lang]{color:#fff}
+html[lang="en"] #partners .card h3 .pair>[lang="ko"],html[lang="ko"] #partners .card h3 .pair>[lang="en"]{color:#C9D9E8}
+#partners .card p{color:#D5E2EE}
+#partners .ph{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.55)}
+.pilot{margin-top:22px;color:#D5E2EE;font-size:.9375rem}
+.btn-partner{margin-top:24px;background:transparent;color:#fff;border-color:#fff}
+.btn-partner:hover{background:rgba(255,255,255,.12);color:#fff}
+
+/* family */
+.fam .card{display:flex;flex-direction:column;gap:8px}
+.planned{align-self:flex-start;font-size:.75rem;font-weight:700;border-radius:999px;padding:3px 10px;background:var(--no-bg);color:var(--no-text)}
+.planned .pair>[lang]{color:inherit!important;font-size:inherit!important}
+
+/* final cta */
+#final-cta{position:relative;overflow:hidden;background:var(--muted-bg)}
+#final-cta .waves{position:absolute;left:0;right:0;top:0;height:90px;width:100%;color:var(--wave);transform:scaleY(-1)}
+#final-cta .wrap{position:relative}
+#final-cta h2{font-size:clamp(1.7rem,5.4vw,2.6rem);font-weight:800;max-width:760px}
+#final-cta h2 .pair{gap:.45em}
+#final-cta p.sub{margin-top:14px;color:var(--text-muted);max-width:620px}
+.final-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-top:26px}
+.final-row a.textlink{font-weight:700;display:inline-flex;min-height:44px;align-items:center}
+
+/* footer */
+#footer{background:var(--footer-bg);color:var(--footer-text);padding:48px 0 calc(32px + env(safe-area-inset-bottom));font-size:.9375rem}
+#footer a{color:#fff}
+.f-brand{font-weight:800;font-size:1.0625rem}
+.f-legal{margin-top:18px;color:var(--footer-muted);font-size:.875rem;line-height:1.7;max-width:860px}
+.f-concept{margin-top:20px;padding:14px 16px;border:1px dashed rgba(255,255,255,.35);border-radius:12px;font-size:.875rem;color:var(--footer-text);max-width:860px}
+.f-row{margin-top:24px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;font-size:.875rem}
+.f-row a{display:inline-flex;min-height:44px;align-items:center}
+#footer .ph{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.55)}
+.f-strip{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14);font-size:.8125rem;color:var(--footer-muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+@media (max-width:959px){body.has-sticky #footer{padding-bottom:calc(96px + env(safe-area-inset-bottom))}}
+
+/* sticky */
+#sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:45;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom));display:flex;gap:10px;transform:translateY(110%);visibility:hidden;transition:transform .25s,visibility .25s}
+#sticky-cta.show{transform:none;visibility:visible}
+#sticky-cta .btn{min-height:48px;padding:6px 14px}
+#sticky-cta .btn-primary{flex:1.6}
+#sticky-cta .btn-outline{flex:1}
+@media (min-width:960px){#sticky-cta{display:none}}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;background:var(--text);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:.9375rem;font-weight:600;max-width:calc(100% - 32px);width:max-content;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+@media (min-width:960px){.toast{bottom:32px}}
+
+/* dialog */
+dialog{border:0;padding:0;border-radius:22px;background:var(--surface);color:var(--text);width:min(560px,calc(100% - 24px));max-height:calc(100dvh - 32px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,22,34,.55)}
+.dlg{padding:24px}
+.dlg-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.dlg-head h2{font-size:1.375rem;font-weight:800}
+.dlg-close{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line-strong);background:var(--bg);cursor:pointer;display:grid;place-items:center}
+.dlg .done{margin-top:18px;padding:16px;border-radius:12px;background:var(--muted-bg)}
+
+@media print{#concept-bar,#sticky-cta,.toast,#header .menu-btn{display:none!important}#header{position:static}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main"><span data-l="en" lang="en">Skip to content</span><span data-l="ko" lang="ko">본문으로 건너뛰기</span></a>
+
+<!-- 0. Concept bar -->
+<div id="concept-bar" role="region" aria-label="Concept notice">
+  <div class="wrap">
+    <div class="cb-text">
+      <strong>BRIDGENODE 컨셉 시안 · 실제 운영 서비스 아님</strong>
+      <span data-l="en" lang="en">Concept demo by BRIDGENODE. Stay Busan is a working name and this is not a live service yet.</span><span data-l="ko" lang="ko">브릿지노드가 만든 컨셉 시안입니다. Stay 부산은 가칭이며, 아직 운영 중인 서비스가 아닙니다.</span>
+      <a href="../"><span data-l="en" lang="en">Back to BRIDGENODE portfolio</span><span data-l="ko" lang="ko">브릿지노드 포트폴리오로</span></a>
+    </div>
+    <button class="cb-close" type="button" id="cb-close" aria-label="Close notice / 안내 닫기">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- 1. Header -->
+<header id="header">
+  <div class="wrap">
+    <a class="logo" href="#hero" aria-label="Stay Busan, working name. Back to top">
+      <b><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="9" r="4.2" fill="#F28C38"/><path d="M2 15.5c2.5 0 2.5-1.6 5-1.6s2.5 1.6 5 1.6 2.5-1.6 5-1.6 2.5 1.6 5 1.6M2 19.5c2.5 0 2.5-1.6 5-1.6s2.5 1.6 5 1.6 2.5-1.6 5-1.6 2.5 1.6 5 1.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>Stay Busan</b>
+      <small>working name · 가칭</small>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#how-it-works"><span class="pair"><span lang="en">How it works</span><span lang="ko">이용 방법</span></span></a>
+      <a href="#community"><span class="pair"><span lang="en">Community</span><span lang="ko">커뮤니티</span></span></a>
+      <a href="#faq"><span class="pair"><span lang="en">FAQ</span><span lang="ko">자주 묻는 질문</span></span></a>
+      <a href="#partners"><span class="pair"><span lang="en">For partners</span><span lang="ko">파트너</span></span></a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language / 언어">
+      <button type="button" data-set-lang="en" aria-pressed="true" lang="en">EN</button>
+      <button type="button" data-set-lang="ko" aria-pressed="false" lang="ko">한국어</button>
+    </div>
+    <a class="btn btn-primary btn-sm head-ask" href="#ask"><span data-l="en" lang="en">Ask a question</span><span data-l="ko" lang="ko">질문 남기기</span></a>
+    <button class="menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mobile-nav" aria-label="Menu / 메뉴">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile" hidden>
+    <ul>
+      <li><a href="#how-it-works"><span class="pair"><span lang="en">How it works</span><span lang="ko">이용 방법</span></span></a></li>
+      <li><a href="#community"><span class="pair"><span lang="en">Community</span><span lang="ko">커뮤니티</span></span></a></li>
+      <li><a href="#faq"><span class="pair"><span lang="en">FAQ</span><span lang="ko">자주 묻는 질문</span></span></a></li>
+      <li><a href="#partners"><span class="pair"><span lang="en">For partners</span><span lang="ko">파트너</span></span></a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- 2. Hero -->
+<section id="hero" aria-labelledby="hero-title">
+  <svg class="waves" viewBox="0 0 1440 120" preserveAspectRatio="none" fill="none" aria-hidden="true">
+    <path d="M0 64c120 0 120-18 240-18s120 18 240 18 120-18 240-18 120 18 240 18 120-18 240-18 120 18 240 18" stroke="currentColor" stroke-width="2"/>
+    <path d="M0 88c120 0 120-18 240-18s120 18 240 18 120-18 240-18 120 18 240 18 120-18 240-18 120 18 240 18" stroke="currentColor" stroke-width="2" opacity=".7"/>
+    <path d="M0 112c120 0 120-18 240-18s120 18 240 18 120-18 240-18 120 18 240 18 120-18 240-18 120 18 240 18" stroke="currentColor" stroke-width="2" opacity=".45"/>
+  </svg>
+  <div class="wrap grid">
+    <div>
+      <p class="eyebrow"><span class="pair"><span lang="en">For international students in Busan &amp; Gyeongnam</span><span lang="ko">부산·경남 외국인 유학생을 위한 곳</span></span></p>
+      <h1 id="hero-title"><span class="pair"><span lang="en">One place to ask, from your first week to your future in Korea.</span><span lang="ko">한국에서의 첫 주부터 앞으로의 삶까지, 물어볼 곳은 한 곳이면 됩니다.</span></span></h1>
+      <p class="hero-sub"><span data-l="en" lang="en">Settling in, student life, part-time work rules, visa deadlines, staying after graduation. Ask us first. We answer everyday questions ourselves, and connect visa and immigration matters to a qualified partner administrative agent (Haengjeongsa).</span><span data-l="ko" lang="ko">정착, 학교생활, 아르바이트 규칙, 체류기간 만료, 졸업 후 진로까지. 먼저 저희에게 물어보세요. 생활 질문은 저희가 직접 답하고, 체류·출입국 문제는 자격을 갖춘 협업 행정사에게 연결해 드립니다.</span></p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#ask"><span class="pair"><span lang="en">Ask a question</span><span lang="ko">질문 남기기</span></span></a>
+        <a class="btn btn-outline" href="#community"><span class="pair"><span lang="en">Join the community</span><span lang="ko">커뮤니티 참여하기</span></span></a>
+      </div>
+      <p class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span><span data-l="en" lang="en">Web form, WhatsApp or Viber. English and Korean now, Nepali coming soon.</span><span data-l="ko" lang="ko">웹 폼, WhatsApp, Viber로 문의할 수 있어요. 지금은 영어·한국어, 네팔어는 곧 지원합니다.</span></span></p>
+    </div>
+    <div class="route" aria-hidden="true">
+      <div class="route-card">
+        <span class="sun"></span>
+        <div class="route-step"><span class="n">1</span><span><b><span data-l="en" lang="en">You ask</span><span data-l="ko" lang="ko">문의 접수</span></b></span></div>
+        <div class="route-line"></div>
+        <div class="route-step"><span class="n">2</span><span><b><span data-l="en" lang="en">We sort it</span><span data-l="ko" lang="ko">자동 분류</span></b></span></div>
+        <div class="route-line"></div>
+        <div class="route-split">
+          <div><b><span data-l="en" lang="en">FAQ first</span><span data-l="ko" lang="ko">FAQ로 먼저 안내</span></b><span data-l="en" lang="en">Everyday questions</span><span data-l="ko" lang="ko">생활 질문</span></div>
+          <div><b><span data-l="en" lang="en">Partner agent</span><span data-l="ko" lang="ko">협업 행정사 연결</span></b><span data-l="en" lang="en">Visa and stay questions</span><span data-l="ko" lang="ko">체류 관련 질문</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Problems -->
+<section id="problems" aria-labelledby="problems-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="problems-title"><span class="pair"><span lang="en">The information is out there. Someone you can trust to ask is not.</span><span lang="ko">정보가 없어서가 아니라, 믿고 물어볼 곳이 없어서 문제가 생깁니다.</span></span></h2>
+    </div>
+    <div class="cards c2 c3" id="prob-cards">
+      <article class="card prob-card"><span class="num" aria-hidden="true">01</span><h3><span class="pair"><span lang="en">Settling in</span><span lang="ko">정착</span></span></h3><p><span data-l="en" lang="en">Housing contracts, alien registration, bank, phone, health insurance. Doing it all alone leads to mistakes, and sometimes scams.</span><span data-l="ko" lang="ko">숙소 계약, 외국인등록, 은행·통신, 건강보험. 혼자 처리하다 실수하거나 사기를 당하기도 합니다.</span></p></article>
+      <article class="card prob-card"><span class="num" aria-hidden="true">02</span><h3><span class="pair"><span lang="en">Staying legally</span><span lang="ko">체류</span></span></h3><p><span data-l="en" lang="en">Extending your stay, part-time work permission, renewing your passport. It is easy to mix them up or miss a deadline.</span><span data-l="ko" lang="ko">체류기간 연장, 시간제취업 허가, 여권 갱신. 헷갈리거나 기한을 놓치기 쉽습니다.</span></p></article>
+      <article class="card prob-card"><span class="num" aria-hidden="true">03</span><h3><span class="pair"><span lang="en">Working</span><span lang="ko">일자리</span></span></h3><p><span data-l="en" lang="en">A part-time job without permission, or too many hours, can put your visa status at risk.</span><span data-l="ko" lang="ko">허가 없는 아르바이트나 허용 시간을 넘긴 근무는 체류자격에 문제를 만들 수 있습니다.</span></p></article>
+      <article class="card prob-card prob-more" id="prob-4" tabindex="-1"><span class="num" aria-hidden="true">04</span><h3><span class="pair"><span lang="en">After graduation</span><span lang="ko">졸업 이후</span></span></h3><p><span data-l="en" lang="en">Many students leave Korea at graduation simply because no one explained the paths for work or long-term stay.</span><span data-l="ko" lang="ko">구직·취업·지역정착으로 이어지는 비자 경로를 몰라 졸업과 함께 출국하는 경우가 많습니다.</span></p></article>
+      <article class="card prob-card prob-more"><span class="num" aria-hidden="true">05</span><h3><span class="pair"><span lang="en">Life changes</span><span lang="ko">삶의 변화</span></span></h3><p><span data-l="en" lang="en">Marriage or inviting family means changing your status, and it is hard to know where to start.</span><span data-l="ko" lang="ko">결혼이나 가족 초청으로 자격을 바꿔야 할 때, 어디서부터 시작할지 막막합니다.</span></p></article>
+      <article class="card prob-card prob-more"><span class="num" aria-hidden="true">06</span><h3><span class="pair"><span lang="en">Language</span><span lang="ko">언어</span></span></h3><p><span data-l="en" lang="en">Official guides in Korean are hard to follow, and tips in community chats are not always accurate.</span><span data-l="ko" lang="ko">한국어 공공 안내는 어렵고, 커뮤니티에 도는 정보는 정확하지 않을 때가 많습니다.</span></p></article>
+    </div>
+    <button class="btn btn-ghost btn-sm more-btn" type="button" id="more-btn" aria-expanded="false" aria-controls="prob-cards" hidden><span class="pair inline"><span lang="en">See 3 more</span><span lang="ko">3개 더 보기</span></span></button>
+  </div>
+</section>
+
+<!-- 4. Journey -->
+<section id="journey" class="alt" aria-labelledby="journey-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="journey-title"><span class="pair"><span lang="en">Every stage of your student life, in one place.</span><span lang="ko">유학생활의 모든 단계를 한 곳에서.</span></span></h2>
+      <p class="lead"><span data-l="en" lang="en">At each stage, we show what Stay Busan does for you and when we connect you to a partner administrative agent.</span><span data-l="ko" lang="ko">단계마다 Stay 부산이 직접 돕는 일과, 협업 행정사에게 연결하는 일을 나눠서 보여 드립니다.</span></p>
+    </div>
+    <ol class="journey" id="journey-list">
+      <li><details open><summary><span class="n">1</span><h3><span class="pair"><span lang="en">Before you arrive</span><span lang="ko">입국 전</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
+          <ul class="j-list" data-l="en" lang="en"><li>Arrival guide</li><li>Housing list</li><li>Info sessions at partner language schools</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>입국 가이드</li><li>숙소 목록</li><li>어학원 설명회</li></ul>
+        </div></details></li>
+      <li><details><summary><span class="n">2</span><h3><span class="pair"><span lang="en">Settling in</span><span lang="ko">정착</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
+          <ul class="j-list" data-l="en" lang="en"><li>Settling-in checklist</li><li>Welcome kit</li><li>Alien registration guide</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>정착 체크리스트</li><li>웰컴 키트</li><li>외국인등록 안내</li></ul>
+          <span class="badge badge-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="pair"><span lang="en">Connected to a partner agent</span><span lang="ko">행정사 연계</span></span></span>
+        </div></details></li>
+      <li><details><summary><span class="n">3</span><h3><span class="pair"><span lang="en">Study &amp; life</span><span lang="ko">학업·생활</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
+          <ul class="j-list" data-l="en" lang="en"><li>Member discounts</li><li>Communities by country</li><li>Local events</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>멤버십 할인</li><li>국가별 커뮤니티</li><li>지역 행사</li></ul>
+        </div></details></li>
+      <li><details><summary><span class="n">4</span><h3><span class="pair"><span lang="en">Getting ready for work</span><span lang="ko">취업 준비</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
+          <ul class="j-list" data-l="en" lang="en"><li>Part-time work rules</li><li>Job posts you are allowed to apply for</li><li>Career talks</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>시간제취업 규칙</li><li>허가 가능 공고</li><li>취업 특강</li></ul>
+          <span class="badge badge-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="pair"><span lang="en">Connected to a partner agent</span><span lang="ko">행정사 연계</span></span></span>
+          <p class="j-note"><span data-l="en" lang="en">Job introductions are handled by registered employment agencies. Stay Busan shares information only.</span><span data-l="ko" lang="ko">일자리 알선은 등록된 기관이 맡습니다. Stay 부산은 정보만 안내합니다.</span></p>
+        </div></details></li>
+      <li><details><summary><span class="n">5</span><h3><span class="pair"><span lang="en">Visa &amp; stay</span><span lang="ko">비자·체류</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
+          <ul class="j-list" data-l="en" lang="en"><li>Expiry date reminders</li><li>Document checklists</li><li>Consultation requests</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>만료일 알림</li><li>서류 체크리스트</li><li>상담 접수</li></ul>
+          <span class="badge badge-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="pair"><span lang="en">Connected to a partner agent</span><span lang="ko">행정사 연계</span></span></span>
+        </div></details></li>
+      <li><details><summary><span class="n">6</span><h3><span class="pair"><span lang="en">Marriage &amp; long-term stay</span><span lang="ko">결혼·장기정착</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
+          <ul class="j-list" data-l="en" lang="en"><li>Status steps after marriage</li><li>Inviting family</li><li>Permanent residency guide</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>결혼 후 체류 절차</li><li>가족 초청</li><li>영주 준비 안내</li></ul>
+          <span class="badge badge-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="pair"><span lang="en">Connected to a partner agent</span><span lang="ko">행정사 연계</span></span></span>
+          <p class="j-note"><span data-l="en" lang="en">We do not offer matchmaking or marriage brokering. This stage is for students whose marriage is already decided and who need help with the stay procedures that follow.</span><span data-l="ko" lang="ko">Stay 부산은 결혼 매칭이나 중개를 하지 않습니다. 결혼이 이미 정해진 학생의 체류자격 변경·가족 초청 절차를 돕는 단계입니다.</span></p>
+        </div></details></li>
+    </ol>
+    <div class="sec-cta"><a class="btn btn-primary" href="#ask"><span class="pair"><span lang="en">Ask about your stage</span><span lang="ko">지금 내 단계 질문하기</span></span></a></div>
+  </div>
+</section>
+
+<!-- 5. How it works -->
+<section id="how-it-works" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="how-title"><span class="pair"><span lang="en">You ask once. We make sure it reaches the right person.</span><span lang="ko">한 번만 물어보세요. 맞는 사람에게 닿게 하는 건 저희 일입니다.</span></span></h2>
+    </div>
+    <ol class="steps">
+      <li class="step"><span class="n" aria-hidden="true">1</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">You ask</span><span lang="ko">문의 접수</span></span></h3><p><span data-l="en" lang="en">Send your question through the web form, WhatsApp or Viber.</span><span data-l="ko" lang="ko">웹 폼, WhatsApp, Viber로 질문을 보내 주세요.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">2</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">We sort it</span><span lang="ko">자동 분류</span></span></h3><p><span data-l="en" lang="en">Everyday questions get an answer from our FAQ. Visa and stay questions go to a partner administrative agent.</span><span data-l="ko" lang="ko">생활 질문은 FAQ로 답하고, 체류 관련 질문은 협업 행정사에게 넘깁니다.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">3</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">We get it ready</span><span lang="ko">사전 정리</span></span></h3><p><span data-l="en" lang="en">We help you gather basic facts, like your visa type and expiry date, in a simple form, so you do not have to explain twice.</span><span data-l="ko" lang="ko">체류자격·만료일 같은 기본 사실을 간단한 양식으로 정리해, 같은 설명을 두 번 하지 않게 합니다.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">4</span><span class="owner pa"><span data-l="en" lang="en">Partner agent</span><span data-l="ko" lang="ko">협업 행정사</span></span><h3><span class="pair"><span lang="en">You talk to an expert</span><span lang="ko">행정사 상담</span></span></h3><p><span data-l="en" lang="en">A qualified administrative agent consults with you directly. Any fee and agreement are made between you and the agent.</span><span data-l="ko" lang="ko">자격을 갖춘 행정사가 직접 상담합니다. 비용과 계약은 학생과 행정사가 직접 정합니다.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">5</span><span class="owner tg"><span data-l="en" lang="en">Together</span><span data-l="ko" lang="ko">함께</span></span><h3><span class="pair"><span lang="en">We keep you updated</span><span lang="ko">진행 공유</span></span></h3><p><span data-l="en" lang="en">You get automatic updates as your case moves forward.</span><span data-l="ko" lang="ko">진행 단계가 바뀌면 자동으로 알려 드립니다.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">6</span><span class="owner tg"><span data-l="en" lang="en">Together</span><span data-l="ko" lang="ko">함께</span></span><h3><span class="pair"><span lang="en">We stay with you</span><span lang="ko">사후 관리</span></span></h3><p><span data-l="en" lang="en">We remind you before your next expiry date, and keep improving our FAQ with our partners.</span><span data-l="ko" lang="ko">다음 만료일 전에 미리 알려 드리고, 행정사와 함께 FAQ를 계속 보강합니다.</span></p></li>
+    </ol>
+    <aside class="boundary" aria-labelledby="boundary-title">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.3 7.5 9.5 4.4-1.2 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span>
+      <div>
+        <h3 id="boundary-title"><span class="pair"><span lang="en">What Stay Busan does not do</span><span lang="ko">Stay 부산이 하지 않는 일</span></span></h3>
+        <p><span data-l="en" lang="en">Stay Busan is an information and community service. We do not judge individual cases, write or file documents on your behalf, or charge fees for administrative work. Those are done only by a qualified partner administrative agent, under their own name.</span><span data-l="ko" lang="ko">Stay 부산은 정보와 커뮤니티를 제공하는 서비스입니다. 개별 사건을 판단하거나, 서류를 대신 작성·신청하거나, 행정 업무 비용을 받지 않습니다. 이런 일은 자격을 갖춘 협업 행정사가 자신의 이름으로만 진행합니다.</span></p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- 6. Who does what -->
+<section id="who-does-what" class="alt" aria-labelledby="who-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="who-title"><span class="pair"><span lang="en">Who does what</span><span lang="ko">누가 무엇을 하나요</span></span></h2>
+      <p class="lead"><span data-l="en" lang="en">We want you to know exactly who is helping you, at every step.</span><span data-l="ko" lang="ko">어느 단계에서든, 누가 나를 돕고 있는지 정확히 아셨으면 합니다.</span></p>
+    </div>
+    <table class="roles">
+      <caption class="sr-only">Who does what / 누가 무엇을 하나요</caption>
+      <thead><tr><th scope="col"><span class="pair inline"><span lang="en">Item</span><span lang="ko">항목</span></span></th><th scope="col">Stay Busan</th><th scope="col">Partner agent <span lang="ko">(협업 행정사)</span></th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><span class="pair"><span lang="en">General guides based on public information</span><span lang="ko">공개 정보 기반 일반 안내</span></span></th>
+          <td data-label="Stay Busan"><span class="r-badge r-yes"><span class="pair"><span lang="en">Yes</span><span lang="ko">담당</span></span></span></td>
+          <td data-label="Partner agent (협업 행정사)"><span class="r-badge r-mid"><span class="pair"><span lang="en">Reviews the content</span><span lang="ko">내용 감수</span></span></span></td></tr>
+        <tr><th scope="row"><span class="pair"><span lang="en">Advice on your individual case</span><span lang="ko">개인 사건 판단·상담</span></span></th>
+          <td data-label="Stay Busan"><span class="r-badge r-no"><span class="pair"><span lang="en">No</span><span lang="ko">하지 않음</span></span></span></td>
+          <td data-label="Partner agent (협업 행정사)"><span class="r-badge r-yes"><span class="pair"><span lang="en">Yes</span><span lang="ko">담당</span></span></span></td></tr>
+        <tr><th scope="row"><span class="pair"><span lang="en">Writing and filing documents</span><span lang="ko">서류 작성·신청 대행</span></span></th>
+          <td data-label="Stay Busan"><span class="r-badge r-no"><span class="pair"><span lang="en">No</span><span lang="ko">하지 않음</span></span></span></td>
+          <td data-label="Partner agent (협업 행정사)"><span class="r-badge r-yes"><span class="pair"><span lang="en">Yes</span><span lang="ko">담당</span></span></span></td></tr>
+        <tr><th scope="row"><span class="pair"><span lang="en">Fees for administrative work</span><span lang="ko">행정 업무 비용</span></span></th>
+          <td data-label="Stay Busan"><span class="r-badge r-no"><span class="pair"><span lang="en">No</span><span lang="ko">받지 않음</span></span></span></td>
+          <td data-label="Partner agent (협업 행정사)"><span class="r-badge r-mid"><span class="pair"><span lang="en">Charged to you directly</span><span lang="ko">학생에게 직접 청구</span></span></span></td></tr>
+        <tr><th scope="row"><span class="pair"><span lang="en">Reminders and follow-up</span><span lang="ko">만료 알림·사후 관리</span></span></th>
+          <td data-label="Stay Busan"><span class="r-badge r-yes"><span class="pair"><span lang="en">Yes</span><span lang="ko">담당</span></span></span></td>
+          <td data-label="Partner agent (협업 행정사)"><span class="r-badge r-mid"><span class="pair"><span lang="en">Shares results</span><span lang="ko">결과 공유</span></span></span></td></tr>
+        <tr><th scope="row"><span class="pair"><span lang="en">Your consent and safe handover of your information</span><span lang="ko">개인정보 동의·안전한 전달</span></span></th>
+          <td data-label="Stay Busan"><span class="r-badge r-yes"><span class="pair"><span lang="en">Yes</span><span lang="ko">담당</span></span></span></td>
+          <td data-label="Partner agent (협업 행정사)"><span class="r-badge r-mid"><span class="pair"><span lang="en">Uses it only for your case</span><span lang="ko">맡은 사건 범위 안에서만 이용</span></span></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7. Ask -->
+<section id="ask" aria-labelledby="ask-title">
+  <div class="wrap ask-grid">
+    <div class="ask-intro">
+      <div class="sec-head" style="margin-bottom:20px">
+        <h2 id="ask-title"><span class="pair"><span lang="en">Ask your question</span><span lang="ko">질문 남기기</span></span></h2>
+        <p class="lead"><span data-l="en" lang="en">Tell us a little about your situation. We aim to reply within 24 hours.</span><span data-l="ko" lang="ko">상황을 간단히 알려 주세요. 24시간 안에 첫 답변 드리는 것을 목표로 합니다.</span></p>
+      </div>
+      <p class="demo-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span><span data-l="en" lang="en">Demo form: nothing you type here is sent or saved.</span><span data-l="ko" lang="ko">데모 폼입니다. 입력한 내용은 전송되거나 저장되지 않습니다.</span></span></p>
+    </div>
+
+    <div class="form-card">
+      <form id="ask-form" novalidate>
+        <div class="field" style="margin-top:0">
+          <label for="f-name"><span class="pair"><span lang="en">Name or nickname <span class="req" aria-hidden="true">*</span></span><span lang="ko">이름 또는 닉네임</span></span></label>
+          <input type="text" id="f-name" name="name" required autocomplete="nickname" aria-describedby="e-name">
+          <p class="err" id="e-name" hidden></p>
+        </div>
+        <div class="field">
+          <label for="f-school"><span class="pair"><span lang="en">School</span><span lang="ko">학교</span></span></label>
+          <select id="f-school" name="school">
+            <option value="pilot-uni">[자리표시] 시범 대학</option>
+            <option value="pilot-school">[자리표시] 연계 어학원</option>
+            <option value="other">Other / 기타</option>
+            <option value="not-yet">Not enrolled yet / 아직 입학 전</option>
+          </select>
+          <p class="help"><span class="ph">[자리표시]</span> <span data-l="en" lang="en">school names will be added after partners agree.</span><span data-l="ko" lang="ko">학교명은 협의 후 표시합니다.</span></p>
+        </div>
+        <div class="field">
+          <label for="f-country"><span class="pair"><span lang="en">Country</span><span lang="ko">국적</span></span></label>
+          <select id="f-country" name="country">
+            <option value="np" selected>Nepal / 네팔</option>
+            <option value="other">Other / 기타</option>
+          </select>
+        </div>
+        <fieldset class="field" id="fs-topic" aria-describedby="e-topic">
+          <legend><span class="pair"><span lang="en">What is your question about? <span class="req" aria-hidden="true">*</span></span><span lang="ko">어떤 질문인가요?</span></span></legend>
+          <div class="choices c2 c3" id="topic-choices">
+            <label class="choice"><input type="radio" name="topic" value="settle" required><span class="box"><span class="pair"><span lang="en">Settling in</span><span lang="ko">정착</span></span></span></label>
+            <label class="choice"><input type="radio" name="topic" value="life"><span class="box"><span class="pair"><span lang="en">Study &amp; life</span><span lang="ko">학업·생활</span></span></span></label>
+            <label class="choice"><input type="radio" name="topic" value="work"><span class="box"><span class="pair"><span lang="en">Part-time work &amp; jobs</span><span lang="ko">아르바이트·취업</span></span></span></label>
+            <label class="choice"><input type="radio" name="topic" value="visa"><span class="box"><span class="pair"><span lang="en">Visa &amp; stay</span><span lang="ko">비자·체류</span></span></span></label>
+            <label class="choice"><input type="radio" name="topic" value="family"><span class="box"><span class="pair"><span lang="en">Marriage &amp; family</span><span lang="ko">결혼·가족</span></span></span></label>
+            <label class="choice"><input type="radio" name="topic" value="else"><span class="box"><span class="pair"><span lang="en">Something else</span><span lang="ko">기타</span></span></span></label>
+          </div>
+          <p class="err" id="e-topic" hidden></p>
+        </fieldset>
+        <div class="field">
+          <label for="f-expiry"><span class="pair"><span lang="en">Your stay expiry date (optional)</span><span lang="ko">체류기간 만료일 (선택)</span></span></label>
+          <input type="date" id="f-expiry" name="expiry" aria-describedby="h-expiry">
+          <p class="help" id="h-expiry"><span data-l="en" lang="en">Helps us remind you in time.</span><span data-l="ko" lang="ko">제때 알려 드리는 데 쓰입니다.</span></p>
+        </div>
+        <div class="field">
+          <label for="f-question"><span class="pair"><span lang="en">Your question <span class="req" aria-hidden="true">*</span></span><span lang="ko">질문 내용</span></span></label>
+          <textarea id="f-question" name="question" required aria-describedby="h-question w-question e-question"></textarea>
+          <p class="help" id="h-question"><span data-l="en" lang="en">Please do not include your passport or alien registration number.</span><span data-l="ko" lang="ko">여권번호나 외국인등록번호는 적지 마세요.</span></p>
+          <p class="warn" id="w-question" aria-live="polite"></p>
+          <p class="err" id="e-question" hidden></p>
+        </div>
+        <fieldset class="field" id="fs-reply" aria-describedby="e-reply">
+          <legend><span class="pair"><span lang="en">How should we reply? <span class="req" aria-hidden="true">*</span></span><span lang="ko">어디로 답변 드릴까요?</span></span></legend>
+          <div class="choices c3" id="reply-choices">
+            <label class="choice"><input type="radio" name="reply" value="whatsapp" required><span class="box">WhatsApp</span></label>
+            <label class="choice"><input type="radio" name="reply" value="viber"><span class="box">Viber</span></label>
+            <label class="choice"><input type="radio" name="reply" value="email"><span class="box"><span class="pair"><span lang="en">Email</span><span lang="ko">이메일</span></span></span></label>
+          </div>
+          <p class="err" id="e-reply" hidden></p>
+        </fieldset>
+        <div class="field">
+          <label for="f-contact" id="l-contact"><span class="pair"><span lang="en">Contact <span class="req" aria-hidden="true">*</span></span><span lang="ko">연락처</span></span></label>
+          <input type="text" id="f-contact" name="contact" required aria-describedby="e-contact">
+          <p class="err" id="e-contact" hidden></p>
+        </div>
+        <fieldset class="field">
+          <legend><span class="pair"><span lang="en">Preferred language</span><span lang="ko">원하는 언어</span></span></legend>
+          <div class="choices c3">
+            <label class="choice"><input type="radio" name="plang" value="en" checked><span class="box" lang="en">English</span></label>
+            <label class="choice"><input type="radio" name="plang" value="ko"><span class="box" lang="ko">한국어</span></label>
+            <label class="choice"><input type="radio" name="plang" value="ne" disabled><span class="box"><span><span lang="ne">नेपाली</span><br><small style="font-weight:500">(coming soon / 준비 중)</small></span></span></label>
+          </div>
+        </fieldset>
+        <div class="consent">
+          <input type="checkbox" id="f-consent" name="consent" required aria-describedby="e-consent">
+          <label for="f-consent"><span data-l="en" lang="en">I agree that Stay Busan may use this information to answer my question, and may share it with a partner administrative agent only if my question needs one.</span><span data-l="ko" lang="ko">질문에 답하기 위해 Stay 부산이 이 정보를 이용하고, 행정사 상담이 필요한 경우에만 협업 행정사에게 전달하는 데 동의합니다.</span></label>
+        </div>
+        <p class="err" id="e-consent" hidden></p>
+        <div class="submit-row">
+          <button class="btn btn-primary" type="submit"><span class="pair"><span lang="en">Send my question</span><span lang="ko">질문 보내기</span></span></button>
+          <p class="fine"><span data-l="en" lang="en">Stay Busan gives general information only. Advice on your individual case comes from a qualified partner administrative agent.</span><span data-l="ko" lang="ko">Stay 부산은 일반 정보만 안내합니다. 개인 사건에 대한 판단은 자격을 갖춘 협업 행정사가 합니다.</span></p>
+        </div>
+      </form>
+      <div class="result" id="ask-result" tabindex="-1" hidden aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Community -->
+<section id="community" class="alt" aria-labelledby="community-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="community-title"><span class="pair"><span lang="en">You are not alone here.</span><span lang="ko">여기서는 혼자가 아니에요.</span></span></h2>
+      <p class="lead"><span data-l="en" lang="en">Join students from your country and your school. Share tips, ask quick questions, and hear about local events and member discounts.</span><span data-l="ko" lang="ko">같은 나라, 같은 학교 학생들과 함께하세요. 생활 팁을 나누고, 가볍게 묻고, 지역 행사와 멤버십 할인 소식을 받아 보세요.</span></p>
+    </div>
+    <div class="cards c3">
+      <article class="card chan">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg></span>
+        <h3>WhatsApp</h3>
+        <p><span data-l="en" lang="en">Chat with us and join student groups.</span><span data-l="ko" lang="ko">문의하고 학생 그룹에 참여하세요.</span></p>
+        <button class="btn btn-outline btn-sm demo-link" type="button"><span class="pair"><span lang="en">Open WhatsApp</span><span lang="ko">WhatsApp 열기</span></span></button>
+      </article>
+      <article class="card chan">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
+        <h3>Viber</h3>
+        <p><span data-l="en" lang="en">Prefer Viber? We are there too.</span><span data-l="ko" lang="ko">Viber가 편하다면 여기서도 만나요.</span></p>
+        <button class="btn btn-outline btn-sm demo-link" type="button"><span class="pair"><span lang="en">Open Viber</span><span lang="ko">Viber 열기</span></span></button>
+      </article>
+      <article class="card chan">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.8.3 5 2.6 5 5.8"/></svg></span>
+        <h3>Nepal community</h3>
+        <p><span data-l="en" lang="en">For students from Nepal, with partner language schools.</span><span data-l="ko" lang="ko">네팔 학생을 위한 커뮤니티, 연계 어학원과 함께합니다.</span></p>
+        <button class="btn btn-outline btn-sm demo-link" type="button"><span class="pair"><span lang="en">Join</span><span lang="ko">참여하기</span></span></button>
+      </article>
+    </div>
+    <p class="note"><span data-l="en" lang="en">Tips shared by members are personal experiences, not official advice. For your own case, ask us and we will connect you to a qualified agent.</span><span data-l="ko" lang="ko">회원이 나누는 팁은 개인 경험이며 공식 안내가 아닙니다. 내 상황에 대해서는 저희에게 물어보시면 자격을 갖춘 행정사에게 연결해 드립니다.</span></p>
+  </div>
+</section>
+
+<!-- 9. Promise -->
+<section id="promise" aria-labelledby="promise-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="promise-title"><span class="pair"><span lang="en">What we are aiming for in our pilot semester</span><span lang="ko">첫 시범 학기에 저희가 지키려는 목표</span></span></h2>
+      <p class="lead"><span data-l="en" lang="en">These are our goals for the pilot, not results yet. We will share real numbers after the pilot.</span><span data-l="ko" lang="ko">시범 운영의 목표치이며, 아직 실적이 아닙니다. 시범 운영이 끝나면 실제 결과를 공개하겠습니다.</span></p>
+    </div>
+    <ul class="metrics" role="list">
+      <li class="metric"><span class="target">Target / 목표</span><span class="big">24h</span><p><span data-l="en" lang="en">First reply within 24 hours</span><span data-l="ko" lang="ko">24시간 안에 첫 응답</span></p></li>
+      <li class="metric"><span class="target">Target / 목표</span><span class="big">80%</span><p><span data-l="en" lang="en">Questions resolved</span><span data-l="ko" lang="ko">문의 해결률</span></p></li>
+      <li class="metric"><span class="target">Target / 목표</span><span class="big">50%</span><p><span data-l="en" lang="en">Handled automatically, so people can focus on harder cases</span><span data-l="ko" lang="ko">자동 처리율 — 사람은 더 어려운 문의에 집중</span></p></li>
+      <li class="metric"><span class="target">Target / 목표</span><span class="big">4.0 / 5</span><p><span data-l="en" lang="en">Student satisfaction</span><span data-l="ko" lang="ko">학생 만족도</span></p></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 10. FAQ -->
+<section id="faq" class="alt" aria-labelledby="faq-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="faq-title"><span class="pair"><span lang="en">FAQ</span><span lang="ko">자주 묻는 질문</span></span></h2>
+    </div>
+    <div class="faq">
+      <details><summary><span class="pair"><span lang="en">Is Stay Busan a government office or an administrative agent?</span><span lang="ko">Stay 부산은 관공서나 행정사 사무소인가요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">Neither. Stay Busan is a private information and community service for international students. Visa and immigration work is done by qualified partner administrative agents, under their own name.</span><span data-l="ko" lang="ko">둘 다 아닙니다. Stay 부산은 유학생을 위한 민간 정보·커뮤니티 서비스입니다. 체류·출입국 업무는 자격을 갖춘 협업 행정사가 자신의 이름으로 진행합니다.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">Do I have to pay to ask a question?</span><span lang="ko">질문하려면 돈을 내야 하나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en"><span class="ph">[자리표시: 상담 접수 비용 정책 확정 후 작성]</span>. If you work with a partner administrative agent, any fee is agreed between you and the agent directly. Stay Busan never collects fees for administrative work.</span><span data-l="ko" lang="ko"><span class="ph">[자리표시: 상담 접수 비용 정책 확정 후 작성]</span>. 협업 행정사와 진행하게 되면 비용은 학생과 행정사가 직접 정합니다. Stay 부산은 행정 업무 비용을 받지 않습니다.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">Can you tell me if my visa will be approved?</span><span lang="ko">제 비자가 나올지 알려 줄 수 있나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">No. We cannot judge individual cases. We can share general information and connect you to a qualified partner administrative agent who can look at your situation.</span><span data-l="ko" lang="ko">아니요. 저희는 개별 사건을 판단할 수 없습니다. 일반 정보를 안내하고, 내 상황을 직접 검토할 수 있는 협업 행정사에게 연결해 드립니다.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">Can you find me a part-time job?</span><span lang="ko">아르바이트를 구해 줄 수 있나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">We explain the part-time work rules and share job posts you are allowed to apply for. Job introductions themselves are handled by registered employment agencies.</span><span data-l="ko" lang="ko">시간제취업 규칙을 안내하고, 지원 가능한 공고 정보를 공유합니다. 실제 일자리 알선은 등록된 기관이 맡습니다.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">What happens to my personal information?</span><span lang="ko">제 개인정보는 어떻게 되나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">We use it only to answer your question. It is shared with a partner administrative agent only when your question needs one and only with your consent. Please never send your passport or alien registration number through the form or chat.</span><span data-l="ko" lang="ko">질문에 답하는 데만 사용합니다. 행정사 상담이 필요한 경우에만, 동의를 받은 뒤 협업 행정사에게 전달합니다. 여권번호나 외국인등록번호는 폼이나 채팅으로 보내지 마세요.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">I am getting married in Korea. Can you help?</span><span lang="ko">한국에서 결혼할 예정인데 도와줄 수 있나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">If your marriage is already decided, we can guide you through the general steps for changing your status and inviting family, and connect you to a partner administrative agent. We do not offer matchmaking or marriage brokering.</span><span data-l="ko" lang="ko">결혼이 이미 정해졌다면 체류자격 변경과 가족 초청의 일반 절차를 안내하고 협업 행정사에게 연결해 드립니다. 결혼 매칭이나 중개는 하지 않습니다.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">Which languages do you support?</span><span lang="ko">어떤 언어를 지원하나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">English and Korean for now. Nepali is next, and more languages will follow as we grow.</span><span data-l="ko" lang="ko">지금은 영어와 한국어를 지원합니다. 다음은 네팔어이며, 서비스가 커지면 다른 언어도 추가합니다.</span></p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 11. Partners -->
+<section id="partners" aria-labelledby="partners-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow"><span class="pair"><span lang="en">For partners</span><span lang="ko">파트너 기관께</span></span></p>
+      <h2 id="partners-title"><span class="pair"><span lang="en">Help your students settle in, stay safely, and succeed.</span><span lang="ko">학생이 잘 정착하고, 안전하게 머무르고, 잘 해낼 수 있도록 함께해 주세요.</span></span></h2>
+      <p class="lead"><span data-l="en" lang="en">We are starting with a one-semester pilot with one language school in Nepal and one university area in Busan and Gyeongnam.</span><span data-l="ko" lang="ko">네팔 어학원 1곳과 부산·경남 대학권 1곳에서 한 학기 시범 운영으로 시작합니다.</span></p>
+    </div>
+    <div class="cards c3">
+      <article class="card"><h3><span class="pair"><span lang="en">Universities</span><span lang="ko">대학 국제처</span></span></h3><p><span data-l="en" lang="en">Run settling-in support together. Your students get one trusted place to ask, in their language.</span><span data-l="ko" lang="ko">정착 지원을 함께 운영합니다. 학생들은 자기 언어로 믿고 물어볼 한 곳을 갖게 됩니다.</span></p></article>
+      <article class="card"><h3><span class="pair"><span lang="en">Language schools</span><span lang="ko">어학원</span></span></h3><p><span data-l="en" lang="en">Stay connected with your students before and after they arrive in Korea.</span><span data-l="ko" lang="ko">입국 전부터 입국 후까지 학생과의 연결을 이어 갑니다.</span></p></article>
+      <article class="card"><h3><span class="pair"><span lang="en">Administrative agents</span><span lang="ko">행정사</span></span></h3><p><span data-l="en" lang="en">Receive consultations with basic documents and facts already organised. We take care of repeat questions and multilingual student contact. We do not share or split your fees.</span><span data-l="ko" lang="ko">기본 서류와 사실관계가 정리된 상담 건을 받으세요. 반복 문의와 다국어 학생 응대는 플랫폼이 맡습니다. 수임료를 나누는 구조는 만들지 않습니다.</span></p></article>
+    </div>
+    <p class="pilot"><span data-l="en" lang="en">Pilot partners: <span class="ph">[자리표시]</span></span><span data-l="ko" lang="ko">시범 운영 파트너: <span class="ph">[자리표시]</span></span></p>
+    <button class="btn btn-partner" type="button" id="partner-open"><span class="pair"><span lang="en">Talk to us about partnering</span><span lang="ko">협업 문의하기</span></span></button>
+  </div>
+</section>
+
+<!-- 12. Family brands -->
+<section id="family" class="fam" aria-labelledby="family-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="family-title"><span class="pair"><span lang="en">Growing together, step by step</span><span lang="ko">단계적으로 함께 넓혀 갑니다</span></span></h2>
+      <p class="lead"><span data-l="en" lang="en">Once our student community is established, we plan to connect these partner brands.</span><span data-l="ko" lang="ko">학생 커뮤니티가 자리 잡은 뒤, 아래 연계 브랜드와 단계적으로 연결할 계획입니다.</span></p>
+    </div>
+    <div class="cards c2">
+      <article class="card"><span class="planned"><span class="pair inline"><span lang="en">Planned</span><span lang="ko">연결 예정</span></span></span><h3><span class="pair"><span lang="en">Heritage Studio B</span><span lang="ko">헤리티지 스튜디오 B</span></span></h3><p><span data-l="en" lang="en">Goods, membership kits and social content</span><span data-l="ko" lang="ko">굿즈·멤버십 키트·SNS 콘텐츠</span></p></article>
+      <article class="card"><span class="planned"><span class="pair inline"><span lang="en">Planned</span><span lang="ko">연결 예정</span></span></span><h3>NOWRO Korea</h3><p><span data-l="en" lang="en">Family visits and travel in Korea</span><span data-l="ko" lang="ko">가족 방문·관광</span></p></article>
+    </div>
+  </div>
+</section>
+
+<!-- 13. Final CTA -->
+<section id="final-cta" aria-labelledby="final-title">
+  <svg class="waves" viewBox="0 0 1440 90" preserveAspectRatio="none" fill="none" aria-hidden="true">
+    <path d="M0 40c120 0 120-16 240-16s120 16 240 16 120-16 240-16 120 16 240 16 120-16 240-16 120 16 240 16" stroke="currentColor" stroke-width="2"/>
+    <path d="M0 66c120 0 120-16 240-16s120 16 240 16 120-16 240-16 120 16 240 16 120-16 240-16 120 16 240 16" stroke="currentColor" stroke-width="2" opacity=".55"/>
+  </svg>
+  <div class="wrap">
+    <h2 id="final-title"><span class="pair"><span lang="en">Not sure where to start? Start here.</span><span lang="ko">어디서부터 해야 할지 모르겠다면, 여기서 시작하세요.</span></span></h2>
+    <p class="sub"><span data-l="en" lang="en">One question is enough. We will help you find the next step.</span><span data-l="ko" lang="ko">질문 하나면 충분해요. 다음 단계는 저희가 함께 찾아 드립니다.</span></p>
+    <div class="final-row">
+      <a class="btn btn-primary" href="#ask"><span class="pair"><span lang="en">Ask a question</span><span lang="ko">질문 남기기</span></span></a>
+      <a class="textlink" href="#community"><span class="pair inline"><span lang="en">Or join the community</span><span lang="ko">또는 커뮤니티 참여하기</span></span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- 14. Footer -->
+<footer id="footer">
+  <div class="wrap">
+    <p class="f-brand">Stay Busan (working name) · Stay 부산(가칭)</p>
+    <p class="f-legal" lang="en">Stay Busan provides general information based on public sources and operates a student community and consultation intake. It is not a government agency or an administrative agent's office. Stay Busan does not judge individual cases, prepare or file documents on anyone's behalf, or charge fees for administrative work. Those services are provided only by qualified partner administrative agents, under their own name and responsibility. Job introductions are handled by registered employment agencies. Stay Busan does not provide matchmaking or marriage brokering.</p>
+    <p class="f-legal" lang="ko" style="margin-top:10px">Stay 부산은 공개 정보를 바탕으로 한 일반 안내와 유학생 커뮤니티, 상담 접수를 운영합니다. 관공서나 행정사 사무소가 아닙니다. Stay 부산은 개별 사건을 판단하거나, 서류를 대신 작성·신청하거나, 행정 업무 비용을 받지 않습니다. 이러한 업무는 자격을 갖춘 협업 행정사가 자신의 이름과 책임으로만 제공합니다. 일자리 알선은 등록된 기관이 수행하며, Stay 부산은 결혼 매칭·중개를 하지 않습니다.</p>
+    <div class="f-concept">
+      <p lang="en">This page is a concept demo designed and built by BRIDGENODE. "Stay Busan" and "Stay B" are working names. Forms on this page do not send or store any data.</p>
+      <p lang="ko" style="margin-top:6px">이 페이지는 브릿지노드가 기획·제작한 컨셉 시안입니다. "Stay 부산"과 "Stay B"는 가칭이며, 이 페이지의 폼은 어떤 정보도 전송·저장하지 않습니다.</p>
+    </div>
+    <div class="f-row">
+      <span>Contact: <span class="ph">[자리표시]</span></span>
+      <a href="https://bridgenode-studio.calmgrou.chatgpt.site/" target="_blank" rel="noopener"><span class="pair inline"><span lang="en">Made by BRIDGENODE</span><span lang="ko">브릿지노드 제작</span></span><span class="sr-only"> (opens in a new tab / 새 탭에서 열림)</span></a>
+    </div>
+    <div class="f-strip">
+      <span>BRIDGENODE 컨셉 시안 · 실제 운영 서비스 아님</span>
+      <a href="../"><span class="pair inline"><span lang="en">Back to BRIDGENODE portfolio</span><span lang="ko">브릿지노드 포트폴리오로</span></span></a>
+    </div>
+  </div>
+</footer>
+
+<!-- 15. Sticky CTA (mobile) -->
+<div id="sticky-cta" aria-label="Quick actions">
+  <a class="btn btn-primary" href="#ask" tabindex="-1"><span data-l="en" lang="en">Ask a question</span><span data-l="ko" lang="ko">질문 남기기</span></a>
+  <a class="btn btn-outline" href="#community" tabindex="-1"><span data-l="en" lang="en">Join</span><span data-l="ko" lang="ko">참여하기</span></a>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Partner dialog (demo) -->
+<dialog id="partner-dialog" aria-labelledby="pd-title">
+  <div class="dlg">
+    <div class="dlg-head">
+      <h2 id="pd-title"><span class="pair"><span lang="en">Talk to us about partnering</span><span lang="ko">협업 문의하기</span></span></h2>
+      <button class="dlg-close" type="button" id="pd-close" aria-label="Close / 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p class="demo-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span><span data-l="en" lang="en">Demo form: nothing you type here is sent or saved.</span><span data-l="ko" lang="ko">데모 폼입니다. 입력한 내용은 전송되거나 저장되지 않습니다.</span></span></p>
+    <form id="partner-form" novalidate>
+      <div class="field">
+        <label for="p-org"><span class="pair"><span lang="en">Organisation <span class="req" aria-hidden="true">*</span></span><span lang="ko">기관명</span></span></label>
+        <input type="text" id="p-org" name="org" required autocomplete="organization" aria-describedby="e-p-org">
+        <p class="err" id="e-p-org" hidden></p>
+      </div>
+      <div class="field">
+        <label for="p-type"><span class="pair"><span lang="en">Type</span><span lang="ko">기관 유형</span></span></label>
+        <select id="p-type" name="type">
+          <option value="university">University / 대학</option>
+          <option value="school">Language school / 어학원</option>
+          <option value="agent">Administrative agent / 행정사</option>
+          <option value="other">Other / 기타</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="p-person"><span class="pair"><span lang="en">Contact person <span class="req" aria-hidden="true">*</span></span><span lang="ko">담당자</span></span></label>
+        <input type="text" id="p-person" name="person" required autocomplete="name" aria-describedby="e-p-person">
+        <p class="err" id="e-p-person" hidden></p>
+      </div>
+      <div class="field">
+        <label for="p-email"><span class="pair"><span lang="en">Email <span class="req" aria-hidden="true">*</span></span><span lang="ko">이메일</span></span></label>
+        <input type="email" id="p-email" name="email" required autocomplete="email" aria-describedby="e-p-email">
+        <p class="err" id="e-p-email" hidden></p>
+      </div>
+      <div class="field">
+        <label for="p-msg"><span class="pair"><span lang="en">Message</span><span lang="ko">문의 내용</span></span></label>
+        <textarea id="p-msg" name="message"></textarea>
+      </div>
+      <div class="submit-row"><button class="btn btn-outline" type="submit"><span class="pair"><span lang="en">Send</span><span lang="ko">보내기</span></span></button></div>
+    </form>
+    <div class="done" id="partner-done" tabindex="-1" hidden>
+      <p><span data-l="en" lang="en">Thank you. This is a demo, so nothing was sent. In the live service, we would reply by email.</span><span data-l="ko" lang="ko">감사합니다. 데모라서 실제로 전송되지는 않았어요. 실제 서비스에서는 이메일로 답변드립니다.</span></p>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  "use strict";
+  var doc = document.documentElement;
+  doc.classList.add("js");
+
+  /* Strings created by script. Body copy in the HTML uses data-l="en|ko" spans.
+     To add Nepali later: add an "ne" key here and data-l="ne" spans in the HTML. */
+  var i18n = {
+    en: {
+      required: "Please fill this in.",
+      choose: "Please choose one.",
+      email: "Please enter a valid email address.",
+      consent: "Please check this box to continue.",
+      idWarn: "This looks like an ID number. Please remove it.",
+      toast: "Demo: the community link will be added when the service launches."
+    },
+    ko: {
+      required: "입력해 주세요.",
+      choose: "하나를 선택해 주세요.",
+      email: "올바른 이메일 주소를 입력해 주세요.",
+      consent: "동의에 체크해 주세요.",
+      idWarn: "신분증 번호처럼 보여요. 지워 주세요.",
+      toast: "데모입니다. 커뮤니티 링크는 서비스 시작 때 연결됩니다."
+    }
+  };
+  function bi(key){ return '<span data-l="en" lang="en">'+i18n.en[key]+'</span><span data-l="ko" lang="ko">'+i18n.ko[key]+'</span>'; }
+  function biText(en, ko){ return '<span data-l="en" lang="en">'+en+'</span><span data-l="ko" lang="ko">'+ko+'</span>'; }
+  function pair(en, ko){ return '<span class="pair"><span lang="en">'+en+'</span><span lang="ko">'+ko+'</span></span>'; }
+
+  /* ---------- language ---------- */
+  var langBtns = document.querySelectorAll("[data-set-lang]");
+  function setLang(l){
+    if(!i18n[l]) l = "en";
+    doc.lang = l;
+    langBtns.forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-set-lang") === l)); });
+    try{ localStorage.setItem("staybusan-lang", l); }catch(e){}
+  }
+  var saved = null;
+  try{ saved = localStorage.getItem("staybusan-lang"); }catch(e){}
+  setLang(saved === "ko" ? "ko" : "en");
+  langBtns.forEach(function(b){ b.addEventListener("click", function(){ setLang(b.getAttribute("data-set-lang")); }); });
+
+  /* ---------- concept bar ---------- */
+  var bar = document.getElementById("concept-bar");
+  try{ if(sessionStorage.getItem("staybusan-bar") === "closed") bar.hidden = true; }catch(e){}
+  document.getElementById("cb-close").addEventListener("click", function(){
+    bar.hidden = true;
+    try{ sessionStorage.setItem("staybusan-bar", "closed"); }catch(e){}
+    document.querySelector(".logo").focus();
+  });
+
+  /* ---------- mobile menu ---------- */
+  var menuBtn = document.getElementById("menu-btn"), mnav = document.getElementById("mobile-nav");
+  function closeMenu(focusBtn){ mnav.hidden = true; menuBtn.setAttribute("aria-expanded","false"); if(focusBtn) menuBtn.focus(); }
+  menuBtn.addEventListener("click", function(){
+    var open = mnav.hidden; mnav.hidden = !open; menuBtn.setAttribute("aria-expanded", String(open));
+    if(open){ var a = mnav.querySelector("a"); if(a) a.focus(); }
+  });
+  mnav.addEventListener("click", function(e){ if(e.target.closest("a")) closeMenu(false); });
+  document.addEventListener("keydown", function(e){ if(e.key === "Escape" && !mnav.hidden) closeMenu(true); });
+
+  /* ---------- problems: see 3 more (mobile) ---------- */
+  var moreBtn = document.getElementById("more-btn");
+  moreBtn.hidden = false;
+  moreBtn.addEventListener("click", function(){
+    document.querySelectorAll(".prob-more").forEach(function(c){ c.classList.add("shown"); });
+    moreBtn.setAttribute("aria-expanded","true");
+    moreBtn.hidden = true;
+    document.getElementById("prob-4").focus();
+  });
+
+  /* ---------- journey: accordion on mobile, 6 columns on desktop ---------- */
+  var mqDesk = window.matchMedia("(min-width: 960px)");
+  var jDetails = Array.prototype.slice.call(document.querySelectorAll("#journey-list details"));
+  function layoutJourney(){
+    if(mqDesk.matches){
+      jDetails.forEach(function(d){ d.open = true; d.querySelector("summary").setAttribute("tabindex","-1"); });
+    } else {
+      jDetails.forEach(function(d,i){ d.open = (i === 0); d.querySelector("summary").removeAttribute("tabindex"); });
+    }
+  }
+  jDetails.forEach(function(d){
+    d.querySelector("summary").addEventListener("click", function(e){ if(mqDesk.matches) e.preventDefault(); });
+    d.addEventListener("toggle", function(){
+      if(!mqDesk.matches && d.open){ jDetails.forEach(function(o){ if(o !== d) o.open = false; }); }
+    });
+  });
+  layoutJourney();
+  if(mqDesk.addEventListener) mqDesk.addEventListener("change", layoutJourney); else mqDesk.addListener(layoutJourney);
+
+  /* ---------- toast ---------- */
+  var toast = document.getElementById("toast"), toastTimer;
+  function showToast(key){
+    toast.innerHTML = bi(key);
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove("show"); toast.innerHTML = ""; }, 3000);
+  }
+  document.querySelectorAll(".demo-link").forEach(function(b){ b.addEventListener("click", function(){ showToast("toast"); }); });
+
+  /* ---------- form helpers (no network, no storage, no console) ---------- */
+  function setErr(input, errEl, key){
+    if(key){ errEl.innerHTML = bi(key); errEl.hidden = false; if(input) input.setAttribute("aria-invalid","true"); }
+    else { errEl.innerHTML = ""; errEl.hidden = true; if(input) input.removeAttribute("aria-invalid"); }
+  }
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function checkText(input, errEl){
+    var v = input.value.trim();
+    if(input.required && !v){ setErr(input, errEl, "required"); return false; }
+    if(input.type === "email" && v && (!emailRe.test(v) || !input.checkValidity())){ setErr(input, errEl, "email"); return false; }
+    setErr(input, errEl, null); return true;
+  }
+
+  /* ---------- ask form ---------- */
+  var form = document.getElementById("ask-form");
+  var result = document.getElementById("ask-result");
+  var fName = document.getElementById("f-name"), fQ = document.getElementById("f-question"),
+      fContact = document.getElementById("f-contact"), fConsent = document.getElementById("f-consent"),
+      fExpiry = document.getElementById("f-expiry"), lContact = document.getElementById("l-contact"),
+      wQ = document.getElementById("w-question");
+  var req = ' <span class="req" aria-hidden="true">*</span>';
+  var contactLabels = {
+    "": ["Contact","연락처"],
+    whatsapp: ["WhatsApp number","WhatsApp 번호"],
+    viber: ["Viber number","Viber 번호"],
+    email: ["Email address","이메일 주소"]
+  };
+  function updateContact(){
+    var r = form.querySelector('input[name="reply"]:checked');
+    var k = r ? r.value : "";
+    var lab = contactLabels[k];
+    lContact.innerHTML = pair(lab[0]+req, lab[1]);
+    if(k === "email"){ fContact.type = "email"; fContact.setAttribute("inputmode","email"); fContact.setAttribute("autocomplete","email"); }
+    else if(k){ fContact.type = "tel"; fContact.setAttribute("inputmode","tel"); fContact.setAttribute("autocomplete","tel"); }
+    else { fContact.type = "text"; fContact.removeAttribute("inputmode"); fContact.removeAttribute("autocomplete"); }
+  }
+  form.querySelectorAll('input[name="reply"]').forEach(function(r){ r.addEventListener("change", function(){ updateContact(); setErr(null, document.getElementById("e-reply"), null); document.getElementById("reply-choices").classList.remove("invalid"); }); });
+  form.querySelectorAll('input[name="topic"]').forEach(function(r){ r.addEventListener("change", function(){ setErr(null, document.getElementById("e-topic"), null); document.getElementById("topic-choices").classList.remove("invalid"); }); });
+
+  function idCheck(){ wQ.innerHTML = /\d{9,}/.test(fQ.value) ? bi("idWarn") : ""; }
+  fQ.addEventListener("input", idCheck);
+  [fName, fQ, fContact].forEach(function(el){
+    el.addEventListener("blur", function(){ if(el.getAttribute("aria-invalid")) checkText(el, document.getElementById("e-"+el.id.slice(2))); });
+  });
+  fConsent.addEventListener("change", function(){ if(fConsent.checked) setErr(fConsent, document.getElementById("e-consent"), null); });
+
+  function checkGroup(name, boxId, errId){
+    var ok = !!form.querySelector('input[name="'+name+'"]:checked');
+    document.getElementById(boxId).classList.toggle("invalid", !ok);
+    setErr(null, document.getElementById(errId), ok ? null : "choose");
+    return ok;
+  }
+
+  var MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function parseDate(v){ var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v); if(!m) return null; var d = new Date(+m[1], +m[2]-1, +m[3]); return isNaN(d) ? null : d; }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var firstBad = null;
+    function mark(ok, el){ if(!ok && !firstBad) firstBad = el; }
+    mark(checkText(fName, document.getElementById("e-name")), fName);
+    mark(checkGroup("topic","topic-choices","e-topic"), form.querySelector('input[name="topic"]'));
+    mark(checkText(fQ, document.getElementById("e-question")), fQ);
+    var replyOk = checkGroup("reply","reply-choices","e-reply");
+    mark(replyOk, form.querySelector('input[name="reply"]'));
+    mark(checkText(fContact, document.getElementById("e-contact")), fContact);
+    var cOk = fConsent.checked; setErr(fConsent, document.getElementById("e-consent"), cOk ? null : "consent"); mark(cOk, fConsent);
+    if(firstBad){ firstBad.focus(); return; }
+
+    var topic = form.querySelector('input[name="topic"]:checked').value;
+    var agent = (topic === "work" || topic === "visa" || topic === "family");
+    var html = '';
+    html += agent
+      ? '<span class="res-badge agent"><span class="pair inline"><span lang="en">Partner agent</span><span lang="ko">협업 행정사 연결</span></span></span>'
+      : '<span class="res-badge faq"><span class="pair inline"><span lang="en">FAQ first</span><span lang="ko">FAQ로 먼저 안내</span></span></span>';
+    html += '<h3 id="res-title">'+pair("Thank you. Here is where your question would go.","감사합니다. 질문은 이렇게 처리됩니다.")+'</h3>';
+    html += '<p class="msg">' + (agent
+      ? biText("This may need a professional opinion. In the live service, we would organise the basic facts and pass your question to a qualified partner administrative agent, who would contact you directly.","전문가 판단이 필요할 수 있는 질문이에요. 실제 서비스에서는 기본 사실을 정리해 자격을 갖춘 협업 행정사에게 전달하고, 행정사가 직접 연락드립니다.")
+      : biText("This looks like an everyday question. In the live service, you would first get an answer from our FAQ, and a team member would follow up if you need more.","생활 질문으로 보여요. 실제 서비스에서는 FAQ로 먼저 답을 드리고, 더 필요하면 담당자가 이어서 도와드립니다.")) + '</p>';
+    var d = parseDate(fExpiry.value);
+    if(d){
+      var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+      var n = Math.round((d - t) / 86400000);
+      if(n < 0){
+        html += '<p class="expiry past">'+biText("This date has already passed. Please talk to a qualified administrative agent as soon as possible.","이미 지난 날짜예요. 가능한 한 빨리 자격을 갖춘 행정사와 상담하세요.")+'</p>';
+      } else {
+        var en = d.getDate()+" "+MON[d.getMonth()]+" "+d.getFullYear();
+        var ko = d.getFullYear()+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일";
+        html += '<p class="expiry">'+biText("Your stay expiry date: "+en+". That is "+n+" days from today. In the live service, we would remind you before it.","입력하신 만료일: "+ko+". 오늘부터 "+n+"일 남았어요. 실제 서비스에서는 그 전에 미리 알려 드립니다.")+'</p>';
+      }
+    }
+    html += '<p class="demo-end">'+biText("This was a demo. No information was sent or stored.","데모였습니다. 어떤 정보도 전송·저장되지 않았습니다.")+'</p>';
+    html += '<div class="res-actions"><button type="button" class="btn btn-ghost" id="res-again">'+pair("Ask another question","다른 질문하기")+'</button><a class="btn btn-outline" href="#community">'+pair("Join the community","커뮤니티 참여하기")+'</a></div>';
+    result.innerHTML = html;
+    form.reset();               /* the demo keeps nothing once the result is shown */
+    wQ.innerHTML = ""; updateContact();
+    form.hidden = true; result.hidden = false;
+    result.focus();
+    document.getElementById("res-again").addEventListener("click", function(){
+      result.hidden = true; result.innerHTML = "";
+      form.hidden = false; form.reset(); updateContact();
+      fName.focus();
+    });
+  });
+
+  /* ---------- sticky CTA ---------- */
+  var sticky = document.getElementById("sticky-cta");
+  var stickyLinks = sticky.querySelectorAll("a");
+  var inView = {ask:false, community:false};
+  function updSticky(){
+    var show = window.scrollY > 300 && !inView.ask && !inView.community && !mqDesk.matches;
+    sticky.classList.toggle("show", show);
+    document.body.classList.toggle("has-sticky", show);
+    stickyLinks.forEach(function(a){ if(show) a.removeAttribute("tabindex"); else a.setAttribute("tabindex","-1"); });
+  }
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ inView[en.target.id] = en.isIntersecting; });
+      updSticky();
+    }, {threshold: 0.05});
+    io.observe(document.getElementById("ask")); io.observe(document.getElementById("community"));
+  }
+  window.addEventListener("scroll", updSticky, {passive:true});
+  updSticky();
+
+  /* ---------- partner dialog ---------- */
+  var dlg = document.getElementById("partner-dialog"), opener = document.getElementById("partner-open");
+  var pForm = document.getElementById("partner-form"), pDone = document.getElementById("partner-done");
+  function openDlg(){
+    pForm.reset(); pForm.hidden = false; pDone.hidden = true;
+    pForm.querySelectorAll(".err").forEach(function(el){ el.hidden = true; el.innerHTML = ""; });
+    pForm.querySelectorAll("[aria-invalid]").forEach(function(el){ el.removeAttribute("aria-invalid"); });
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open","");
+    document.getElementById("p-org").focus();
+  }
+  function closeDlg(){ if(dlg.open){ if(dlg.close) dlg.close(); else { dlg.removeAttribute("open"); opener.focus(); } } }
+  opener.addEventListener("click", openDlg);
+  document.getElementById("pd-close").addEventListener("click", closeDlg);
+  dlg.addEventListener("click", function(e){ if(e.target === dlg) closeDlg(); });
+  dlg.addEventListener("close", function(){ pForm.reset(); opener.focus(); });
+  pForm.addEventListener("submit", function(e){
+    e.preventDefault();
+    var ids = ["p-org","p-person","p-email"], first = null;
+    ids.forEach(function(id){ var el = document.getElementById(id); if(!checkText(el, document.getElementById("e-"+id)) && !first) first = el; });
+    if(first){ first.focus(); return; }
+    pForm.reset(); pForm.hidden = true; pDone.hidden = false; pDone.focus();
+  });
+})();
+</script>
+</body>
+</html>

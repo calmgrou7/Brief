@@ -1,0 +1,18 @@
+# BRIDGENODE portfolio site: response headers (documentation)
+#
+# This file uses the Netlify / Cloudflare Pages "_headers" format.
+# Render static sites do NOT read this file. On Render, set the same headers in
+# the dashboard (Settings > Headers) or in render.yaml under `headers:`.
+#
+# Why: the main BRIDGENODE homepage (bridgenode-studio.calmgrou.chatgpt.site)
+# fetches portfolio.json from this site, which is a different domain.
+# Without Access-Control-Allow-Origin the browser blocks that fetch (CORS).
+
+/portfolio.json
+  Access-Control-Allow-Origin: *
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

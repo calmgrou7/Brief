@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BRIDGENODE Works</title>
+<meta name="description" content="브릿지노드가 기획하고 만든 홈페이지·앱 작업 모음. 좋은 생각이 좋은 서비스가 되는 곳.">
+<meta property="og:title" content="BRIDGENODE Works">
+<meta property="og:description" content="좋은 생각이 좋은 서비스가 되는 곳. 브릿지노드 포트폴리오.">
+<meta property="og:type" content="website">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Ccircle cx='6' cy='6' r='4.5' fill='none' stroke='%23111214' stroke-width='2'/%3E%3Ccircle cx='18' cy='6' r='5.5' fill='%23FF5A1F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F4F0; --surface:#FFFFFF; --ink:#111214; --muted:#5E626A; --line:#DEDCD5; --line-strong:#B9B7B0;
+  --accent:#FF5A1F; --accent-ink:#C93D0B; --chip:#ECEAE4;
+  --st-concept-bg:#FFF1D6; --st-concept-text:#7A4A00;
+  --st-live-bg:#DDF3E4; --st-live-text:#176235;
+  --st-done-bg:#E4E7EC; --st-done-text:#3A4250;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 10px 30px rgba(0,0,0,.06);
+  --font:"Inter Tight","Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F1012; --surface:#17181B; --ink:#F2F1EC; --muted:#A3A6AD; --line:#2A2C31; --line-strong:#43464D;
+    --accent:#FF6B33; --accent-ink:#FF8A5C; --chip:#22242A;
+    --st-concept-bg:#3A2C10; --st-concept-text:#F6CF85;
+    --st-live-bg:#123222; --st-live-text:#8FE0AE;
+    --st-done-bg:#262A31; --st-done-text:#C4CAD4;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.3);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:1.0625rem;line-height:1.6;word-break:keep-all;overflow-x:hidden}
+a{color:inherit}
+img{display:block;max-width:100%}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+@media (min-width:768px){.wrap{padding:0 40px}}
+.skip{position:absolute;left:12px;top:-60px;background:var(--surface);padding:10px 14px;border-radius:8px;z-index:10;font-weight:700}
+.skip:focus{top:12px}
+
+header{border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:68px}
+.mark{font-weight:900;letter-spacing:.08em;font-size:1rem;text-decoration:none;display:inline-flex;align-items:center;gap:10px;min-height:44px}
+.mark i{width:22px;height:10px;display:inline-block;position:relative}
+.mark i::before,.mark i::after{content:"";position:absolute;top:0;width:10px;height:10px;border-radius:50%;border:2px solid currentColor}
+.mark i::before{left:0}.mark i::after{right:0;background:var(--accent);border-color:var(--accent)}
+.head-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border:1.5px solid var(--ink);border-radius:999px;font-weight:700;font-size:.9375rem;text-decoration:none}
+.head-link:hover{background:var(--ink);color:var(--bg)}
+
+.hero{padding:64px 0 48px}
+@media (min-width:960px){.hero{padding:120px 0 80px}}
+.kicker{font-size:.8125rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.kicker::before{content:"";width:28px;height:2px;background:var(--accent)}
+.hero h1{margin-top:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.92;font-size:clamp(2.7rem,11.5vw,8.4rem)}
+.hero h1 span{display:block}
+.hero h1 .o{color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+@supports not (-webkit-text-stroke:1px black){.hero h1 .o{color:var(--muted)}}
+.hero .ko{margin-top:28px;font-size:clamp(1.15rem,3.6vw,1.6rem);font-weight:700;letter-spacing:-.02em}
+.hero .desc{margin-top:10px;color:var(--muted);max-width:560px}
+
+.works{padding:24px 0 96px}
+.works-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;border-top:2px solid var(--ink);padding-top:22px;margin-bottom:28px}
+.works-head h2{font-size:clamp(1.9rem,6vw,3.2rem);font-weight:900;letter-spacing:-.03em;text-transform:uppercase;line-height:1}
+.works-head h2 small{display:block;font-size:.95rem;font-weight:700;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:10px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--line-strong);background:transparent;font:inherit;font-weight:700;font-size:.9375rem;color:var(--ink);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters button .c{font-weight:500;opacity:.7;margin-left:4px}
+.status-line{font-size:.9375rem;color:var(--muted);margin-bottom:18px;min-height:1.5em}
+
+.grid{list-style:none;margin:0;padding:0;display:grid;gap:22px}
+@media (min-width:720px){.grid{grid-template-columns:1fr 1fr;gap:28px}}
+@media (min-width:1100px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.thumb{aspect-ratio:16/10;background:var(--chip);overflow:hidden;border-bottom:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top}
+.thumb.empty{display:grid;place-items:center;font-weight:900;letter-spacing:.1em;color:var(--muted);font-size:.875rem}
+.body{padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8125rem;font-weight:700;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 10px;font-size:.75rem;font-weight:800;letter-spacing:.02em}
+.st-concept{background:var(--st-concept-bg);color:var(--st-concept-text)}
+.st-live{background:var(--st-live-bg);color:var(--st-live-text)}
+.st-done{background:var(--st-done-bg);color:var(--st-done-text)}
+.card h3{font-size:1.1875rem;font-weight:800;letter-spacing:-.02em;line-height:1.35}
+.card h3 a{text-decoration:none}
+.card h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.card .en{font-size:.875rem;color:var(--muted);font-weight:500;line-height:1.45}
+.card .sum{font-size:.9375rem;color:var(--ink);opacity:.86}
+.tags{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.tags li{font-size:.75rem;font-weight:600;background:var(--chip);border-radius:6px;padding:3px 8px;color:var(--muted)}
+.go{margin-top:auto;padding-top:8px;font-weight:800;font-size:.9375rem;display:inline-flex;gap:6px;align-items:center;color:var(--accent-ink)}
+.card:focus-within{outline:3px solid var(--accent);outline-offset:3px}
+.card h3 a:focus-visible{outline:none}
+
+.notice{border:1.5px dashed var(--line-strong);border-radius:20px;padding:28px 22px;color:var(--muted)}
+.notice strong{display:block;color:var(--ink);font-size:1.0625rem;margin-bottom:6px}
+.notice a{font-weight:700;color:var(--accent-ink)}
+
+.cta{background:var(--ink);color:var(--bg);padding:72px 0}
+@media (min-width:960px){.cta{padding:112px 0}}
+.cta h2{font-weight:900;text-transform:uppercase;letter-spacing:-.035em;line-height:.95;font-size:clamp(2.2rem,8vw,5.6rem)}
+.cta p{margin-top:18px;font-size:1.0625rem;opacity:.8;max-width:520px}
+.cta a.btn{margin-top:30px;display:inline-flex;align-items:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;background:var(--accent);color:#111214;font-weight:800;text-decoration:none}
+.cta a.btn:hover{filter:brightness(1.06)}
+footer{padding:28px 0 calc(28px + env(safe-area-inset-bottom));font-size:.875rem;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+footer a{display:inline-flex;min-height:44px;align-items:center}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#works">작업 목록으로 건너뛰기</a>
+<header>
+  <div class="wrap">
+    <a class="mark" href="./" aria-label="BRIDGENODE Works 처음으로"><i aria-hidden="true"></i>BRIDGENODE</a>
+    <a class="head-link" href="https://bridgenode-studio.calmgrou.chatgpt.site/" target="_blank" rel="noopener">상담 문의<span aria-hidden="true">↗</span><span class="sr-only"> (새 탭에서 열림)</span></a>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="kicker">Selected Works</p>
+      <h1 id="hero-title" lang="en"><span>Ideas connect.</span><span class="o">Possibilities</span><span>begin.</span></h1>
+      <p class="ko">좋은 생각이 좋은 서비스가 되는 곳.</p>
+      <p class="desc">부산의 앱·웹 제작 스튜디오 브릿지노드가 직접 기획하고 만든 작업을 모았습니다.</p>
+    </div>
+  </section>
+
+  <section class="works" id="works" aria-labelledby="works-title">
+    <div class="wrap">
+      <div class="works-head">
+        <h2 id="works-title" lang="en">Works<small lang="ko">홈페이지 · 앱 작업</small></h2>
+        <div class="filters" role="group" aria-label="분류 필터">
+          <button type="button" data-filter="all" aria-pressed="true">전체<span class="c" data-count="all"></span></button>
+          <button type="button" data-filter="홈페이지" aria-pressed="false">홈페이지<span class="c" data-count="홈페이지"></span></button>
+          <button type="button" data-filter="앱" aria-pressed="false">앱<span class="c" data-count="앱"></span></button>
+        </div>
+      </div>
+      <p class="status-line" id="status" role="status" aria-live="polite">작업 목록을 불러오는 중입니다.</p>
+      <ul class="grid" id="grid"></ul>
+    </div>
+  </section>
+
+  <section class="cta" aria-labelledby="cta-title">
+    <div class="wrap">
+      <h2 id="cta-title" lang="en">Let's build yours.</h2>
+      <p>만들고 싶은 서비스가 있다면, 이야기부터 들려주세요.</p>
+      <a class="btn" href="https://bridgenode-studio.calmgrou.chatgpt.site/" target="_blank" rel="noopener">브릿지노드에 상담하기<span aria-hidden="true">→</span><span class="sr-only"> (새 탭에서 열림)</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 BRIDGENODE · 부산</span>
+    <a href="https://bridgenode-studio.calmgrou.chatgpt.site/" target="_blank" rel="noopener">bridgenode-studio 홈페이지<span class="sr-only"> (새 탭에서 열림)</span></a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var FEED = "portfolio.json";
+  var HOME = "https://bridgenode-studio.calmgrou.chatgpt.site/";
+  var grid = document.getElementById("grid"), status = document.getElementById("status");
+  var btns = document.querySelectorAll("[data-filter]");
+  var items = [], filter = "all";
+  var statusClass = {"컨셉 시안":"st-concept","운영 중":"st-live","완료":"st-done"};
+
+  function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+  function resolve(u){ try{ return new URL(u, new URL(FEED, location.href)).href; }catch(e){ return u; } }
+
+  function card(it){
+    var li = el("li", "card");
+    var th = el("div", "thumb");
+    if(it.thumbnail){
+      var img = document.createElement("img");
+      img.src = resolve(it.thumbnail); img.alt = ""; img.loading = "lazy"; img.width = 1200; img.height = 750;
+      img.onerror = function(){ th.classList.add("empty"); th.textContent = "BRIDGENODE"; };
+      th.appendChild(img);
+    } else { th.classList.add("empty"); th.textContent = "BRIDGENODE"; }
+    li.appendChild(th);
+    var b = el("div", "body");
+    var meta = el("div", "meta");
+    if(it.status) meta.appendChild(el("span", "badge " + (statusClass[it.status] || "st-done"), it.status));
+    meta.appendChild(el("span", null, [it.kind, it.category, it.year].filter(Boolean).join(" · ")));
+    b.appendChild(meta);
+    var h = el("h3"); var a = el("a", null, it.title || "");
+    a.href = it.url ? resolve(it.url) : HOME;
+    if(/^https?:/i.test(it.url || "") && new URL(a.href).origin !== location.origin){ a.target = "_blank"; a.rel = "noopener"; }
+    h.appendChild(a); b.appendChild(h);
+    if(it.titleEn){ var en = el("p", "en", it.titleEn); en.lang = "en"; b.appendChild(en); }
+    if(it.summary) b.appendChild(el("p", "sum", it.summary));
+    if(Array.isArray(it.tags) && it.tags.length){
+      var ul = el("ul", "tags"); ul.setAttribute("aria-label", "태그");
+      it.tags.forEach(function(t){ ul.appendChild(el("li", null, t)); });
+      b.appendChild(ul);
+    }
+    var go = el("span", "go", it.status === "컨셉 시안" ? "시안 보기 →" : "자세히 보기 →"); go.setAttribute("aria-hidden","true");
+    b.appendChild(go);
+    li.appendChild(b);
+    return li;
+  }
+
+  function render(){
+    var list = items.filter(function(it){ return filter === "all" || it.category === filter; });
+    grid.innerHTML = "";
+    if(!list.length){
+      status.textContent = "";
+      var n = el("li", "notice");
+      n.appendChild(el("strong", null, "이 분류에는 아직 공개된 작업이 없어요."));
+      n.appendChild(document.createTextNode("새 작업이 준비되는 대로 이곳에 올라옵니다."));
+      grid.appendChild(n);
+      return;
+    }
+    list.forEach(function(it){ grid.appendChild(card(it)); });
+    status.textContent = (filter === "all" ? "전체" : filter) + " 작업 " + list.length + "건";
+  }
+
+  function counts(){
+    var c = {all: items.length, "홈페이지":0, "앱":0};
+    items.forEach(function(it){ if(c[it.category] != null) c[it.category]++; });
+    document.querySelectorAll("[data-count]").forEach(function(s){ s.textContent = " " + c[s.getAttribute("data-count")]; });
+  }
+
+  btns.forEach(function(b){
+    b.addEventListener("click", function(){
+      filter = b.getAttribute("data-filter");
+      btns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+      render();
+    });
+  });
+
+  function fail(){
+    status.textContent = "";
+    grid.innerHTML = "";
+    var n = el("li", "notice");
+    n.appendChild(el("strong", null, "작업 목록을 불러오지 못했어요."));
+    n.appendChild(document.createTextNode("잠시 후 새로고침해 주세요. 그동안 작업 소개는 "));
+    var a = el("a", null, "브릿지노드 홈페이지"); a.href = HOME; a.target = "_blank"; a.rel = "noopener";
+    n.appendChild(a);
+    n.appendChild(document.createTextNode("에서 보실 수 있습니다."));
+    grid.appendChild(n);
+  }
+
+  fetch(FEED, {cache: "no-cache"})
+    .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function(data){
+      items = (data && Array.isArray(data.items) ? data.items : []).slice().sort(function(a, b){ return (a.order || 999) - (b.order || 999); });
+      counts(); render();
+    })
+    .catch(fail);
+})();
+</script>
+</body>
+</html>
