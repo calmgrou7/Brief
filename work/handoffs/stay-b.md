@@ -86,3 +86,24 @@
 
 **다음**: 반영 후 검토자 재검토(diff 기준) → 통과 시 비서.
 **대표 결정 필요**: 새로 없음(기존: 심볼, 오프라인 비용, 장소·제휴처 공개 시점, 연락 이메일).
+
+## 웹코더 (2026-11-14, 수정) → 검토자 재검토
+
+**한 일 (반영 항목)**
+- F-1 ① `index.html` `#off-session` 아래 "For students already admitted to a school in Korea. / 한국 학교 입학이 정해진 학생을 위한 생활 설명회예요." 추가
+- F-1 ② `#trust` `ul.trust-notes` 4번째 줄 "Stay B does not recruit students, handle school admissions, or apply for visas. / Stay B는 학생 모집, 입학 수속, 비자 신청을 하지 않아요." 추가
+- F-1 ③ `#f-school` 옵션 → `Admitted, not started yet / 입학 예정(입국 전)` ("Not enrolled yet" 남은 곳 없음)
+- R-1 `assets/guides-data.js` 주석 15 cards
+- R-2 `partners.html` `.hub-foot`: Heritage Studio B 빼고 NOWRO Korea만 "단계적 연결"(EN·KO 검토자 문구 그대로). Heritage 카드 `Planned` 배지는 유지
+- R-3 FAQ 4 답 문장 순서 교체(검토자 문구 그대로)
+- R-4 `og-image.png` 4번 칩 `Visa & after graduation` 두 줄, 잘림 없음(이미지 확인)
+- R-5 `partners.html` 제목이 언어 전환 시 `Stay B · 파트너 안내 (컨셉 시안)`으로 바뀜
+- R-6 기획안 `work/planning/20261114-stayb-homepage-v2.md` 25행·72행 "카드 14장"→15장, 0-2절 중복 번호 "5. noindex"→9 (숫자·번호만, 기획자 대신 처리)
+
+**확인**: Playwright index/partners × 400/1280 × EN/KO 8조합 콘솔 오류 0, 가로 넘침 0, 제목 언어 전환 정상.
+
+**결과물**: `work/builds/stayb-v2/` (index.html, partners.html, assets/guides-data.js, assets/site.css, og-image.png), 기획안 v2
+
+**다음**: 검토자 diff 기준 재검토 → 통과 시 비서.
+**스스로 정한 것**: R-6는 실장 지시로 웹코더가 숫자·번호만 고침(본문 변경 없음).
+**대표 결정 필요**: 새로 없음.
