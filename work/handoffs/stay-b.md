@@ -99,6 +99,7 @@
 - R-4 `og-image.png` 4번 칩 `Visa & after graduation` 두 줄, 잘림 없음(이미지 확인)
 - R-5 `partners.html` 제목이 언어 전환 시 `Stay B · 파트너 안내 (컨셉 시안)`으로 바뀜
 - R-6 기획안 `work/planning/20261114-stayb-homepage-v2.md` 25행·72행 "카드 14장"→15장, 0-2절 중복 번호 "5. noindex"→9 (숫자·번호만, 기획자 대신 처리)
+- (추가, 대표 결정 8 갱신) 오프라인 선택 서비스 표기 변경: `index.html` 첫 주 지원·정착 동행 카드 2곳 `Optional paid service · coming soon / 유료 선택 서비스 · 준비 중`, FAQ 비용 답 "Optional in-person services, like airport pickup, will be paid services. Details and prices are coming soon. / 공항 픽업 같은 오프라인 선택 서비스는 유료이며, 내용과 가격은 준비 중이에요."(문장은 웹코더 작성). 정보 보기·질문 남기기 무료 문구는 그대로. 폼·partners·스크립트에는 해당 표기 없음. 심볼은 건드리지 않음.
 
 **확인**: Playwright index/partners × 400/1280 × EN/KO 8조합 콘솔 오류 0, 가로 넘침 0, 제목 언어 전환 정상.
 
