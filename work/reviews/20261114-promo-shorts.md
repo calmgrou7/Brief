@@ -123,3 +123,36 @@
 ## 참고(일반 정보 출처, 법률 자문 아님)
 - 행정사법 제3조(행정사 아닌 사람의 업무·명칭 사용 금지) 요약: https://www.nepla.ai/law/행정사법
 - 세무사법 소개·알선 대가 금지 조항 신설 보도(유사 쟁점 참고): https://www.lawtimes.co.kr/news/articleView.html?idxno=175047
+
+---
+
+## 재검토(44de874, fc278f0)
+
+- 재검토일: 2026-11-14 (KST) · 범위: 필수 6건 + 편집자 권장 V-5~V-10, 새 `fonts/` 라이선스, 새로 생긴 위험 표현·오탈자만
+- 확인 방법: 두 커밋 diff 정독, `draft.mp4` ffprobe, 인코딩된 mp4에서 3.5·4.5·4.8·5.0·5.2·5.5초 프레임 직접 추출, 썸네일 3장 확인, 남은 `qualified agent`·`Inter` 표기 검색
+
+### 판정: 통과 (→ 비서)
+
+| # | 결과 | 확인 내용 |
+|---|---|---|
+| V-1 | 반영 | 3편 Threads 끝에 필수 한 줄 원문 추가, TikTok 축약문 → 원문 교체. 4개 플랫폼 모두 같은 원문 |
+| V-2 | 반영 | 영상·storyboard·썸네일 3장 모두 v2 토큰(크림 바탕·청록 제목·노랑 밑줄·흙빛 보조). 글꼴도 명세대로 Bricolage Grotesque·Figtree. script.md 색·폰트 설명 갱신. 2·3편 DRAFT 도장 유지 |
+| V-3 | 반영 | 4.5~5.5초 체크리스트 카드가 휴대폰 화면 안에서 잘려 보이고 하단 `Concept · Stay B is a working name`와 겹치지 않음. `Visa & after graduation` 버튼 좌우 여백 확보. 확인 근거 `storyboard_06_check_4.5-5.5s.png` 추가 |
+| V-4 | 반영 | 3편 KO·NE srt 4·5번(10~16초)에 필수 한 줄 추가(기획안 카드 3-2 원문 일치), NE 검수 표기 유지 |
+| V-5 | 반영 | `Usually: form, passport, 1 photo (to be confirmed)` / KO `보통: … [확인 필요]` / NE 동일 |
+| V-6 | 반영 | 2편 화면 상시 문구·Reels·TikTok·YouTube에 `Not an official government or school service.`, TikTok·Threads에 `We do not apply for you.`, 하이코리아 녹화 위 오인 방지 문구 지시 |
+| V-7 | 반영 | "집 현관" 삭제, 찍으면 안 되는 것에 문패·호수·창밖 풍경 + "대표 자택에서는 촬영하지 않는다" |
+| V-8 | 반영 | 사이트 버튼 이름 4개 그대로 |
+| V-9 | 반영 | Reels·TikTok·Threads에 `(coming soon)`, 게시 전 체크리스트에 삭제/유지 판단 항목 추가 |
+| V-10 | 반영 | 2·3편 전체 `licensed immigration administrative agent`로 통일(남은 `qualified agent` 없음) |
+| M-1 | 반영 | 4-2-1에 대상 한정 EN/KO, 하지 않는 일 한 줄 EN/KO, 쓰지 않을 말, 학생 1인당 대가 구조 금지(대표 결정 사항). "공식 안내" → "안내". 2-4 표에 유학·입학 알선 줄 + 행정사 명칭 줄. 4-2-4에 서면 동의·행정사 명의·업무 주체 표기 금지·연결 대가 없음. 7절 "반영 완료" 정리 |
+| M-2 | 반영 | 4-3 그룹 고정 공지 EN/KO 4줄(번호 노출·다른 용도 사용 안 함·여권/ARC/계좌 사진 금지·질문 폼) + 수집 동의 내부 메모 + 게시는 대표 승인 후 |
+| 권장(마케터) | 반영 | 캘린더 2·3·4주 화요일 칸에 `[행정사 감수 후 게시]` |
+
+- `draft.mp4` 규격: H.264 1080×1920, 30fps, yuv420p, 20.0초, AAC 48kHz 스테레오(무음), 435,718바이트. 직전과 동일 규격.
+- 폰트 라이선스: `stayb-shorts-01/fonts/`에 `BricolageGrotesque-VF.ttf`·`Figtree-VF.ttf` + `OFL-BricolageGrotesque.txt`·`OFL-Figtree.txt`(각 93줄, SIL OFL 1.1 전문 + 저작권 표기). 영상 번인·이미지 사용 가능, 폰트 파일 자체를 판매하지 않는 한 문제 없음. 적합.
+- 새 위험 표현·오탈자: 없음. 새로 들어간 문구(오인 방지, 행정사 명의 예시, 그룹 공지) 모두 금지 표 범위 안.
+
+### 남은 것(통과에 영향 없음, 편집자 다음 작업 때 정리)
+- 44de874에 `stayb-shorts-01/__pycache__/make_draft.cpython-313.pyc`(실행 부산물)가 함께 커밋됨. 다음 커밋 때 삭제하고 `.gitignore`에 `__pycache__/` 추가 권장.
+- 게시 전 전제는 그대로: 2·3편 행정사 감수, 네팔어 원어민 검수, Stay B 이름·공개 여부·링크 대표 결정.
