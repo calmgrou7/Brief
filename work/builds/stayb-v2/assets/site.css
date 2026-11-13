@@ -376,6 +376,7 @@ html[lang="ko"] .btn .pair>[lang="en"]{font-size:14px;font-weight:500;opacity:.8
 .off-card > .flow-ic{position:absolute;top:16px;right:16px;width:32px;height:32px}
 .off-card h3{font-size:var(--fs-h3);line-height:1.3;padding-right:40px}
 .off-card p{margin:10px 0 0}
+.off-card .off-scope{margin-top:8px;color:var(--ink-muted)}
 .off-card .note-later{margin-top:12px}
 .off-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
 .off-foot .btn .pair>[lang]{color:inherit!important}

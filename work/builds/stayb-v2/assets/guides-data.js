@@ -1,4 +1,4 @@
-/* Stay B guide hub content: 4 stages x 14 cards (planning v2, section 4-4).
+/* Stay B guide hub content: 4 stages x 15 cards (planning v2, section 4-4).
    Edit copy here only. Each text has en + ko; add "ne" later with the same shape.
    Markers inside text:
      [[tbc]]        -> "to be confirmed / 확인 예정" chip (facts waiting for agent review)

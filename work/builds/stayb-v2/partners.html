@@ -162,7 +162,7 @@
       <article class="hub-node l"><span class="kind"><span class="pair inline"><span lang="en">Planned</span><span lang="ko">연결 예정</span></span></span><h3><span class="pair"><span lang="en">Heritage Studio B</span><span lang="ko">헤리티지 스튜디오 B</span></span></h3><p><span data-l="en" lang="en">Brand experience for Stay B: welcome kits, membership cards, goods and social content.</span><span data-l="ko" lang="ko">Stay B 브랜드 경험: 웰컴 키트·멤버십 카드·굿즈·SNS 콘텐츠.</span></p></article>
       <article class="hub-node r"><span class="kind"><span class="pair inline"><span lang="en">Planned</span><span lang="ko">연결 예정</span></span></span><h3><span class="pair"><span lang="en">NOWRO Korea</span><span lang="ko">NOWRO Korea</span></span></h3><p><span data-l="en" lang="en">Family visits and travel in Korea.</span><span data-l="ko" lang="ko">가족 방문·관광 연결.</span></p></article>
     </div>
-    <p class="hub-foot"><span data-l="en" lang="en">Job introductions are handled by registered employment agencies and public employment centers. Stay B shares general information only. Heritage Studio B and NOWRO Korea will be connected step by step, once the student community is established.</span><span data-l="ko" lang="ko">일자리 알선은 등록된 기관과 고용센터가 수행하며, Stay B는 일반 정보만 안내합니다. 헤리티지 스튜디오 B와 NOWRO Korea는 학생 기반이 쌓인 뒤 단계적으로 연결합니다.</span></p>
+    <p class="hub-foot"><span data-l="en" lang="en">Job introductions are handled by registered employment agencies and public employment centers. Stay B shares general information only. NOWRO Korea will be connected step by step, once the student community is established.</span><span data-l="ko" lang="ko">일자리 알선은 등록된 기관과 고용센터가 수행하며, Stay B는 일반 정보만 안내합니다. NOWRO Korea는 학생 기반이 쌓인 뒤 단계적으로 연결합니다.</span></p>
   </div>
 </section>
 
@@ -360,6 +360,11 @@
 (function(){
   "use strict";
   var S = window.StayB;
+  /* page title follows language, like the home page */
+  var TITLES = { en: "Stay B · For partners (Concept)", ko: "Stay B · 파트너 안내 (컨셉 시안)" };
+  function syncTitle(l){ document.title = TITLES[l] || TITLES.en; }
+  syncTitle(S.getLang());
+  S.onLang(syncTitle);
   var pForm = document.getElementById("partner-form"), pDone = document.getElementById("partner-done");
   var ids = ["p-org","p-person","p-email"];
   ids.forEach(function(id){
