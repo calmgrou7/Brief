@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stay B 심볼 3안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF7F0; --paper-2:#F1EBE0; --surface:#FFFFFF; --ink:#16302F; --ink-muted:#4E605E;
+  --sea:#0B6B66; --on-sea:#FFFFFF; --sun:#F4B942; --clay:#A9481F; --line:#E6DED1; --line-strong:#C9BFAE;
+  --footer-bg:#12302E; --footer-text:#D8E6E3; --focus:#1F5FBF;
+  --dk-paper:#0F1A1A; --dk-surface:#152424; --dk-ink:#EAF1EF; --dk-muted:#A9BAB7; --dk-sea:#5CC4BA; --dk-line:#263736;
+  --font-display:"Bricolage Grotesque","Noto Sans KR",system-ui,sans-serif;
+  --font-body:"Figtree","Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#0F1A1A; --paper-2:#132121; --surface:#152424; --ink:#EAF1EF; --ink-muted:#A9BAB7; --line:#263736; --line-strong:#3A5250; }
+}
+:root[data-theme="dark"]{ --paper:#0F1A1A; --paper-2:#132121; --surface:#152424; --ink:#EAF1EF; --ink-muted:#A9BAB7; --line:#263736; --line-strong:#3A5250; }
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--font-body);word-break:keep-all}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 16px 80px}
+@media (min-width:600px){.wrap{padding-left:24px;padding-right:24px}}
+h1{font:700 30px/1.15 var(--font-display);margin:0 0 8px;letter-spacing:-.01em}
+h2{font:700 24px/1.2 var(--font-display);margin:0}
+h3{font:600 15px/1.3 var(--font-body);margin:0 0 10px;color:var(--ink-muted)}
+p{margin:0 0 12px;max-width:66ch}
+.lead{font-size:18px;color:var(--ink-muted)}
+.meta{font-size:14px;color:var(--ink-muted)}
+code{font-size:13px}
+section.opt{border-top:1px solid var(--line);padding:40px 0 8px;margin-top:40px}
+.opt-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;margin-bottom:6px}
+.tag{font:600 13px/1 var(--font-body);padding:6px 10px;border-radius:999px;background:var(--paper-2);color:var(--ink)}
+.tag.rec{background:var(--sea);color:var(--on-sea)}
+.intent{font-size:17px}
+.why{font-size:15px;color:var(--ink-muted)}
+.grid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:20px}
+@media (min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+.panel{border:1px solid var(--line);border-radius:12px;padding:20px;min-width:0}
+.panel.light{background:#FBF7F0;color:#16302F;border-color:#E6DED1}
+.panel.dark{background:#0F1A1A;color:#EAF1EF;border-color:#263736}
+.panel.light h3{color:#4E605E}.panel.dark h3{color:#A9BAB7}
+.sizes{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.sizes figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sizes figcaption{font-size:12px;opacity:.75}
+.sizes svg{display:block}
+.fav{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px}
+.fav canvas{image-rendering:pixelated;width:96px;height:96px;border-radius:6px;border:1px solid currentColor;border-color:rgba(127,127,127,.3)}
+.tab{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:8px 8px 0 0;font:500 13px/1 system-ui,sans-serif;max-width:100%}
+.panel.light .tab{background:#E8E3DA;color:#222}
+.panel.dark .tab{background:#2A2F33;color:#E6E6E6}
+.lockups{display:flex;flex-direction:column;gap:18px;margin-top:4px}
+.lockup{display:inline-flex;align-items:center;gap:.36em;font:700 22px/1 var(--font-display);letter-spacing:-.01em;white-space:nowrap}
+.lockup svg{width:1.27em;height:1.27em;flex:none}
+.lockup .b{margin-left:.14em;color:var(--sea)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lockup .b{color:#5CC4BA}}
+.lockup.lg{font-size:44px}
+.panel.light .lockup .b{color:#0B6B66}
+.panel.dark .lockup .b{color:#5CC4BA}
+.lockup.mono .b,.panel .lockup.mono .b{color:inherit}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+.chip-bg{border-radius:12px;padding:18px 20px;display:flex;align-items:center;flex:1 1 220px;min-width:0}
+.bg-paper{background:#FBF7F0;color:#16302F;border:1px solid #E6DED1}
+.bg-white{background:#FFFFFF;color:#111111;border:1px solid #E6DED1}
+.bg-footer{background:#12302E;color:#FFFFFF}
+.bg-sea{background:#0B6B66;color:#FFFFFF}
+.bg-sun{background:#F4B942;color:#16302F}
+.chip-bg small{display:block;font:500 12px/1.3 var(--font-body);opacity:.8;margin-top:8px}
+.chip-bg > div{min-width:0}
+details{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+summary{cursor:pointer;padding:12px 16px;font-weight:600;min-height:44px;display:flex;align-items:center}
+summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:12px}
+pre{margin:0;padding:0 16px 16px;overflow-x:auto;font-size:12.5px;line-height:1.5;white-space:pre}
+.before{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-top:12px}
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px}
+.compare .cell{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.compare .cell .t{font-size:13px;color:var(--ink-muted)}
+.verdict{margin-top:48px;border-left:4px solid var(--sea);padding:4px 0 4px 16px}
+.verdict h2{margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="meta">BRIDGE NODE 웹디자이너 · 2026-11-14 · Stay B v2 심볼 재작업 (대표 결정 9: "조금 더 센스 있게")</p>
+  <h1>Stay B 심볼 3안</h1>
+  <p class="lead">지난 안(문 + 대교 아치 + 물결)은 세 가지를 한 칸에 넣어 16px에서 뭉개졌습니다. 이번에는 안마다 아이디어를 하나만 남겼습니다.</p>
+
+  <div class="before" aria-label="지난 안 비교">
+    <div class="meta">지난 안 →</div>
+    <span id="old16"></span><span id="old24"></span><span id="old48"></span>
+    <div class="meta">16px에서 아치·기둥·물결이 한 덩어리가 됨</div>
+  </div>
+
+  <div class="compare" id="compare" aria-label="3안 나란히 비교"></div>
+
+  <div id="opts"></div>
+
+  <div class="verdict">
+    <h2>디자이너 추천: A안 「누운 B」</h2>
+    <p>이름의 B를 눕히면 그대로 두 칸짜리 다리(광안대교의 연결)이자 두 번의 물결이 됩니다. 글자 하나로 이름·연결·바다를 다 말하니 따로 그림을 더할 필요가 없고, 선 하나짜리 윤곽이라 16px 파비콘에서도 모양이 남습니다.</p>
+    <p class="why">B안 「열린 문」은 가장 따뜻하지만 흔한 모양이라 기억에 덜 남습니다. C안 「도착 노선」은 사이트의 노선 선과 가장 잘 이어지지만, 심볼만 따로 봤을 때 뜻이 덜 바로 읽힙니다. 대표가 A안을 고르면 C안의 정거장 점은 사이트 안 장식으로 계속 씁니다.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var C = { tile:'#0B6B66', mark:'#FFFFFF', accent:'#F4B942' };
+  var uid = 0;
+
+  var OPTS = [
+    { key:'A', name:'누운 B', en:'Bridge B', rec:true,
+      intent:'이름의 B를 눕히면 두 칸짜리 다리이자 두 번의 물결이 된다. 글자 하나로 "Stay B · 연결 · 부산 바다".',
+      note:'위쪽 볼(왼쪽 아치)을 오른쪽보다 살짝 작게 해 실제 B 글자의 비례를 남겼다. 선 하나(3.4) 윤곽, 아치를 세로로 살짝 높여(타원) 눈·안대처럼 납작해 보이지 않게 했고이라 16px에서도 두 개의 구멍이 보인다.',
+      mark:function(c){ return '<path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="'+c.mark+'" stroke-width="3.4" stroke-linejoin="round"/>'; }
+    },
+    { key:'B', name:'열린 문', en:'Open door', rec:false,
+      intent:'바다색 벽에 햇살이 새어 나오는 아치형 문 하나. "부산에 너를 위한 문이 열려 있다"는 Stay의 뜻.',
+      note:'문은 칸 아래 끝까지 이어져 땅에 닿는다(문턱 = 칸의 가장자리). 아치 윗부분이 광안대교 아치를 은근히 닮았지만 다리는 그리지 않는다.',
+      mark:function(c){ return '<path d="M9.5 34 V15.5 A6.5 6.5 0 0 1 22.5 15.5 V34 Z" fill="'+c.accent+'"/>'; }
+    },
+    { key:'C', name:'도착 노선', en:'Arrival route', rec:false,
+      intent:'먼 길을 건너온 노선이 부산의 정거장 점에 내려앉는다. 사이트 전체의 "노선 선" 서명을 심볼로 압축.',
+      note:'아치 하나 + 점 하나. 점은 햇살 노랑이라 작은 크기에서도 눈이 먼저 간다. 단색일 때는 점과 선이 함께 뚫린다.',
+      mark:function(c){ return '<path d="M6.5 24 C8 12.5, 19 9.5, 22.6 18.2" fill="none" stroke="'+c.mark+'" stroke-width="2.8" stroke-linecap="round"/><circle cx="23.6" cy="22" r="3.6" fill="'+c.accent+'"/>'; }
+    }
+  ];
+
+  // mode: 'color' | 'mono' (currentColor tile with mark knocked out)
+  function svg(opt, size, mode, label){
+    var id = 'k' + (++uid);
+    var a = label ? ' role="img" aria-label="'+label+'"' : ' aria-hidden="true" focusable="false"';
+    var s = '<svg width="'+size+'" height="'+size+'" viewBox="0 0 32 32"'+a+' xmlns="http://www.w3.org/2000/svg">';
+    if(mode === 'mono'){
+      var k = { mark:'#000', accent:'#000' };
+      s += '<defs><mask id="'+id+'" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32"><rect width="32" height="32" fill="#fff"/>'+opt.mark(k)+'</mask></defs>';
+      s += '<rect x="0" y="0" width="32" height="32" rx="9" fill="currentColor" mask="url(#'+id+')"/>';
+    } else {
+      s += '<defs><clipPath id="'+id+'"><rect width="32" height="32" rx="9"/></clipPath></defs>';
+      s += '<rect width="32" height="32" rx="9" fill="'+C.tile+'"/><g clip-path="url(#'+id+')">'+opt.mark(C)+'</g>';
+    }
+    return s + '</svg>';
+  }
+
+  function oldSvg(size){
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="8" fill="#0B6B66"/><path d="M6 15.5 Q14 6.5 22 15.5" fill="none" stroke="#F4B942" stroke-width="2.2" stroke-linecap="round"/><path d="M10 11.2V15.5M18 11.2V15.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M5.5 20.5q2.1-1.6 4.25 0t4.25 0 4.25 0 4.25 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  }
+  document.getElementById('old16').innerHTML = oldSvg(16);
+  document.getElementById('old24').innerHTML = oldSvg(24);
+  document.getElementById('old48').innerHTML = oldSvg(48);
+
+  function lockup(opt, cls, mode){
+    return '<span class="lockup '+(cls||'')+'">'+svg(opt, 28, mode||'color')+'<span>Stay<span class="b">B</span></span></span>';
+  }
+
+  // quick compare row
+  var cmp = document.getElementById('compare');
+  OPTS.forEach(function(o){
+    var d = document.createElement('div'); d.className = 'cell';
+    d.innerHTML = '<div class="t">'+o.key+'안 · '+o.name+(o.rec?' · 추천':'')+'</div><div style="display:flex;gap:12px;align-items:flex-end">'+svg(o,16,'color')+svg(o,24,'color')+svg(o,48,'color', 'Stay B 심볼 '+o.key+'안')+'</div>'+lockup(o);
+    cmp.appendChild(d);
+  });
+
+  var host = document.getElementById('opts');
+  OPTS.forEach(function(o){
+    var sizes = [16,24,48,120].map(function(n){ return '<figure>'+svg(o,n,'color')+'<figcaption>'+n+'px</figcaption></figure>'; }).join('');
+    var sec = document.createElement('section'); sec.className = 'opt';
+    sec.setAttribute('aria-labelledby','h-'+o.key);
+    sec.innerHTML =
+      '<div class="opt-head"><h2 id="h-'+o.key+'">'+o.key+'안 · '+o.name+' <span class="meta">'+o.en+'</span></h2>'+(o.rec?'<span class="tag rec">디자이너 추천</span>':'<span class="tag">대안</span>')+'</div>'+
+      '<p class="intent"><strong>의도</strong> '+o.intent+'</p><p class="why">'+o.note+'</p>'+
+      '<div class="grid">'+
+        '<div class="panel light"><h3>라이트 · 16 / 24 / 48 / 120px</h3><div class="sizes">'+sizes+'</div>'+
+          '<div class="fav"><canvas width="16" height="16" data-opt="'+o.key+'" aria-label="16px 파비콘 실제 픽셀 확대"></canvas><div><span class="tab">'+svg(o,16,'color')+' Stay B · Find your way</span><div class="meta" style="color:#4E605E;margin-top:6px">왼쪽: 16px로 그린 뒤 6배 확대(실제 픽셀)</div></div></div></div>'+
+        '<div class="panel dark"><h3>다크 · 16 / 24 / 48 / 120px</h3><div class="sizes">'+sizes+'</div>'+
+          '<div class="fav"><canvas width="16" height="16" data-opt="'+o.key+'" aria-label="16px 파비콘 실제 픽셀 확대"></canvas><div><span class="tab">'+svg(o,16,'color')+' Stay B · Find your way</span><div class="meta" style="color:#A9BAB7;margin-top:6px">다크 탭 막대 위 16px</div></div></div></div>'+
+        '<div class="panel light"><h3>가로형 워드마크 · 헤더 28px / 큰 크기</h3><div class="lockups">'+lockup(o)+lockup(o,'lg')+'</div></div>'+
+        '<div class="panel dark"><h3>가로형 워드마크 · 다크</h3><div class="lockups">'+lockup(o)+lockup(o,'lg')+'</div></div>'+
+      '</div>'+
+      '<div class="row">'+
+        '<div class="chip-bg bg-white"><div>'+lockup(o,'mono','mono')+'<small>단색(검정) · 인쇄·도장·팩스</small></div></div>'+
+        '<div class="chip-bg bg-footer"><div>'+lockup(o,'mono','mono')+'<small>반전(흰색) · 푸터 #12302E</small></div></div>'+
+        '<div class="chip-bg bg-sea"><div>'+lockup(o,'mono','mono')+'<small>반전 · 바다색 면 위</small></div></div>'+
+        '<div class="chip-bg bg-sun"><div>'+lockup(o,'mono','mono')+'<small>단색 · 햇살 면 위(굿즈)</small></div></div>'+
+      '</div>'+
+      '<details><summary>'+o.key+'안 SVG 코드 (컬러 / 단색)</summary><pre></pre></details>';
+    host.appendChild(sec);
+    var code = svg(o,28,'color').replace(/ id="k\d+"/,' id="sb-clip"').replace(/url\(#k\d+\)/,'url(#sb-clip)') + '\n\n' +
+               svg(o,28,'mono').replace(/ id="k\d+"/,' id="sb-mask"').replace(/url\(#k\d+\)/,'url(#sb-mask)');
+    sec.querySelector('pre').textContent = code.replace(/></g,'>\n<');
+  });
+
+  // true 16px rasterization
+  document.querySelectorAll('canvas[data-opt]').forEach(function(cv){
+    var o = OPTS.filter(function(x){return x.key===cv.dataset.opt;})[0];
+    var img = new Image();
+    img.onload = function(){ var ctx = cv.getContext('2d'); ctx.drawImage(img,0,0,16,16); };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(o,16,'color'));
+  });
+})();
+</script>
+</body>
+</html>

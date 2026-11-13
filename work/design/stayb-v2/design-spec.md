@@ -132,25 +132,58 @@
 
 ---
 
-## 3. Stay B 워드마크·심볼 (제안, 인라인 SVG)
+## 3. Stay B 워드마크·심볼 (재작업 3안, 2026-11-14 · 대표 결정 9 반영)
 
-- **심볼:** 둥근 사각형(문/집 = Stay) 안에 광안대교 아치 한 줄 + 아래 물결 한 줄. 아치가 "연결"을, 물결이 "부산 바다"를 말한다. 24px에서도 읽히게 선 2개만.
-- **워드마크:** `Stay` (Bricolage Grotesque 700, `--ink`) + `B` (같은 글꼴, `--sea`). 글자 간격 -0.01em. 심볼과 8px 간격.
-- 헤더 높이 28px(심볼) / 글자 22px. 푸터는 흰 글자 버전(`currentColor`).
+> 지난 안(둥근 사각형 안에 문 + 광안대교 아치 + 물결)은 세 가지를 한 칸에 넣어 16px에서 뭉개졌다. 이번 3안은 **아이디어 하나씩만** 담았다. 비교 견본: `work/design/stayb-v2/symbol-options.html` (16/24/48/120px, 라이트·다크, 16px 실제 픽셀 확대, 가로형 워드마크, 단색·반전, SVG 코드). 이름·브랜드는 대표 결정 사항이므로 **대표가 고르기 전까지 웹코더는 A안(추천)으로 시안을 만든다.**
+
+| 안 | 이름 | 의도 한 줄 | 16px 판독 | 기억성 |
+|---|---|---|---|---|
+| **A (추천)** | 누운 B (Bridge B) | 이름의 B를 눕히면 두 칸짜리 다리이자 두 번의 물결. 글자 하나로 "Stay B · 연결 · 부산 바다" | 좋음(구멍 2개가 남음) | 높음(이름과 직결) |
+| B | 열린 문 (Open door) | 바다색 벽에 햇살이 새어 나오는 아치형 문 하나. "부산에 너를 위한 문이 열려 있다" | 가장 좋음(면 하나) | 보통(흔한 모양) |
+| C | 도착 노선 (Arrival route) | 먼 길을 건너온 노선이 부산의 정거장 점에 내려앉는다. 사이트의 "노선 선" 서명을 압축 | 좋음(노랑 점이 먼저 보임) | 보통(따로 보면 뜻이 늦게 읽힘) |
+
+**디자이너 추천: A안.** 이름 자체(B)가 그림(다리·물결)이 되므로 덧붙일 요소가 없고, 선 하나 윤곽이라 파비콘에서도 형태가 남는다. A안 채택 시 C안의 정거장 점은 사이트 안 장식(노선 선)으로 계속 쓴다.
+
+**공통 규칙 (3안 모두)**
+- 칸: 32×32 viewBox, 둥근 사각형 `rx 9`, 바탕 `#0B6B66`(--sea). 표식 흰색(`#FFFFFF`), 포인트 `#F4B942`(--sun, B·C안만).
+- 다크 모드에서도 **컬러 심볼은 그대로** 쓴다(브랜드 일관성; 로고는 대비 기준 예외, 표식 대 칸 대비 6.35). 워드마크 글자만 바뀐다.
+- 단색·반전: 칸을 `currentColor`로 칠하고 표식을 `mask`로 뚫는다 → 어떤 바탕에서도 한 색으로 동작(검정 인쇄, 푸터 흰색, 바다색 면 위 흰색, 햇살 면 위 `--ink`).
+- 최소 크기 16px. 16px에서는 칸 없는 표식만 쓰지 않는다(항상 칸 포함).
+- 파비콘: 컬러 SVG를 `favicon.svg`로, 같은 그림을 32px PNG로도(웹코더가 생성).
+
+**A안 SVG (헤더 28px, 컬러)**
+```html
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+  <defs><clipPath id="sb-clip"><rect width="32" height="32" rx="9"/></clipPath></defs>
+  <rect width="32" height="32" rx="9" fill="#0B6B66"/>
+  <g clip-path="url(#sb-clip)">
+    <path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linejoin="round"/>
+  </g>
+</svg>
+```
+**A안 SVG (단색·반전, 글자색을 따라감)**
+```html
+<svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+  <defs><mask id="sb-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+    <rect width="32" height="32" fill="#fff"/>
+    <path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/>
+  </mask></defs>
+  <rect width="32" height="32" rx="9" fill="currentColor" mask="url(#sb-mask)"/>
+</svg>
+```
+- B·C안 코드는 견본 페이지의 "SVG 코드" 펼침에 있다. 한 페이지에 심볼이 여러 번 나오면 `id`가 겹치지 않게 바꾼다(sb-clip-header, sb-clip-footer 등).
+
+**가로형 워드마크**
+- `Stay` + `B`: Bricolage Grotesque 700, 글자 간격 -0.01em. `Stay` = `--ink`, `B` = `--sea`(다크 `#5CC4BA`), `B` 앞 간격 .14em.
+- 심볼 높이 = 글자 크기 × 1.27, 심볼과 글자 사이 .36em. 헤더: 글자 22px / 심볼 28px. 푸터: 단색(흰) 버전.
 - 가칭 배지는 붙이지 않는다(가칭 표기는 푸터, 대표 결정 3).
 
 ```html
 <a class="brand" href="#top" aria-label="Stay B home">
-  <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-    <rect x="1" y="1" width="26" height="26" rx="8" fill="var(--sea)"/>
-    <path d="M6 15.5 Q14 6.5 22 15.5" fill="none" stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"/>
-    <path d="M10 11.2V15.5M18 11.2V15.5" stroke="var(--on-sea)" stroke-width="1.6" stroke-linecap="round"/>
-    <path d="M5.5 20.5q2.1-1.6 4.25 0t4.25 0 4.25 0 4.25 0" fill="none" stroke="var(--on-sea)" stroke-width="1.8" stroke-linecap="round"/>
-  </svg>
+  <!-- 위 A안 컬러 SVG -->
   <span class="brand-word">Stay<span class="brand-b">B</span></span>
 </a>
 ```
-(`Stay`와 `B` 사이는 얇은 공백 `&thinsp;` 또는 margin-left .12em.)
 
 ---
 
@@ -367,4 +400,4 @@
 5. WhatsApp·Viber는 이름 텍스트만, 로고·브랜드색 미사용(상표).
 6. 정보 허브 모바일 탭은 섹션 안에서 고정(sticky) — 카드 14장을 단계별로 나눠 보여 주는 핵심 장치.
 7. 사진 자리 상자는 `off-kit` 한 곳만 화면에 보이게, 나머지는 일러스트로 완성.
-8. Stay B 심볼(문 모양 + 대교 아치 + 물결)은 **제안**. 이름·브랜드는 대표 결정 사항이라 확정 전까지 시안용.
+8. Stay B 심볼은 3절의 재작업 3안 중 **A안(누운 B)을 시안 기본**으로 쓴다. 이름·브랜드는 대표 결정 사항이라 확정 전까지 시안용.
