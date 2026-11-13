@@ -1,5 +1,7 @@
 # Stay Busan 컨셉 시안: 위치 안내
 
+> 2026-11-13: Stay B로 이름이 확정되어 `portfolio-site/stay-b/`로 옮김. 최신 메모는 `work/builds/stay-b/README.md`. 아래는 옛 기록.
+
 - 기획안: `work/planning/20261113-staybusan-homepage.md`
 - **최종 파일 위치: `portfolio-site/stay-busan/index.html`** (기획안에 적힌 이 폴더 대신 포트폴리오 사이트 폴더에 둠)
 - 썸네일: `portfolio-site/stay-busan/thumb.png` (1200×750, 시안 첫 화면 캡처)
