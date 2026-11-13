@@ -9,7 +9,7 @@
 
 - Render 정적 사이트 `bridgenode-portfolio`, publishPath = `portfolio-site/`, 빌드 명령 없음.
 - 배포 후 주소: `https://<render 도메인>/stay-busan/` (갤러리는 `https://<render 도메인>/`)
-- Render Settings > Headers에 `/portfolio.json` → `Access-Control-Allow-Origin: *` 추가 (`portfolio-site/_headers` 참고).
+- Render Settings > Headers에 `/portfolio.json` → `Access-Control-Allow-Origin: *` 추가 (`work/builds/portfolio-site-README.md`의 "응답 헤더" 절 참고).
 - 이 시안은 `noindex` 메타가 걸려 있음(검색 노출 안 함). 공개 검색 노출을 원하면 `<meta name="robots">` 줄 삭제.
 
 ## 제작 메모

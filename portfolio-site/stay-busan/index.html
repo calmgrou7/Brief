@@ -8,7 +8,6 @@
 <meta property="og:title" content="Stay Busan: one place to ask">
 <meta property="og:description" content="A concept for one trusted place where international students in Busan and Gyeongnam can ask about settling in, student life, work rules, visas and long-term stay.">
 <meta property="og:type" content="website">
-<!-- og:image: [자리표시] og-image 1200×630 (기획안 16번, 이미지 확정 후 추가) -->
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='10' r='6' fill='%23F28C38'/%3E%3Crect x='2' y='17' width='20' height='3' rx='1.5' fill='%231F4E79'/%3E%3C/svg%3E">
@@ -88,7 +87,7 @@ html[lang="en"] .pair.inline>[lang="ko"]::before, html[lang="ko"] .pair.inline>[
 #concept-bar .wrap{display:flex;align-items:flex-start;gap:10px;padding-top:8px;padding-bottom:8px}
 #concept-bar .cb-text{flex:1;min-width:0}
 #concept-bar strong{font-weight:700;letter-spacing:.02em;margin-right:6px}
-#concept-bar a{color:inherit;text-underline-offset:2px;white-space:nowrap}
+#concept-bar a{color:inherit;text-underline-offset:2px;white-space:nowrap;display:inline-block;padding:14px 0;margin:-14px 0}
 #concept-bar .cb-close{flex:none;width:44px;height:44px;margin:-10px -12px -10px 0;border:0;background:transparent;color:inherit;border-radius:8px;cursor:pointer;display:grid;place-items:center}
 #concept-bar .cb-close:hover{background:rgba(255,255,255,.12)}
 #concept-bar[hidden]{display:none}
@@ -104,7 +103,7 @@ html[lang="en"] .pair.inline>[lang="ko"]::before, html[lang="ko"] .pair.inline>[
 .nav a{color:var(--text);text-decoration:none;font-weight:600;font-size:.9375rem;padding:10px 4px;display:inline-flex}
 .nav a:hover{color:var(--brand)}
 .lang{display:inline-flex;border:1px solid var(--line-strong);border-radius:999px;padding:2px;flex:none}
-.lang button{border:0;background:transparent;min-width:40px;height:38px;padding:0 10px;border-radius:999px;font-size:.8125rem;font-weight:700;cursor:pointer;color:var(--text-muted)}
+.lang button{border:0;background:transparent;min-width:44px;height:44px;padding:0 10px;border-radius:999px;font-size:.8125rem;font-weight:700;cursor:pointer;color:var(--text-muted)}
 .lang button[aria-pressed="true"]{background:var(--brand);color:var(--yes-text)}
 .menu-btn{width:44px;height:44px;border:1px solid var(--line-strong);background:var(--surface);border-radius:12px;display:grid;place-items:center;cursor:pointer;flex:none}
 .mobile-nav{border-top:1px solid var(--line);background:var(--bg)}
@@ -148,8 +147,8 @@ html[lang="ko"] .eyebrow .pair>[lang="ko"]{font-size:.875rem}
 .alt{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 
 /* hero */
-#hero{position:relative;padding:36px 0 56px;overflow:hidden;background:linear-gradient(180deg,var(--muted-bg) 0%,var(--bg) 78%)}
-#hero .waves{position:absolute;left:0;right:0;bottom:0;height:120px;width:100%;color:var(--wave);pointer-events:none}
+#hero{position:relative;padding:36px 0 104px;overflow:hidden;background:linear-gradient(180deg,var(--muted-bg) 0%,var(--bg) 78%)}
+#hero .waves{position:absolute;left:0;right:0;bottom:0;height:72px;width:100%;color:var(--wave);pointer-events:none}
 #hero .grid{position:relative;display:grid;gap:40px;align-items:center}
 #hero .eyebrow{margin-bottom:16px}
 #hero h1{font-size:clamp(1.75rem,7.4vw,3.05rem);font-weight:800;letter-spacing:-.025em}
@@ -164,6 +163,7 @@ html[lang="en"] #hero h1 .pair>[lang="ko"], html[lang="ko"] #hero h1 .pair>[lang
 .route{display:none}
 @media (min-width:960px){
   #hero{padding:48px 0 112px}
+  #hero .waves{height:120px}
   #hero .grid{grid-template-columns:1.25fr 1fr;gap:56px}
   .route{display:block}
 }
@@ -398,7 +398,8 @@ html[lang="en"] #partners .card h3 .pair>[lang="ko"],html[lang="ko"] #partners .
 .f-row{margin-top:24px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;font-size:.875rem}
 .f-row a{display:inline-flex;min-height:44px;align-items:center}
 #footer .ph{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.55)}
-.f-strip{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14);font-size:.8125rem;color:var(--footer-muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+.f-strip{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14);font-size:.8125rem;color:var(--footer-muted);display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
+.f-strip a{display:inline-flex;align-items:center;min-height:44px}
 @media (max-width:959px){body.has-sticky #footer{padding-bottom:calc(96px + env(safe-area-inset-bottom))}}
 
 /* sticky */
@@ -433,7 +434,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
 <div id="concept-bar" role="region" aria-label="Concept notice">
   <div class="wrap">
     <div class="cb-text">
-      <strong>BRIDGENODE 컨셉 시안 · 실제 운영 서비스 아님</strong>
+      <strong lang="ko">BRIDGENODE 컨셉 시안 · 실제 운영 서비스 아님</strong>
       <span data-l="en" lang="en">Concept demo by BRIDGENODE. Stay Busan is a working name and this is not a live service yet.</span><span data-l="ko" lang="ko">브릿지노드가 만든 컨셉 시안입니다. Stay 부산은 가칭이며, 아직 운영 중인 서비스가 아닙니다.</span>
       <a href="../"><span data-l="en" lang="en">Back to BRIDGENODE portfolio</span><span data-l="ko" lang="ko">브릿지노드 포트폴리오로</span></a>
     </div>
@@ -493,7 +494,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
         <a class="btn btn-primary" href="#ask"><span class="pair"><span lang="en">Ask a question</span><span lang="ko">질문 남기기</span></span></a>
         <a class="btn btn-outline" href="#community"><span class="pair"><span lang="en">Join the community</span><span lang="ko">커뮤니티 참여하기</span></span></a>
       </div>
-      <p class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span><span data-l="en" lang="en">Web form, WhatsApp or Viber. English and Korean now, Nepali coming soon.</span><span data-l="ko" lang="ko">웹 폼, WhatsApp, Viber로 문의할 수 있어요. 지금은 영어·한국어, 네팔어는 곧 지원합니다.</span></span></p>
+      <p class="trust"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span><span data-l="en" lang="en">Web form, WhatsApp or Viber. Planned languages: English and Korean first, then Nepali.</span><span data-l="ko" lang="ko">웹 폼, WhatsApp, Viber로 문의할 수 있어요. 지원 예정 언어: 영어·한국어부터, 이어서 네팔어.</span></span></p>
     </div>
     <div class="route" aria-hidden="true">
       <div class="route-card">
@@ -521,7 +522,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
       <article class="card prob-card"><span class="num" aria-hidden="true">01</span><h3><span class="pair"><span lang="en">Settling in</span><span lang="ko">정착</span></span></h3><p><span data-l="en" lang="en">Housing contracts, alien registration, bank, phone, health insurance. Doing it all alone leads to mistakes, and sometimes scams.</span><span data-l="ko" lang="ko">숙소 계약, 외국인등록, 은행·통신, 건강보험. 혼자 처리하다 실수하거나 사기를 당하기도 합니다.</span></p></article>
       <article class="card prob-card"><span class="num" aria-hidden="true">02</span><h3><span class="pair"><span lang="en">Staying legally</span><span lang="ko">체류</span></span></h3><p><span data-l="en" lang="en">Extending your stay, part-time work permission, renewing your passport. It is easy to mix them up or miss a deadline.</span><span data-l="ko" lang="ko">체류기간 연장, 시간제취업 허가, 여권 갱신. 헷갈리거나 기한을 놓치기 쉽습니다.</span></p></article>
       <article class="card prob-card"><span class="num" aria-hidden="true">03</span><h3><span class="pair"><span lang="en">Working</span><span lang="ko">일자리</span></span></h3><p><span data-l="en" lang="en">A part-time job without permission, or too many hours, can put your visa status at risk.</span><span data-l="ko" lang="ko">허가 없는 아르바이트나 허용 시간을 넘긴 근무는 체류자격에 문제를 만들 수 있습니다.</span></p></article>
-      <article class="card prob-card prob-more" id="prob-4" tabindex="-1"><span class="num" aria-hidden="true">04</span><h3><span class="pair"><span lang="en">After graduation</span><span lang="ko">졸업 이후</span></span></h3><p><span data-l="en" lang="en">Many students leave Korea at graduation simply because no one explained the paths for work or long-term stay.</span><span data-l="ko" lang="ko">구직·취업·지역정착으로 이어지는 비자 경로를 몰라 졸업과 함께 출국하는 경우가 많습니다.</span></p></article>
+      <article class="card prob-card prob-more" id="prob-4" tabindex="-1"><span class="num" aria-hidden="true">04</span><h3><span class="pair"><span lang="en">After graduation</span><span lang="ko">졸업 이후</span></span></h3><p><span data-l="en" lang="en">Some students leave Korea at graduation simply because no one explained the paths for work or long-term stay.</span><span data-l="ko" lang="ko">구직·취업·지역정착으로 이어지는 비자 경로를 몰라 졸업과 함께 출국하기도 합니다.</span></p></article>
       <article class="card prob-card prob-more"><span class="num" aria-hidden="true">05</span><h3><span class="pair"><span lang="en">Life changes</span><span lang="ko">삶의 변화</span></span></h3><p><span data-l="en" lang="en">Marriage or inviting family means changing your status, and it is hard to know where to start.</span><span data-l="ko" lang="ko">결혼이나 가족 초청으로 자격을 바꿔야 할 때, 어디서부터 시작할지 막막합니다.</span></p></article>
       <article class="card prob-card prob-more"><span class="num" aria-hidden="true">06</span><h3><span class="pair"><span lang="en">Language</span><span lang="ko">언어</span></span></h3><p><span data-l="en" lang="en">Official guides in Korean are hard to follow, and tips in community chats are not always accurate.</span><span data-l="ko" lang="ko">한국어 공공 안내는 어렵고, 커뮤니티에 도는 정보는 정확하지 않을 때가 많습니다.</span></p></article>
     </div>
@@ -555,8 +556,8 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
         </div></details></li>
       <li><details><summary><span class="n">4</span><h3><span class="pair"><span lang="en">Getting ready for work</span><span lang="ko">취업 준비</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
         <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
-          <ul class="j-list" data-l="en" lang="en"><li>Part-time work rules</li><li>Job posts you are allowed to apply for</li><li>Career talks</li></ul>
-          <ul class="j-list" data-l="ko" lang="ko"><li>시간제취업 규칙</li><li>허가 가능 공고</li><li>취업 특강</li></ul>
+          <ul class="j-list" data-l="en" lang="en"><li>Part-time work rules</li><li>Job info and student work-hour rules</li><li>Career talks</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>시간제취업 규칙</li><li>일자리 정보·근무 시간 규칙</li><li>취업 특강</li></ul>
           <span class="badge badge-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="pair"><span lang="en">Connected to a partner agent</span><span lang="ko">행정사 연계</span></span></span>
           <p class="j-note"><span data-l="en" lang="en">Job introductions are handled by registered employment agencies. Stay Busan shares information only.</span><span data-l="ko" lang="ko">일자리 알선은 등록된 기관이 맡습니다. Stay 부산은 정보만 안내합니다.</span></p>
         </div></details></li>
@@ -568,10 +569,10 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
         </div></details></li>
       <li><details><summary><span class="n">6</span><h3><span class="pair"><span lang="en">Marriage &amp; long-term stay</span><span lang="ko">결혼·장기정착</span></span></h3><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
         <div class="j-body"><p class="j-label"><span class="pair"><span lang="en">We help with</span><span lang="ko">저희가 돕는 일</span></span></p>
-          <ul class="j-list" data-l="en" lang="en"><li>Status steps after marriage</li><li>Inviting family</li><li>Permanent residency guide</li></ul>
-          <ul class="j-list" data-l="ko" lang="ko"><li>결혼 후 체류 절차</li><li>가족 초청</li><li>영주 준비 안내</li></ul>
+          <ul class="j-list" data-l="en" lang="en"><li>Guide: status change after marriage</li><li>Guide: inviting family</li><li>Permanent residency guide</li></ul>
+          <ul class="j-list" data-l="ko" lang="ko"><li>결혼 후 체류자격 변경 안내</li><li>가족 초청 절차 안내</li><li>영주 준비 안내</li></ul>
           <span class="badge badge-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="pair"><span lang="en">Connected to a partner agent</span><span lang="ko">행정사 연계</span></span></span>
-          <p class="j-note"><span data-l="en" lang="en">We do not offer matchmaking or marriage brokering. This stage is for students whose marriage is already decided and who need help with the stay procedures that follow.</span><span data-l="ko" lang="ko">Stay 부산은 결혼 매칭이나 중개를 하지 않습니다. 결혼이 이미 정해진 학생의 체류자격 변경·가족 초청 절차를 돕는 단계입니다.</span></p>
+          <p class="j-note"><span data-l="en" lang="en">We do not offer matchmaking or marriage brokering. This stage is for students whose marriage is already decided. We share general information on the stay procedures that follow, and connect you to a partner administrative agent.</span><span data-l="ko" lang="ko">Stay 부산은 결혼 매칭이나 중개를 하지 않습니다. 결혼이 이미 정해진 학생에게 이후 체류자격 변경·가족 초청의 일반 절차를 안내하고 협업 행정사에게 연결해 드리는 단계입니다.</span></p>
         </div></details></li>
     </ol>
     <div class="sec-cta"><a class="btn btn-primary" href="#ask"><span class="pair"><span lang="en">Ask about your stage</span><span lang="ko">지금 내 단계 질문하기</span></span></a></div>
@@ -586,10 +587,10 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
     </div>
     <ol class="steps">
       <li class="step"><span class="n" aria-hidden="true">1</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">You ask</span><span lang="ko">문의 접수</span></span></h3><p><span data-l="en" lang="en">Send your question through the web form, WhatsApp or Viber.</span><span data-l="ko" lang="ko">웹 폼, WhatsApp, Viber로 질문을 보내 주세요.</span></p></li>
-      <li class="step"><span class="n" aria-hidden="true">2</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">We sort it</span><span lang="ko">자동 분류</span></span></h3><p><span data-l="en" lang="en">Everyday questions get an answer from our FAQ. Visa and stay questions go to a partner administrative agent.</span><span data-l="ko" lang="ko">생활 질문은 FAQ로 답하고, 체류 관련 질문은 협업 행정사에게 넘깁니다.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">2</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">We sort it</span><span lang="ko">자동 분류</span></span></h3><p><span data-l="en" lang="en">Everyday questions get an answer from our FAQ. Visa and stay questions go to a partner administrative agent, with your consent.</span><span data-l="ko" lang="ko">생활 질문은 FAQ로 답하고, 체류 관련 질문은 동의를 받은 뒤 협업 행정사에게 전달합니다.</span></p></li>
       <li class="step"><span class="n" aria-hidden="true">3</span><span class="owner sb"><span data-l="en" lang="en">Stay Busan</span><span data-l="ko" lang="ko">Stay 부산</span></span><h3><span class="pair"><span lang="en">We get it ready</span><span lang="ko">사전 정리</span></span></h3><p><span data-l="en" lang="en">We help you gather basic facts, like your visa type and expiry date, in a simple form, so you do not have to explain twice.</span><span data-l="ko" lang="ko">체류자격·만료일 같은 기본 사실을 간단한 양식으로 정리해, 같은 설명을 두 번 하지 않게 합니다.</span></p></li>
       <li class="step"><span class="n" aria-hidden="true">4</span><span class="owner pa"><span data-l="en" lang="en">Partner agent</span><span data-l="ko" lang="ko">협업 행정사</span></span><h3><span class="pair"><span lang="en">You talk to an expert</span><span lang="ko">행정사 상담</span></span></h3><p><span data-l="en" lang="en">A qualified administrative agent consults with you directly. Any fee and agreement are made between you and the agent.</span><span data-l="ko" lang="ko">자격을 갖춘 행정사가 직접 상담합니다. 비용과 계약은 학생과 행정사가 직접 정합니다.</span></p></li>
-      <li class="step"><span class="n" aria-hidden="true">5</span><span class="owner tg"><span data-l="en" lang="en">Together</span><span data-l="ko" lang="ko">함께</span></span><h3><span class="pair"><span lang="en">We keep you updated</span><span lang="ko">진행 공유</span></span></h3><p><span data-l="en" lang="en">You get automatic updates as your case moves forward.</span><span data-l="ko" lang="ko">진행 단계가 바뀌면 자동으로 알려 드립니다.</span></p></li>
+      <li class="step"><span class="n" aria-hidden="true">5</span><span class="owner tg"><span data-l="en" lang="en">Together</span><span data-l="ko" lang="ko">함께</span></span><h3><span class="pair"><span lang="en">We keep you updated</span><span lang="ko">진행 공유</span></span></h3><p><span data-l="en" lang="en">When the agent shares progress, we send you an automatic update.</span><span data-l="ko" lang="ko">행정사가 진행 상황을 공유하면 자동으로 알려 드립니다.</span></p></li>
       <li class="step"><span class="n" aria-hidden="true">6</span><span class="owner tg"><span data-l="en" lang="en">Together</span><span data-l="ko" lang="ko">함께</span></span><h3><span class="pair"><span lang="en">We stay with you</span><span lang="ko">사후 관리</span></span></h3><p><span data-l="en" lang="en">We remind you before your next expiry date, and keep improving our FAQ with our partners.</span><span data-l="ko" lang="ko">다음 만료일 전에 미리 알려 드리고, 행정사와 함께 FAQ를 계속 보강합니다.</span></p></li>
     </ol>
     <aside class="boundary" aria-labelledby="boundary-title">
@@ -714,7 +715,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
           <div class="choices c3">
             <label class="choice"><input type="radio" name="plang" value="en" checked><span class="box" lang="en">English</span></label>
             <label class="choice"><input type="radio" name="plang" value="ko"><span class="box" lang="ko">한국어</span></label>
-            <label class="choice"><input type="radio" name="plang" value="ne" disabled><span class="box"><span><span lang="ne">नेपाली</span><br><small style="font-weight:500">(coming soon / 준비 중)</small></span></span></label>
+            <label class="choice"><input type="radio" name="plang" value="ne" disabled><span class="box"><span><span lang="ne">नेपाली</span><br><small style="font-weight:500">(planned / 예정)</small></span></span></label>
           </div>
         </fieldset>
         <div class="consent">
@@ -793,13 +794,13 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
       <details><summary><span class="pair"><span lang="en">Can you tell me if my visa will be approved?</span><span lang="ko">제 비자가 나올지 알려 줄 수 있나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
         <p class="ans"><span data-l="en" lang="en">No. We cannot judge individual cases. We can share general information and connect you to a qualified partner administrative agent who can look at your situation.</span><span data-l="ko" lang="ko">아니요. 저희는 개별 사건을 판단할 수 없습니다. 일반 정보를 안내하고, 내 상황을 직접 검토할 수 있는 협업 행정사에게 연결해 드립니다.</span></p></details>
       <details><summary><span class="pair"><span lang="en">Can you find me a part-time job?</span><span lang="ko">아르바이트를 구해 줄 수 있나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p class="ans"><span data-l="en" lang="en">We explain the part-time work rules and share job posts you are allowed to apply for. Job introductions themselves are handled by registered employment agencies.</span><span data-l="ko" lang="ko">시간제취업 규칙을 안내하고, 지원 가능한 공고 정보를 공유합니다. 실제 일자리 알선은 등록된 기관이 맡습니다.</span></p></details>
+        <p class="ans"><span data-l="en" lang="en">We explain the part-time work rules and share general job information. Job introductions themselves are handled by registered employment agencies.</span><span data-l="ko" lang="ko">시간제취업 규칙을 안내하고, 일반적인 일자리 정보를 안내합니다. 실제 일자리 알선은 등록된 기관이 맡습니다.</span></p></details>
       <details><summary><span class="pair"><span lang="en">What happens to my personal information?</span><span lang="ko">제 개인정보는 어떻게 되나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
         <p class="ans"><span data-l="en" lang="en">We use it only to answer your question. It is shared with a partner administrative agent only when your question needs one and only with your consent. Please never send your passport or alien registration number through the form or chat.</span><span data-l="ko" lang="ko">질문에 답하는 데만 사용합니다. 행정사 상담이 필요한 경우에만, 동의를 받은 뒤 협업 행정사에게 전달합니다. 여권번호나 외국인등록번호는 폼이나 채팅으로 보내지 마세요.</span></p></details>
       <details><summary><span class="pair"><span lang="en">I am getting married in Korea. Can you help?</span><span lang="ko">한국에서 결혼할 예정인데 도와줄 수 있나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p class="ans"><span data-l="en" lang="en">If your marriage is already decided, we can guide you through the general steps for changing your status and inviting family, and connect you to a partner administrative agent. We do not offer matchmaking or marriage brokering.</span><span data-l="ko" lang="ko">결혼이 이미 정해졌다면 체류자격 변경과 가족 초청의 일반 절차를 안내하고 협업 행정사에게 연결해 드립니다. 결혼 매칭이나 중개는 하지 않습니다.</span></p></details>
-      <details><summary><span class="pair"><span lang="en">Which languages do you support?</span><span lang="ko">어떤 언어를 지원하나요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
-        <p class="ans"><span data-l="en" lang="en">English and Korean for now. Nepali is next, and more languages will follow as we grow.</span><span data-l="ko" lang="ko">지금은 영어와 한국어를 지원합니다. 다음은 네팔어이며, 서비스가 커지면 다른 언어도 추가합니다.</span></p></details>
+        <p class="ans"><span data-l="en" lang="en">If your marriage is already decided, we can share the general steps for changing your status and inviting family, and connect you to a partner administrative agent. We do not offer matchmaking or marriage brokering.</span><span data-l="ko" lang="ko">결혼이 이미 정해졌다면 체류자격 변경과 가족 초청의 일반 절차를 안내하고 협업 행정사에게 연결해 드립니다. 결혼 매칭이나 중개는 하지 않습니다.</span></p></details>
+      <details><summary><span class="pair"><span lang="en">Which languages will you support?</span><span lang="ko">어떤 언어를 지원할 예정인가요?</span></span><svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">Planned languages: English and Korean first, then Nepali. More languages may be added as we grow.</span><span data-l="ko" lang="ko">지원 예정 언어: 영어·한국어부터, 이어서 네팔어. 서비스가 커지면 다른 언어도 추가할 수 있습니다.</span></p></details>
     </div>
   </div>
 </section>
@@ -815,7 +816,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
     <div class="cards c3">
       <article class="card"><h3><span class="pair"><span lang="en">Universities</span><span lang="ko">대학 국제처</span></span></h3><p><span data-l="en" lang="en">Run settling-in support together. Your students get one trusted place to ask, in their language.</span><span data-l="ko" lang="ko">정착 지원을 함께 운영합니다. 학생들은 자기 언어로 믿고 물어볼 한 곳을 갖게 됩니다.</span></p></article>
       <article class="card"><h3><span class="pair"><span lang="en">Language schools</span><span lang="ko">어학원</span></span></h3><p><span data-l="en" lang="en">Stay connected with your students before and after they arrive in Korea.</span><span data-l="ko" lang="ko">입국 전부터 입국 후까지 학생과의 연결을 이어 갑니다.</span></p></article>
-      <article class="card"><h3><span class="pair"><span lang="en">Administrative agents</span><span lang="ko">행정사</span></span></h3><p><span data-l="en" lang="en">Receive consultations with basic documents and facts already organised. We take care of repeat questions and multilingual student contact. We do not share or split your fees.</span><span data-l="ko" lang="ko">기본 서류와 사실관계가 정리된 상담 건을 받으세요. 반복 문의와 다국어 학생 응대는 플랫폼이 맡습니다. 수임료를 나누는 구조는 만들지 않습니다.</span></p></article>
+      <article class="card"><h3><span class="pair"><span lang="en">Administrative agents</span><span lang="ko">행정사</span></span></h3><p><span data-l="en" lang="en">Receive consultation requests where the student has already shared basic information, such as visa type and expiry date. We take care of repeat questions and multilingual student contact. We do not share or split your fees.</span><span data-l="ko" lang="ko">체류자격·만료일 같은 기본 정보를 학생이 미리 남긴 상담 요청을 받으세요. 반복 문의와 다국어 학생 응대는 플랫폼이 맡습니다. 수임료를 나누는 구조는 만들지 않습니다.</span></p></article>
     </div>
     <p class="pilot"><span data-l="en" lang="en">Pilot partners: <span class="ph">[자리표시]</span></span><span data-l="ko" lang="ko">시범 운영 파트너: <span class="ph">[자리표시]</span></span></p>
     <button class="btn btn-partner" type="button" id="partner-open"><span class="pair"><span lang="en">Talk to us about partnering</span><span lang="ko">협업 문의하기</span></span></button>
@@ -869,7 +870,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
       <a href="https://bridgenode-studio.calmgrou.chatgpt.site/" target="_blank" rel="noopener"><span class="pair inline"><span lang="en">Made by BRIDGENODE</span><span lang="ko">브릿지노드 제작</span></span><span class="sr-only"> (opens in a new tab / 새 탭에서 열림)</span></a>
     </div>
     <div class="f-strip">
-      <span>BRIDGENODE 컨셉 시안 · 실제 운영 서비스 아님</span>
+      <span lang="ko">BRIDGENODE 컨셉 시안 · 실제 운영 서비스 아님</span><span data-l="en" lang="en">BRIDGENODE concept demo · not a live service</span>
       <a href="../"><span class="pair inline"><span lang="en">Back to BRIDGENODE portfolio</span><span lang="ko">브릿지노드 포트폴리오로</span></span></a>
     </div>
   </div>
@@ -949,7 +950,7 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
       required: "입력해 주세요.",
       choose: "하나를 선택해 주세요.",
       email: "올바른 이메일 주소를 입력해 주세요.",
-      consent: "동의에 체크해 주세요.",
+      consent: "동의 항목에 체크해 주세요.",
       idWarn: "신분증 번호처럼 보여요. 지워 주세요.",
       toast: "데모입니다. 커뮤니티 링크는 서비스 시작 때 연결됩니다."
     }
@@ -1114,10 +1115,12 @@ dialog::backdrop{background:rgba(10,22,34,.55)}
       var n = Math.round((d - t) / 86400000);
       if(n < 0){
         html += '<p class="expiry past">'+biText("This date has already passed. Please talk to a qualified administrative agent as soon as possible.","이미 지난 날짜예요. 가능한 한 빨리 자격을 갖춘 행정사와 상담하세요.")+'</p>';
+      } else if(n === 0){
+        html += '<p class="expiry past">'+biText("Your stay expiry date is today. Please talk to a qualified administrative agent as soon as possible.","만료일이 오늘이에요. 가능한 한 빨리 자격을 갖춘 행정사와 상담하세요.")+'</p>';
       } else {
         var en = d.getDate()+" "+MON[d.getMonth()]+" "+d.getFullYear();
         var ko = d.getFullYear()+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일";
-        html += '<p class="expiry">'+biText("Your stay expiry date: "+en+". That is "+n+" days from today. In the live service, we would remind you before it.","입력하신 만료일: "+ko+". 오늘부터 "+n+"일 남았어요. 실제 서비스에서는 그 전에 미리 알려 드립니다.")+'</p>';
+        html += '<p class="expiry">'+biText("Your stay expiry date: "+en+". That is "+n+(n === 1 ? " day" : " days")+" from today. In the live service, we would remind you before it.","입력하신 만료일: "+ko+". 오늘부터 "+n+"일 남았어요. 실제 서비스에서는 그 전에 미리 알려 드립니다.")+'</p>';
       }
     }
     html += '<p class="demo-end">'+biText("This was a demo. No information was sent or stored.","데모였습니다. 어떤 정보도 전송·저장되지 않았습니다.")+'</p>';

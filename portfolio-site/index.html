@@ -84,6 +84,7 @@ header .wrap{display:flex;align-items:center;justify-content:space-between;gap:1
 .thumb img{width:100%;height:100%;object-fit:cover;object-position:top}
 .thumb.empty{display:grid;place-items:center;font-weight:900;letter-spacing:.1em;color:var(--muted);font-size:.875rem}
 .body{padding:20px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+.note{font-size:.8125rem;font-weight:700;color:var(--st-concept-text)}
 .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8125rem;font-weight:700;color:var(--muted)}
 .badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 10px;font-size:.75rem;font-weight:800;letter-spacing:.02em}
 .st-concept{background:var(--st-concept-bg);color:var(--st-concept-text)}
@@ -142,8 +143,6 @@ footer a{display:inline-flex;min-height:44px;align-items:center}
         <h2 id="works-title" lang="en">Works<small lang="ko">홈페이지 · 앱 작업</small></h2>
         <div class="filters" role="group" aria-label="분류 필터">
           <button type="button" data-filter="all" aria-pressed="true">전체<span class="c" data-count="all"></span></button>
-          <button type="button" data-filter="홈페이지" aria-pressed="false">홈페이지<span class="c" data-count="홈페이지"></span></button>
-          <button type="button" data-filter="앱" aria-pressed="false">앱<span class="c" data-count="앱"></span></button>
         </div>
       </div>
       <p class="status-line" id="status" role="status" aria-live="polite">작업 목록을 불러오는 중입니다.</p>
@@ -173,7 +172,8 @@ footer a{display:inline-flex;min-height:44px;align-items:center}
   var FEED = "portfolio.json";
   var HOME = "https://bridgenode-studio.calmgrou.chatgpt.site/";
   var grid = document.getElementById("grid"), status = document.getElementById("status");
-  var btns = document.querySelectorAll("[data-filter]");
+  var filterBox = document.querySelector(".filters");
+  var btns = [];
   var items = [], filter = "all";
   var statusClass = {"컨셉 시안":"st-concept","운영 중":"st-live","완료":"st-done"};
 
@@ -195,6 +195,7 @@ footer a{display:inline-flex;min-height:44px;align-items:center}
     if(it.status) meta.appendChild(el("span", "badge " + (statusClass[it.status] || "st-done"), it.status));
     meta.appendChild(el("span", null, [it.kind, it.category, it.year].filter(Boolean).join(" · ")));
     b.appendChild(meta);
+    if(it.note) b.appendChild(el("p", "note", it.note));
     var h = el("h3"); var a = el("a", null, it.title || "");
     a.href = it.url ? resolve(it.url) : HOME;
     if(/^https?:/i.test(it.url || "") && new URL(a.href).origin !== location.origin){ a.target = "_blank"; a.rel = "noopener"; }
@@ -227,19 +228,31 @@ footer a{display:inline-flex;min-height:44px;align-items:center}
     status.textContent = (filter === "all" ? "전체" : filter) + " 작업 " + list.length + "건";
   }
 
-  function counts(){
-    var c = {all: items.length, "홈페이지":0, "앱":0};
-    items.forEach(function(it){ if(c[it.category] != null) c[it.category]++; });
-    document.querySelectorAll("[data-count]").forEach(function(s){ s.textContent = " " + c[s.getAttribute("data-count")]; });
-  }
-
-  btns.forEach(function(b){
-    b.addEventListener("click", function(){
-      filter = b.getAttribute("data-filter");
-      btns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
-      render();
+  // Show a filter button only for categories that have at least one item.
+  function buildFilters(){
+    var order = [], c = {};
+    items.forEach(function(it){
+      var k = it.category; if(!k) return;
+      if(c[k] == null){ c[k] = 0; order.push(k); }
+      c[k]++;
     });
-  });
+    order.forEach(function(k){
+      var b = el("button", null, k);
+      b.type = "button"; b.setAttribute("data-filter", k); b.setAttribute("aria-pressed", "false");
+      b.appendChild(el("span", "c", " " + c[k]));
+      filterBox.appendChild(b);
+    });
+    var all = filterBox.querySelector('[data-count="all"]');
+    if(all) all.textContent = " " + items.length;
+    btns = Array.prototype.slice.call(filterBox.querySelectorAll("[data-filter]"));
+    btns.forEach(function(b){
+      b.addEventListener("click", function(){
+        filter = b.getAttribute("data-filter");
+        btns.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+        render();
+      });
+    });
+  }
 
   function fail(){
     status.textContent = "";
@@ -257,7 +270,7 @@ footer a{display:inline-flex;min-height:44px;align-items:center}
     .then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
     .then(function(data){
       items = (data && Array.isArray(data.items) ? data.items : []).slice().sort(function(a, b){ return (a.order || 999) - (b.order || 999); });
-      counts(); render();
+      buildFilters(); render();
     })
     .catch(fail);
 })();

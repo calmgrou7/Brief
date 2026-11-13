@@ -120,8 +120,8 @@
 - 주 버튼: `Ask a question` / 아래 작은 글씨 `질문 남기기`
 - 보조 버튼(외곽선): `Join the community` / `커뮤니티 참여하기`
 - 버튼 아래 신뢰 한 줄(작은 글씨)
-  - EN: `Web form, WhatsApp or Viber. English and Korean now, Nepali coming soon.`
-  - KO: `웹 폼, WhatsApp, Viber로 문의할 수 있어요. 지금은 영어·한국어, 네팔어는 곧 지원합니다.`
+  - EN: `Web form, WhatsApp or Viber. Planned languages: English and Korean first, then Nepali.`
+  - KO: `웹 폼, WhatsApp, Viber로 문의할 수 있어요. 지원 예정 언어: 영어·한국어부터, 이어서 네팔어.`
 
 ### 3. 이런 적 있나요 (`problems`)
 - 섹션 제목
@@ -137,8 +137,8 @@
   - EN: `A part-time job without permission, or too many hours, can put your visa status at risk.`
   - KO: `허가 없는 아르바이트나 허용 시간을 넘긴 근무는 체류자격에 문제를 만들 수 있습니다.`
 - 카드 4 — 제목 EN `After graduation` / KO `졸업 이후`
-  - EN: `Many students leave Korea at graduation simply because no one explained the paths for work or long-term stay.`
-  - KO: `구직·취업·지역정착으로 이어지는 비자 경로를 몰라 졸업과 함께 출국하는 경우가 많습니다.`
+  - EN: `Some students leave Korea at graduation simply because no one explained the paths for work or long-term stay.`
+  - KO: `구직·취업·지역정착으로 이어지는 비자 경로를 몰라 졸업과 함께 출국하기도 합니다.`
 - 카드 5 — 제목 EN `Life changes` / KO `삶의 변화`
   - EN: `Marriage or inviting family means changing your status, and it is hard to know where to start.`
   - KO: `결혼이나 가족 초청으로 자격을 바꿔야 할 때, 어디서부터 시작할지 막막합니다.`
@@ -161,16 +161,16 @@
 | 1 | `Before you arrive` / `입국 전` | Arrival guide · Housing list · Info sessions at partner language schools | 입국 가이드 · 숙소 목록 · 어학원 설명회 | 없음 |
 | 2 | `Settling in` / `정착` | Settling-in checklist · Welcome kit · Alien registration guide | 정착 체크리스트 · 웰컴 키트 · 외국인등록 안내 | 있음 |
 | 3 | `Study & life` / `학업·생활` | Member discounts · Communities by country · Local events | 멤버십 할인 · 국가별 커뮤니티 · 지역 행사 | 없음 |
-| 4 | `Getting ready for work` / `취업 준비` | Part-time work rules · Job posts you are allowed to apply for · Career talks | 시간제취업 규칙 · 허가 가능 공고 · 취업 특강 | 있음 |
+| 4 | `Getting ready for work` / `취업 준비` | Part-time work rules · Job info and student work-hour rules · Career talks | 시간제취업 규칙 · 일자리 정보·근무 시간 규칙 · 취업 특강 | 있음 |
 | 5 | `Visa & stay` / `비자·체류` | Expiry date reminders · Document checklists · Consultation requests | 만료일 알림 · 서류 체크리스트 · 상담 접수 | 있음 |
-| 6 | `Marriage & long-term stay` / `결혼·장기정착` | Status steps after marriage · Inviting family · Permanent residency guide | 결혼 후 체류 절차 · 가족 초청 · 영주 준비 안내 | 있음 |
+| 6 | `Marriage & long-term stay` / `결혼·장기정착` | Guide: status change after marriage · Guide: inviting family · Permanent residency guide | 결혼 후 체류자격 변경 안내 · 가족 초청 절차 안내 · 영주 준비 안내 | 있음 |
 
 - 4단계 아래 작은 주석(일자리)
   - EN: `Job introductions are handled by registered employment agencies. Stay Busan shares information only.`
   - KO: `일자리 알선은 등록된 기관이 맡습니다. Stay 부산은 정보만 안내합니다.`
 - 6단계 아래 작은 주석(결혼)
-  - EN: `We do not offer matchmaking or marriage brokering. This stage is for students whose marriage is already decided and who need help with the stay procedures that follow.`
-  - KO: `Stay 부산은 결혼 매칭이나 중개를 하지 않습니다. 결혼이 이미 정해진 학생의 체류자격 변경·가족 초청 절차를 돕는 단계입니다.`
+  - EN: `We do not offer matchmaking or marriage brokering. This stage is for students whose marriage is already decided. We share general information on the stay procedures that follow, and connect you to a partner administrative agent.`
+  - KO: `Stay 부산은 결혼 매칭이나 중개를 하지 않습니다. 결혼이 이미 정해진 학생에게 이후 체류자격 변경·가족 초청의 일반 절차를 안내하고 협업 행정사에게 연결해 드리는 단계입니다.`
 - 섹션 끝 버튼: `Ask about your stage / 지금 내 단계 질문하기` → `#ask` (주 버튼과 같은 스타일)
 
 ### 5. 질문이 처리되는 방법 (`how-it-works`) — 법적 경계 1차
@@ -182,10 +182,10 @@
 | # | 담당 배지 | 제목 EN / KO | 설명 EN | 설명 KO |
 |---|---|---|---|---|
 | 1 | Stay Busan | `You ask` / `문의 접수` | Send your question through the web form, WhatsApp or Viber. | 웹 폼, WhatsApp, Viber로 질문을 보내 주세요. |
-| 2 | Stay Busan | `We sort it` / `자동 분류` | Everyday questions get an answer from our FAQ. Visa and stay questions go to a partner administrative agent. | 생활 질문은 FAQ로 답하고, 체류 관련 질문은 협업 행정사에게 넘깁니다. |
+| 2 | Stay Busan | `We sort it` / `자동 분류` | Everyday questions get an answer from our FAQ. Visa and stay questions go to a partner administrative agent, with your consent. | 생활 질문은 FAQ로 답하고, 체류 관련 질문은 동의를 받은 뒤 협업 행정사에게 전달합니다. |
 | 3 | Stay Busan | `We get it ready` / `사전 정리` | We help you gather basic facts, like your visa type and expiry date, in a simple form, so you do not have to explain twice. | 체류자격·만료일 같은 기본 사실을 간단한 양식으로 정리해, 같은 설명을 두 번 하지 않게 합니다. |
 | 4 | Partner agent | `You talk to an expert` / `행정사 상담` | A qualified administrative agent consults with you directly. Any fee and agreement are made between you and the agent. | 자격을 갖춘 행정사가 직접 상담합니다. 비용과 계약은 학생과 행정사가 직접 정합니다. |
-| 5 | Together | `We keep you updated` / `진행 공유` | You get automatic updates as your case moves forward. | 진행 단계가 바뀌면 자동으로 알려 드립니다. |
+| 5 | Together | `We keep you updated` / `진행 공유` | When the agent shares progress, we send you an automatic update. | 행정사가 진행 상황을 공유하면 자동으로 알려 드립니다. |
 | 6 | Together | `We stay with you` / `사후 관리` | We remind you before your next expiry date, and keep improving our FAQ with our partners. | 다음 만료일 전에 미리 알려 드리고, 행정사와 함께 FAQ를 계속 보강합니다. |
 
 - 6단계 바로 아래 경계 안내 상자(옅은 배경, 아이콘: 방패 또는 정보 "i")
@@ -239,7 +239,7 @@
   6. `Your question` / `질문 내용` — 필수, 여러 줄. 도움말 EN `Please do not include your passport or alien registration number.` / KO `여권번호나 외국인등록번호는 적지 마세요.`
   7. `How should we reply?` / `어디로 답변 드릴까요?` — 필수, 선택: `WhatsApp`, `Viber`, `Email / 이메일`
   8. `Contact` / `연락처` — 필수. 7번 선택에 따라 라벨 변경: `WhatsApp number / WhatsApp 번호`, `Viber number / Viber 번호`, `Email address / 이메일 주소`
-  9. `Preferred language` / `원하는 언어` — `English`, `한국어`, `नेपाली (coming soon / 준비 중)` — 네팔어는 비활성(disabled)
+  9. `Preferred language` / `원하는 언어` — `English`, `한국어`, `नेपाली (planned / 예정)` — 네팔어는 비활성(disabled)
   10. 동의 체크박스(필수)
       - EN: `I agree that Stay Busan may use this information to answer my question, and may share it with a partner administrative agent only if my question needs one.`
       - KO: `질문에 답하기 위해 Stay 부산이 이 정보를 이용하고, 행정사 상담이 필요한 경우에만 협업 행정사에게 전달하는 데 동의합니다.`
@@ -309,17 +309,17 @@
    - A EN: `No. We cannot judge individual cases. We can share general information and connect you to a qualified partner administrative agent who can look at your situation.`
    - A KO: `아니요. 저희는 개별 사건을 판단할 수 없습니다. 일반 정보를 안내하고, 내 상황을 직접 검토할 수 있는 협업 행정사에게 연결해 드립니다.`
 4. Q EN `Can you find me a part-time job?` / KO `아르바이트를 구해 줄 수 있나요?`
-   - A EN: `We explain the part-time work rules and share job posts you are allowed to apply for. Job introductions themselves are handled by registered employment agencies.`
-   - A KO: `시간제취업 규칙을 안내하고, 지원 가능한 공고 정보를 공유합니다. 실제 일자리 알선은 등록된 기관이 맡습니다.`
+   - A EN: `We explain the part-time work rules and share general job information. Job introductions themselves are handled by registered employment agencies.`
+   - A KO: `시간제취업 규칙을 안내하고, 일반적인 일자리 정보를 안내합니다. 실제 일자리 알선은 등록된 기관이 맡습니다.`
 5. Q EN `What happens to my personal information?` / KO `제 개인정보는 어떻게 되나요?`
    - A EN: `We use it only to answer your question. It is shared with a partner administrative agent only when your question needs one and only with your consent. Please never send your passport or alien registration number through the form or chat.`
    - A KO: `질문에 답하는 데만 사용합니다. 행정사 상담이 필요한 경우에만, 동의를 받은 뒤 협업 행정사에게 전달합니다. 여권번호나 외국인등록번호는 폼이나 채팅으로 보내지 마세요.`
 6. Q EN `I am getting married in Korea. Can you help?` / KO `한국에서 결혼할 예정인데 도와줄 수 있나요?`
-   - A EN: `If your marriage is already decided, we can guide you through the general steps for changing your status and inviting family, and connect you to a partner administrative agent. We do not offer matchmaking or marriage brokering.`
+   - A EN: `If your marriage is already decided, we can share the general steps for changing your status and inviting family, and connect you to a partner administrative agent. We do not offer matchmaking or marriage brokering.`
    - A KO: `결혼이 이미 정해졌다면 체류자격 변경과 가족 초청의 일반 절차를 안내하고 협업 행정사에게 연결해 드립니다. 결혼 매칭이나 중개는 하지 않습니다.`
-7. Q EN `Which languages do you support?` / KO `어떤 언어를 지원하나요?`
-   - A EN: `English and Korean for now. Nepali is next, and more languages will follow as we grow.`
-   - A KO: `지금은 영어와 한국어를 지원합니다. 다음은 네팔어이며, 서비스가 커지면 다른 언어도 추가합니다.`
+7. Q EN `Which languages will you support?` / KO `어떤 언어를 지원할 예정인가요?`
+   - A EN: `Planned languages: English and Korean first, then Nepali. More languages may be added as we grow.`
+   - A KO: `지원 예정 언어: 영어·한국어부터, 이어서 네팔어. 서비스가 커지면 다른 언어도 추가할 수 있습니다.`
 
 ### 11. 파트너 (`partners`) — 보조 방문자용, 파트너 CTA 1개
 - 섹션 머리말 EN `For partners` / KO `파트너 기관께`
@@ -337,8 +337,8 @@
     - EN: `Stay connected with your students before and after they arrive in Korea.`
     - KO: `입국 전부터 입국 후까지 학생과의 연결을 이어 갑니다.`
   - 카드 3 — EN `Administrative agents` / KO `행정사`
-    - EN: `Receive consultations with basic documents and facts already organised. We take care of repeat questions and multilingual student contact. We do not share or split your fees.`
-    - KO: `기본 서류와 사실관계가 정리된 상담 건을 받으세요. 반복 문의와 다국어 학생 응대는 플랫폼이 맡습니다. 수임료를 나누는 구조는 만들지 않습니다.`
+    - EN: `Receive consultation requests where the student has already shared basic information, such as visa type and expiry date. We take care of repeat questions and multilingual student contact. We do not share or split your fees.`
+    - KO: `체류자격·만료일 같은 기본 정보를 학생이 미리 남긴 상담 요청을 받으세요. 반복 문의와 다국어 학생 응대는 플랫폼이 맡습니다. 수임료를 나누는 구조는 만들지 않습니다.`
 - 파트너 로고 자리: 실제 제휴처가 없으므로 로고 줄을 만들지 않는다. 대신 한 줄 표기
   - EN: `Pilot partners: [자리표시]`
   - KO: `시범 운영 파트너: [자리표시]`
@@ -456,6 +456,7 @@
 | 6 | 공개용 연락 이메일(서비스용, 대표 개인 이메일 아님) | 푸터 | `[자리표시]` 유지 |
 | 7 | 브랜드명 결정(Stay Busan / Stay B 중 시안 대표 표기) | 전체 | 이 기획안은 `Stay Busan`으로 통일 |
 | 8 | 대표가 직접 쓴 문장 또는 수정한 카피(있다면) | 저작권용 창작 기여 기록 | 검토 단계에서 대표가 고친 문장을 기록 |
+| 9 | 지원 언어 계획(영어·한국어·네팔어 지원 여부와 시기) — 원천 자료에 언급 없음 | 첫 화면 신뢰 문구, FAQ 7, 폼 언어 선택 | "지원 예정(planned)"으로만 표기 |
 
 ---
 
@@ -502,6 +503,9 @@
 8. **네팔 커뮤니티 카드**: 1차 타깃이 네팔 학생이라 별도 카드로 넣었다. 국가 중립을 원하면 `Communities by country`로 바꾼다.
 9. **포트폴리오 카드 태그·분류**: 브릿지노드 포트폴리오 기존 분류(홈페이지/앱)에 맞춰 "홈페이지"로 넣었다.
 10. **브릿지노드 기존 포트폴리오 8건과의 관계**: 대표 지시대로 "포트폴리오 1호(자체 프로젝트)"로 표기했다. 기존 8건이 있는 상태에서 "1호"가 자체 프로젝트 기준 1호라는 뜻인지 확인 필요(카드에는 `자체 프로젝트 01`로 표기).
+11. **[실제 운영 전 확인] 직업정보제공사업 신고 필요 여부**: 일자리 정보(구인 정보)를 모아 제공하면 직업안정법상 직업정보제공사업 신고 대상이 될 수 있다. 실제 운영 전 신고 필요 여부를 검토한다. (검토 보고서 F-4 / L-3)
+12. **[실제 운영 전 확인] 협업 행정사 자격 종류와 출입국 민원 대행기관 등록 여부**: 출입국 민원 대행은 별도 대행기관 등록 제도가 있고, 외국어번역행정사는 출입국 신청서류 작성을 할 수 없다는 해석이 있다. 협업 행정사의 자격 종류와 대행기관 등록 여부를 확인한다. (검토 보고서 R-6 / L-9)
+13. **[실제 운영 전 확인] 개인정보 제3자 제공 동의 필수 고지 항목**: 실제 운영 시 행정사에게 상담 정보를 넘길 때 개인정보보호법상 제3자 제공 동의에 받는 자·제공 목적·제공 항목·보유 및 이용 기간·동의 거부권과 거부 시 불이익을 고지해야 한다. 현재 시안의 한 문장 동의문은 데모용이다. (검토 보고서 R-6 / L-10)
 
 ---
 
