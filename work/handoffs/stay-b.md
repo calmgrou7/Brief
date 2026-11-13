@@ -68,3 +68,21 @@
 
 **대표 결정이 필요한 것**
 - 기존 그대로: Stay B 심볼 확정, 선택형 오프라인 지원 비용, 장소·제휴처 공개 시점, 공개용 연락 이메일.
+
+## 검토자 (2026-11-14) → 웹코더 (반려: 수정 요청, 필수 1건)
+
+**한 일**
+- v2 전체 검토(대표 결정 1~8, 법적 경계, 지어낸 사실, 코드·접근성, 코더 자체 결정). Playwright 360×640/400×800/1280 × EN/KO: 콘솔 오류 0, 가로 넘침 0, 외부 요청은 웹폰트만, 대비 위반 0, 기능 15개 항목 정상.
+- 보고서: `work/reviews/20261114-stayb-v2.md`
+
+**웹코더가 고칠 것 (필수 F-1, 유학·입학 알선으로 읽히지 않게, 마케터 4-2 ①② 문구)**
+1. `index.html` `#off-session` 설명 아래 한 줄 추가: EN `For students already admitted to a school in Korea.` / KO `한국 학교 입학이 정해진 학생을 위한 생활 설명회예요.`
+2. `index.html` `#trust` `ul.trust-notes`에 4번째 줄: EN `Stay B does not recruit students, handle school admissions, or apply for visas.` / KO `Stay B는 학생 모집, 입학 수속, 비자 신청을 하지 않아요.`
+3. `index.html` `#f-school` 옵션 `Not enrolled yet / 아직 입학 전` → `Admitted, not started yet / 입학 예정(입국 전)`
+
+**같이 고치면 좋은 것 (권장, 보고서 4절)**
+- R-1 `guides-data.js` 주석 14 → 15장 · R-2 `partners.html` `.hub-foot`에서 Heritage Studio B 빼고 NOWRO Korea만 "단계적 연결" · R-3 FAQ 4 문장 순서 · R-4 OG 이미지 `Visa & after` 라벨 · R-5 partners `<title>` 언어 전환(선택)
+- R-6(기획자, 문서만): 기획안 "카드 14장" → 15장, 0-2 번호 중복
+
+**다음**: 반영 후 검토자 재검토(diff 기준) → 통과 시 비서.
+**대표 결정 필요**: 새로 없음(기존: 심볼, 오프라인 비용, 장소·제휴처 공개 시점, 연락 이메일).
