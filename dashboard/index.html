@@ -1,0 +1,222 @@
+<title>BRIDGE NODE 오피스</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 상단 대표 지시창 → 직원 노드 5칸 → 업무 파이프라인(지시→진행→검토→승인→완료) → 활동 로그 */
+:root{
+  --bg:#EEF1F4; --panel:#FFFFFF; --ink:#13202C; --muted:#5D6B78; --line:#D7DDE3;
+  --accent:#2448C9; --accent-soft:#E3E9FB;
+  --ok:#1F7A4D; --ok-soft:#E1F2E8; --warn:#9A5B00; --warn-soft:#FBEFD9; --busy:#2448C9; --busy-soft:#E3E9FB; --idle:#6B7783; --idle-soft:#ECEFF2;
+  --f-display:"Space Grotesk","IBM Plex Sans KR",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F161D; --panel:#17212B; --ink:#E6ECF2; --muted:#93A1AE; --line:#263443;
+  --accent:#7D9BFF; --accent-soft:#1E2A4A;
+  --ok:#6FD39C; --ok-soft:#173326; --warn:#F2B65A; --warn-soft:#3A2A12; --busy:#7D9BFF; --busy-soft:#1E2A4A; --idle:#8D99A5; --idle-soft:#1F2a35; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F161D; --panel:#17212B; --ink:#E6ECF2; --muted:#93A1AE; --line:#263443;
+  --accent:#7D9BFF; --accent-soft:#1E2A4A;
+  --ok:#6FD39C; --ok-soft:#173326; --warn:#F2B65A; --warn-soft:#3A2A12; --busy:#7D9BFF; --busy-soft:#1E2A4A; --idle:#8D99A5; --idle-soft:#1F2a35; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{flex:none}
+h1{font-family:var(--f-display);font-size:22px;letter-spacing:.04em;margin:0;line-height:1.1}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+.sync{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+h2{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-family:var(--f-display)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px}
+/* 지시창 */
+.order{padding:14px;display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+.order input,.order select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.order input:focus,.order select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent}
+.btn{background:var(--accent);color:var(--panel);padding:10px 16px;font-weight:600}
+.btn:disabled{opacity:.5;cursor:default}
+.hint{grid-column:1/-1;color:var(--muted);font-size:12px;margin:0}
+@media (max-width:640px){.order{grid-template-columns:1fr}}
+/* 직원 노드 */
+.staff{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:980px){.staff{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:620px){.staff{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:400px){.staff{grid-template-columns:1fr}}
+.node{padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.node-top{display:flex;align-items:center;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:13px;background:var(--accent-soft);color:var(--accent);flex:none}
+.who{min-width:0}
+.who b{display:block;font-size:14px}
+.who span{display:block;color:var(--muted);font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;width:max-content}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-idle{color:var(--idle);background:var(--idle-soft)}
+.s-busy{color:var(--busy);background:var(--busy-soft)}
+.s-review{color:var(--warn);background:var(--warn-soft)}
+.s-done{color:var(--ok);background:var(--ok-soft)}
+.cur{font-size:13px;color:var(--ink);overflow-wrap:anywhere}
+.cur.none{color:var(--muted)}
+/* 파이프라인 */
+.board-scroll{overflow-x:auto;padding-bottom:4px}
+.board{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:10px;min-width:1040px}
+.col{padding:10px;display:flex;flex-direction:column;gap:8px;background:transparent;border:1px dashed var(--line);border-radius:10px;min-height:120px}
+.col-h{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:13px;padding:2px 4px}
+.count{font-family:var(--f-mono);color:var(--muted);font-size:12px}
+.card{padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card .t{font-weight:600;font-size:13.5px;overflow-wrap:anywhere}
+.card .d{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.tag{background:var(--accent-soft);color:var(--accent);border-radius:5px;padding:1px 7px;font-weight:600}
+.out{font-family:var(--f-mono);font-size:11.5px;color:var(--ink);background:var(--bg);border-radius:5px;padding:4px 6px;overflow-wrap:anywhere}
+.approve{background:var(--ok);color:var(--panel);padding:6px 10px;font-weight:600;font-size:12.5px;align-self:flex-start}
+.empty{color:var(--muted);font-size:12.5px;padding:6px 4px}
+/* 로그 */
+.log{padding:6px 14px}
+.log ol{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:52px 90px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.log li:last-child{border-bottom:0}
+.log time{font-family:var(--f-mono);color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.log .lw{font-weight:600}
+.log .lt{min-width:0;overflow-wrap:anywhere}
+@media (max-width:520px){.log li{grid-template-columns:44px 1fr}.log .lt{grid-column:1/-1}}
+.notice{font-size:12.5px;color:var(--warn);background:var(--warn-soft);padding:8px 12px;border-radius:8px}
+@media (prefers-reduced-motion:no-preference){.pill.s-busy::before{animation:pulse 1.6s ease-in-out infinite}}
+@keyframes pulse{50%{opacity:.3}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M6 26 Q20 8 34 26" fill="none" stroke="var(--accent)" stroke-width="2.4"/><line x1="4" y1="26" x2="36" y2="26" stroke="var(--ink)" stroke-width="2.4"/><circle cx="6" cy="26" r="3.6" fill="var(--accent)"/><circle cx="20" cy="17" r="3.6" fill="var(--ink)"/><circle cx="34" cy="26" r="3.6" fill="var(--accent)"/></svg>
+      <div><h1>BRIDGE NODE</h1><p class="sub">대표 1명 · AI 직원 5명 운영 현황판</p></div>
+    </div>
+    <div class="sync" id="sync">연결 중…</div>
+  </header>
+
+  <section>
+    <h2>대표 지시</h2>
+    <form class="panel order" id="orderForm">
+      <input id="orderText" type="text" placeholder="예) 신규 서비스 소개 홈페이지 기획안 만들어줘" maxlength="300" autocomplete="off">
+      <select id="orderWho" aria-label="담당 직원">
+        <option value="">담당: 실장이 배정</option>
+      </select>
+      <button class="btn" id="orderBtn" type="submit">지시 등록</button>
+      <p class="hint">여기 등록한 지시는 '지시' 칸에 쌓이고, 채팅방에서 "지시함 처리해"라고 하면 실장(Claude)이 직원에게 배정해 진행합니다.</p>
+    </form>
+  </section>
+
+  <section>
+    <h2>직원 현황</h2>
+    <div class="staff" id="staff"></div>
+  </section>
+
+  <section>
+    <h2>업무 파이프라인</h2>
+    <div class="board-scroll"><div class="board" id="board"></div></div>
+  </section>
+
+  <section>
+    <h2>오늘 활동 로그</h2>
+    <div class="panel log"><ol id="log"><li><span></span><span></span><span class="lt" style="color:var(--muted)">아직 기록이 없어요.</span></li></ol></div>
+  </section>
+</div>
+
+<script>
+const STAFF_DEFAULT=[
+  {id:"secretary",name:"비서",role:"일정·메일·브리핑",ini:"SE"},
+  {id:"planner",name:"홈페이지 기획자",role:"기획·구성안·카피",ini:"PL"},
+  {id:"builder",name:"제작자",role:"홈페이지·대시보드 제작",ini:"DV"},
+  {id:"reviewer",name:"검토자",role:"품질·사실·리스크 검토",ini:"QA"},
+  {id:"editor",name:"영상 편집자",role:"편집·자막·업로드안",ini:"VE"}
+];
+const STAGES=[["todo","지시"],["doing","진행 중"],["review","검토"],["approval","대표 승인 대기"],["done","완료"]];
+const STATUS={idle:["대기","s-idle"],busy:["작업 중","s-busy"],review:["검토 대기","s-review"],done:["완료 보고","s-done"]};
+let staff={},tasks=[],logEntries=[],db=null;
+const $=id=>document.getElementById(id);
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+const nameOf=id=>(staff[id]?.name)||(STAFF_DEFAULT.find(s=>s.id===id)?.name)||"미배정";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const hm=iso=>{try{const d=new Date(iso);return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}catch(e){return""}};
+
+STAFF_DEFAULT.forEach(s=>{const o=el("option",null,s.name);o.value=s.id;$("orderWho").appendChild(o)});
+
+function renderStaff(){
+  const box=$("staff");box.replaceChildren();
+  STAFF_DEFAULT.forEach(def=>{
+    const s=Object.assign({},def,staff[def.id]||{});
+    const st=STATUS[s.status]||STATUS.idle;
+    const n=el("article","panel node");
+    const top=el("div","node-top");
+    top.append(el("div","av",def.ini));
+    const who=el("div","who");who.append(el("b",null,s.name),el("span",null,s.role));top.append(who);
+    n.append(top,el("span","pill "+st[1],st[0]));
+    n.append(el("div","cur"+(s.current?"":" none"),s.current||"배정된 업무 없음"));
+    if(s.updatedAt){n.append(el("div","meta","업데이트 "+hm(s.updatedAt)))}
+    box.append(n);
+  });
+}
+function renderBoard(){
+  const b=$("board");b.replaceChildren();
+  STAGES.forEach(([key,label])=>{
+    const list=tasks.filter(t=>(t.stage||"todo")===key);
+    const col=el("div","col");
+    const h=el("div","col-h");h.append(el("span",null,label),el("span","count",String(list.length)));col.append(h);
+    if(!list.length)col.append(el("div","empty",key==="todo"?"새 지시가 여기에 쌓여요":"비어 있음"));
+    list.forEach(t=>{
+      const c=el("div","panel card");
+      c.append(el("div","t",t.title||"(제목 없음)"));
+      if(t.detail)c.append(el("div","d",t.detail));
+      const m=el("div","meta");m.append(el("span","tag",nameOf(t.assignee)));
+      if(t.updatedAt)m.append(el("span",null,hm(t.updatedAt)));
+      c.append(m);
+      if(t.output)c.append(el("div","out",t.output));
+      if(key==="approval"&&db){
+        const a=el("button","approve","승인하고 완료");a.type="button";
+        a.onclick=async()=>{a.disabled=true;try{await db.doc("tasks/"+t._id).update({stage:"done",approvedAt:new Date().toISOString(),updatedAt:new Date().toISOString()});addLog("대표","승인: "+t.title)}catch(e){a.disabled=false;showNote("승인을 저장하지 못했어요. 잠시 후 다시 눌러 주세요.")}};
+        c.append(a);
+      }
+      col.append(c);
+    });
+    b.append(col);
+  });
+}
+function renderLog(){
+  const ol=$("log");ol.replaceChildren();
+  const items=[...logEntries].sort((a,b)=>(b.t||"").localeCompare(a.t||"")).slice(0,40);
+  if(!items.length){const li=el("li");li.append(el("span"),el("span"),Object.assign(el("span","lt","아직 기록이 없어요."),{style:"color:var(--muted)"}));ol.append(li);return}
+  items.forEach(x=>{const li=el("li");const tm=el("time",null,hm(x.t));li.append(tm,el("span","lw",x.who||""),el("span","lt",x.text||""));ol.append(li)});
+}
+function showNote(msg){let n=document.querySelector(".notice");if(!n){n=el("div","notice");document.querySelector(".wrap").insertBefore(n,document.querySelector(".wrap").children[1])}n.textContent=msg}
+async function addLog(who,text){
+  if(!db)return;
+  const ref=db.doc("log/"+today());
+  try{const s=await ref.get();const entries=(s.exists&&Array.isArray(s.data().entries))?[...s.data().entries]:[];entries.push({t:new Date().toISOString(),who,text});await ref.set({entries:entries.slice(-300)})}catch(e){}
+}
+renderStaff();renderBoard();
+
+$("orderForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const text=$("orderText").value.trim();if(!text)return;
+  if(!db){showNote("현황판 저장소에 연결되지 않아 지시를 저장할 수 없어요. 채팅방에 직접 지시해 주세요.");return}
+  $("orderBtn").disabled=true;
+  const now=new Date().toISOString();
+  try{await db.collection("tasks").add({title:text,detail:"",assignee:$("orderWho").value||"",stage:"todo",source:"dashboard",createdAt:now,updatedAt:now});$("orderText").value="";addLog("대표","지시 등록: "+text)}
+  catch(err){showNote("지시를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.")}
+  finally{$("orderBtn").disabled=false}
+});
+
+(async()=>{
+  db=await (window.claude?.use?.("db")??Promise.resolve(null));
+  if(!db){$("sync").textContent="오프라인 보기";showNote("이 보기에서는 실시간 현황을 불러올 수 없어요. claude.ai에 로그인한 상태로 열어 주세요.");return}
+  renderBoard();
+  let timer=setTimeout(()=>{$("sync").textContent="응답 대기 중 · 내용이 최신이 아닐 수 있어요"},10000);
+  const live=snap=>{if(!snap.metadata.fromCache){clearTimeout(timer);$("sync").textContent="실시간 연결됨 · "+hm(new Date().toISOString())}};
+  const fail=()=>{clearTimeout(timer);$("sync").textContent="연결 끊김 · 새로고침해 주세요"};
+  db.collection("staff").onSnapshot(s=>{staff={};s.docs.forEach(d=>staff[d.id]=d.data());renderStaff();renderBoard();live(s)},fail);
+  db.collection("tasks").orderBy("createdAt","desc").limit(200).onSnapshot(s=>{tasks=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderBoard();live(s)},fail);
+  db.doc("log/"+today()).onSnapshot(d=>{logEntries=(d.exists&&Array.isArray(d.data().entries))?d.data().entries:[];renderLog()},fail);
+})();
+</script>
