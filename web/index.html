@@ -247,71 +247,250 @@ async function uploadImage(memberId, kind, dataUrl){
   return path;
 }
 
-/* 엑셀/CSV 일괄 등록
-   - 이름으로 매칭, 빈 칸은 기존 값 유지
-   - 추천인 칸 '창립' → 창립회원, '창립(홍길동)' → 창립회원 + 추천인 홍길동
+/* ===================== 엑셀 일괄 등록·변경 =====================
+   흐름: 수정용 엑셀 받기 → 엑셀에서 고치기 → 업로드 → 변경 내용 미리보기 → 적용
+   - 매칭: ID 열(수정용 엑셀) → 명부 NO+성명 → 성명 순서로 회원을 찾음 (ID가 있으면 이름 변경 가능)
+   - 빈 칸은 기존 값 유지, '-' 는 값 지우기
+   - 창립·신입 열: O(또는 Y, 1, 예, V) = 체크, 빈칸 = 해제  /  상태 열: 활동·휴면
+   - 예전 명부 엑셀(ID 없음, 추천인 칸 '창립')도 그대로 인식
    - 명부에 없는 추천인은 '휴면' 회원으로 자동 생성 */
-async function importRows(rows){
-  rows = rows.filter(r=>r.name);
-  rows.forEach(r=>{
-    const g = (r.guardian||'').trim();
-    r.founder = g.startsWith('창립');
-    r.guardian = g.startsWith('창립(') ? g.slice(3).replace(/[()]/g,'').trim() : (r.founder ? '' : g);
-  });
-  const M = () => D().members;
-  // 같은 이름이 여럿이면 명부 번호(NO)로 구분
-  const target = r => M().find(m=>r.no && String(m.rosterNo)===String(r.no) && m.name===r.name)
-    || M().find(m=>m.name===r.name && (!r.no || !m.rosterNo || String(m.rosterNo)===String(r.no)));
-  const guardianOf = n => M().filter(m=>m.name===n)
-    .sort((a,b)=>(a.status==='inactive')-(b.status==='inactive') || (a.rosterNo||9999)-(b.rosterNo||9999))[0];
-  let added = 0, guardians = 0;
-  for(const r of rows){
-    if(target(r)) continue;
-    const [row] = await q(sb.from('jw_members').insert({name:r.name, roster_no:+r.no||null}).select('*'));
-    M().push(fromMember(row)); added++;
-  }
-  const missing = [...new Set(rows.map(r=>r.guardian).filter(n=>n && !guardianOf(n)))];
-  if(missing.length){
-    const created = await q(sb.from('jw_members').insert(missing.map(name=>({name, status:'inactive', memo:'명부에 없는 추천인 (전 회원 추정)'}))).select('*'));
-    M().push(...created.map(fromMember)); guardians = missing.length;
-  }
-  for(const r of rows){
-    const patch = {is_founder:r.founder};
-    if(r.joined) patch.joined = r.joined;
-    if(+r.no) patch.roster_no = +r.no;
-    [['company','company'],['products','products'],['birthYear','birth_year'],['phone','phone'],
-     ['title','title'],['address','address'],['memo','memo'],['industry','industry'],['website','website']]
-      .forEach(([k,c])=>{ if(r[k]) patch[c] = r[k]; });
-    if(r.guardian) patch.guardian_id = guardianOf(r.guardian).id;
-    else if(r.founder) patch.guardian_id = null;
-    const t = target(r);
-    await q(sb.from('jw_members').update(patch).eq('id', t.id));
-    t.rosterNo = patch.roster_no ?? t.rosterNo;
-  }
-  return {added, guardians, total:rows.length};
-}
+const IMPORT_FIELDS = [   // [엑셀 키, DB 열, 화면 이름, 회원 속성]
+  ['name','name','성명','name'], ['no','roster_no','NO','rosterNo'], ['joined','joined','입회년월','joined'],
+  ['phone','phone','전화번호','phone'], ['company','company','근무처','company'], ['title','title','직함','title'],
+  ['products','products','제품·서비스','products'], ['industry','industry','업종','industry'], ['address','address','주소','address'],
+  ['website','website','홈페이지','website'], ['email','email','이메일','email'], ['birthYear','birth_year','출생연도','birthYear'],
+  ['memo','memo','비고','memo']];
+const EXPORT_HEAD = ['ID','NO','입회년월','성명','추천인','전화번호','근무처','직함','제품·서비스','업종','주소','홈페이지','이메일','출생연도','창립','신입','상태','비고','직책(참고)'];
+const isYes = v => /^(o|ㅇ|y|yes|1|예|v|✓|✔|●|true)$/i.test(String(v||'').trim());
 
-/* 표(2차원 배열) → 회원 행. 머리글 줄을 자동으로 찾음 (제목 줄이 있어도 됨) */
+/* 표(2차원 배열) → {rows, has}. 머리글 줄을 자동으로 찾음 (제목 줄이 있어도 됨) */
 function rowsFromTable(table){
   const norm = v => String(v ?? '').replace(/\s+/g,' ').trim();
   const hi = table.findIndex(r=>r.some(c=>/^(성명|회원명|이름)$/.test(norm(c))));
   if(hi < 0) throw new Error('"성명" 또는 "회원명" 머리글을 찾을 수 없습니다.');
   const head = table[hi].map(norm);
   const col = (...names) => head.findIndex(h=>names.some(n=>h.includes(n)));
-  const ix = {no:head.findIndex(h=>/^(NO|번호|순번)$/i.test(h)), joined:col('입회'), name:head.findIndex(h=>/^(성명|회원명|이름)$/.test(h)),
-    guardian:col('추천'), phone:col('전화','연락처','휴대'), company:col('근무처','회사','상호'), address:col('주소'), website:col('홈페이지','웹사이트','URL'),
-    products:col('업종','제품','서비스'), birthYear:col('출생'), title:col('직함','직위'), memo:col('비고','메모')};
+  const exact = re => head.findIndex(h=>re.test(h));
+  const prodCol = col('제품','서비스');
+  const ix = {id:exact(/^ID$/i), no:exact(/^(NO|번호|순번)$/i), joined:col('입회'), name:exact(/^(성명|회원명|이름)$/),
+    guardian:col('추천'), phone:col('전화','연락처','휴대'), company:col('근무처','회사','상호'), title:col('직함','직위'),
+    address:col('주소'), website:col('홈페이지','웹사이트','URL'), email:col('이메일','메일','email'), birthYear:col('출생'),
+    memo:col('비고','메모'), founder:exact(/^창립/), isNew:exact(/^신입/), status:exact(/^상태$/),
+    // 예전 명부는 '업종' 칸에 제품·서비스를 적었음 → 제품 칸이 따로 없으면 업종을 제품으로 읽음
+    products: prodCol >= 0 ? prodCol : col('업종'), industry: prodCol >= 0 ? col('업종') : -1};
   const toJoined = v => {
     if(v === '' || v == null) return '';
+    if(String(v).trim() === '-') return '-';
     const t = typeof v === 'number' ? v.toFixed(2) : norm(v).replace(/[.\/-]+$/,'');
     const m = t.match(/^(\d{4})[.\/-](\d{1,2})/); return m ? `${m[1]}-${m[2].padStart(2,'0')}` : '';
   };
-  return table.slice(hi+1).map(r=>{
-    const o = {}; for(const k in ix) o[k] = ix[k] >= 0 ? norm(r[ix[k]]) : '';
+  const has = Object.fromEntries(Object.entries(ix).map(([k,i])=>[k, i >= 0]));
+  const rows = table.slice(hi+1).map((r, n)=>{
+    const o = {_line: hi + n + 2};
+    for(const k in ix) o[k] = ix[k] >= 0 ? norm(r[ix[k]]) : '';
     o.joined = ix.joined >= 0 ? toJoined(r[ix.joined]) : '';
     return o;
   }).filter(o=>o.name);
+  return {rows, has};
 }
+
+/* 업로드 내용과 현재 명부를 비교해 변경 계획을 만듦 (DB는 아직 안 바뀜) */
+function planImport({rows, has}){
+  const M = D().members;
+  const plan = {creates:[], updates:[], same:0, warnings:[], newGuardians:new Set(), absent:[], has};
+  const used = new Set();
+  const byName = n => M.filter(m=>m.name===n);
+  const findTarget = r => {
+    if(r.id){
+      const m = M.find(x=>x.id===r.id);
+      if(m) return m;
+      plan.warnings.push(`${r._line}행 ${r.name}: ID가 명부에 없어 새 회원으로 등록합니다.`);
+      return null;
+    }
+    const byNo = r.no && M.find(m=>String(m.rosterNo)===String(r.no) && m.name===r.name);
+    if(byNo) return byNo;
+    const same = byName(r.name).filter(m=>!r.no || !m.rosterNo || String(m.rosterNo)===String(r.no));
+    if(same.length > 1){ plan.warnings.push(`${r._line}행 ${r.name}: 같은 이름이 ${same.length}명이라 건너뜁니다. (수정용 엑셀의 ID 열을 사용하세요)`); return 'skip'; }
+    return same[0] || null;
+  };
+  const guardianOf = (n, self) => M.filter(m=>m.name===n && (!self || m.id!==self.id))
+    .sort((a,b)=>(a.status==='inactive')-(b.status==='inactive') || (a.rosterNo||9999)-(b.rosterNo||9999))[0];
+  const fmt = (k, v) => v === '' || v == null ? '(없음)' : k === 'joined' ? String(v).replace('-','.') : String(v);
+
+  for(const r of rows){
+    const m = findTarget(r);
+    if(m === 'skip') continue;
+    if(m && used.has(m.id)){ plan.warnings.push(`${r._line}행 ${r.name}: 같은 회원이 파일에 두 번 있어 건너뜁니다.`); continue; }
+    if(m) used.add(m.id);
+    const cur = m || {};
+    const patch = {}, changes = [];
+    const set = (col, label, from, to, key) => { if(String(from ?? '') !== String(to ?? '')){ patch[col] = to; changes.push({label, from:fmt(key, from), to:fmt(key, to)}); } };
+
+    for(const [k, col, label, prop] of IMPORT_FIELDS){
+      if(!has[k]) continue;
+      let v = r[k];
+      if(v === '') continue;                         // 빈 칸 = 그대로
+      if(v === '-') v = '';                           // '-' = 지우기
+      if(k === 'name' && !v) continue;
+      if(k === 'email') v = v.toLowerCase();
+      if(k === 'no'){ const n = parseInt(v, 10); if(v === '') set(col, label, cur.rosterNo || '', null, k); else if(Number.isFinite(n)) set(col, label, cur.rosterNo || '', n, k); continue; }
+      set(col, label, cur[prop] ?? '', v, k);
+    }
+    // 창립: 창립 열이 있으면 그 값, 없으면 예전 명부처럼 추천인 칸의 '창립'으로 판단
+    let g = r.guardian;
+    const legacyFounder = !has.founder && has.guardian && g.startsWith('창립');
+    if(g.startsWith('창립')) g = g.startsWith('창립(') ? g.slice(3).replace(/[()]/g,'').trim() : '';
+    const founder = has.founder ? isYes(r.founder) : has.guardian ? legacyFounder : undefined;
+    if(founder !== undefined) set('is_founder', '창립', cur.isFounder ? 'O' : '', founder ? 'O' : '', 'f');
+    if(has.isNew) set('is_new', '신입', cur.isNew ? 'O' : '', isYes(r.isNew) ? 'O' : '', 'n');
+    if(has.status && r.status){
+      const st = /휴면|탈퇴|정지/.test(r.status) ? 'inactive' : /활동|정상|회원/.test(r.status) ? 'active' : '';
+      if(st) set('status', '상태', cur.status === 'inactive' ? '휴면' : m ? '활동' : '', st === 'inactive' ? '휴면' : '활동', 's');
+    }
+    // 상태 열 값은 화면용 → DB 값으로 바꿈
+    if('status' in patch) patch.status = patch.status === '휴면' ? 'inactive' : 'active';
+    if('is_founder' in patch) patch.is_founder = patch.is_founder === 'O';
+    if('is_new' in patch) patch.is_new = patch.is_new === 'O';
+    // 추천인
+    if(has.guardian){
+      const curG = cur.guardianId ? member(cur.guardianId)?.name || '' : '';
+      if(r.guardian === '-' || (legacyFounder && !g)){
+        if(curG){ patch.guardian_id = null; changes.push({label:'추천인', from:curG, to:'(없음)'}); }
+      }else if(g && g !== curG){
+        patch._guardianName = g; changes.push({label:'추천인', from:curG || '(없음)', to:g, _g:g});
+      }
+    }
+    if(!m){
+      if(!r.name) continue;
+      patch.name = r.name;
+      plan.creates.push({row:r, patch});
+    }else if(changes.length) plan.updates.push({m, patch, changes});
+    else plan.same++;
+  }
+  // 명부에 없는 추천인: 기존 회원에도, 이번 파일의 신규 회원에도 없는 이름만
+  const createNames = new Set(plan.creates.map(c=>c.patch.name));
+  const missing = n => !guardianOf(n) && !createNames.has(n);
+  [...plan.creates.map(c=>c.patch), ...plan.updates.map(u=>u.patch)].forEach(p=>{ if(p._guardianName && missing(p._guardianName)) plan.newGuardians.add(p._guardianName); });
+  plan.updates.forEach(u=>u.changes.forEach(c=>{ if(c._g && plan.newGuardians.has(c._g)) c.to += ' (명부에 없어 휴면으로 생성)'; }));
+  plan.absent = M.filter(m=>m.status !== 'inactive' && !used.has(m.id));
+  plan.guardianOf = guardianOf;
+  return plan;
+}
+
+function showImportPlan(plan, fileName){
+  const li = (t) => `<li style="margin:3px 0">${t}</li>`;
+  const upd = plan.updates.map(u=>li(`<b>${esc(u.m.name)}</b> — ${u.changes.map(c=>`${esc(c.label)}: <span class="muted">${esc(c.from)}</span> → <b>${esc(c.to)}</b>`).join(' · ')}`)).join('');
+  const crt = plan.creates.map(c=>li(`<b>${esc(c.patch.name)}</b> ${esc(c.patch.company||'')}`)).join('');
+  const total = plan.creates.length + plan.updates.length;
+  openModal(`<h2>엑셀 반영 미리보기</h2>
+    <p class="muted" style="margin-top:-6px;font-size:13px">${esc(fileName)} · 아직 반영되지 않았습니다. 확인 후 <b>적용</b>을 누르세요.</p>
+    <div class="grid kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+      <div class="panel kpi" style="padding:12px"><div class="l">신규 등록</div><div class="n" style="font-size:24px">${plan.creates.length}</div></div>
+      <div class="panel kpi" style="padding:12px"><div class="l">정보 변경</div><div class="n" style="font-size:24px">${plan.updates.length}</div></div>
+      <div class="panel kpi" style="padding:12px"><div class="l">변경 없음</div><div class="n" style="font-size:24px">${plan.same}</div></div>
+    </div>
+    <div style="max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px 14px">
+      ${plan.updates.length?`<details open><summary><b>변경 ${plan.updates.length}명</b></summary><ul style="padding-left:18px;font-size:14px">${upd}</ul></details>`:''}
+      ${plan.creates.length?`<details ${plan.updates.length?'':'open'}><summary><b>신규 ${plan.creates.length}명</b></summary><ul style="padding-left:18px;font-size:14px">${crt}</ul></details>`:''}
+      ${plan.newGuardians.size?`<details><summary><b>명부에 없는 추천인 ${plan.newGuardians.size}명</b> (휴면 회원으로 생성)</summary><p style="font-size:14px">${[...plan.newGuardians].map(esc).join(', ')}</p></details>`:''}
+      ${plan.warnings.length?`<details open><summary><b style="color:var(--warn)">확인 필요 ${plan.warnings.length}건</b></summary><ul style="padding-left:18px;font-size:13px;color:var(--warn)">${plan.warnings.map(w=>li(esc(w))).join('')}</ul></details>`:''}
+      ${!total && !plan.warnings.length ? '<p class="muted">바뀌는 내용이 없습니다.</p>' : ''}
+    </div>
+    ${plan.absent.length && plan.has.id ? `<label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:14px">
+      <input type="checkbox" id="absentOff" style="margin-top:3px"> <span>엑셀에 없는 활동 회원 <b>${plan.absent.length}명</b>을 휴면 처리
+      <span class="muted" style="font-size:12px">(${plan.absent.slice(0,8).map(m=>esc(m.name)).join(', ')}${plan.absent.length>8?' 외':''})</span></span></label>` : ''}
+    <div class="row" style="justify-content:flex-end;margin-top:14px">
+      <button class="btn" data-close>취소</button>
+      <button class="btn pri" id="applyImport" ${total || plan.absent.length ? '' : 'disabled'}>적용</button>
+    </div>`, root=>{
+    root.querySelector('#applyImport').onclick = async e=>{
+      const off = root.querySelector('#absentOff')?.checked;
+      if(!total && !off) return closeModal();
+      const btn = e.currentTarget; btn.disabled = true; btn.textContent = '반영 중…';
+      const res = await applyImport(plan, {absentOff:off});
+      closeModal();
+      const msg = `신규 ${res.created}명 · 변경 ${res.updated}명${res.inactivated?` · 휴면 ${res.inactivated}명`:''}${res.guardians?` · 추천인 ${res.guardians}명 생성`:''}`;
+      if(res.errors.length){
+        openModal(`<h2>반영 결과</h2><p>${msg}</p><p style="color:var(--warn)"><b>반영하지 못한 ${res.errors.length}건</b></p>
+          <ul style="font-size:13px;color:var(--warn)">${res.errors.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+          <div class="row" style="justify-content:flex-end"><button class="btn pri" data-close>확인</button></div>`);
+      }else toast(msg + ' 반영했습니다.');
+      Store.refresh();
+    };
+  });
+}
+
+async function applyImport(plan, {absentOff}){
+  const res = {created:0, updated:0, inactivated:0, guardians:0, errors:[]};
+  const M = D().members;
+  const errText = e => e?.code === '23505' ? '이미 다른 회원이 쓰는 이메일입니다' : (e?.message || '오류');
+  const resolve = (patch, self) => {
+    const p = {...patch};
+    if(p._guardianName){ const g = plan.guardianOf(p._guardianName, self); if(g) p.guardian_id = g.id; }
+    delete p._guardianName;
+    return p;
+  };
+  // 1) 신규 회원 (추천인은 모두 등록한 뒤 연결)
+  const created = [];
+  for(const c of plan.creates){
+    const {_guardianName, ...row} = c.patch;
+    const {data, error} = await sb.from('jw_members').insert(row).select('*');
+    if(error) res.errors.push(`${c.patch.name}: ${errText(error)}`);
+    else { const m = fromMember(data[0]); M.push(m); created.push([m, c.patch]); res.created++; }
+  }
+  // 2) 기존 명부·신규 회원 어디에도 없는 추천인 → 휴면 회원 생성
+  if(plan.newGuardians.size){
+    const {data, error} = await sb.from('jw_members')
+      .insert([...plan.newGuardians].map(name=>({name, status:'inactive', memo:'명부에 없는 추천인 (전 회원 추정)'}))).select('*');
+    if(error) res.errors.push('추천인 생성: ' + errText(error)); else { M.push(...data.map(fromMember)); res.guardians = data.length; }
+  }
+  // 3) 신규 회원의 추천인 연결
+  for(const [m, patch] of created){
+    if(!patch._guardianName) continue;
+    const g = plan.guardianOf(patch._guardianName, m);
+    if(g){ const {error} = await sb.from('jw_members').update({guardian_id:g.id}).eq('id', m.id); if(error) res.errors.push(`${m.name} 추천인: ${errText(error)}`); }
+  }
+  // 3-2) 기존 회원 정보 변경
+  for(const u of plan.updates){
+    const {error} = await sb.from('jw_members').update(resolve(u.patch, u.m)).eq('id', u.m.id);
+    if(error) res.errors.push(`${u.m.name}: ${errText(error)}`); else res.updated++;
+  }
+  // 4) 엑셀에 없는 회원 휴면 처리 (선택)
+  if(absentOff && plan.absent.length){
+    const {error} = await sb.from('jw_members').update({status:'inactive'}).in('id', plan.absent.map(m=>m.id));
+    if(error) res.errors.push('휴면 처리: ' + errText(error)); else res.inactivated = plan.absent.length;
+  }
+  return res;
+}
+
+/* 수정용 엑셀 내려받기: 올릴 때와 같은 양식 (ID 열로 회원을 정확히 찾음) */
+async function exportMembersXlsx(list, filename){
+  const X = await loadXLSX();
+  const rows = list.map(m=>{ const t = currentTerm(m.id);
+    return [m.id, m.rosterNo || '', m.joined ? m.joined.replace('-','.') : '', m.name, member(m.guardianId)?.name || '',
+      m.phone, m.company, m.title, m.products, m.industry, m.address, m.website, m.email, m.birthYear,
+      m.isFounder ? 'O' : '', m.isNew ? 'O' : '', m.status === 'inactive' ? '휴면' : '활동', m.memo,
+      t ? position(t.positionId)?.name || '' : ''];
+  });
+  const ws = X.utils.aoa_to_sheet([EXPORT_HEAD, ...rows]);
+  ws['!cols'] = [10,5,9,9,9,15,20,10,30,14,36,22,24,8,5,5,6,30,10].map(w=>({wch:w}));
+  const guide = X.utils.aoa_to_sheet([
+    ['정우회 회원명부 수정 방법'], [''],
+    ['1. 「회원명부」 시트에서 내용을 고친 뒤 저장하고, 사이트 관리 → 회원 일괄 등록·변경에 올립니다.'],
+    ['2. 올리면 바뀌는 내용을 미리 보여주고, [적용]을 눌러야 반영됩니다.'],
+    ['3. ID 열은 회원을 찾는 열입니다. 고치거나 지우지 마세요. (ID가 있으면 이름도 바꿀 수 있습니다)'],
+    ['4. 새 회원은 맨 아래에 ID를 비우고 추가하면 됩니다.'],
+    ['5. 빈 칸은 기존 값이 유지됩니다. 값을 지우려면 - (하이픈)을 입력하세요.'],
+    ['6. 창립·신입 열은 O = 체크, 빈칸 = 해제입니다. 상태 열은 활동 또는 휴면.'],
+    ['7. 추천인은 회원 이름으로 적습니다. 직책(참고) 열은 바꿔도 반영되지 않습니다 (임원진 메뉴에서 변경).'],
+  ]);
+  guide['!cols'] = [{wch:100}];
+  const wb = X.utils.book_new();
+  X.utils.book_append_sheet(wb, ws, '회원명부');
+  X.utils.book_append_sheet(wb, guide, '수정 방법');
+  X.writeFile(wb, filename);
+}
+
 let xlsxLib = null;
 function loadXLSX(){
   if(window.XLSX) return Promise.resolve(window.XLSX);
@@ -596,7 +775,7 @@ function Members(){
   return `
   <div class="head"><h1>회원명부 <span class="muted" style="font-size:15px">${list.length}명</span></h1>
     <div class="row">
-      ${can.officer()?'<button class="btn" id="vcf">📱 휴대폰 연락처 저장</button><button class="btn" id="exp">엑셀(CSV) 내보내기</button>':''}
+      ${can.officer()?'<button class="btn" id="vcf">📱 휴대폰 연락처 저장</button><button class="btn" id="exp">엑셀 내보내기</button>':''}
       ${can.admin()?'<button class="btn pri" id="add">+ 회원 등록</button>':''}
     </div></div>
   <div class="panel" style="margin-bottom:14px"><div class="row">
@@ -1153,13 +1332,16 @@ function Settings(){
       : '<div class="empty" style="padding:18px">대기 중인 가입 신청이 없습니다.</div>'}
   </div>
   <div class="grid two">
-    <div class="panel"><h2>회원 일괄 등록 (엑셀)</h2>
-      <p class="muted">회원명부 <b>엑셀(.xlsx)</b> 또는 CSV를 그대로 올리면 회원과 추천인 관계가 자동으로 만들어집니다.
-      같은 이름은 정보가 갱신되고, 빈 칸은 기존 값을 유지합니다. 추천인 칸의 <b>'창립'</b>은 창립회원으로 표시됩니다.</p>
-      <p class="muted" style="font-size:13px">인식하는 머리글: NO · 입회년월 · 성명 · 추천인 · 전화번호 · 근무처 · 주소 · 업종 · 비고</p>
-      <pre class="text" style="font-size:13px">NO,입회년월,성명,추천인,전화번호,근무처,주소,업종,비고
-2026-08,박홍진,김상원,영진종합유통,위생용품,1981,</pre>
-      <div class="row"><input type="file" id="csv" accept=".xlsx,.xls,.csv" class="input"><button class="btn sm" id="tpl">양식 받기</button></div>
+    <div class="panel"><h2>회원 일괄 등록·변경 (엑셀)</h2>
+      <ol class="muted" style="padding-left:18px;line-height:1.8;margin:0 0 12px">
+        <li><b>수정용 엑셀 받기</b>로 전체 명부를 내려받습니다.</li>
+        <li>엑셀에서 고치거나 맨 아래에 새 회원을 추가합니다. (이름 변경도 가능)</li>
+        <li>파일을 올리면 <b>바뀌는 내용을 미리 보여주고</b>, 적용을 눌러야 반영됩니다.</li>
+      </ol>
+      <p class="muted" style="font-size:13px">빈 칸 = 그대로 · <b>-</b> = 지우기 · 창립/신입 열 <b>O</b> = 체크 · 상태 열 <b>활동/휴면</b><br>
+      예전 명부 엑셀(NO·입회년월·성명·추천인·전화번호·근무처·주소·업종·비고)도 그대로 올릴 수 있습니다.</p>
+      <div class="row" style="margin-bottom:8px"><button class="btn pri" id="xlsxAll">⬇ 수정용 엑셀 받기 (전체 ${D().members.length}명)</button><button class="btn sm" id="tpl">빈 양식</button></div>
+      <div class="row"><input type="file" id="csv" accept=".xlsx,.xls,.csv" class="input" style="flex:1"></div>
     </div>
     <div class="panel"><h2>회원 로그인 허용</h2>
       <p class="muted">회원 상세 → <b>정보 수정</b>에서 <b>로그인 이메일</b>을 입력하면 그 회원이 이메일 링크로 로그인할 수 있습니다.
@@ -1205,11 +1387,8 @@ const bind = {
       toast(`${list.length}명 연락처 파일을 저장했습니다.`);
     };
     if($('#exp')) $('#exp').onclick = ()=>{
-      const head = ['NO','입회월','회원명','구분','직책','회사','직함','제품','업종','출생연도','전화','이메일','주소','홈페이지','추천인','추천횟수'];
-      const rows = filteredMembers().map(m=>{ const t=currentTerm(m.id); return [m.rosterNo, m.joined||(m.isFounder?'창립':'기존회원'), m.name, typeText(m),
-        t?position(t.positionId)?.name:'', m.company, m.title, m.products, m.industry, m.birthYear, m.phone, m.email, m.address, m.website,
-        member(m.guardianId)?.name||'', recruits(m.id).length]; });
-      download(`정우회_회원명부_${today()}.csv`, '﻿'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n'), 'text/csv');
+      const list = filteredMembers();
+      exportMembersXlsx(list, `정우회_회원명부_${list.length}명_${today()}.xlsx`).catch(err=>toast(err.message));
     };
   },
   member(id){
@@ -1257,16 +1436,16 @@ const bind = {
     document.querySelectorAll('[data-app]').forEach(b=>b.onclick=()=>reviewApplication(D().applications.find(a=>a.id===b.dataset.app)));
     $('#csv').onchange = async e=>{
       const f = e.target.files[0]; if(!f) return;
-      let data;
-      try{ data = rowsFromTable(await readTableFile(f)); }
+      let parsed;
+      try{ parsed = rowsFromTable(await readTableFile(f)); }
       catch(err){ e.target.value = ''; return toast(err.message || '파일을 읽지 못했습니다.'); }
-      if(!data.length){ e.target.value = ''; return toast('등록할 회원 행이 없습니다.'); }
-      if(!confirm(`${data.length}명의 정보를 반영할까요? (같은 이름은 갱신)`)){ e.target.value = ''; return; }
-      try{ const res = await importRows(data);
-        toast(`${res.total}명 반영 · 신규 ${res.added}명${res.guardians?` · 명부 외 추천인 ${res.guardians}명(휴면)`:''}`); }
-      finally{ e.target.value = ''; Store.refresh(); }
+      e.target.value = '';
+      if(!parsed.rows.length) return toast('등록할 회원 행이 없습니다.');
+      showImportPlan(planImport(parsed), f.name);
     };
-    $('#tpl').onclick = ()=>download('정우회_회원등록양식.csv', '﻿NO,입회년월,성명,추천인,전화번호,근무처,주소,업종,비고\n', 'text/csv');
+    $('#tpl').onclick = ()=>exportMembersXlsx([], '정우회_회원등록_빈양식.xlsx').catch(err=>toast(err.message));
+    $('#xlsxAll').onclick = ()=>exportMembersXlsx([...D().members].sort((a,b)=>(a.rosterNo||9999)-(b.rosterNo||9999) || a.name.localeCompare(b.name,'ko')),
+      `정우회_회원명부_수정용_${today()}.xlsx`).then(()=>toast('수정용 엑셀을 받았습니다.')).catch(err=>toast(err.message));
     $('#setcode').onclick = async ()=>{
       const v = $('#newcode').value.trim();
       if(v.length < 8) return toast('접속 코드는 8자 이상으로 정해주세요.');
