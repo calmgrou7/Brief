@@ -56,6 +56,15 @@ BRIDGE NODE는 대표 1명과 AI 직원 5명으로 일하는 1인 회사다. 대
 - 대표가 현황판에서 직접 등록한 지시는 `source: "dashboard"`, `stage: "todo"`로 들어온다.
   대표가 "지시함 처리해"라고 하면 `tasks`에서 `stage == todo`를 읽어 배정한다.
 
+## 포트폴리오 사이트 (Render)
+
+- 사이트: https://bridgenode-portfolio.onrender.com (Render 서비스 `bridgenode-portfolio`, id `srv-dbrhrnoae00c73fnd000`)
+- 이 브랜치의 `portfolio-site/` 폴더가 그대로 배포된다. 푸시하면 자동 배포.
+- 피드: `/portfolio.json` (CORS 헤더 Render에 설정됨). 브릿지노드 본 홈페이지가 이 피드를 읽는다.
+- 새 포트폴리오 = `portfolio-site/<slug>/`에 페이지 + `portfolio.json` 항목 추가. 대표 승인(done) 후에만 피드에 넣는다.
+- 기존 Render 사이트 8개는 샘플·초안이라 포트폴리오에 넣지 않는다(대표 지시).
+- 이 클라우드 세션의 네트워크는 onrender.com 접속이 막혀 있다. 배포 상태는 Render API로 확인한다.
+
 ## 결과물 보관 위치
 
 - `work/planning/` 기획안 · `work/builds/` 제작물 · `work/reviews/` 검토 보고서
