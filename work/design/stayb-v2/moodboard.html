@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Stay B Moodboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&display=swap&text=%E0%A4%A8%E0%A5%87%E0%A4%AA%E0%A4%BE%E0%A4%B2%E0%A5%80" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap&text=connected%EC%97%B0%EA%B2%B0" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF7F0; --paper-2:#F1EBE0; --surface:#FFFFFF; --surface-warm:#FFFDF9;
+  --ink:#16302F; --ink-muted:#4E605E;
+  --sea:#0B6B66; --sea-strong:#08524E; --on-sea:#FFFFFF; --sea-tint:#DDEFEC;
+  --sun:#F4B942; --sun-hover:#E9AA2E; --clay:#A9481F; --warm-tint:#FCEBD7;
+  --line:#E6DED1; --line-strong:#C9BFAE; --grid:rgba(11,107,102,.06);
+  --tbc-bg:#E6EEF6; --tbc-text:#2B4766; --ph-line:#8A8478; --ph-text:#5A554C;
+  --demo-bg:#FFF1C7; --demo-text:#5E4300; --error:#B42318; --error-bg:#FDECEA;
+  --focus:#1F5FBF; --footer-bg:#12302E; --footer-text:#D8E6E3; --footer-muted:#A9C3BE;
+  --disabled-bg:#E7E2D9; --disabled-text:#5F5A51;
+  --shadow-warm:0 1px 2px rgba(120,60,20,.06),0 8px 24px rgba(120,60,20,.08);
+  --shadow-float:0 -2px 12px rgba(22,48,47,.10);
+  --r-sm:8px; --r-md:12px; --r-lg:20px; --r-pill:999px;
+  --font-display:"Bricolage Grotesque","Noto Sans KR","Noto Sans Devanagari",system-ui,sans-serif;
+  --font-body:"Figtree","Noto Sans KR","Noto Sans Devanagari",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-note:"Gaegu","Figtree","Noto Sans KR",cursive;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1A1A; --paper-2:#132121; --surface:#152424; --surface-warm:#1E1A15;
+    --ink:#EAF1EF; --ink-muted:#A9BAB7;
+    --sea:#5CC4BA; --sea-strong:#8EDDD3; --on-sea:#0B1F1E; --sea-tint:#16302E;
+    --sun:#F4C462; --sun-hover:#F7D07E; --clay:#F0A07A; --warm-tint:#2A2018;
+    --line:#263736; --line-strong:#3A5250; --grid:rgba(92,196,186,.06);
+    --tbc-bg:#1E2C3A; --tbc-text:#BFD4EE; --ph-line:#7D8A88; --ph-text:#C9C2B5;
+    --demo-bg:#3A3013; --demo-text:#F2D98C; --error:#FF9A8F; --error-bg:#3A1B1A;
+    --focus:#8FB8FF; --footer-bg:#0A1414; --disabled-bg:#223130; --disabled-text:#94A3A0;
+    --shadow-warm:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1A1A; --paper-2:#132121; --surface:#152424; --surface-warm:#1E1A15;
+  --ink:#EAF1EF; --ink-muted:#A9BAB7;
+  --sea:#5CC4BA; --sea-strong:#8EDDD3; --on-sea:#0B1F1E; --sea-tint:#16302E;
+  --sun:#F4C462; --sun-hover:#F7D07E; --clay:#F0A07A; --warm-tint:#2A2018;
+  --line:#263736; --line-strong:#3A5250; --grid:rgba(92,196,186,.06);
+  --tbc-bg:#1E2C3A; --tbc-text:#BFD4EE; --ph-line:#7D8A88; --ph-text:#C9C2B5;
+  --demo-bg:#3A3013; --demo-text:#F2D98C; --error:#FF9A8F; --error-bg:#3A1B1A;
+  --focus:#8FB8FF; --footer-bg:#0A1414; --disabled-bg:#223130; --disabled-text:#94A3A0;
+  --shadow-warm:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.6;overflow-x:hidden}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+svg{display:block}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+@media (min-width:600px){.wrap{padding:0 24px}}
+h1,h2,h3{font-family:var(--font-display);margin:0;letter-spacing:-.01em}
+.mb-section{padding:40px 0;border-top:1px solid var(--line)}
+.mb-label{font-size:14px;font-weight:600;color:var(--ink-muted);margin:0 0 4px}
+.mb-title{font-size:26px;line-height:1.2;margin-bottom:20px}
+.ko{display:block;font-family:"Noto Sans KR",sans-serif;font-size:15px;font-weight:500;color:var(--ink-muted);letter-spacing:0}
+.eyebrow{font-size:14px;font-weight:600;color:var(--sea);letter-spacing:.04em;margin:0 0 8px}
+.grid2{display:grid;gap:16px}
+@media (min-width:960px){.grid2{grid-template-columns:1fr 1fr;gap:24px;align-items:start}}
+
+/* intro */
+.intro{padding:32px 0 24px}
+.intro p{margin:8px 0 0;color:var(--ink-muted);max-width:60ch}
+.theme-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+
+/* swatches */
+.sw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (min-width:600px){.sw-grid{grid-template-columns:repeat(4,1fr)}}
+.sw{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.sw i{display:block;height:56px}
+.sw b{display:block;font-size:14px;padding:6px 10px 0}
+.sw span{display:block;font-size:14px;color:var(--ink-muted);padding:0 10px 8px}
+
+/* type */
+.type-row{display:grid;gap:14px}
+.t-h1,.t-h2{font-family:var(--font-display);font-weight:700;letter-spacing:-.01em}
+.t-h1{font-size:30px;line-height:1.15}
+@media (min-width:960px){.t-h1{font-size:48px}}
+.t-h2{font-size:26px;line-height:1.2}
+.t-note{font-family:var(--font-note);font-size:20px;color:var(--clay)}
+.t-small{font-size:14px;color:var(--ink-muted)}
+
+/* brand */
+.brand{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);min-height:44px}
+.brand-word{font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:-.01em}
+.brand-b{color:var(--sea);margin-left:.12em}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:var(--r-md);font:600 16px/1.2 var(--font-body);text-decoration:none;cursor:pointer;border:1.5px solid transparent;transition:background-color .16s,border-color .16s}
+.btn-primary{background:var(--sea);color:var(--on-sea)}
+.btn-primary:hover{background:var(--sea-strong)}
+.btn-outline{background:transparent;color:var(--sea);border-color:var(--sea)}
+.btn-outline:hover{background:var(--sea-tint)}
+.btn-warm{background:var(--sun);color:#16302F}
+.btn-warm:hover{background:var(--sun-hover)}
+.btn:disabled{background:var(--disabled-bg);color:var(--disabled-text);border-color:transparent;cursor:not-allowed}
+.btn-soon{background:none;border:0;color:var(--ink-muted);font:500 15px/1.2 var(--font-body);min-height:44px;padding:0 4px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.btn-soon:hover{text-decoration:underline}
+.link{color:var(--sea);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;font-weight:600;display:inline-flex;align-items:center;min-height:44px}
+.link:hover{text-decoration-thickness:2px}
+.btn-demo{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.state-note{font-size:14px;color:var(--ink-muted);margin:8px 0 0}
+
+/* chips & badges */
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:14px;line-height:1.3;border-radius:var(--r-sm);padding:2px 8px;vertical-align:baseline;white-space:nowrap}
+.chip-tbc{background:var(--tbc-bg);color:var(--tbc-text)}
+.chip-ph{border:1.5px dashed var(--ph-line);color:var(--ph-text);white-space:normal}
+.badge-check{background:var(--sea-tint);color:var(--sea-strong);font-weight:600}
+.badge-planned{border:1.5px solid var(--clay);color:var(--clay);font-weight:700;letter-spacing:.06em;font-size:14px;text-transform:uppercase}
+.badge-demo{background:var(--demo-bg);color:var(--demo-text)}
+
+/* hero mock */
+.phone{max-width:400px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:var(--paper)}
+.concept-bar{display:flex;gap:8px;align-items:flex-start;background:var(--paper-2);color:var(--ink-muted);font-size:14px;line-height:1.45;padding:6px 4px 6px 16px}
+.concept-bar p{margin:6px 0}
+.concept-bar a{color:var(--ink-muted)}
+.icon-btn{flex:none;width:44px;height:44px;display:grid;place-items:center;background:none;border:0;border-radius:var(--r-md);color:inherit;cursor:pointer}
+.hdr{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 8px 0 16px;border-bottom:1px solid var(--line)}
+.hdr-r{display:flex;align-items:center;gap:4px}
+.lang{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:2px}
+.lang button{font:600 14px/1 var(--font-body);min-height:44px;min-width:44px;padding:0 10px;border:0;border-radius:var(--r-pill);background:none;color:var(--ink);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lang button:disabled{color:var(--disabled-text);cursor:not-allowed}
+.lang .soon{font-size:12px;font-weight:600;background:var(--paper-2);border-radius:var(--r-sm);padding:1px 5px;margin-left:4px}
+.hero{padding:24px 16px 20px}
+.hero h1{font-size:30px;line-height:1.15;margin:0 0 16px}
+.connect-fig{display:grid;grid-template-columns:1fr 64px 1fr;align-items:center;margin:0 0 20px}
+.cf-box{border-radius:var(--r-md);padding:8px 10px;font-size:14px;line-height:1.3}
+.cf-box b{display:block;font-size:15px}
+.cf-online{background:var(--sea-tint);color:var(--sea-strong)}
+.cf-off{background:var(--warm-tint);color:var(--clay)}
+.cf-line{position:relative;height:48px;padding-top:16px}
+.cf-line span{position:absolute;top:-4px;left:0;right:0;text-align:center;font-family:var(--font-note);font-size:16px;color:var(--ink-muted)}
+.q{font-size:19px;line-height:1.3;margin:0 0 12px}
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stage-btn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:84px;padding:12px;border:1.5px solid var(--line-strong);border-radius:var(--r-md);background:var(--surface);color:var(--ink);text-align:left;font:inherit;cursor:pointer;position:relative;transition:background-color .16s,border-color .16s}
+.stage-btn:hover{border-color:var(--sea);background:var(--sea-tint)}
+.stage-top{display:flex;align-items:center;gap:8px;color:var(--sea)}
+.stop{width:24px;height:24px;border-radius:50%;border:2px solid var(--sea);display:grid;place-items:center;font:700 13px/1 var(--font-body);color:var(--sea)}
+.stage-btn.is-picked .stop{background:var(--sea);color:var(--on-sea)}
+.stage-btn b{font-family:var(--font-display);font-size:17px;line-height:1.2}
+.stage-btn small{font-size:14px;line-height:1.35;color:var(--ink-muted)}
+.skyline{color:var(--ink);margin-top:12px}
+
+/* guides */
+.guides{background-color:var(--paper);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;padding:20px 16px;border-radius:var(--r-lg);border:1px solid var(--line)}
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 12px;margin:0 -2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:1px solid var(--line-strong);border-radius:var(--r-pill);background:var(--surface);color:var(--ink);font:600 15px/1 var(--font-body);cursor:pointer}
+.tab:hover{border-color:var(--sea)}
+.tab[aria-selected="true"]{background:var(--sea);color:var(--on-sea);border-color:var(--sea)}
+.tab .n{font-size:13px;opacity:.8}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;margin-bottom:12px}
+.card-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--ink-muted);margin-bottom:6px}
+.card h3{font-size:19px;line-height:1.3}
+.card .sum{font-size:15px;color:var(--ink-muted);margin:4px 0 0}
+.card details{margin-top:12px;border-top:1px solid var(--line)}
+.card summary{list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:48px;font-weight:600;cursor:pointer}
+.card summary::-webkit-details-marker{display:none}
+.card summary:hover{color:var(--sea)}
+.card details[open] .chev{transform:rotate(180deg)}
+.points{list-style:none;margin:0 0 12px;padding:0}
+.points li{position:relative;padding-left:28px;margin:6px 0}
+.points.check li::before{content:"";position:absolute;left:0;top:4px;width:16px;height:16px;border:1.5px solid var(--sea);border-radius:4px}
+.points.dot li::before{content:"";position:absolute;left:5px;top:10px;width:6px;height:6px;border-radius:50%;background:var(--sea)}
+.src{border-top:1px solid var(--line);padding-top:10px;font-size:14px;color:var(--ink-muted)}
+.src b{color:var(--ink);font-weight:600}
+.help-row{position:relative;margin-top:28px;background:var(--warm-tint);border-radius:var(--r-lg);padding:16px}
+.help-row::before{content:"";position:absolute;left:24px;top:-28px;height:28px;border-left:2px dashed var(--clay)}
+.help-row p{margin:0 0 10px;font-weight:600;font-size:15px;color:var(--clay)}
+.help-chips{display:flex;flex-wrap:wrap;gap:8px}
+.help-chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;background:var(--surface-warm);border:1px solid rgba(169,72,31,.3);border-radius:var(--r-pill);color:var(--clay);font-weight:600;font-size:15px;text-decoration:none}
+.help-chip:hover{background:var(--warm-tint)}
+
+/* offline */
+.offline{background:var(--warm-tint);border-radius:var(--r-lg);padding:24px 16px}
+.flow{display:grid;gap:0;margin:16px 0 24px}
+.flow-stop{display:flex;align-items:center;gap:12px;position:relative;padding:8px 0}
+.flow-stop + .flow-stop::before{content:"";position:absolute;left:19px;top:-14px;height:22px;border-left:2px dashed var(--clay)}
+.flow-ic{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;border:2px solid var(--sea);color:var(--sea);background:var(--surface)}
+.flow-ic.meet{background:var(--clay);border-color:var(--clay);color:var(--surface-warm)}
+.flow-ic.stay{background:var(--sun);border-color:var(--sea);color:#16302F}
+.flow-stop b{font-family:var(--font-display);font-size:18px}
+.flow-stop .ko{display:inline;margin-left:6px}
+@media (min-width:600px){.flow{grid-template-columns:repeat(3,1fr)}.flow-stop + .flow-stop::before{display:none}}
+.off-grid{display:grid;gap:28px}
+@media (min-width:960px){.off-grid{grid-template-columns:repeat(3,1fr);gap:24px}.off-kit{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}}
+.off-card{position:relative;background:var(--surface-warm);border-radius:var(--r-lg);box-shadow:var(--shadow-warm);padding:28px 20px 20px}
+.ticket{position:absolute;top:-13px;left:16px;background:var(--surface-warm);border:1px solid var(--clay);color:var(--clay);font-size:14px;font-weight:600;border-radius:var(--r-sm);padding:2px 10px}
+.off-card .flow-ic{position:absolute;top:16px;right:16px;width:32px;height:32px}
+.off-card h3{font-size:19px;padding-right:40px}
+.off-card p{margin:8px 0}
+.cost{font-size:14px;color:var(--ink-muted)}
+.off-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.off-kit .flow-ic{position:static;margin:0 0 8px}
+.ph-box{aspect-ratio:4/3;border:1.5px dashed var(--ph-line);border-radius:var(--r-lg);background:var(--paper-2);display:grid;place-items:center;align-content:center;gap:10px;padding:12px;text-align:center;color:var(--ink)}
+.by{font-size:14px;font-weight:600;color:var(--clay);margin:8px 0 0}
+
+/* form */
+.form{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
+.demo-strip{display:flex;gap:8px;align-items:center;background:var(--demo-bg);color:var(--demo-text);font-size:14px;border-radius:var(--r-sm);padding:8px 12px;margin-bottom:16px}
+.fl{display:block;font-weight:600;font-size:16px;margin:0 0 6px}
+.fl .ko{font-size:14px;font-weight:400;display:inline;margin-left:6px}
+.fl .req{font-size:14px;font-weight:400;color:var(--ink-muted);margin-left:6px}
+.input{width:100%;min-height:48px;border:1.5px solid var(--line-strong);border-radius:var(--r-md);background:var(--surface);color:var(--ink);font:400 17px var(--font-body);padding:0 14px}
+.input:hover{border-color:var(--ink-muted)}
+.input:focus-visible{border:2px solid var(--sea)}
+.input.err{border:2px solid var(--error)}
+.err-msg{display:flex;gap:6px;align-items:center;color:var(--error);font-size:14px;margin:6px 0 0}
+.help{font-size:14px;color:var(--ink-muted);margin:6px 0 0}
+.field{margin-bottom:18px}
+fieldset{border:0;margin:0 0 18px;padding:0}
+legend{padding:0}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.radios label:last-child{grid-column:span 2}
+.rc{position:relative;display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 12px;border:1.5px solid var(--line-strong);border-radius:var(--r-md);cursor:pointer;font-size:15px;font-weight:600;line-height:1.25}
+.rc:hover{border-color:var(--sea)}
+.rc input{position:absolute;opacity:0;width:1px;height:1px}
+.rc .dot{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-strong);display:grid;place-items:center}
+.rc:has(input:checked){border:2px solid var(--sea);background:var(--sea-tint)}
+.rc:has(input:checked) .dot{background:var(--sea);border-color:var(--sea)}
+.rc:has(input:checked) .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--on-sea)}
+.rc:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:3px}
+.rc small{display:block;font-weight:400;font-size:14px;color:var(--ink-muted)}
+
+/* faq */
+.faq details{border-top:1px solid var(--line)}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;font-weight:600;cursor:pointer}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--sea)}
+.faq .pm-m{display:none}
+.faq details[open] .pm-p{display:none}
+.faq details[open] .pm-m{display:block}
+.faq p{margin:0 0 16px}
+
+/* trust */
+.trust-col{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:20px}
+.trust-col h3{display:flex;gap:10px;align-items:center;font-size:18px;margin-bottom:10px}
+.ticks{list-style:none;margin:0;padding:0}
+.ticks li{display:flex;gap:10px;margin:8px 0}
+.ticks svg{flex:none;margin-top:4px;color:var(--sea)}
+
+/* sticky + toast */
+.sticky-demo{max-width:400px;position:relative;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--paper);padding-top:64px}
+.toast{position:absolute;left:12px;right:12px;top:8px;background:var(--ink);color:var(--paper);border-radius:var(--r-md);padding:10px 14px;font-size:14px;box-shadow:var(--shadow-float)}
+.toast a{color:var(--sun);font-weight:600}
+.toast a:focus-visible{outline-color:#8FB8FF}
+.sticky{display:grid;grid-template-columns:3fr 2fr;gap:8px;background:var(--surface);border-top:1px solid var(--line);box-shadow:var(--shadow-float);padding:8px 12px}
+.sticky .btn{flex-direction:column;gap:0;padding:0 10px}
+.sticky .btn small{font-weight:500;font-size:13px;opacity:.9}
+
+/* footer */
+.foot{background:var(--footer-bg);color:var(--footer-text);border-radius:var(--r-lg);padding:24px 16px;font-size:14px;--focus:#8FB8FF}
+.foot a{color:var(--footer-text);display:inline-block;padding:12px 0}
+.foot .muted{color:var(--footer-muted)}
+.foot p{margin:10px 0;max-width:70ch}
+.foot .brand{color:#fff}
+.foot .brand-b{color:#8EDDD3}
+
+.dont{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.dont li{padding-left:20px;position:relative}
+.dont li::before{content:"";position:absolute;left:2px;top:11px;width:10px;height:2px;background:var(--ink-muted)}
+.mb-end{padding:32px 0 48px;color:var(--ink-muted);font-size:14px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-bag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M8 20v1M16 20v1M4 12h16"/></g></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7v8.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/><circle cx="12" cy="13.5" r="2"/><path d="M12 15.5V18"/></g></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5C6 5 8.5 5 11 6.5v12C8.5 17 6 17 3.5 18.5Z"/><path d="M11 6.5c2.5-1.5 5-1.5 7.5 0V11"/><path d="M14 14h6v2.5a3 3 0 0 1-3 3 3 3 0 0 1-3-3Z"/><path d="M20 15h.7a1.3 1.3 0 0 1 0 2.6H20"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="15.5" cy="15" r="2"/></g></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/></g></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5Z"/><path d="M19 9h1a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 20 18h-1v2.5L16 18h-4"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></g></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H6.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9Z"/><path d="M14 3.5V9h5.5M8.5 13h7M8.5 16.5h4"/></g></symbol>
+    <symbol id="i-mark" viewBox="0 0 28 28">
+      <rect x="1" y="1" width="26" height="26" rx="8" fill="var(--sea)"/>
+      <path d="M6 15.5 Q14 6.5 22 15.5" fill="none" stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M10 11.2V15.5M18 11.2V15.5" stroke="var(--on-sea)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M5.5 20.5q2.1-1.6 4.25 0t4.25 0 4.25 0 4.25 0" fill="none" stroke="var(--on-sea)" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<main class="wrap">
+  <header class="intro">
+    <p class="eyebrow">BRIDGENODE · Design moodboard</p>
+    <h1 class="t-h2">Stay B v2: tokens and key components<span class="ko">Stay B v2 디자인 견본: 토큰과 핵심 컴포넌트</span></h1>
+    <p>A senior's notebook you can trust, and a place in Busan where you can meet that senior. Online is a ruled notebook; in person is a warm postcard. A dashed route line connects them.</p>
+    <p lang="ko">먼저 온 선배의 정리 노트, 그리고 그 선배를 직접 만나는 곳. 온라인은 노트, 오프라인은 엽서. 둘을 노선 점선이 잇는다.</p>
+    <div class="theme-row" role="group" aria-label="Preview theme">
+      <button class="btn btn-outline" type="button" data-theme-set="light">Light</button>
+      <button class="btn btn-outline" type="button" data-theme-set="dark">Dark</button>
+      <button class="btn btn-outline" type="button" data-theme-set="">System</button>
+    </div>
+  </header>
+
+  <!-- 1. Color -->
+  <section class="mb-section" aria-labelledby="s-color">
+    <p class="mb-label">01</p>
+    <h2 id="s-color" class="mb-title">Color<span class="ko">색 — 바다 청록, 햇살 노랑, 흙빛 on 크림 종이</span></h2>
+    <div class="sw-grid">
+      <div class="sw"><i style="background:var(--paper)"></i><b>--paper</b><span>#FBF7F0 page</span></div>
+      <div class="sw"><i style="background:var(--ink)"></i><b>--ink</b><span>#16302F text 13.1:1</span></div>
+      <div class="sw"><i style="background:var(--sea)"></i><b>--sea</b><span>#0B6B66 primary</span></div>
+      <div class="sw"><i style="background:var(--sea-tint)"></i><b>--sea-tint</b><span>#DDEFEC online</span></div>
+      <div class="sw"><i style="background:var(--sun)"></i><b>--sun</b><span>#F4B942 warmth</span></div>
+      <div class="sw"><i style="background:var(--clay)"></i><b>--clay</b><span>#A9481F in person</span></div>
+      <div class="sw"><i style="background:var(--warm-tint)"></i><b>--warm-tint</b><span>#FCEBD7 offline bg</span></div>
+      <div class="sw"><i style="background:var(--footer-bg)"></i><b>--footer-bg</b><span>#12302E footer</span></div>
+    </div>
+    <p class="state-note">Red (<code>--error</code>) is used only for form errors. BRIDGENODE orange is not used on Stay B screens.</p>
+  </section>
+
+  <!-- 2. Type & brand -->
+  <section class="mb-section" aria-labelledby="s-type">
+    <p class="mb-label">02</p>
+    <h2 id="s-type" class="mb-title">Type and wordmark<span class="ko">글꼴과 워드마크</span></h2>
+    <div class="type-row">
+      <a class="brand" href="#s-type" aria-label="Stay B wordmark sample">
+        <svg width="28" height="28" aria-hidden="true"><use href="#i-mark"/></svg>
+        <span class="brand-word">Stay<span class="brand-b">B</span></span>
+      </a>
+      <p class="t-h1">Find answers here. Get help in person, in Busan.</p>
+      <p class="t-h2" lang="ko" style="font-family:'Noto Sans KR',sans-serif;font-weight:700">필요한 정보는 여기서 찾고, 도움은 부산에서 직접.</p>
+      <p style="margin:0">Body 17px Figtree. Short sentences, plain words, for students who use English as a second language.</p>
+      <p style="margin:0" lang="ko">본문 17px Noto Sans KR. 영어 큰 글씨 아래 한국어 작은 글씨로 병기해요.</p>
+      <p style="margin:0">Nepali, soon: <span lang="ne" style="font-family:'Noto Sans Devanagari',sans-serif;font-weight:600;font-size:20px">नेपाली</span></p>
+      <p class="t-note" style="margin:0">connected · 연결 <span class="t-small" style="font-family:var(--font-body)">(Gaegu, 3 notes only)</span></p>
+      <p class="t-small" style="margin:0">Small 14px is the minimum size on the page.</p>
+    </div>
+  </section>
+
+  <!-- 3. Hero mobile -->
+  <section class="mb-section" aria-labelledby="s-hero">
+    <p class="mb-label">03</p>
+    <h2 id="s-hero" class="mb-title">First screen, mobile<span class="ko">첫 화면 모바일 — 단계 버튼이 가장 누르고 싶게</span></h2>
+    <div class="phone">
+      <div class="concept-bar">
+        <p>BRIDGENODE portfolio · Concept demo · Not a live service (demo forms do not send anything) · <a href="#s-hero">Back to portfolio</a></p>
+        <button class="icon-btn" type="button" aria-label="Close notice"><svg width="18" height="18" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="hdr">
+        <a class="brand" href="#s-hero" aria-label="Stay B home"><svg width="28" height="28" aria-hidden="true"><use href="#i-mark"/></svg><span class="brand-word">Stay<span class="brand-b">B</span></span></a>
+        <div class="hdr-r">
+          <div class="lang" role="group" aria-label="Language"><button type="button" aria-pressed="true">EN</button><button type="button" aria-pressed="false" lang="ko">한</button></div>
+          <button class="icon-btn" type="button" aria-label="Open menu"><svg width="24" height="24" aria-hidden="true"><use href="#i-menu"/></svg></button>
+        </div>
+      </div>
+      <div class="hero">
+        <p class="eyebrow">For international students in Busan &amp; Gyeongnam</p>
+        <h1>Find answers here. Get help in person, in Busan.</h1>
+        <div class="connect-fig" role="img" aria-label="Online guides connected to in-person help in Busan">
+          <div class="cf-box cf-online"><b>Online</b>Guides &amp; checklists</div>
+          <div class="cf-line"><span>connected</span>
+            <svg viewBox="0 0 64 32" width="64" height="32" aria-hidden="true"><path d="M0 22 Q32 6 64 22" fill="none" stroke="var(--sea)" stroke-width="2" stroke-dasharray="4 4"/><circle cx="32" cy="14" r="4" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.5"/></svg>
+          </div>
+          <div class="cf-box cf-off"><b>In Busan</b>Sessions, help &amp; meetups</div>
+        </div>
+        <h2 class="q">Where are you now?<span class="ko">지금 어느 단계인가요?</span></h2>
+        <div class="stages">
+          <button class="stage-btn" type="button"><span class="stage-top"><span class="stop">1</span><svg width="20" height="20" aria-hidden="true"><use href="#i-bag"/></svg></span><b>Before I arrive</b><small>Packing, housing, first days</small></button>
+          <button class="stage-btn is-picked" type="button"><span class="stage-top"><span class="stop">2</span><svg width="20" height="20" aria-hidden="true"><use href="#i-key"/></svg></span><b>Just arrived</b><small>First 3 months: registration, bank, phone</small></button>
+          <button class="stage-btn" type="button"><span class="stage-top"><span class="stop">3</span><svg width="20" height="20" aria-hidden="true"><use href="#i-book"/></svg></span><b>Study, life &amp; work</b><small>Part-time work, saving money, friends</small></button>
+          <button class="stage-btn" type="button"><span class="stage-top"><span class="stop">4</span><svg width="20" height="20" aria-hidden="true"><use href="#i-cal"/></svg></span><b>Visa &amp; after graduation</b><small>Expiry dates, passport, staying on</small></button>
+        </div>
+        <a class="link" href="#s-form">Can't find your answer? Ask us&nbsp;<svg width="18" height="18" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <svg class="skyline" viewBox="0 0 368 96" width="100%" height="96" aria-hidden="true" preserveAspectRatio="xMidYMax meet">
+          <circle cx="300" cy="26" r="12" fill="var(--sun)"/>
+          <g fill="var(--warm-tint)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round">
+            <rect x="8" y="52" width="22" height="18" rx="2"/><rect x="26" y="40" width="20" height="30" rx="2"/><rect x="44" y="56" width="24" height="14" rx="2"/><rect x="62" y="46" width="18" height="24" rx="2"/>
+          </g>
+          <g fill="var(--ink)"><circle cx="34" cy="48" r="1.5"/><circle cx="40" cy="48" r="1.5"/><circle cx="16" cy="60" r="1.5"/><circle cx="70" cy="54" r="1.5"/></g>
+          <path d="M96 70 Q190 18 284 70" fill="none" stroke="var(--sea)" stroke-width="2"/>
+          <path d="M150 70V42M230 70V42" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>
+          <path d="M150 42 Q125 56 110 70M150 42 Q175 56 190 62M230 42 Q205 56 190 62M230 42 Q255 56 270 70" fill="none" stroke="var(--ink)" stroke-width="1" opacity=".5"/>
+          <path d="M318 70V30h16M334 30v8M318 40l14 -8" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M0 74H368" stroke="var(--ink)" stroke-width="1.5"/>
+          <path d="M0 84q11.5-6 23 0t23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0" fill="none" stroke="var(--sea)" stroke-width="1.75" opacity=".6"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Guides -->
+  <section class="mb-section" aria-labelledby="s-guides">
+    <p class="mb-label">04</p>
+    <h2 id="s-guides" class="mb-title">Guide hub: notebook texture<span class="ko">정보 허브 — 노트 질감, 한 번에 한 단계만</span></h2>
+    <div class="guides">
+      <div class="tabs" role="tablist" aria-label="Your stage">
+        <button class="tab" role="tab" aria-selected="false" type="button">1 Before I arrive <span class="n">3</span></button>
+        <button class="tab" role="tab" aria-selected="true" type="button">2 Just arrived <span class="n">4</span></button>
+        <button class="tab" role="tab" aria-selected="false" type="button">3 Study, life &amp; work <span class="n">4</span></button>
+        <button class="tab" role="tab" aria-selected="false" type="button">4 Visa &amp; after <span class="n">3</span></button>
+      </div>
+      <div class="grid2">
+        <article class="card">
+          <div class="card-top"><span>2-1</span><span class="chip badge-check"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Checklist</span></div>
+          <h3>Alien registration: what to bring</h3>
+          <p class="sum">If you stay in Korea longer than 90 days, you register with immigration. Book early.</p>
+          <details open>
+            <summary>Key points <svg class="chev" width="20" height="20" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+            <ul class="points check">
+              <li>Deadline: within 90 days of arrival <span class="chip chip-tbc"><svg width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>to be confirmed</span></li>
+              <li>Book a visit online through HiKorea <span class="chip chip-tbc"><svg width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>to be confirmed</span></li>
+              <li>Your card arrives a few weeks later. Keep your receipt until then.</li>
+            </ul>
+            <div class="src"><b>Official source</b> · HiKorea · Busan Immigration Office</div>
+            <button class="btn-soon" type="button"><svg width="18" height="18" aria-hidden="true"><use href="#i-clock"/></svg>Full guide · coming soon</button>
+          </details>
+        </article>
+        <article class="card">
+          <div class="card-top"><span>2-2</span></div>
+          <h3>Bank and phone: the right order</h3>
+          <p class="sum">Some steps need your alien registration card first. This order saves trips.</p>
+          <details>
+            <summary>Key points <svg class="chev" width="20" height="20" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+            <ul class="points dot"><li>Collapsed by default on mobile, open on desktop.</li></ul>
+          </details>
+        </article>
+      </div>
+      <div class="help-row">
+        <p>Help in person for this stage <span class="ko" style="display:inline;color:var(--clay)">이 단계에서 직접 받을 수 있는 도움</span></p>
+        <div class="help-chips">
+          <a class="help-chip" href="#s-offline"><svg width="18" height="18" aria-hidden="true"><use href="#i-pin"/></svg>Settling-in help</a>
+          <a class="help-chip" href="#s-offline"><svg width="18" height="18" aria-hidden="true"><use href="#i-pin"/></svg>Welcome kit &amp; card</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Offline -->
+  <section class="mb-section" aria-labelledby="s-offline">
+    <p class="mb-label">05</p>
+    <h2 id="s-offline" class="mb-title">In person: postcard texture<span class="ko">오프라인 — 엽서 질감, 그림자는 여기에만</span></h2>
+    <div class="offline">
+      <p class="eyebrow" style="color:var(--clay)">In person</p>
+      <h3 class="t-h2">Not just a website. Real help in Busan.</h3>
+      <div class="flow">
+        <div class="flow-stop"><span class="flow-ic"><svg width="20" height="20" aria-hidden="true"><use href="#i-note"/></svg></span><b>Find online</b></div>
+        <div class="flow-stop"><span class="flow-ic meet"><svg width="20" height="20" aria-hidden="true"><use href="#i-pin"/></svg></span><b>Meet in person</b></div>
+        <div class="flow-stop"><span class="flow-ic stay"><svg width="20" height="20" aria-hidden="true"><use href="#i-chat"/></svg></span><b>Stay connected</b></div>
+      </div>
+      <div class="off-grid">
+        <article class="off-card">
+          <span class="ticket">Before I arrive</span>
+          <span class="flow-ic meet" title="Meet in person"><svg width="16" height="16" aria-hidden="true"><use href="#i-pin"/></svg></span>
+          <h3>Pre-arrival info sessions</h3>
+          <p>Meet us in Nepal, with our partner language school, before you fly. Learn about Busan, your school, housing and your first week.</p>
+          <p class="cost">Cost: <span class="chip chip-ph">[자리표시: 설명회 비용]</span></p>
+          <div class="off-foot"><span class="chip badge-planned">Planned</span><button class="btn btn-warm" type="button">Get session dates</button></div>
+        </article>
+        <article class="off-card off-kit">
+          <span class="ticket">Just arrived</span>
+          <div class="ph-box" role="img" aria-label="Image placeholder: welcome kit and membership card">
+            <svg viewBox="0 0 160 110" width="160" height="110" aria-hidden="true">
+              <path d="M20 46 80 30l60 16v44l-60 16-60-16Z" fill="var(--warm-tint)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M20 46l60 16 60-16M80 62v44" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+              <rect x="92" y="8" width="56" height="36" rx="6" fill="var(--sea)" stroke="var(--ink)" stroke-width="2" transform="rotate(8 120 26)"/>
+              <path d="M104 30 Q118 18 132 30" fill="none" stroke="var(--sun)" stroke-width="2.5" stroke-linecap="round" transform="rotate(8 120 26)"/>
+            </svg>
+            <span class="chip chip-ph">[자리표시: welcome kit &amp; card image, Heritage Studio B]</span>
+          </div>
+          <div>
+            <span class="flow-ic meet"><svg width="16" height="16" aria-hidden="true"><use href="#i-pin"/></svg></span>
+            <h3>Welcome kit &amp; Stay membership card</h3>
+            <p>A welcome kit for your first days in Busan, and a membership card for partner discounts.</p>
+            <p class="by">Designed by Heritage Studio B</p>
+            <p class="cost">Optional service, cost to be announced</p>
+            <div class="off-foot"><span class="chip badge-planned">Planned</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Buttons & chips -->
+  <section class="mb-section" aria-labelledby="s-btn">
+    <p class="mb-label">06</p>
+    <h2 id="s-btn" class="mb-title">Buttons, chips and badges<span class="ko">버튼·칩·배지 (Tab 키로 포커스 확인)</span></h2>
+    <div class="btn-demo">
+      <button class="btn btn-primary" type="button">Send my question</button>
+      <button class="btn btn-outline" type="button">Settling-in checklist</button>
+      <button class="btn btn-warm" type="button">Get talk dates</button>
+      <button class="btn btn-primary" type="button" disabled>Disabled</button>
+      <button class="btn-soon" type="button"><svg width="18" height="18" aria-hidden="true"><use href="#i-clock"/></svg>Full guide · coming soon</button>
+    </div>
+    <p class="state-note">Primary · Outline (information) · Warm (in-person) · Disabled · Coming soon (still clickable, shows a toast)</p>
+    <div class="btn-demo" style="margin-top:16px">
+      <span class="chip badge-check"><svg width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Checklist</span>
+      <span class="chip badge-planned">Planned</span>
+      <span class="chip chip-tbc"><svg width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>to be confirmed</span>
+      <span class="chip chip-ph">[자리표시: 시범 장소·일정]</span>
+      <span class="chip badge-demo"><svg width="14" height="14" aria-hidden="true"><use href="#i-info"/></svg>Demo form</span>
+    </div>
+    <div class="btn-demo" style="margin-top:16px">
+      <div class="lang" role="group" aria-label="Language (full)">
+        <button type="button" aria-pressed="true">EN</button>
+        <button type="button" aria-pressed="false" lang="ko">한국어</button>
+        <button type="button" disabled><span lang="ne" style="font-family:'Noto Sans Devanagari',sans-serif">नेपाली</span><span class="soon">soon</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Form -->
+  <section class="mb-section" aria-labelledby="s-form">
+    <p class="mb-label">07</p>
+    <h2 id="s-form" class="mb-title">Ask form<span class="ko">질문 폼 — 서류 양식처럼 보이지 않게</span></h2>
+    <form class="form" onsubmit="return false" novalidate>
+      <div class="demo-strip"><svg width="18" height="18" aria-hidden="true"><use href="#i-info"/></svg>Demo form: nothing you type here is sent or saved.</div>
+      <fieldset>
+        <legend class="fl">Which stage are you in?<span class="req">required</span></legend>
+        <div class="radios">
+          <label class="rc"><input type="radio" name="st"><span class="dot"></span>Before I arrive</label>
+          <label class="rc"><input type="radio" name="st" checked><span class="dot"></span>Just arrived</label>
+          <label class="rc"><input type="radio" name="st"><span class="dot"></span>Study, life &amp; work</label>
+          <label class="rc"><input type="radio" name="st"><span class="dot"></span>Visa &amp; after graduation</label>
+          <label class="rc"><input type="radio" name="st"><span class="dot"></span>Something else</label>
+        </div>
+      </fieldset>
+      <div class="field">
+        <label class="fl" for="nm">Name or nickname<span class="ko">이름 또는 닉네임</span><span class="req">required</span></label>
+        <input class="input" id="nm" type="text" autocomplete="nickname">
+      </div>
+      <div class="field">
+        <label class="fl" for="q">Your question<span class="ko">질문 내용</span><span class="req">required</span></label>
+        <input class="input err" id="q" type="text" aria-describedby="q-err" aria-invalid="true">
+        <p class="err-msg" id="q-err"><svg width="16" height="16" aria-hidden="true"><use href="#i-info"/></svg>Please write your question.</p>
+        <p class="help">Please do not include your passport or alien registration number.</p>
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;min-height:52px">Send my question</button>
+    </form>
+  </section>
+
+  <!-- 8. Trust + FAQ -->
+  <section class="mb-section" aria-labelledby="s-trust">
+    <p class="mb-label">08</p>
+    <h2 id="s-trust" class="mb-title">Trust and FAQ<span class="ko">안심 섹션(같은 무게 두 칸, X·빨강 없음)과 FAQ</span></h2>
+    <div class="grid2">
+      <div class="trust-col">
+        <h3><svg width="24" height="24" aria-hidden="true"><use href="#i-mark"/></svg>Stay B helps with</h3>
+        <ul class="ticks"><li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Guides and checklists based on public information</li><li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Info sessions, settling-in help, welcome kit, discounts and meetups</li></ul>
+      </div>
+      <div class="trust-col">
+        <h3><svg width="24" height="24" aria-hidden="true" style="color:var(--sea)"><use href="#i-pen"/></svg>A qualified administrative agent handles</h3>
+        <ul class="ticks"><li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Advice on your own case</li><li><svg width="18" height="18" aria-hidden="true"><use href="#i-check"/></svg>Preparing and filing visa and stay documents</li></ul>
+      </div>
+    </div>
+    <div class="faq" style="margin-top:24px">
+      <details><summary>Is Stay B free?<svg class="pm-p" width="20" height="20" aria-hidden="true"><use href="#i-plus"/></svg><svg class="pm-m" width="20" height="20" aria-hidden="true"><use href="#i-minus"/></svg></summary><p>The guides on this site are free to read, and asking us a question is free. <span class="chip chip-ph">[자리표시: 선택형 오프라인 생활지원 비용]</span></p></details>
+      <details><summary>Where can I meet you in person?<svg class="pm-p" width="20" height="20" aria-hidden="true"><use href="#i-plus"/></svg><svg class="pm-m" width="20" height="20" aria-hidden="true"><use href="#i-minus"/></svg></summary><p>Locations will be shared after partner agreements.</p></details>
+    </div>
+  </section>
+
+  <!-- 9. Sticky + toast + footer -->
+  <section class="mb-section" aria-labelledby="s-sticky">
+    <p class="mb-label">09</p>
+    <h2 id="s-sticky" class="mb-title">Sticky bar, toast, footer<span class="ko">하단 고정 바·토스트·푸터</span></h2>
+    <div class="sticky-demo">
+      <div class="toast" role="status">This full guide is being checked by a qualified administrative agent. <a href="#s-form">Ask us</a></div>
+      <div class="sticky">
+        <a class="btn btn-primary" href="#s-guides">My stage<small>Just arrived</small></a>
+        <a class="btn btn-outline" href="#s-form">Ask us</a>
+      </div>
+    </div>
+    <div class="foot" style="margin-top:24px">
+      <a class="brand" href="#s-sticky" aria-label="Stay B home"><svg width="28" height="28" aria-hidden="true"><use href="#i-mark"/></svg><span class="brand-word">Stay<span class="brand-b">B</span></span></a>
+      <span class="muted">Busan · Gyeongnam</span>
+      <p><a href="#s-sticky" style="font-weight:600;font-size:15px">For universities, language schools and partners →</a></p>
+      <p>Stay B provides general information based on public sources, offline settling-in support, and a student community and consultation intake. It is not a government agency or an administrative agent's office.</p>
+      <p class="muted">This page is a concept demo designed and built by BRIDGENODE. Forms on this page do not send or store any data. Stay B is a working name.</p>
+      <p class="muted"><a href="#s-sticky">Made by BRIDGENODE</a></p>
+    </div>
+  </section>
+
+  <section class="mb-section" aria-labelledby="s-dont">
+    <p class="mb-label">10</p>
+    <h2 id="s-dont" class="mb-title">Do not<span class="ko">하지 않을 것</span></h2>
+    <ul class="dont">
+      <li>Purple gradients, emoji section markers, everything centered, the same shadow on every block</li>
+      <li>Navy and gold, seals, shields, scales: anything that looks like a government or law office</li>
+      <li>Photos of people, stock or generated. Scenes use objects: passport, transport card, SIM, kit</li>
+      <li>WhatsApp or Viber logos and brand colors: channel names as text only</li>
+      <li>BRIDGENODE logo image: footer text only until the original file arrives</li>
+    </ul>
+  </section>
+  <p class="mb-end">Fonts: Bricolage Grotesque, Figtree, Noto Sans KR, Noto Sans Devanagari, Gaegu (Google Fonts, SIL OFL). Icons and illustrations: drawn inline for this project.</p>
+</main>
+<script>
+document.querySelectorAll('[data-theme-set]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.getAttribute('data-theme-set');
+    if(t){document.documentElement.setAttribute('data-theme',t);}else{document.documentElement.removeAttribute('data-theme');}
+  });
+});
+</script>
+</body>
+</html>
