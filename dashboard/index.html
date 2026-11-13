@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>BRIDGE NODE 오피스</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -119,12 +120,17 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparen
 .log .lt{min-width:0;overflow-wrap:anywhere}
 @media (max-width:520px){.log li{grid-template-columns:44px 1fr}.log .lt{grid-column:1/-1}}
 .notice{font-size:12.5px;color:var(--warn);background:var(--warn-soft);padding:8px 12px;border-radius:8px}
+.notice.err{color:var(--ink);background:var(--panel);border:1px solid var(--warn)}
+.log li.blank{display:block}
+.board-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:10px}
 .muted{color:var(--muted);font-size:12.5px}
 @media (prefers-reduced-motion:no-preference){.pill.s-busy::before{animation:pulse 1.6s ease-in-out infinite}}
 @keyframes pulse{50%{opacity:.3}}
 </style>
 
 <div class="wrap" id="wrap">
+  <div class="notice" id="offline" hidden></div>
+  <div class="notice err" id="errbox" role="alert" hidden></div>
   <header>
     <div class="brand">
       <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M6 26 Q20 8 34 26" fill="none" stroke="var(--accent)" stroke-width="2.4"/><line x1="4" y1="26" x2="36" y2="26" stroke="var(--ink)" stroke-width="2.4"/><circle cx="6" cy="26" r="3.6" fill="var(--accent)"/><circle cx="20" cy="17" r="3.6" fill="var(--ink)"/><circle cx="34" cy="26" r="3.6" fill="var(--accent)"/></svg>
@@ -169,7 +175,7 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparen
 
   <section>
     <h2>업무 파이프라인</h2>
-    <div class="board-scroll"><div class="board" id="board"></div></div>
+    <div class="board-scroll" tabindex="0" role="region" aria-label="업무 파이프라인, 좌우로 스크롤"><div class="board" id="board"></div></div>
   </section>
 
   <section>
@@ -190,19 +196,24 @@ const STAGES=[["todo","지시"],["doing","진행 중"],["review","검토"],["app
 const PSTEPS=["기획","제작","검토","대표 승인","공개"];
 const STATUS={idle:["대기","s-idle"],busy:["작업 중","s-busy"],review:["검토 대기","s-review"],done:["완료 보고","s-done"]};
 let staff={},tasks=[],logEntries=[],projects=[],decisions=[],db=null,showAllDone=false;
+const loaded={staff:false,tasks:false,projects:false,decisions:false};
+let offline=false;
+const waitText=()=>offline?"오프라인이라 불러올 수 없어요.":"불러오는 중이에요…";
 const $=id=>document.getElementById(id);
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
 const nameOf=id=>(staff[id]?.name)||(STAFF_DEFAULT.find(s=>s.id===id)?.name)||"미배정";
 const kday=d=>{const k=new Date(d.getTime()+9*3600e3);return k.toISOString().slice(0,10)};
 const today=()=>kday(new Date());
-const hm=iso=>{const d=new Date(iso);if(isNaN(d))return"";return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+const hm=iso=>{const d=new Date(iso);if(isNaN(d))return"";const k=new Date(d.getTime()+9*3600e3);return String(k.getUTCHours()).padStart(2,"0")+":"+String(k.getUTCMinutes()).padStart(2,"0")};
+const stamp=iso=>{const d=new Date(iso);if(isNaN(d))return"";const k=new Date(d.getTime()+9*3600e3);return (kday(d)===today()?"오늘 ":(k.getUTCMonth()+1)+"/"+k.getUTCDate()+" ")+hm(iso)};
 const projName=id=>(projects.find(p=>p._id===id)?.name)||"";
 const safeUrl=u=>/^https:\/\//.test(u||"")?u:null;
 
 STAFF_DEFAULT.forEach(s=>{const o=el("option",null,s.name);o.value=s.id;$("orderWho").appendChild(o)});
 
-function setKpi(id,v,attn){const k=$(id);k.querySelector(".v").textContent=String(v);k.classList.toggle("attn",!!attn&&v>0)}
+function setKpi(id,v,attn){const k=$(id);k.querySelector(".v").textContent=String(v);k.classList.toggle("attn",!!attn&&typeof v==="number"&&v>0)}
 function renderKpis(){
+  if(!loaded.tasks||!loaded.decisions){["k-approval","k-decision","k-doing","k-done"].forEach(id=>setKpi(id,"–"));return}
   setKpi("k-approval",tasks.filter(t=>t.stage==="approval").length,true);
   setKpi("k-decision",decisions.filter(d=>d.status!=="decided").length,true);
   setKpi("k-doing",tasks.filter(t=>t.stage==="doing"||t.stage==="review").length);
@@ -210,6 +221,7 @@ function renderKpis(){
 }
 function renderDecisions(){
   const box=$("decisions");box.replaceChildren();
+  if(!loaded.decisions){$("decN").textContent="";box.append(el("p","muted",waitText()));return}
   const open=decisions.filter(d=>d.status!=="decided");
   $("decN").textContent=open.length?String(open.length):"";
   if(!open.length){box.append(el("p","muted","지금 대표님이 결정할 일은 없어요."));return}
@@ -224,6 +236,7 @@ function renderDecisions(){
 }
 function renderProjects(){
   const box=$("projects");box.replaceChildren();
+  if(!loaded.projects){box.append(el("p","muted",waitText()));return}
   if(!projects.length){box.append(el("p","muted","진행 중인 프로젝트가 아직 없어요."));return}
   [...projects].sort((a,b)=>(a.order??99)-(b.order??99)).forEach(p=>{
     const c=el("article","panel proj");
@@ -244,7 +257,7 @@ function renderProjects(){
       p.links.forEach(x=>{const u=safeUrl(x.url);if(u){const a=el("a",null,x.label||u);a.href=u;a.target="_blank";a.rel="noopener";l.append(a)}else if(x.label){l.append(el("span","muted",x.label+(x.url?" · "+x.url:"")))}});
       c.append(l);
     }
-    if(p.updatedAt)c.append(el("div","meta","업데이트 "+hm(p.updatedAt)));
+    if(p.updatedAt)c.append(el("div","meta","업데이트 "+stamp(p.updatedAt)));
     box.append(c);
   });
 }
@@ -252,12 +265,13 @@ function renderStaff(){
   const box=$("staff");box.replaceChildren();
   STAFF_DEFAULT.forEach(def=>{
     const s=Object.assign({},def,staff[def.id]||{});
-    const st=STATUS[s.status]||STATUS.idle;
+    const st=loaded.staff?(STATUS[s.status]||STATUS.idle):[offline?"알 수 없음":"확인 중","s-idle"];
+    if(!loaded.staff)s.current="";
     const n=el("article","panel node");
     const top=el("div","node-top");top.append(el("div","av",def.ini));
     const who=el("div","who");who.append(el("b",null,s.name),el("span",null,s.role));top.append(who);
-    n.append(top,el("span","pill "+st[1],st[0]),el("div","cur"+(s.current?"":" none"),s.current||"배정된 업무 없음"));
-    if(s.updatedAt)n.append(el("div","meta","업데이트 "+hm(s.updatedAt)));
+    n.append(top,el("span","pill "+st[1],st[0]),el("div","cur"+(s.current?"":" none"),s.current||(loaded.staff?"배정된 업무 없음":waitText())));
+    if(loaded.staff&&s.updatedAt)n.append(el("div","meta","업데이트 "+stamp(s.updatedAt)));
     box.append(n);
   });
 }
@@ -269,19 +283,19 @@ function renderBoard(){
     if(key==="done"&&!showAllDone)list=list.slice(0,6);
     const col=el("div","col");
     const h=el("div","col-h");h.append(el("span",null,label),el("span","count",String(total)));col.append(h);
-    if(!total)col.append(el("div","empty",key==="todo"?"새 지시가 여기에 쌓여요":"비어 있음"));
+    if(!total)col.append(el("div","empty",!loaded.tasks?waitText():(key==="todo"?"새 지시가 여기에 쌓여요":"비어 있음")));
     list.forEach(t=>{
       const c=el("div","panel card");
       c.append(el("div","t",t.title||"(제목 없음)"));
       if(t.detail)c.append(el("div","d",t.detail));
       const m=el("div","meta");m.append(el("span","tag",nameOf(t.assignee)));
       if(t.project&&projName(t.project))m.append(el("span","ptag",projName(t.project)));
-      if(t.updatedAt)m.append(el("span",null,hm(t.updatedAt)));
+      if(t.updatedAt)m.append(el("span",null,stamp(t.updatedAt)));
       c.append(m);
       if(t.output){const u=safeUrl(t.output.split(" ")[0]);if(u){const a=el("a","out",t.output);a.href=u;a.target="_blank";a.rel="noopener";c.append(a)}else c.append(el("div","out",t.output))}
       if(key==="approval"&&db){
         const a=el("button","approve","승인하고 완료");a.type="button";
-        a.onclick=async()=>{a.disabled=true;const now=new Date().toISOString();try{await db.doc("tasks/"+t._id).update({stage:"done",approvedAt:now,updatedAt:now});addLog("대표","승인: "+t.title)}catch(e){a.disabled=false;showNote("승인을 저장하지 못했어요. 잠시 후 다시 눌러 주세요.")}};
+        a.onclick=async()=>{a.disabled=true;const now=new Date().toISOString();try{await db.doc("tasks/"+t._id).update({stage:"done",approvedAt:now,updatedAt:now});addLog("대표","승인: "+t.title)}catch(e){a.disabled=false;showError("승인을 저장하지 못했어요. 잠시 후 다시 눌러 주세요.")}};
         c.append(a);
       }
       col.append(c);
@@ -293,11 +307,13 @@ function renderBoard(){
 function renderLog(){
   const ol=$("log");ol.replaceChildren();
   const items=[...logEntries].sort((a,b)=>(b.t||"").localeCompare(a.t||"")).slice(0,40);
-  if(!items.length){const li=el("li");li.append(el("span"),el("span"),el("span","lt muted","아직 기록이 없어요."));ol.append(li);return}
+  if(!items.length){const li=el("li","blank muted",db?"아직 기록이 없어요.":waitText());ol.append(li);return}
   items.forEach(x=>{const li=el("li");li.append(el("time",null,hm(x.t)),el("span","lw",x.who||""),el("span","lt",x.text||""));ol.append(li)});
 }
 function renderAll(){renderKpis();renderDecisions();renderProjects();renderStaff();renderBoard()}
-function showNote(msg){let n=document.querySelector(".notice");if(!n){n=el("div","notice");$("wrap").insertBefore(n,$("wrap").children[1])}n.textContent=msg}
+function showOffline(msg){const n=$("offline");n.textContent=msg;n.hidden=false}
+let errTimer=null;
+function showError(msg){const n=$("errbox");n.textContent=msg;n.hidden=false;clearTimeout(errTimer);errTimer=setTimeout(()=>{n.hidden=true},8000)}
 async function addLog(who,text){
   if(!db)return;
   const ref=db.doc("log/"+today());
@@ -308,24 +324,24 @@ renderAll();renderLog();
 $("orderForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const text=$("orderText").value.trim();if(!text)return;
-  if(!db){showNote("현황판 저장소에 연결되지 않아 지시를 저장할 수 없어요. 채팅방에 직접 지시해 주세요.");return}
+  if(!db){showError("현황판 저장소에 연결되지 않아 지시를 저장할 수 없어요. 채팅방에 직접 지시해 주세요.");return}
   $("orderBtn").disabled=true;const now=new Date().toISOString();
   try{await db.collection("tasks").add({title:text,detail:"",assignee:$("orderWho").value||"",stage:"todo",source:"dashboard",createdAt:now,updatedAt:now});$("orderText").value="";addLog("대표","지시 등록: "+text)}
-  catch(err){showNote("지시를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.")}
+  catch(err){showError("지시를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.")}
   finally{$("orderBtn").disabled=false}
 });
 
 (async()=>{
   db=await (window.claude?.use?.("db")??Promise.resolve(null));
-  if(!db){$("sync").textContent="오프라인 보기";showNote("이 보기에서는 실시간 현황을 불러올 수 없어요. claude.ai에 로그인한 상태로 열어 주세요.");return}
+  if(!db){offline=true;$("sync").textContent="오프라인 보기";showOffline("이 보기에서는 실시간 현황을 불러올 수 없어요. claude.ai에 로그인한 상태로 열어 주세요.");renderAll();renderLog();return}
   renderBoard();
   let timer=setTimeout(()=>{$("sync").textContent="응답 대기 중 · 내용이 최신이 아닐 수 있어요"},10000);
   const live=snap=>{if(!snap.metadata.fromCache){clearTimeout(timer);$("sync").textContent="실시간 연결됨 · "+hm(new Date().toISOString())}};
-  const fail=()=>{clearTimeout(timer);$("sync").textContent="연결 끊김 · 새로고침해 주세요"};
-  db.collection("staff").onSnapshot(s=>{staff={};s.docs.forEach(d=>staff[d.id]=d.data());renderAll();live(s)},fail);
-  db.collection("tasks").orderBy("updatedAt","desc").limit(300).onSnapshot(s=>{tasks=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
-  db.collection("projects").onSnapshot(s=>{projects=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
-  db.collection("decisions").onSnapshot(s=>{decisions=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
+  const fail=()=>{clearTimeout(timer);offline=true;$("sync").textContent="연결 끊김 · 새로고침해 주세요";showOffline("실시간 연결이 끊겼어요. 새로고침하면 다시 연결됩니다.");renderAll()};
+  db.collection("staff").onSnapshot(s=>{loaded.staff=true;staff={};s.docs.forEach(d=>staff[d.id]=d.data());renderAll();live(s)},fail);
+  db.collection("tasks").orderBy("updatedAt","desc").limit(300).onSnapshot(s=>{loaded.tasks=true;tasks=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
+  db.collection("projects").onSnapshot(s=>{loaded.projects=true;projects=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
+  db.collection("decisions").onSnapshot(s=>{loaded.decisions=true;decisions=s.docs.map(d=>Object.assign({_id:d.id},d.data()));renderAll();live(s)},fail);
   db.doc("log/"+today()).onSnapshot(d=>{logEntries=(d.exists&&Array.isArray(d.data().entries))?d.data().entries:[];renderLog()},fail);
 })();
 </script>

@@ -50,7 +50,7 @@ BRIDGE NODE는 대표 1명과 AI 직원 5명으로 일하는 1인 회사다. 대
 - 원본 파일: `dashboard/index.html` (수정 후 같은 경로로 Artifact 재배포)
 - 데이터 구조 (ArtifactData, 쓰기 전에 읽고 `if_version` 지정):
   - `staff/{id}`: `{name, role, status: idle|busy|review|done, current, updatedAt}`
-  - `tasks/{taskId}`: `{title, detail, assignee, stage: todo|doing|review|approval|done, output, source: chat|dashboard, createdAt, updatedAt}`
+  - `tasks/{taskId}`: `{title, detail, assignee, stage: todo|doing|review|approval|done, output, source: chat|dashboard, project, approvedAt, createdAt, updatedAt}` — 시각은 실제 UTC(`date -u`)로 기록
     - taskId 형식: `t-YYYYMMDD-짧은영문`
   - `log/{YYYY-MM-DD}`(한국 날짜): `{entries: [{t, who, text}]}` — 하루 한 문서에 누적
   - `projects/{slug}`: `{name, summary, step: 0기획|1제작|2검토|3대표승인|4공개|5완료, next, blocked, links:[{label,url}], order, updatedAt}` — 업무 카드에 `project: slug`를 달면 프로젝트 카드에 담당자가 표시된다
