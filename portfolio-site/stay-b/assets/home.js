@@ -8,15 +8,6 @@
   var bi = S.bi, biText = S.biText, pair = S.pair, esc = S.esc;
   var mqDesk = window.matchMedia("(min-width: 960px)");
 
-  /* ---------- page title follows language (marketer doc 1-4) ---------- */
-  var TITLES = {
-    en: "Stay B Busan · Gyeongnam | Student life",
-    ko: "스테이B 부산·경남 | 유학생 생활 안내"
-  };
-  function syncTitle(l){ document.title = TITLES[l] || TITLES.en; }
-  syncTitle(S.getLang());
-  S.onLang(syncTitle);
-
   /* ---------- render helpers ---------- */
   function rich(s){
     /* [[tbc]] -> chip, [[ph:...]] -> dashed placeholder chip */
@@ -62,6 +53,8 @@
 
   /* ---------- build tabs + panels ---------- */
   var tablist = document.getElementById("stage-tabs"), panelsWrap = document.getElementById("stage-panels");
+  // Replace the readable HTML edition with the interactive tab panels.
+  panelsWrap.replaceChildren();
   var tabs = [], panels = [];
   D.stages.forEach(function(s, i){
     var count = D.cards.filter(function(c){ return c.stage === s.key; }).length;

@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://bridgenode-portfolio.onrender.com/stay-b/sitemap.xml
