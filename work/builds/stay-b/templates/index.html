@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Search metadata is generated for each language. -->
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f8f7f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#f8f7f2" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="favicon-180.png">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/editorial/home.css">
+<link rel="stylesheet" href="assets/journal/site.css">
+<link rel="stylesheet" href="assets/local/desk.css">
+</head>
+<body class="journal student-page">
+<!-- Icons: drawn inline for this project (24px grid, 1.75px stroke). No icon set or icon font. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-bag" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M8 20v1M16 20v1M4 12h16"/></g></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7v8.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/><circle cx="12" cy="13.5" r="2"/><path d="M12 15.5V18"/></g></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.5C6 5 8.5 5 11 6.5v12C8.5 17 6 17 3.5 18.5Z"/><path d="M11 6.5c2.5-1.5 5-1.5 7.5 0V11"/><path d="M14 14h6v2.5a3 3 0 0 1-3 3 3 3 0 0 1-3-3Z"/><path d="M20 15h.7a1.3 1.3 0 0 1 0 2.6H20"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="15.5" cy="15" r="2"/></g></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/></g></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h11a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5H9l-3.5 3v-3H4A1.5 1.5 0 0 1 2.5 13V7A1.5 1.5 0 0 1 4 5.5Z"/><path d="M19 9h1a1.5 1.5 0 0 1 1.5 1.5v6A1.5 1.5 0 0 1 20 18h-1v2.5L16 18h-4"/></g></symbol>
+    <symbol id="i-bubble" viewBox="0 0 24 24"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 17h-8l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 5 5Z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></symbol>
+    <symbol id="i-phonechat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 0 1 0 17c-1.4 0-2.7-.3-3.9-.9L4 20.5l1-3.9A8.5 8.5 0 0 1 12 3.5Z"/><path d="M9.2 8.5c0 3.5 2.8 6.3 6.3 6.3l.8-1.6-1.8-.9-.8.8a4 4 0 0 1-2.1-2.1l.8-.8-.9-1.8Z"/></g></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5h9a1.5 1.5 0 0 1 1.5 1.5v4.5A1.5 1.5 0 0 1 12 13H7.5L4.5 15.5V13H3a1.5 1.5 0 0 1-1.5-1.5V7A1.5 1.5 0 0 1 3 5.5Z"/><path d="M16.5 9H21a1.5 1.5 0 0 1 1.5 1.5V15A1.5 1.5 0 0 1 21 16.5h-1.5V19l-3-2.5h-4A1.5 1.5 0 0 1 11 15v-.5"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></g></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></g></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H6.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V9Z"/><path d="M14 3.5V9h5.5M8.5 13h7M8.5 16.5h4"/></g></symbol>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="M10.5 13.5 4 11l1.5-1.5 7 .5 4-4a2 2 0 0 1 3 3l-4 4 .5 7L14.5 21l-2.5-6.5-3 3V20l-1.5 1-1-3.5L3 16.5l1-1.5h2.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="12" r="6.5"/><path d="M10 9v6M8 10.5h3"/><path d="m15.5 17 2 2 4-4.5"/></g></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17"/></g></symbol>
+    <clipPath id="sb-clip-mark"><rect width="32" height="32" rx="9"/></clipPath>
+    <mask id="sb-mask-footer" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <rect width="32" height="32" fill="#fff"/>
+      <path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/>
+    </mask>
+    <!-- Stay B mark, option A "Bridge B" (design-spec 3). Colour version keeps its colours in dark mode. -->
+    <symbol id="i-mark" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="9" fill="#0B6B66"/>
+      <g clip-path="url(#sb-clip-mark)"><path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linejoin="round"/></g>
+    </symbol>
+    <!-- Single-colour, knocked-out version: follows currentColor (footer). -->
+    <symbol id="i-mark-mono" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="9" fill="currentColor" mask="url(#sb-mask-footer)"/>
+    </symbol>
+    <symbol id="skyline" viewBox="0 0 368 96">
+      <circle cx="300" cy="26" r="12" fill="var(--sun)"/>
+      <g fill="var(--warm-tint)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+        <rect x="8" y="52" width="22" height="18" rx="2"/><rect x="26" y="40" width="20" height="30" rx="2"/><rect x="44" y="56" width="24" height="14" rx="2"/><rect x="62" y="46" width="18" height="24" rx="2"/>
+      </g>
+      <g fill="currentColor"><circle cx="34" cy="48" r="1.5"/><circle cx="40" cy="48" r="1.5"/><circle cx="16" cy="60" r="1.5"/><circle cx="70" cy="54" r="1.5"/></g>
+      <path d="M96 70 Q190 18 284 70" fill="none" stroke="var(--sea)" stroke-width="2"/>
+      <path d="M150 70V42M230 70V42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M150 42 Q125 56 110 70M150 42 Q175 56 190 62M230 42 Q205 56 190 62M230 42 Q255 56 270 70" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>
+      <path d="M318 70V30h16M334 30v8M318 40l14 -8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M0 74H368" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M0 84q11.5-6 23 0t23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0 23 0" fill="none" stroke="var(--sea)" stroke-width="1.75" opacity=".6"/>
+    </symbol>
+    <symbol id="ed-globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.45"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5q7 4 14 0M5 17.5q7-4 14 0"/></g></symbol>
+    <symbol id="ed-plane" viewBox="0 0 56 52"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 22 53 6 38 47l-9-16-15 8 4-12Z"/><path d="m18 27 35-21-24 25"/><g class="ed-accent"><path d="m5 37 7-5M7 45l8-6m0 9 5-4"/></g></g></symbol>
+    <symbol id="ed-key" viewBox="0 0 56 52"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M33 7a12 12 0 0 0-15 15L4 37l1 9 10-1 3-5 5-1 2-6 5-1 4-5A12 12 0 0 0 33 7Z"/><circle cx="29" cy="15" r="3"/><path d="m12 38 10-11"/><g class="ed-accent"><path d="m44 9 5-5m-4 13 7-1M37 5l1-3"/></g></g></symbol>
+    <symbol id="ed-book" viewBox="0 0 56 52"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11q10-4 19 2v28q-9-6-19-3ZM25 13q9-6 18-4v10M3 16v26q12-5 22 1 3-2 6-3"/><g class="ed-accent"><path d="M32 29h15v7a7.5 7.5 0 0 1-15 0Zm15 2h2a3 3 0 0 1 0 6h-2m-12-12q3-3 0-6m6 6q3-3 0-6"/><path d="M30 46h21"/></g></g></symbol>
+    <symbol id="ed-visa" viewBox="0 0 56 52"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 14 35 5l2 8M10 14h31a3 3 0 0 1 3 3v28H13a4 4 0 0 1-4-4V17a3 3 0 0 1 1-3Z"/><g class="ed-accent"><circle cx="28" cy="27" r="8"/><path d="M20 27h16m-8-8q-7 8 0 16 7-8 0-16ZM23 40h10"/></g></g></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main"><span data-l="en" lang="en">Skip to content</span><span data-l="ko" lang="ko">본문으로 건너뛰기</span></a>
+
+
+<!-- 1. Header -->
+<header class="site-header ed-header" id="top">
+  <div class="ed-header-inner">
+    <a href="#main" class="brand ed-brand" aria-label="Stay B Busan and Gyeongnam home" data-label-en="Stay B Busan and Gyeongnam home" data-label-ko="스테이B 부산·경남 홈">Stay B<span aria-hidden="true">.</span><small class="sb-lockup"><span data-l="en" lang="en">Busan · Gyeongnam</span><span data-l="ko" lang="ko">부산 · 경남</span></small></a>
+    <nav class="ed-nav" aria-label="Main" data-label-en="Main" data-label-ko="주 메뉴">
+      <a href="#guides"><span data-l="en" lang="en">Life guides</span><span data-l="ko" lang="ko">생활 가이드</span></a>
+      <a href="#local-desk"><span data-l="en" lang="en">Student desk</span><span data-l="ko" lang="ko">지역 생활정보</span></a>
+      <a href="#offline"><span data-l="en" lang="en">Local help</span><span data-l="ko" lang="ko">현장 도움</span></a>
+      <a href="#community"><span data-l="en" lang="en">Community</span><span data-l="ko" lang="ko">커뮤니티</span></a>
+    </nav>
+    <div class="ed-actions">
+      <details class="ed-language" id="ed-language">
+        <summary aria-label="Select language" data-label-en="Select language" data-label-ko="언어 선택"><svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#ed-globe"/></svg><span data-l="en" lang="en">English</span><span data-l="ko" lang="ko">한국어</span><svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-chev"/></svg></summary>
+        <div class="ed-language-list">
+          <button type="button" lang="en" data-set-lang="en" aria-pressed="true">English</button>
+          <button type="button" lang="ko" data-set-lang="ko" aria-pressed="false">한국어</button>
+          <span class="ed-lang-soon"><span lang="ne">नेपाली</span> · <span data-l="en" lang="en">Coming soon</span><span data-l="ko" lang="ko">준비 중</span></span>
+        </div>
+      </details>
+      <a class="ed-ask hero-ask" href="#ask"><span data-l="en" lang="en">Ask a question</span><span data-l="ko" lang="ko">질문하기</span></a>
+      <button type="button" class="ed-menu" id="menu-btn" aria-controls="mobile-nav" aria-expanded="false" aria-label="Menu" data-label-en="Menu" data-label-ko="메뉴"><svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg></button>
+    </div>
+  </div>
+  <nav class="ed-mobile-nav" id="mobile-nav" hidden aria-label="Mobile navigation" data-label-en="Mobile navigation" data-label-ko="모바일 메뉴">
+      <a href="#guides"><span data-l="en" lang="en">Life guides</span><span data-l="ko" lang="ko">생활 가이드</span></a>
+      <a href="#local-desk"><span data-l="en" lang="en">Student desk</span><span data-l="ko" lang="ko">지역 생활정보</span></a>
+      <a href="#offline"><span data-l="en" lang="en">Local help</span><span data-l="ko" lang="ko">현장 도움</span></a>
+      <a href="#community"><span data-l="en" lang="en">Community</span><span data-l="ko" lang="ko">커뮤니티</span></a>
+      <a href="#faq"><span data-l="en" lang="en">FAQ</span><span data-l="ko" lang="ko">자주 묻는 질문</span></a>
+      <a href="#ask"><span data-l="en" lang="en">Ask a question</span><span data-l="ko" lang="ko">질문하기</span></a>
+  </nav>
+  <div class="j-reading-progress" aria-hidden="true"><i></i></div>
+</header>
+
+<main id="main" tabindex="-1">
+
+<!-- 2. Hero -->
+<section id="hero" class="j-hero" aria-labelledby="hero-title">
+  <div class="j-hero-type">
+    <p class="j-loc"><span data-l="en" lang="en">Busan &amp; Gyeongnam, South Korea</span><span data-l="ko" lang="ko">대한민국 부산 · 경남</span></p>
+    <h1 id="hero-title"><span data-l="en" lang="en">Find your feet.<br><em>Feel at home.</em></span><span data-l="ko" lang="ko">부산·경남에서,<br><em>내 집처럼.</em></span></h1>
+    <p class="j-intro"><span data-l="en" lang="en">Student life in Busan and Gyeongnam.<br>From your first day to everyday life.</span><span data-l="ko" lang="ko">부산·경남 유학생을 위한 생활 가이드.<br>도착하는 첫날부터 이곳의 일상까지.</span></p>
+    <a class="j-text-link" href="#stage-q"><span data-l="en" lang="en">Find my guide</span><span data-l="ko" lang="ko">내 단계 찾기</span> <span aria-hidden="true">↓</span></a>
+  </div><figure class="j-photo j-photo-beach">
+      <div class="j-photo-frame"><img src="assets/journal/beach-1600.webp" srcset="assets/journal/beach-800.webp 800w, assets/journal/beach-1600.webp 1600w" sizes="(max-width: 719px) 100vw, 55vw" width="1600" height="901" loading="eager" fetchpriority="high" alt=""></div>
+      <figcaption><span><span data-l="en" lang="en">Gwangalli Beach</span><span data-l="ko" lang="ko">광안리해수욕장</span> <span class="j-year">/ 2022</span></span><a href="https://commons.wikimedia.org/wiki/File:Gwangalli_Beach_and_Gwangan_Bridge_Busan.jpg" aria-label="Photo by Masterhatch on Wikimedia Commons">© Masterhatch</a></figcaption>
+    </figure></section>
+
+<section class="ed-finder" aria-labelledby="stage-q">
+  <h2 id="stage-q" tabindex="-1"><span data-l="en" lang="en">Where are you in your journey?</span><span data-l="ko" lang="ko">지금 어느 단계인가요?</span></h2>
+  <ul id="hero-stages">
+      <li><a href="#guides-arrive" data-stage="arrive" class="ed-stage">
+        <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#ed-plane"/></svg>
+        <strong><span data-l="en" lang="en">Before you arrive</span><span data-l="ko" lang="ko">입국 전</span> <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></strong>
+        <small><span data-l="en" lang="en">Plan your first week</span><span data-l="ko" lang="ko">준비물과 첫 주 일정</span></small>
+      </a></li>
+      <li><a href="#guides-settle" data-stage="settle" class="ed-stage">
+        <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#ed-key"/></svg>
+        <strong><span data-l="en" lang="en">Settling in</span><span data-l="ko" lang="ko">정착 중</span> <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></strong>
+        <small><span data-l="en" lang="en">Housing, phone &amp; banking</span><span data-l="ko" lang="ko">숙소·휴대폰·은행 이용</span></small>
+      </a></li>
+      <li><a href="#guides-life" data-stage="life" class="ed-stage">
+        <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#ed-book"/></svg>
+        <strong><span data-l="en" lang="en">Daily life &amp; work</span><span data-l="ko" lang="ko">생활과 일</span> <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></strong>
+        <small><span data-l="en" lang="en">Study, work &amp; meet people</span><span data-l="ko" lang="ko">학업·일·새로운 만남</span></small>
+      </a></li>
+      <li><a href="#guides-visa" data-stage="visa" class="ed-stage">
+        <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#ed-visa"/></svg>
+        <strong><span data-l="en" lang="en">Visas &amp; graduation</span><span data-l="ko" lang="ko">비자와 졸업 이후</span> <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></strong>
+        <small><span data-l="en" lang="en">Plan your next step</span><span data-l="ko" lang="ko">체류 일정과 졸업 후 계획</span></small>
+      </a></li>
+  </ul>
+</section>
+
+<!-- 0. Concept notice -->
+<div class="concept-bar" id="concept-bar" role="region" aria-label="Notice / 안내">
+  <div class="wrap">
+    <p>
+      <span data-l="en" lang="en">BRIDGENODE portfolio · Concept demo · Not a live service (demo forms do not send anything)</span>
+      <span data-l="ko" lang="ko">BRIDGENODE 포트폴리오 · 컨셉 시안 · 실제 운영 서비스 아님 (데모 폼은 전송되지 않습니다)</span>
+      · <a href="../"><span data-l="en" lang="en">Back to BRIDGENODE portfolio</span><span data-l="ko" lang="ko">브릿지노드 포트폴리오로</span></a>
+      · <a href="#faq"><span data-l="en" lang="en">FAQ</span><span data-l="ko" lang="ko">자주 묻는 질문</span></a>
+    </p>
+    <button class="icon-btn" type="button" id="cb-close" aria-label="Close notice / 안내 닫기"><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-x"/></svg></button>
+  </div>
+</div>
+
+<!-- 3. How Stay B works -->
+
+
+<section class="sec sb-desk" id="local-desk" aria-labelledby="local-title">
+<div class="wrap">
+<header class="sb-desk-head"><div><p class="sb-kicker">Stay B. / <span data-l="en" lang="en">Student desk</span><span data-l="ko" lang="ko">유학생 안내</span></p><h2 id="local-title"><span data-l="en" lang="en">Your local desk</span><span data-l="ko" lang="ko">우리 지역 생활정보</span></h2></div><p><span data-l="en" lang="en">Choose your region to find a campus, look up scholarships or get help settling in.</span><span data-l="ko" lang="ko">생활하는 지역을 고르면 학교 주소부터 장학금, 체류 상담까지 한곳에서 찾을 수 있어요.</span></p></header>
+<div class="sb-regions" role="group" aria-label="Region" data-label-en="Region" data-label-ko="지역 선택"><button type="button" data-region="busan" aria-pressed="true"><span data-l="en" lang="en">Busan</span><span data-l="ko" lang="ko">부산</span></button><button type="button" data-region="gyeongnam" aria-pressed="false"><span data-l="en" lang="en">Gyeongnam</span><span data-l="ko" lang="ko">경남</span></button></div>
+<div class="sb-desk-body"><div class="sb-campus"><h3><span data-l="en" lang="en">Find a campus</span><span data-l="ko" lang="ko">캠퍼스 찾기</span></h3><p><span data-l="en" lang="en">Selected campuses. Use the Korean address in a local map app.</span><span data-l="ko" lang="ko">지역별 주요 캠퍼스입니다. 한글 도로명주소를 지도 앱에서 검색해 보세요.</span></p>
+<label class="sb-search"><span><span data-l="en" lang="en">Search by school or address</span><span data-l="ko" lang="ko">학교 이름 또는 주소 검색</span></span><input id="sb-search" type="search" autocomplete="off" spellcheck="false"></label>
+<p id="sb-count" class="sb-count" role="status"></p><ul class="sb-campus-list" id="sb-campus-list"></ul>
+<p class="sb-source"><a href="https://www.data.go.kr/data/15107736/standard.do"><span data-l="en" lang="en">Source · Korean Council for University Education</span><span data-l="ko" lang="ko">자료 · 한국대학교육협의회</span></a><span id="sb-date"></span></p>
+</div><aside class="sb-links"><h3><span data-l="en" lang="en">Official information</span><span data-l="ko" lang="ko">공식 기관 안내</span></h3><ul><li data-zone="all"><a href="https://www.studyinkorea.go.kr/en/plan/scholarship.do" data-url-en="https://www.studyinkorea.go.kr/en/plan/scholarship.do" data-url-ko="https://www.studyinkorea.go.kr/ko/plan/scholarship.do"><span><span data-l="en" lang="en">Government scholarships</span><span data-l="ko" lang="ko">정부 장학금</span><small><span data-l="en" lang="en">Study in Korea · GKS</span><span data-l="ko" lang="ko">Study in Korea · GKS</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="all"><a href="https://www.studyinkorea.go.kr/en/life/livingAndHousing.do" data-url-en="https://www.studyinkorea.go.kr/en/life/livingAndHousing.do" data-url-ko="https://www.studyinkorea.go.kr/ko/life/livingAndHousing.do"><span><span data-l="en" lang="en">Housing &amp; dormitories</span><span data-l="ko" lang="ko">숙소와 기숙사</span><small><span data-l="en" lang="en">Study in Korea</span><span data-l="ko" lang="ko">Study in Korea</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="all"><a href="https://studyinkorea.go.kr/en/life/residenceAndStayInfo.do" data-url-en="https://studyinkorea.go.kr/en/life/residenceAndStayInfo.do" data-url-ko="https://studyinkorea.go.kr/ko/life/residenceAndStayInfo.do"><span><span data-l="en" lang="en">Student visas &amp; part-time work</span><span data-l="ko" lang="ko">체류와 시간제취업</span><small><span data-l="en" lang="en">Study in Korea</span><span data-l="ko" lang="ko">Study in Korea</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="all"><a href="https://www.nhis.or.kr/english/wbheaa02900m01.do" data-url-en="https://www.nhis.or.kr/english/wbheaa02900m01.do" data-url-ko="https://www.nhis.or.kr/english/wbheaa02900m01.do"><span><span data-l="en" lang="en">National health insurance</span><span data-l="ko" lang="ko">외국인 건강보험</span><small><span data-l="en" lang="en">NHIS</span><span data-l="ko" lang="ko">국민건강보험공단 · 영문 안내</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="all"><a href="https://www.immigration.go.kr/immigration_eng/1862/subview.do" data-url-en="https://www.immigration.go.kr/immigration_eng/1862/subview.do" data-url-ko="https://immigration.go.kr/immigration/1530/subview.do"><span><span data-l="en" lang="en">Immigration enquiries · 1345</span><span data-l="ko" lang="ko">출입국 상담 · 1345</span><small><span data-l="en" lang="en">Korea Immigration Service</span><span data-l="ko" lang="ko">법무부</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="busan"><a href="https://www.busan.go.kr/eng/busan-international-students-support-center" data-url-en="https://www.busan.go.kr/eng/busan-international-students-support-center" data-url-ko="https://www.busan.go.kr/depart/family0407"><span><span data-l="en" lang="en">Student support in Busan</span><span data-l="ko" lang="ko">부산 유학생 지원센터</span><small><span data-l="en" lang="en">Busan Metropolitan City</span><span data-l="ko" lang="ko">부산광역시</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="gyeongnam"><a href="https://international.gnu.ac.kr/" data-url-en="https://international.gnu.ac.kr/" data-url-ko="https://international.gnu.ac.kr/"><span><span data-l="en" lang="en">Student support at GNU, Jinju</span><span data-l="ko" lang="ko">진주 경상국립대 국제처</span><small><span data-l="en" lang="en">Gyeongsang National University</span><span data-l="ko" lang="ko">경상국립대학교</span></small></span><span aria-hidden="true">→</span></a></li>
+<li data-zone="gyeongnam"><a href="https://www.moj.go.kr/immigration/2058/subview.do" data-url-en="https://www.moj.go.kr/immigration/2058/subview.do" data-url-ko="https://www.moj.go.kr/immigration/2058/subview.do"><span><span data-l="en" lang="en">Find your immigration office</span><span data-l="ko" lang="ko">부산·경남 관할 출입국 찾기</span><small><span data-l="en" lang="en">Korea Immigration Service · Korean page</span><span data-l="ko" lang="ko">법무부</span></small></span><span aria-hidden="true">→</span></a></li>
+</ul><p class="sb-source"><a href="resources.html"><span data-l="en" lang="en">Official student resources</span><span data-l="ko" lang="ko">유학생 공식 정보 안내</span></a></p></aside></div></div></section>
+
+<!-- 4. Guide hub (cards rendered from assets/guides-data.js) -->
+<section class="guides sec" id="guides" aria-labelledby="guides-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="guides-title"><span data-l="en" lang="en">Student handbook</span><span data-l="ko" lang="ko">유학생 생활 수첩</span></h2>
+      <p class="lead"><span data-l="en" lang="en">Start with your stage. Open any topic for a checklist, sources and a next step.</span><span data-l="ko" lang="ko">지금 내 단계를 고르세요. 항목을 열면 준비할 일과 참고할 곳을 확인할 수 있어요.</span></p>
+      <p class="small"><span data-l="en" lang="en">Guides are general information. Before launch, they are checked by a qualified administrative agent. Items marked "to be confirmed" are being checked.</span><span data-l="ko" lang="ko">일반 정보입니다. 서비스 시작 전 자격 있는 행정사가 감수합니다. "확인 예정" 표시는 지금 확인 중인 내용이에요.</span></p>
+    </div>
+    <div class="tabs-bar"><div class="tabs" role="tablist" id="stage-tabs" aria-label="Your stage / 내 단계"></div></div>
+    <div id="stage-panels"></div>
+
+  </div>
+</section>
+<section class="connect" id="connect" aria-labelledby="connect-title">
+  <div class="wrap">
+    <div class="j-orientation"><h2 id="connect-title"><span data-l="en" lang="en">About Stay B</span><span data-l="ko" lang="ko">Stay B 소개</span></h2><p><span data-l="en" lang="en">Start with a guide. If you need a hand in Busan, explore local support or ask the student community.</span><span data-l="ko" lang="ko">생활 가이드에서 궁금한 점을 찾아보세요. 혼자 해결하기 어려운 일은 현장 지원과 학생 커뮤니티에서 이어갈 수 있어요.</span></p><a class="j-text-link" href="#offline"><span data-l="en" lang="en">Explore local help</span><span data-l="ko" lang="ko">현장 도움 보기</span> <span aria-hidden="true">↓</span></a></div></div></section>
+
+<!-- 5. In person -->
+<section class="offline sec" id="offline" aria-labelledby="offline-title">
+  
+  <div class="wrap">
+    <div class="j-off-head"><div class="sec-head">
+      
+      <h2 id="offline-title"><span data-l="en" lang="en">Local help</span><span data-l="ko" lang="ko">부산에서 받는 도움</span></h2>
+      <p class="lead"><span data-l="en" lang="en">Planning your first week, opening a bank account or finding a student meetup? See what is being prepared and how to ask about it.</span><span data-l="ko" lang="ko">첫 주 일정부터 은행 방문, 학생 모임까지. 준비 중인 지원 내용과 문의 방법을 살펴보세요.</span></p>
+    </div>
+    
+
+    <figure class="j-photo j-photo-station">
+      <div class="j-photo-frame"><img src="assets/journal/station-960.webp" width="960" height="720" loading="lazy" alt=""></div>
+      <figcaption><span><span data-l="en" lang="en">Busan Station</span><span data-l="ko" lang="ko">부산역 대합실</span> <span class="j-year">/ 2018</span></span><a href="https://commons.wikimedia.org/wiki/File:Busan_Station_Busan_(31885854218).jpg" aria-label="Photo by bryan... on Wikimedia Commons">© bryan...</a></figcaption>
+    </figure></div>
+    <div class="off-grid">
+      <article class="off-card" id="off-session" aria-labelledby="off-session-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-session-t"><span class="pair"><span lang="en">Pre-arrival info sessions</span><span lang="ko">입국 전 설명회</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Before I arrive</span><span lang="ko">입국 전</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+        <p><span data-l="en" lang="en">Meet us in Nepal, with our partner language school, before you fly. Learn about Busan, your school, housing and your first week.</span><span data-l="ko" lang="ko">출국 전 네팔에서 연계 어학원과 함께 만나요. 부산, 학교, 숙소, 첫 주를 미리 알려 드려요.</span></p>
+        <p class="small off-scope"><span data-l="en" lang="en">For students already admitted to a school in Korea.</span><span data-l="ko" lang="ko">한국 학교 입학이 정해진 학생을 위한 생활 설명회예요.</span></p>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="arrive" data-ask-topic="dates"><span class="pair"><span lang="en">Get session dates</span><span lang="ko">설명회 일정 받기</span></span></a></div>
+      </div></details>
+      </article>
+
+      <article class="off-card long" id="off-firstweek" aria-labelledby="off-firstweek-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-firstweek-t"><span class="pair"><span lang="en">First-week support</span><span lang="ko">공항부터 첫 주까지</span></span></span><span class="ticket"><span data-l="en" lang="en">Before I arrive → Just arrived</span><span data-l="ko" lang="ko">입국 전 → 정착 중</span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+        <p><span data-l="en" lang="en">Optional help when you land, such as airport pickup and a guided first week. It does not include any administrative or visa work.</span><span data-l="ko" lang="ko">원하는 학생에게 공항 픽업, 첫 주 생활 안내 같은 도움을 드려요. 행정·체류 업무 대행은 포함하지 않아요.</span></p>
+        <p class="note-later"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span><span data-l="en" lang="en">Optional paid service · coming soon</span><span data-l="ko" lang="ko">유료 선택 서비스 · 준비 중</span></span></p>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="settle" data-ask-topic="firstweek"><span class="pair"><span lang="en">Ask about first-week support</span><span lang="ko">첫 주 지원 문의</span></span></a></div>
+      </div></details>
+      </article>
+
+      <article class="off-card" id="off-settle" aria-labelledby="off-settle-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-settle-t"><span class="pair"><span lang="en">Settling-in help</span><span lang="ko">정착 동행·예약 안내</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Just arrived</span><span lang="ko">정착 중</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+        <p><span data-l="en" lang="en">We show you how to book your alien registration visit and what to bring. We can go with you to open a bank account or get a phone.</span><span data-l="ko" lang="ko">외국인등록 방문 예약 방법과 준비물을 알려 드려요. 은행 계좌 개설, 휴대폰 개통에는 함께 가 드릴 수 있어요.</span></p>
+        <p class="note-later"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span><span data-l="en" lang="en">Optional paid service · coming soon</span><span data-l="ko" lang="ko">유료 선택 서비스 · 준비 중</span></span></p>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="settle" data-ask-topic="firstweek"><span class="pair"><span lang="en">Ask about settling-in help</span><span lang="ko">정착 도움 문의</span></span></a></div>
+      </div></details>
+      </article>
+
+      <article class="off-card" id="off-kit" aria-labelledby="off-kit-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-kit-t"><span class="pair"><span lang="en">Welcome kit &amp; Stay B membership card</span><span lang="ko">웰컴 키트·Stay B 멤버십 카드</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Just arrived</span><span lang="ko">정착 중</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+          <p><span data-l="en" lang="en">A welcome kit for your first days in Busan, and a membership card for partner discounts.</span><span data-l="ko" lang="ko">부산에서의 첫날을 위한 웰컴 키트와, 제휴 할인에 쓰는 멤버십 카드.</span></p>
+          <p class="by"><span data-l="en" lang="en">Designed by Heritage Studio B</span><span data-l="ko" lang="ko">헤리티지 스튜디오 B가 디자인합니다</span></p>
+          <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span></div>
+        </div></details>
+      </article>
+
+      <article class="off-card" id="off-discount" aria-labelledby="off-discount-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-discount-t"><span class="pair"><span lang="en">Member discounts</span><span lang="ko">제휴업체 할인</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Study, life &amp; work</span><span lang="ko">생활·일</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+        <p><span data-l="en" lang="en">Show your Stay B membership card for discounts at local partners: places to stay, food, phone plans and everyday services.</span><span data-l="ko" lang="ko">Stay B 멤버십 카드를 보여 주면 지역 제휴처(숙소, 식당, 통신, 생활 서비스)에서 할인받아요.</span></p>
+        <p class="note-later"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span><span data-l="en" lang="en">Partner list will be shared after partner talks.</span><span data-l="ko" lang="ko">제휴처 목록은 협의 후 공개 예정이에요.</span></span></p>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#community"><span class="pair"><span lang="en">See the community</span><span lang="ko">커뮤니티 보기</span></span></a></div>
+      </div></details>
+      </article>
+
+      <article class="off-card" id="off-meetup" aria-labelledby="off-meetup-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-meetup-t"><span class="pair"><span lang="en">Meetups &amp; communities</span><span lang="ko">지역 행사·국가별 모임</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Study, life &amp; work</span><span lang="ko">생활·일</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+        <p><span data-l="en" lang="en">Local events and meetups by school and by country, starting with students from Nepal.</span><span data-l="ko" lang="ko">학교별·국가별 모임과 지역 행사. 네팔 학생 모임부터 시작해요.</span></p>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#community"><span class="pair"><span lang="en">See the community</span><span lang="ko">커뮤니티 보기</span></span></a></div>
+      </div></details>
+      </article>
+
+      <article class="off-card long" id="off-career" aria-labelledby="off-career-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-career-t"><span class="pair"><span lang="en">Career talks</span><span lang="ko">취업 특강</span></span></span><span class="ticket"><span data-l="en" lang="en">Study, life &amp; work → Visa &amp; after graduation</span><span data-l="ko" lang="ko">생활·일 → 비자·졸업 이후</span></span><span class="j-plus" aria-hidden="true"></span></summary>
+        <div class="j-service-content">
+        <p><span data-l="en" lang="en">Talks on job hunting in Korea, writing a Korean-style resume, and Korean for work.</span><span data-l="ko" lang="ko">한국 구직 방법, 한국식 이력서, 일할 때 쓰는 한국어를 배우는 특강.</span></p>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="life" data-ask-topic="dates"><span class="pair"><span lang="en">Get talk dates</span><span lang="ko">특강 일정 받기</span></span></a></div>
+      </div></details>
+      </article>
+
+      <div class="off-where">
+        <p class="where-line"><svg class="ic" aria-hidden="true" focusable="false" style="color:var(--clay)"><use href="#i-cal"/></svg><span><b><span data-l="en" lang="en">Where and when</span><span data-l="ko" lang="ko">장소·일정</span></b><span data-l="en" lang="en">Places and dates will be shared after partner talks.</span><span data-l="ko" lang="ko">장소·일정은 협의 후 공개 예정이에요.</span></span></p>
+        <p class="family"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-plane"/></svg><span><span data-l="en" lang="en">When your family visits: NOWRO Korea helps families travel in Korea. (coming soon)</span><span data-l="ko" lang="ko">가족이 방문할 때도: NOWRO Korea가 가족의 한국 여행을 도와요. (연결 예정)</span></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Moments -->
+<section class="sec" id="moments" aria-labelledby="moments-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="moments-title"><span data-l="en" lang="en">When you need a hand</span><span data-l="ko" lang="ko">이럴 땐 어떻게 할까요?</span></h2>
+    </div>
+    <div class="moments-grid">
+      <article class="moment" aria-labelledby="m1-t">
+        <div class="moment-head">
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false"><path d="M14 8h20l10 10v30H14Z" fill="var(--sea-tint)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><rect x="21" y="24" width="16" height="14" rx="2" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.75"/><path d="M29 24v14M21 31h16" stroke="var(--ink)" stroke-width="1.25"/></svg>
+          <h3 id="m1-t"><span class="pair"><span lang="en">Your first week in Busan</span><span lang="ko">부산에서의 첫 주</span></span></h3>
+        </div>
+        <p class="scene"><span data-l="en" lang="en">You landed two days ago. Your phone runs on a prepaid SIM, the bank asks for a card you do not have yet, and the immigration website is in Korean.</span><span data-l="ko" lang="ko">도착한 지 이틀. 휴대폰은 선불 유심이고, 은행은 아직 없는 카드를 달라고 하고, 출입국 사이트는 한국어예요.</span></p>
+        <div class="moment-acts">
+          <a class="btn btn-outline" href="#guide-2-1"><span class="pair"><span lang="en">Settling-in checklist</span><span lang="ko">정착 체크리스트</span></span></a>
+          <a class="btn btn-primary" href="#off-settle"><span class="pair"><span lang="en">Get settling-in help</span><span lang="ko">정착 도움 받기</span></span></a>
+        </div>
+      </article>
+      <article class="moment" aria-labelledby="m2-t">
+        <div class="moment-head">
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false"><path d="M16 50 22 10h12l6 40" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><rect x="14" y="12" width="28" height="24" rx="3" fill="var(--warm-tint)" stroke="var(--ink)" stroke-width="2"/><path d="M19 19h12M19 24h18M19 29h10" stroke="var(--clay)" stroke-width="2" stroke-linecap="round"/><path d="M36 30c4 0 8 2 8 6v12H32V36c0-3 1-6 4-6Z" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.75" stroke-linejoin="round"/></svg>
+          <h3 id="m2-t"><span class="pair"><span lang="en">Before your first part-time job</span><span lang="ko">첫 아르바이트 전</span></span></h3>
+        </div>
+        <p class="scene"><span data-l="en" lang="en">A restaurant near campus says you can start tomorrow. A friend says you do not need permission. Is that true?</span><span data-l="ko" lang="ko">학교 앞 식당에서 내일부터 나오라고 해요. 친구는 허가 같은 건 필요 없대요. 정말일까요?</span></p>
+        <div class="moment-acts">
+          <a class="btn btn-outline" href="#guide-3-1"><span class="pair"><span lang="en">Part-time work rules</span><span lang="ko">시간제취업 규칙</span></span></a>
+          <a class="btn btn-primary" href="#ask" data-ask-stage="life" data-ask-topic="work"><span class="pair"><span lang="en">Ask us</span><span lang="ko">질문하기</span></span></a>
+        </div>
+      </article>
+      <article class="moment" aria-labelledby="m3-t">
+        <div class="moment-head">
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false"><rect x="8" y="12" width="40" height="36" rx="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/><path d="M8 22h40M18 8v8M38 8v8" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><g fill="var(--line-strong)"><circle cx="16" cy="30" r="2"/><circle cx="24" cy="30" r="2"/><circle cx="32" cy="30" r="2"/><circle cx="16" cy="39" r="2"/><circle cx="24" cy="39" r="2"/></g><circle cx="38" cy="38" r="6.5" fill="none" stroke="var(--clay)" stroke-width="2.5"/></svg>
+          <h3 id="m3-t"><span class="pair"><span lang="en">When your expiry date is getting close</span><span lang="ko">만료일이 다가올 때</span></span></h3>
+        </div>
+        <p class="scene"><span data-l="en" lang="en">Your card says two months left. Extension, passport renewal, health insurance. Which comes first?</span><span data-l="ko" lang="ko">카드에 두 달 남았다고 적혀 있어요. 연장, 여권 갱신, 건강보험. 뭐부터 해야 하죠?</span></p>
+        <div class="moment-acts">
+          <a class="btn btn-outline" href="#guide-4-1"><span class="pair"><span lang="en">Know your dates</span><span lang="ko">만료일 알기</span></span></a>
+          <a class="btn btn-primary" href="#ask" data-ask-stage="visa" data-ask-topic="visa"><span class="pair"><span lang="en">Ask us</span><span lang="ko">질문하기</span></span></a>
+        </div>
+      </article>
+      <article class="moment" aria-labelledby="m4-t">
+        <div class="moment-head">
+          <svg viewBox="0 0 56 56" aria-hidden="true" focusable="false"><rect x="22" y="26" width="26" height="22" rx="3" fill="var(--warm-tint)" stroke="var(--ink)" stroke-width="2"/><path d="M30 26v-4h10v4M22 36h26" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M4 18 18 11l14 7-14 7Z" fill="var(--sea)" stroke="var(--ink)" stroke-width="1.75" stroke-linejoin="round"/><path d="M10 21v6c4 3 12 3 16 0v-6" fill="none" stroke="var(--ink)" stroke-width="1.75"/><path d="M32 18v8" stroke="var(--sun)" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <h3 id="m4-t"><span class="pair"><span lang="en">Before graduation</span><span lang="ko">졸업을 앞두고</span></span></h3>
+        </div>
+        <p class="scene"><span data-l="en" lang="en">Your friends are packing. You want to stay and work in Busan, but you are not sure there is a way.</span><span data-l="ko" lang="ko">친구들은 짐을 싸요. 나는 부산에 남아 일하고 싶은데, 방법이 있는지 모르겠어요.</span></p>
+        <div class="moment-acts">
+          <a class="btn btn-outline" href="#guide-4-3"><span class="pair"><span lang="en">After graduation</span><span lang="ko">졸업 후 진로</span></span></a>
+          <a class="btn btn-primary" href="#off-career"><span class="pair"><span lang="en">Join a career talk</span><span lang="ko">취업 특강</span></span></a>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</section>
+
+<!-- 7. Community -->
+<section class="community sec" id="community" aria-labelledby="community-title">
+  <div class="wrap j-community"><figure class="j-photo j-photo-book">
+      <div class="j-photo-frame"><img src="assets/journal/book-960.webp" width="960" height="1280" loading="lazy" alt=""></div>
+      <figcaption><span><span data-l="en" lang="en">An afternoon in Bosu-dong</span><span data-l="ko" lang="ko">보수동의 오후</span> <span class="j-year">/ 2012</span></span><a href="https://commons.wikimedia.org/wiki/File:Bookstore_alley_in_Bosudong.jpg" aria-label="Photo by Choi2451 on Wikimedia Commons">© Choi2451</a></figcaption>
+    </figure><div class="j-community-body">
+    <div class="sec-head">
+      <h2 id="community-title"><span data-l="en" lang="en">Student communities</span><span data-l="ko" lang="ko">학생 커뮤니티</span></h2>
+      <p class="lead"><span data-l="en" lang="en">For the questions you would ask another student. These groups will open with the pilot.</span><span data-l="ko" lang="ko">먼저 와 본 학생에게 묻고 싶은 일이 있나요? 아래 채널은 시범 운영에 맞춰 열릴 예정이에요.</span></p>
+    </div>
+    <div class="channels">
+      <article class="channel">
+        <span class="ch-ic" aria-hidden="true"><svg class="ic" focusable="false"><use href="#i-bubble"/></svg></span>
+        <h3>WhatsApp</h3>
+        <p><span data-l="en" lang="en">Chat with us and join student groups.</span><span data-l="ko" lang="ko">문의하고 학생 그룹에 참여하세요.</span></p>
+        <button class="btn btn-outline" type="button" data-toast="community"><span class="pair"><span lang="en">Open WhatsApp</span><span lang="ko">WhatsApp 열기</span></span></button>
+      </article>
+      <article class="channel">
+        <span class="ch-ic" aria-hidden="true"><svg class="ic" focusable="false"><use href="#i-phonechat"/></svg></span>
+        <h3>Viber</h3>
+        <p><span data-l="en" lang="en">Prefer Viber? We are there too.</span><span data-l="ko" lang="ko">Viber가 편하다면 여기서도 만나요.</span></p>
+        <button class="btn btn-outline" type="button" data-toast="community"><span class="pair"><span lang="en">Open Viber</span><span lang="ko">Viber 열기</span></span></button>
+      </article>
+      <article class="channel">
+        <span class="ch-ic" aria-hidden="true"><svg class="ic" focusable="false"><use href="#i-people"/></svg></span>
+        <h3><span class="pair"><span lang="en">Nepal student community</span><span lang="ko">네팔 학생 커뮤니티</span></span></h3>
+        <p><span data-l="en" lang="en">For students from Nepal, with our partner language school.</span><span data-l="ko" lang="ko">네팔 학생 커뮤니티, 연계 어학원과 함께해요.</span></p>
+        <button class="btn btn-outline" type="button" data-toast="community"><span class="pair"><span lang="en">Join</span><span lang="ko">참여하기</span></span></button>
+      </article>
+    </div>
+    <p class="meetups"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-cal"/></svg><span data-l="en" lang="en">Upcoming meetups:</span><span data-l="ko" lang="ko">다가오는 모임:</span> <span class="note-later"><span data-l="en" lang="en">Places and dates will be shared after partner talks.</span><span data-l="ko" lang="ko">장소·일정은 협의 후 공개 예정이에요.</span></span></p>
+    <p class="fine"><span data-l="en" lang="en">Tips from members are personal experiences, not official advice.</span><span data-l="ko" lang="ko">회원이 나누는 팁은 개인 경험이며 공식 안내가 아니에요.</span></p>
+  </div>
+</div></section>
+
+<!-- 8. Ask (demo form) -->
+<section class="sec" id="ask" aria-labelledby="ask-title">
+  <div class="wrap ask-grid">
+    <div class="sec-head">
+      <h2 id="ask-title"><span data-l="en" lang="en">Ask Stay B</span><span data-l="ko" lang="ko">Stay B에 물어보기</span></h2>
+      <p class="lead"><span data-l="en" lang="en">Choose a topic and tell us what you need. You can try the form below before the service opens.</span><span data-l="ko" lang="ko">궁금한 주제를 고르고 질문을 적어보세요. 서비스 시작 전 문의 양식을 미리 살펴볼 수 있어요.</span></p>
+      <p class="free-note"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span data-l="en" lang="en">Asking a question is free.</span><span data-l="ko" lang="ko">질문 남기기는 무료예요.</span></p>
+    </div>
+    <div class="form-card">
+      <p class="demo-strip"><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-info"/></svg><span><span data-l="en" lang="en">Demo form: nothing you type here is sent or saved.</span><span data-l="ko" lang="ko">데모 폼입니다. 입력한 내용은 전송되거나 저장되지 않습니다.</span></span></p>
+      <form id="ask-form" novalidate>
+        <div class="field">
+          <label class="fl" for="f-name"><span class="pair"><span lang="en">Name or nickname</span><span lang="ko">이름 또는 닉네임</span></span><span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></label>
+          <input class="input" type="text" id="f-name" name="name" required autocomplete="nickname" aria-describedby="e-name">
+          <p class="err" id="e-name" hidden></p>
+        </div>
+        <fieldset class="field" aria-describedby="e-stage">
+          <legend class="fl"><span class="pair"><span lang="en">Which stage are you in?</span><span lang="ko">지금 어느 단계인가요?</span></span><span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></legend>
+          <div class="radios r5" id="stage-choices">
+            <label class="rc"><input type="radio" name="stage" value="arrive" required><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Before I arrive</span><span lang="ko">입국 전</span></span></label>
+            <label class="rc"><input type="radio" name="stage" value="settle"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Just arrived</span><span lang="ko">정착 중</span></span></label>
+            <label class="rc"><input type="radio" name="stage" value="life"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Study, life &amp; work</span><span lang="ko">생활·일</span></span></label>
+            <label class="rc"><input type="radio" name="stage" value="visa"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Visa &amp; after graduation</span><span lang="ko">비자·졸업 이후</span></span></label>
+            <label class="rc"><input type="radio" name="stage" value="else"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Something else</span><span lang="ko">기타</span></span></label>
+          </div>
+          <p class="err" id="e-stage" hidden></p>
+        </fieldset>
+        <div class="field">
+          <label class="fl" for="f-topic"><span class="pair"><span lang="en">What is it about?</span><span lang="ko">어떤 내용인가요?</span></span><span class="req"><span data-l="en" lang="en">optional</span><span data-l="ko" lang="ko">선택</span></span></label>
+          <select class="input" id="f-topic" name="topic">
+            <option value="">-</option>
+            <option value="life">Everyday life / 생활</option>
+            <option value="work">Part-time work / 아르바이트</option>
+            <option value="visa">Visa &amp; stay / 체류</option>
+            <option value="family">Marriage &amp; family / 결혼·가족</option>
+            <option value="firstweek">First-week or settling-in help / 첫 주·정착 도움</option>
+            <option value="dates">Session or talk dates / 설명회·특강 일정</option>
+            <option value="other">Other / 기타</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="fl" for="f-expiry"><span class="pair"><span lang="en">Your stay expiry date (optional)</span><span lang="ko">체류기간 만료일 (선택)</span></span></label>
+          <input class="input" type="date" id="f-expiry" name="expiry" aria-describedby="h-expiry">
+          <p class="help" id="h-expiry"><span data-l="en" lang="en">Helps us remind you in time.</span><span data-l="ko" lang="ko">제때 알려 드리는 데 쓰여요.</span></p>
+        </div>
+        <div class="field">
+          <label class="fl" for="f-question"><span class="pair"><span lang="en">Your question</span><span lang="ko">질문 내용</span></span><span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></label>
+          <textarea class="input" id="f-question" name="question" required aria-describedby="h-question w-question e-question"></textarea>
+          <p class="help" id="h-question"><span data-l="en" lang="en">Please do not include your passport or alien registration number.</span><span data-l="ko" lang="ko">여권번호나 외국인등록번호는 적지 마세요.</span></p>
+          <p class="warn-id" id="w-question" aria-live="polite"></p>
+          <p class="err" id="e-question" hidden></p>
+        </div>
+        <fieldset class="field" aria-describedby="e-reply">
+          <legend class="fl"><span class="pair"><span lang="en">How should we reply?</span><span lang="ko">어디로 답할까요?</span></span><span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></legend>
+          <div class="radios r3" id="reply-choices">
+            <label class="rc"><input type="radio" name="reply" value="whatsapp" required><span class="dot" aria-hidden="true"></span><span>WhatsApp</span></label>
+            <label class="rc"><input type="radio" name="reply" value="viber"><span class="dot" aria-hidden="true"></span><span>Viber</span></label>
+            <label class="rc"><input type="radio" name="reply" value="email"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Email</span><span lang="ko">이메일</span></span></label>
+          </div>
+          <p class="err" id="e-reply" hidden></p>
+        </fieldset>
+        <div class="field">
+          <label class="fl" for="f-contact" id="l-contact"><span class="pair"><span lang="en">Contact</span><span lang="ko">연락처</span></span><span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></label>
+          <input class="input" type="text" id="f-contact" name="contact" required aria-describedby="e-contact">
+          <p class="err" id="e-contact" hidden></p>
+        </div>
+        <details class="more-fields" id="more-fields">
+          <summary><span class="pair"><span lang="en">More about me (optional)</span><span lang="ko">나에 대해 더 알려 주기(선택)</span></span><svg class="ic chev" aria-hidden="true" focusable="false"><use href="#i-chev"/></svg></summary>
+          <div class="more-body">
+            <div class="field">
+              <label class="fl" for="f-school"><span class="pair"><span lang="en">School</span><span lang="ko">학교</span></span></label>
+              <select class="input" id="f-school" name="school">
+                <option value="" selected>Choose / 선택</option>
+                <option value="partner-uni">Partner university (to be announced) / 제휴 대학(협의 후 공개)</option>
+                <option value="partner-school">Partner language school in Nepal / 네팔 협력 어학원</option>
+                <option value="other">Other / 기타</option>
+                <option value="not-yet">Admitted, not started yet / 입학 예정(입국 전)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="fl" for="f-country"><span class="pair"><span lang="en">Country</span><span lang="ko">국적</span></span></label>
+              <select class="input" id="f-country" name="country">
+                <option value="np" selected>Nepal / 네팔</option>
+                <option value="other">Other / 기타</option>
+              </select>
+            </div>
+            <fieldset class="field">
+              <legend class="fl"><span class="pair"><span lang="en">Preferred language</span><span lang="ko">원하는 언어</span></span></legend>
+              <div class="radios r3">
+                <label class="rc"><input type="radio" name="plang" value="en" checked><span class="dot" aria-hidden="true"></span><span lang="en">English</span></label>
+                <label class="rc"><input type="radio" name="plang" value="ko"><span class="dot" aria-hidden="true"></span><span lang="ko">한국어</span></label>
+                <label class="rc"><input type="radio" name="plang" value="ne" disabled><span class="dot" aria-hidden="true"></span><span><span lang="ne">नेपाली</span> <small>(<span data-l="en" lang="en">soon</span><span data-l="ko" lang="ko">준비 중</span>)</small></span></label>
+              </div>
+            </fieldset>
+          </div>
+        </details>
+        <label class="consent" for="f-consent">
+          <input type="checkbox" id="f-consent" name="consent" required aria-describedby="e-consent">
+          <span><span data-l="en" lang="en">I agree that Stay B may use this information to answer my question, and may share it with a partner administrative agent only if my question needs one.</span><span data-l="ko" lang="ko">질문에 답하기 위해 Stay B가 이 정보를 이용하고, 행정사 상담이 필요한 경우에만 협업 행정사에게 전달하는 데 동의합니다.</span> <span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></span>
+        </label>
+        <p class="err" id="e-consent" hidden></p>
+        <div class="submit-row">
+          <button class="btn btn-primary" type="submit"><span class="pair"><span lang="en">Send my question</span><span lang="ko">질문 보내기</span></span></button>
+        </div>
+      </form>
+      <div class="result" id="ask-result" tabindex="-1" aria-labelledby="res-title" hidden></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. How we work (the one place for legal boundaries) -->
+<section class="trust sec" id="trust" aria-labelledby="trust-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow"><span data-l="en" lang="en">How we work</span><span data-l="ko" lang="ko">이렇게 일해요</span></p>
+      <h2 id="trust-title"><span data-l="en" lang="en">Who can help?</span><span data-l="ko" lang="ko">누구에게 물어볼까요?</span></h2>
+      <p class="lead"><span data-l="en" lang="en">So you always know who is helping you, and nobody asks you to pay for something they are not allowed to do.</span><span data-l="ko" lang="ko">누가 나를 돕고 있는지 늘 알 수 있게, 그리고 자격 없는 사람에게 돈을 내는 일이 없게.</span></p>
+    </div>
+    <div class="trust-cols">
+      <div class="trust-col">
+        <h3><svg width="24" height="24" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg><span class="pair"><span lang="en">Stay B helps with</span><span lang="ko">Stay B가 돕는 일</span></span></h3>
+        <ul class="ticks">
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Guides and checklists based on public information</span><span data-l="ko" lang="ko">공개 정보 기반 안내·체크리스트</span></span></li>
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Info sessions, settling-in help, welcome kit, discounts and meetups</span><span data-l="ko" lang="ko">설명회, 정착 동행, 웰컴 키트, 할인, 모임</span></span></li>
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Community chats and expiry date reminders</span><span data-l="ko" lang="ko">커뮤니티, 만료일 알림</span></span></li>
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Passing your question to a partner agent, only with your consent</span><span data-l="ko" lang="ko">동의를 받은 경우에만 협업 행정사에게 질문 전달</span></span></li>
+        </ul>
+      </div>
+      <div class="trust-col">
+        <h3><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pen"/></svg><span class="pair"><span lang="en">A qualified administrative agent (Haengjeongsa) handles</span><span lang="ko">자격 있는 협업 행정사가 맡는 일</span></span></h3>
+        <ul class="ticks">
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Advice on your own case</span><span data-l="ko" lang="ko">내 상황에 대한 판단과 상담</span></span></li>
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Preparing and filing visa and stay documents</span><span data-l="ko" lang="ko">체류·출입국 서류 작성과 신청</span></span></li>
+          <li><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><span><span data-l="en" lang="en">Any fee for this work, agreed directly between you and the agent</span><span data-l="ko" lang="ko">이 업무 비용은 학생과 행정사가 직접 정함</span></span></li>
+        </ul>
+      </div>
+    </div>
+    <ul class="trust-notes">
+      <li><svg aria-hidden="true" focusable="false"><use href="#i-coin"/></svg><span><span data-l="en" lang="en">Stay B does not charge any fee for administrative work and does not take a share of the agent's fee.</span><span data-l="ko" lang="ko">Stay B는 행정 업무 비용을 받지 않고, 행정사 비용의 일부도 받지 않아요.</span></span></li>
+      <li><svg aria-hidden="true" focusable="false"><use href="#i-brief"/></svg><span><span data-l="en" lang="en">Job introductions are made by registered employment agencies and job centers.</span><span data-l="ko" lang="ko">일자리 소개는 등록된 직업소개소와 고용센터가 해요.</span></span></li>
+      <li><svg aria-hidden="true" focusable="false"><use href="#i-info"/></svg><span><span data-l="en" lang="en">Stay B does not offer matchmaking or marriage brokering.</span><span data-l="ko" lang="ko">Stay B는 결혼 매칭이나 중개를 하지 않아요.</span></span></li>
+      <li><svg aria-hidden="true" focusable="false"><use href="#i-info"/></svg><span><span data-l="en" lang="en">Stay B does not recruit students, handle school admissions, or apply for visas.</span><span data-l="ko" lang="ko">Stay B는 학생 모집, 입학 수속, 비자 신청을 하지 않아요.</span></span></li>
+    </ul>
+    <p class="privacy"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-bubble"/></svg><span><span data-l="en" lang="en">Your information is used only to help you, and shared with an agent only when you agree. Never send your passport or alien registration number.</span><span data-l="ko" lang="ko">내 정보는 나를 돕는 데만 쓰고, 동의할 때만 행정사에게 전달해요. 여권번호·외국인등록번호는 보내지 마세요.</span></span></p>
+  </div>
+</section>
+
+<!-- 10. FAQ -->
+<section class="sec" id="faq" aria-labelledby="faq-title" >
+  <div class="wrap faq-grid">
+    <div class="sec-head">
+      <h2 id="faq-title"><span data-l="en" lang="en">Common questions</span><span data-l="ko" lang="ko">자주 묻는 질문</span></h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary><span><span data-l="en" lang="en">Is Stay B free?</span><span data-l="ko" lang="ko">Stay B는 무료인가요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">The guides on this site are free to read, and asking us a question is free. Optional in-person services, like airport pickup, will be paid services. Details and prices are coming soon.</span><span data-l="ko" lang="ko">이 사이트의 정보는 누구나 무료로 볼 수 있고, 질문 남기기도 무료예요. 공항 픽업 같은 오프라인 선택 서비스는 유료이며, 내용과 가격은 준비 중이에요.</span></p>
+      </details>
+      <details>
+        <summary><span><span data-l="en" lang="en">Is Stay B a government office or an administrative agent?</span><span data-l="ko" lang="ko">Stay B는 관공서나 행정사 사무소인가요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">Neither. Stay B is a private information, support and community service for international students. See <a href="#trust">How we work</a>.</span><span data-l="ko" lang="ko">둘 다 아니에요. 유학생을 위한 민간 정보·지원·커뮤니티 서비스예요. <a href="#trust">"이렇게 일해요"</a>를 참고하세요.</span></p>
+      </details>
+      <details>
+        <summary><span><span data-l="en" lang="en">Can you tell me if my visa will be approved?</span><span data-l="ko" lang="ko">제 비자가 나올지 알려 줄 수 있나요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">No. We share general information, and connect you to a qualified partner agent who can look at your case.</span><span data-l="ko" lang="ko">아니요. 일반 정보를 안내하고, 내 상황을 볼 수 있는 자격 있는 협업 행정사에게 연결해 드려요.</span></p>
+      </details>
+      <details>
+        <summary><span><span data-l="en" lang="en">Where can I meet you in person?</span><span data-l="ko" lang="ko">어디서 직접 만날 수 있나요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">In Busan, and before you arrive, at info sessions with our partner language school in Nepal. Places and dates will be shared after partner talks.</span><span data-l="ko" lang="ko">부산에서, 그리고 입국 전에는 네팔 연계 어학원 설명회에서 만나요. 장소·일정은 협의 후 공개 예정이에요.</span></p>
+      </details>
+      <details>
+        <summary><span><span data-l="en" lang="en">Can you find me a part-time job?</span><span data-l="ko" lang="ko">아르바이트를 구해 줄 수 있나요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">We explain the rules and share general job information. Job introductions are made by registered agencies.</span><span data-l="ko" lang="ko">규칙과 일반 일자리 정보를 안내해요. 일자리 소개는 등록된 기관이 해요.</span></p>
+      </details>
+      <details>
+        <summary><span><span data-l="en" lang="en">I am getting married in Korea. Can you help?</span><span data-l="ko" lang="ko">한국에서 결혼할 예정인데 도와줄 수 있나요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">If your marriage is already decided, we share general information on the stay steps that follow, and connect you to a partner agent. We do not offer matchmaking or marriage brokering.</span><span data-l="ko" lang="ko">결혼이 이미 정해졌다면 이후 체류 절차의 일반 정보를 안내하고 협업 행정사에게 연결해 드려요. 결혼 매칭·중개는 하지 않아요.</span></p>
+      </details>
+      <details>
+        <summary><span><span data-l="en" lang="en">Which languages do you support?</span><span data-l="ko" lang="ko">어떤 언어를 지원하나요?</span></span><svg class="ic pm-p" aria-hidden="true" focusable="false"><use href="#i-plus"/></svg><svg class="ic pm-m" aria-hidden="true" focusable="false"><use href="#i-minus"/></svg></summary>
+        <p class="ans"><span data-l="en" lang="en">English and Korean first, then Nepali. More languages may come as we grow.</span><span data-l="ko" lang="ko">영어·한국어부터, 이어서 네팔어. 서비스가 커지면 다른 언어도 추가할 수 있어요.</span></p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- 11. Final CTA -->
+<section class="final-cta" id="final-cta" aria-labelledby="final-title">
+  <div class="wrap">
+    <h2 id="final-title"><span data-l="en" lang="en">Browse by stage</span><span data-l="ko" lang="ko">단계별 가이드</span></h2>
+    <div class="stages small" role="list" aria-labelledby="final-title">
+      <a class="stage-btn" role="listitem" href="#guides-arrive" data-stage="arrive"><span class="stop">1</span><b><span data-l="en" lang="en">Before I arrive</span><span data-l="ko" lang="ko">입국 전</span></b></a>
+      <a class="stage-btn" role="listitem" href="#guides-settle" data-stage="settle"><span class="stop">2</span><b><span data-l="en" lang="en">Just arrived</span><span data-l="ko" lang="ko">정착 중</span></b></a>
+      <a class="stage-btn" role="listitem" href="#guides-life" data-stage="life"><span class="stop">3</span><b><span data-l="en" lang="en">Study, life &amp; work</span><span data-l="ko" lang="ko">생활·일</span></b></a>
+      <a class="stage-btn" role="listitem" href="#guides-visa" data-stage="visa"><span class="stop">4</span><b><span data-l="en" lang="en">Visa &amp; after graduation</span><span data-l="ko" lang="ko">비자·졸업 이후</span></b></a>
+    </div>
+    <p class="final-links">
+      <a class="link" href="#ask"><span class="pair inline"><span lang="en">Ask us</span><span lang="ko">질문하기</span></span></a>
+      <a class="link" href="#community"><span class="pair inline"><span lang="en">Join the community</span><span lang="ko">커뮤니티 참여하기</span></span></a>
+    </p>
+    <svg class="skyline" viewBox="0 0 368 96" aria-hidden="true" focusable="false"><use href="#skyline"/></svg>
+  </div>
+</section>
+
+</main>
+
+<!-- 12. Footer -->
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="f-brand">
+      <span class="j-footer-word">Stay B<span>.</span></span>
+      <span class="muted">Busan · Gyeongnam</span>
+    </p>
+    <a class="f-partner" href="partners.html"><span data-l="en" lang="en">For universities, language schools and partners</span><span data-l="ko" lang="ko">대학·어학원·협력 기관 안내</span><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
+    <p class="f-legal" lang="en" data-l="en">Stay B provides general information based on public sources, offline settling-in support, and a student community and consultation intake. It is not a government agency or an administrative agent's office. Stay B does not judge individual cases, prepare or file documents on anyone's behalf, or charge fees for administrative work. Those services are provided only by qualified partner administrative agents, under their own name and responsibility. Job introductions are handled by registered employment agencies. Stay B does not provide matchmaking or marriage brokering.</p>
+    <p class="f-legal" lang="ko" data-l="ko">Stay B는 공개 정보를 바탕으로 한 일반 안내, 오프라인 정착 지원, 유학생 커뮤니티와 상담 접수를 운영합니다. 관공서나 행정사 사무소가 아닙니다. Stay B는 개별 사건을 판단하거나, 서류를 대신 작성·신청하거나, 행정 업무 비용을 받지 않습니다. 이러한 업무는 자격을 갖춘 협업 행정사가 자신의 이름과 책임으로만 제공합니다. 일자리 알선은 등록된 기관이 수행하며, Stay B는 결혼 매칭·중개를 하지 않습니다.</p>
+    <p class="f-concept" data-l="en"><span lang="en">This page is a concept demo designed and built by BRIDGENODE. Forms on this page do not send or store any data. Stay B is a working name.</span></p>
+    <p class="f-concept" data-l="ko"><span lang="ko">이 페이지는 브릿지노드가 기획·제작한 컨셉 시안입니다. 이 페이지의 폼은 어떤 정보도 전송·저장하지 않습니다. Stay B는 가칭입니다.</span></p>
+    <details class="j-credits"><summary><span data-l="en" lang="en">Photography credits</span><span data-l="ko" lang="ko">사진 출처</span></summary><ul><li><a href="https://commons.wikimedia.org/wiki/File:Gwangalli_Beach_and_Gwangan_Bridge_Busan.jpg"><span data-l="en" lang="en">Gwangalli Beach</span><span data-l="ko" lang="ko">광안리해수욕장</span></a> · Masterhatch · <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></li><li><a href="https://commons.wikimedia.org/wiki/File:Bosu-dong_Bookstore_Alley_20200523_015.jpg"><span data-l="en" lang="en">Bosu-dong Book Street</span><span data-l="ko" lang="ko">보수동 책방골목</span></a> · Mobius6 · <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a></li><li><a href="https://commons.wikimedia.org/wiki/File:Busan_Station_Busan_(31885854218).jpg"><span data-l="en" lang="en">Busan Station</span><span data-l="ko" lang="ko">부산역 대합실</span></a> · bryan... · <a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/">CC BY-SA 2.0</a></li><li><a href="https://commons.wikimedia.org/wiki/File:Bookstore_alley_in_Bosudong.jpg"><span data-l="en" lang="en">An afternoon in Bosu-dong</span><span data-l="ko" lang="ko">보수동의 오후</span></a> · Choi2451 · <a rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a></li></ul><p><span data-l="en" lang="en">Images have been resized, converted to WebP and cropped in the layout. Each version carries the licence shown above.</span><span data-l="ko" lang="ko">사진의 크기와 파일 형식을 조정했으며 화면에 따라 일부를 잘라 표시합니다. 변환본에도 각 사진에 표시한 라이선스를 적용합니다.</span></p></details>
+    <div class="f-row">
+      <a href="resources.html"><span data-l="en" lang="en">Official student resources</span><span data-l="ko" lang="ko">유학생 공식 정보 안내</span></a>
+      <a href="../"><span data-l="en" lang="en">Back to BRIDGENODE portfolio</span><span data-l="ko" lang="ko">브릿지노드 포트폴리오로</span></a>
+      <a class="f-made" href="https://bridgenode-studio.calmgrou.chatgpt.site/" target="_blank" rel="noopener"><span data-l="en" lang="en">Made by BRIDGENODE</span><span data-l="ko" lang="ko">제작: BRIDGENODE</span><span class="sr-only"> (opens in a new tab / 새 탭에서 열림)</span></a>
+    </div>
+  </div>
+</footer>
+
+<!-- 13. Mobile sticky bar -->
+<div class="sticky-cta" id="sticky-cta" role="region" aria-label="Quick actions / 바로가기">
+  <a class="btn btn-primary" href="#guides-arrive" id="sticky-stage"><span><span data-l="en" lang="en">My stage</span><span data-l="ko" lang="ko">내 단계</span></span><small id="sticky-stage-name" hidden></small></a>
+  <a class="btn btn-outline" href="#ask"><span data-l="en" lang="en">Ask us</span><span data-l="ko" lang="ko">질문하기</span></a>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/common.js"></script>
+<script src="assets/guides-data.js"></script>
+<script src="assets/home.js"></script>
+<script src="assets/editorial/navigation.js"></script>
+<script src="assets/journal/motion.js"></script>
+<script src="assets/local/campuses.js"></script>
+<script src="assets/local/desk.js"></script>
+</body>
+</html>

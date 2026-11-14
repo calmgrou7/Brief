@@ -1,7 +1,7 @@
 /* Stay B shared script (index.html + partners.html):
    language switch, notice bar, header, mobile menu, smooth anchors, toast, demo-form helpers.
    Demo principle: nothing typed into a form is sent, stored or logged.
-   Storage: only the chosen language (localStorage), the closed notice bar (sessionStorage)
+   Storage: only the closed notice bar (sessionStorage)
    and, on the home page, the last stage tab. All wrapped in try/catch. */
 (function(){
   "use strict";
@@ -55,24 +55,29 @@
   function pair(en, ko, cls){ return '<span class="pair'+(cls?' '+cls:'')+'"><span lang="en">'+en+'</span><span lang="ko">'+ko+'</span></span>'; }
 
   /* ---------- language ---------- */
-  var langBtns = document.querySelectorAll("[data-set-lang]");
   var langListeners = [];
   function setLang(l){
     if(LANGS.indexOf(l) < 0) l = "en";
     doc.lang = l;
-    langBtns.forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-set-lang") === l)); });
     document.querySelectorAll("[data-label-en]").forEach(function(el){
       var v = el.getAttribute("data-label-"+l) || el.getAttribute("data-label-en");
       el.setAttribute("aria-label", v);
     });
-    try{ localStorage.setItem("stayb-lang", l); }catch(e){}
     langListeners.forEach(function(fn){ fn(l); });
   }
   function getLang(){ return doc.lang === "ko" ? "ko" : "en"; }
-  var saved = null;
-  try{ saved = localStorage.getItem("stayb-lang"); }catch(e){}
-  setLang(saved === "ko" ? "ko" : "en");
-  langBtns.forEach(function(b){ b.addEventListener("click", function(){ setLang(b.getAttribute("data-set-lang")); }); });
+  // Each language has a stable URL. Keep deep links when switching editions.
+  setLang(getLang());
+  function syncLanguageLinks(){
+    document.querySelectorAll("a[data-edition]").forEach(function(link){
+      link.hash = location.hash;
+    });
+  }
+  syncLanguageLinks();
+  window.addEventListener("hashchange", syncLanguageLinks);
+  document.addEventListener("click", function(event){
+    if(event.target.closest("a[data-edition]")) syncLanguageLinks();
+  }, true);
 
   /* ---------- notice bar ---------- */
   var bar = document.getElementById("concept-bar");

@@ -11,7 +11,7 @@
     if (returnFocus) summary.focus();
   }
   language.addEventListener('click', event => {
-    if (event.target.closest('[data-set-lang]')) closeLanguage(true);
+    if (event.target.closest('[data-edition]')) closeLanguage(true);
     if (event.target.closest('summary') && !mobileNav.hidden) menuButton.click();
   });
   document.addEventListener('click', event => {
