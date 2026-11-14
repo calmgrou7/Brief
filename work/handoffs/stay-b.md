@@ -201,3 +201,34 @@
 
 **스스로 정한 가정**: 기획안 4절의 "일정 받기 → 데모 토스트"는 기획자 권한으로 폼 연결로 변경(폼은 여전히 전송 없음). 새 문구(주제 옵션·결과 문장·링크)는 기획자 작성. 대표 결정 1~12 위반 없음(이름·장소·일정·가격 새로 안 씀, 무료 표기·첫 화면 순서 그대로).
 **대표 결정 필요**: 없음(심볼 A안 확정 반영).
+
+## 웹코더 (2026-11-14, UX 동선 수정 M-1~M-7 + 권장 4건) → 검토자
+
+**한 일**: 기획자 UX 점검 보고서 4절 필수 7건 + 권장 4건 모두 반영. `work/builds/stayb-v2/`에서만 수정(공개 `portfolio-site/stay-b/`는 그대로).
+- M-1 심볼 A안(누운 B): index·partners 두 페이지 `i-mark`를 32×32 A안 컬러로 교체(clipPath `sb-clip-mark`), 푸터는 단색·반전 `i-mark-mono`(mask `sb-mask-footer`)로. 헤더 28px·안심 제목 24px·푸터 28px. 파비콘 `favicon.svg` + `favicon-32.png` + `favicon-180.png`(apple-touch), `og-image.png`(문구·배치 그대로) · `thumb.png`(1200×750 첫 화면 다시 촬영) 재생성.
+- M-2 `Get session dates`/`Get talk dates` → `#ask` 링크(arrive·dates / life·dates), 주제 `dates` 옵션 추가, A 분기 결과 문장 교체(기획자 문구 그대로). `toastDates` 삭제(다른 곳 사용 없음).
+- M-3 도움 줄 질문 칩: 입국 전·정착 `Ask us`, 생활·일 `Ask about part-time work`(work). 빈 주제는 `data-ask-topic` 생략.
+- M-4 고정 바 `Ask us`·첫 화면 질문 링크에 기억된 단계 `data-ask-stage` 동기화(없으면 제거).
+- M-5 만료일 도구 아래 `Ask about my dates →` → 폼 visa·visa + 도구 날짜를 `#f-expiry`로 복사(저장 없음).
+- M-6 모바일 `scroll-padding-bottom: calc(80px + safe-area)`, 입력칸 포커스 동안 고정 바 숨김.
+- M-7 `#f-school` 첫 옵션 `Choose / 선택`(기본).
+- R-1 학교·국적·원하는 언어를 `More about me (optional)` 접힘 묶음으로(연락처 뒤, 동의 앞). 모바일 접힘, 데스크톱 펼침.
+- R-2 모바일 단계 착지: `[id^=guide-]`·`[id^=guides-]` scroll-margin 50px → 첫 카드 122px(탭 줄 56–113px에 붙은 상태).
+- R-3 링크 있는 토스트 8초. R-4 할인 카드에 `See the community` 버튼.
+
+**결과물**: `work/builds/stayb-v2/` index.html, partners.html, assets/(common.js, guides-data.js, home.js, site.css), favicon.svg, favicon-32.png, favicon-180.png, og-image.png, thumb.png
+
+**반영 후 확인 (Playwright)**
+1. 390×844 터치 4개 동선: ① 설명회 버튼 → 폼 arrive·dates, 제출 결과에 일정 문장 ② 정착 카드 → settle·firstweek ③ 생활 칩 → life·work, 고정 바 Ask → life(주제 빈칸) ④ 도구 날짜(50일) → 폼 visa·visa·만료일 채워짐. 4-1 날짜칸 포커스 시 고정 바 숨김 확인.
+2. index·partners × 360×640/390×844/400/1280 × EN/KO × 라이트/다크(32조합): 가로 넘침 0, 콘솔 오류 0. 360×640 첫 화면 질문 링크 하단 634px(보임 유지).
+3. 심볼 16·24·28px 구멍 2개 판독, 다크에서도 컬러 유지, 푸터 단색 반전 정상. 파비콘 32px PNG 확인.
+4. "dates" 결과 문장에 장소·일정·이름 없음(대표 결정 7).
+
+**스스로 정한 가정**
+- 파비콘은 기획자 지시대로 `favicon.svg` 파일 링크 + PNG 대체로 바꾸고 data URI는 뺐다(같은 그림, 파일이 우선 적용되므로 중복 제거). apple-touch용 180px은 추가로 만듦(모서리 없는 정사각, iOS가 둥글게 처리).
+- R-1 묶음 위치: 기획자 순서(…연락처 → 동의)에 맞춰 연락처와 동의 사이. 모바일 폼 높이 1,721 → 1,429px(목표 약 1,250px에는 못 미침; 필수 칸·도움말 줄 높이 때문, 칸을 더 빼려면 기획 판단 필요).
+- `Ask about my dates →`의 KO 줄도 화살표 포함(기획자 문구 그대로).
+- 결과 일정 문장은 A 분기에서만(단계가 visa면 기존대로 B 분기 "행정사 연결").
+
+**검토자 확인 부탁**: 심볼 교체 후 OG 이미지·썸네일, 폼 접힘 묶음의 키보드 동작(summary Enter/Space), 고정 바 숨김이 스크린리더 포커스 이동을 방해하지 않는지.
+**대표 결정 필요**: 없음(심볼은 A안 확정 반영).
