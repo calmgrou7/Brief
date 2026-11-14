@@ -10,8 +10,8 @@
 
   /* ---------- page title follows language (marketer doc 1-4) ---------- */
   var TITLES = {
-    en: "Stay B · Guides & in-person help for students in Busan (Concept)",
-    ko: "Stay B · 부산 유학생 정보와 직접 받는 도움 (컨셉 시안)"
+    en: "Stay B Busan · Gyeongnam | Student life",
+    ko: "스테이B 부산·경남 | 유학생 생활 안내"
   };
   function syncTitle(l){ document.title = TITLES[l] || TITLES.en; }
   syncTitle(S.getLang());
@@ -37,21 +37,19 @@
   D.stages.forEach(function(s){ stageByKey[s.key] = s; });
 
   function cardHTML(c){
-    var h = '<article class="card'+(c.wide ? ' wide' : '')+'" id="guide-'+c.id+'" aria-labelledby="guide-'+c.id+'-t">';
-    h += '<div class="card-top"><span>'+c.id+'</span>';
-    if(c.checklist) h += '<span class="chip badge-check"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>'+pair("Checklist","체크리스트","inline")+'</span>';
-    h += '</div>';
-    h += '<h3 id="guide-'+c.id+'-t">'+pair(esc(c.title.en), esc(c.title.ko))+'</h3>';
-    h += '<p class="sum">'+both(c.sum)+'</p>';
-    h += '<details><summary><span class="pair inline"><span lang="en">Key points</span><span lang="ko">핵심</span></span><svg class="ic chev" aria-hidden="true" focusable="false"><use href="#i-chev"/></svg></summary>';
+    var h = '<article class="card" id="guide-'+c.id+'" aria-labelledby="guide-'+c.id+'-t">';
+    h += '<details class="j-entry"><summary>';
+    h += '<span class="j-entry-name" id="guide-'+c.id+'-t">'+biText(esc(c.title.en), esc(c.title.ko))+'</span>';
+    h += '<span class="j-entry-summary">'+both(c.sum)+'</span><span class="j-plus" aria-hidden="true"></span></summary>';
+    h += '<div class="j-entry-content">';
     h += pts(c);
     if(c.tool === "expiry") h += toolHTML(c.id);
     if(c.note) h += '<p class="card-note'+(c.notePh ? ' ph' : '')+'">'+both(c.note)+'</p>';
     h += '<p class="src"><b>'+pair("Official source:","공식 출처:","inline")+'</b>'+both(c.source)+'</p>';
     h += '<div class="card-foot">';
-    if(c.guideUrl) h += '<a class="link" href="'+esc(c.guideUrl)+'">'+pair("Read the full guide","자세히 보기","inline")+'</a>';
+    if(c.guideUrl) h += '<a class="link" href="'+esc(c.guideUrl)+'">'+pair("Open official guidance","공식 안내 보기","inline")+'</a>';
     else h += '<button class="btn-soon" type="button" data-toast="guide"><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>'+pair("Full guide · coming soon","자세한 가이드 · 준비 중","inline")+'</button>';
-    h += '</div></details></article>';
+    h += '</div></div></details></article>';
     return h;
   }
   function toolHTML(id){
@@ -90,21 +88,6 @@
     panel.innerHTML = h;
     panelsWrap.appendChild(panel); panels.push(panel);
   });
-
-  /* ---------- details: collapsed on mobile, open on desktop ---------- */
-  var allDetails = Array.prototype.slice.call(panelsWrap.querySelectorAll(".card details"));
-  function layoutCards(){
-    allDetails.forEach(function(d){
-      var sum = d.querySelector("summary");
-      if(mqDesk.matches){ d.open = true; sum.setAttribute("tabindex","-1"); sum.setAttribute("aria-disabled","true"); }
-      else { d.open = false; sum.removeAttribute("tabindex"); sum.removeAttribute("aria-disabled"); }
-    });
-  }
-  allDetails.forEach(function(d){
-    d.querySelector("summary").addEventListener("click", function(e){ if(mqDesk.matches) e.preventDefault(); });
-  });
-  layoutCards();
-  if(mqDesk.addEventListener) mqDesk.addEventListener("change", layoutCards); else mqDesk.addListener(layoutCards);
 
   /* ---------- tabs ---------- */
   var current = null;
@@ -177,7 +160,7 @@
       var d = card.querySelector("details"); if(d) d.open = true;
       S.scrollToEl(card, false);
       var sum = card.querySelector("summary");
-      if(sum && !mqDesk.matches) sum.focus({preventScroll:true});
+      if(sum) sum.focus({preventScroll:true});
       else { card.setAttribute("tabindex","-1"); card.focus({preventScroll:true}); }
       flash(card);
       return true;
