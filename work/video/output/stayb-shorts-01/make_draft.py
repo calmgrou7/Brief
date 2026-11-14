@@ -133,6 +133,8 @@ def s6():
     items = title_lines(["Meet us", [("offline.", INK)]], 170, INK, 400, hl_line=1, hl_seg=0)
     for i, s in enumerate(["Info sessions", "First-week help", "Meetups"]):
         items.append((list_item(760 + i * 120, s, i == 0), T0 + (2 + i) * STAGGER))
+    # review V2-1: offline services are optional paid / not running yet (decision 8)
+    items += body_lines(["Coming soon"], 48, CLAY, 1200, T0 + 5 * STAGGER)
     return dict(base=base, items=items)
 
 @scene(2.5, "teal")

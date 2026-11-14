@@ -38,7 +38,7 @@
   Stay B is a concept service for international students in Busan and Gyeongnam.
 
   Find it here: pick your stage (Before I arrive / Just arrived / Study, life & work / Visa & after graduation) and read simple guides for free.
-  Meet us in Busan: info sessions, first-week help and meetups (details to be shared later).
+  Meet us in Busan: info sessions, first-week help and meetups (some will be paid services, details coming soon).
   Safe and honest: we tell you who helps with what. Visa and document work is done only by qualified experts.
 
   Free guides. Free to ask.
@@ -64,5 +64,5 @@ Your first place to ask.
 - [ ] 검토자 통과(금지 표현·저작권)
 - [ ] Stay B 이름·공개 여부 대표 결정
 - [ ] 링크·QR 교체, 엔드카드 `[QR / link here]` 교체
-- [ ] 오프라인 서비스(설명회·첫 주 지원·모임)가 게시 시점에 운영 중이면 `(coming soon)`·`(details to be shared later)` 삭제, 아직이면 유지
+- [ ] 오프라인 서비스(설명회·첫 주 지원·모임)가 게시 시점에 운영 중이면 `(coming soon)`과 `details coming soon` 부분 삭제(유료 표기 `some will be paid services`는 유지), 아직이면 그대로
 - [ ] (선택) 실사 촬영본 들어오면 1·2·3번 장면 교체

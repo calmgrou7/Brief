@@ -40,7 +40,7 @@
 | 3 | 4.5~7.1 | 크림+모눈, 청록 띠 | `Get simple / guides.` (**guides.**) | 노트 체크리스트(SIM card · Transit card · Bank account), 체크 3개 차례로 |
 | 4 | 7.1~9.4 | 웜틴트 | `And real help / in Busan.` 흙빛 (**real**) | 언덕 마을 층층 집 + 해 |
 | 5 | 9.4~11.7 | 웜틴트 | `Welcome kit, / member card` + `(mockup)` | 웰컴 키트 상자 + 멤버십 카드(누운 B 심볼) |
-| 6 | 11.7~14.3 | 크림+모눈, 청록 띠 | `Meet us / offline.` (**offline.**) + 정거장 점 목록 Info sessions · First-week help · Meetups | 엽서(광안대교 작은 그림, 우표) |
+| 6 | 11.7~14.3 | 크림+모눈, 청록 띠 | `Meet us / offline.` (**offline.**) + 정거장 점 목록 Info sessions · First-week help · Meetups + 그 아래 `Coming soon`(Figtree 600 48px, 흙빛, 검토 V2-1: 오프라인 선택 서비스 유료·준비 중) · 자막 EN `(coming soon)` / KO `(준비 중)` / NE `(छिट्टै आउँदैछ)` | 엽서(광안대교 작은 그림, 우표) |
 | 7 | 14.3~16.8 | 바다 청록 전면 | `Your first / place to ask / in Busan.` (**first**) | 페리 + 물결, 갈매기 |
 | 8 | 16.8~19.8 | 크림+모눈, 청록 띠 | 누운 B 심볼 + `Stay B` 워드마크, `Free guides. / Free to ask.` (**Free**), `[QR / link here]` `domain TBD`, 손글씨 `see you / in Busan` | 광안대교 아치 + 다리 위로 노선 점이 그려져 노랑 정거장에 도착 |
 
