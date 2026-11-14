@@ -58,6 +58,7 @@
     return '<div class="tool"><label for="tool-date">'+pair("How many days do I have?","며칠 남았을까?","inline")+'</label>'+
       '<input class="input" type="date" id="tool-date" aria-describedby="tool-out tool-hint">'+
       '<p class="tool-out" id="tool-out" aria-live="polite"></p>'+
+      '<a class="link tool-ask" href="#ask" id="tool-ask" data-ask-stage="visa" data-ask-topic="visa">'+pair("Ask about my dates →","내 만료일로 질문하기 →","inline")+'</a>'+
       '<p class="small" id="tool-hint">'+biText("Reminders by WhatsApp or Viber are planned.","WhatsApp·Viber 알림은 준비 중이에요.")+' '+biText("Nothing you enter is saved.","입력한 날짜는 저장되지 않아요.")+'</p></div>';
   }
 
@@ -82,7 +83,7 @@
     var h = '<div class="cards">' + D.cards.filter(function(c){ return c.stage === s.key; }).map(cardHTML).join("") + '</div>';
     h += '<div class="help-row"><h3>'+pair("Help in person for this stage","이 단계에서 직접 받을 수 있는 도움")+'</h3><div class="help-chips">';
     s.help.forEach(function(x){
-      var attrs = x.ask ? ' data-ask-stage="'+x.ask.stage+'" data-ask-topic="'+x.ask.topic+'"' : '';
+      var attrs = x.ask ? ' data-ask-stage="'+x.ask.stage+'"'+(x.ask.topic ? ' data-ask-topic="'+x.ask.topic+'"' : '') : '';
       h += '<a class="help-chip" href="'+x.href+'"'+attrs+'><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#'+(x.href === "#ask" ? "i-chat" : "i-pin")+'"/></svg>'+biText(esc(x.en), esc(x.ko))+'</a>';
     });
     h += '</div></div>';
@@ -219,11 +220,21 @@
     var st = a.getAttribute("data-ask-stage"), tp = a.getAttribute("data-ask-topic");
     var r = form.querySelector('input[name="stage"][value="'+st+'"]'); if(r){ r.checked = true; clearGroup("stage"); }
     if(tp){ var sel = document.getElementById("f-topic"); sel.value = tp; }
+    /* expiry tool -> form: carry the date over (not stored anywhere; UX U-4) */
+    if(a.id === "tool-ask"){
+      var td = document.getElementById("tool-date"), fe = document.getElementById("f-expiry");
+      if(td && fe && td.value) fe.value = td.value;
+    }
     var result = document.getElementById("ask-result");
     if(result && !result.hidden){ result.hidden = true; result.innerHTML = ""; form.hidden = false; }
   });
 
   /* ---------- ask form (demo) ---------- */
+  /* optional fields: folded on mobile, open on desktop (UX U-7) */
+  var more = document.getElementById("more-fields");
+  function layoutMore(){ if(more) more.open = mqDesk.matches; }
+  layoutMore();
+  if(mqDesk.addEventListener) mqDesk.addEventListener("change", layoutMore); else mqDesk.addListener(layoutMore);
   var setErr = S.setErr, checkText = S.checkText;
   var result = document.getElementById("ask-result");
   var fName = document.getElementById("f-name"), fQ = document.getElementById("f-question"),
@@ -288,7 +299,9 @@
       ? '<span class="res-badge agent">'+pair("Partner agent","협업 행정사 연결","inline")+'</span>'
       : '<span class="res-badge faq">'+pair("Guides first","정보로 먼저 안내","inline")+'</span>';
     html += '<h3 id="res-title">'+pair("Thank you. Here is where your question would go.","감사합니다. 질문은 이렇게 처리됩니다.")+'</h3>';
-    html += '<p class="msg">' + (agent
+    html += '<p class="msg">' + (topic === "dates" && !agent
+      ? biText("In the live service, we would send you the dates on the channel you chose, once places and dates are set after partner talks.","실제 서비스에서는 장소·일정이 협의 후 정해지면, 고른 채널로 일정을 보내 드려요.")
+      : agent
       ? biText("This may need a professional opinion. In the live service, we would organise the basic facts and pass your question to a qualified partner administrative agent, who would contact you directly.","전문가 판단이 필요할 수 있는 질문이에요. 실제 서비스에서는 기본 사실을 정리해 자격을 갖춘 협업 행정사에게 전달하고, 행정사가 직접 연락드립니다.")
       : biText("This looks like an everyday question. In the live service, we would first send you the right guide, and a team member would follow up if you need more. For first-week or settling-in help, we would tell you how to join.","생활 질문으로 보여요. 실제 서비스에서는 맞는 정보를 먼저 보내 드리고, 더 필요하면 담당자가 이어서 도와요. 첫 주·정착 도움이라면 신청 방법을 안내해 드려요.")) + '</p>';
     var d = S.parseDate(fExpiry.value);
@@ -321,16 +334,28 @@
       stickyName = document.getElementById("sticky-stage-name");
   var stickyLinks = sticky.querySelectorAll("a");
   var inView = {};
+  /* hide the bar while someone is typing, so it never covers the field (UX U-5) */
+  var typing = false, typingTimer;
+  function isField(el){ return el && /^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName); }
+  document.addEventListener("focusin", function(e){ if(isField(e.target)){ clearTimeout(typingTimer); typing = true; updSticky(); } });
+  document.addEventListener("focusout", function(e){
+    if(!isField(e.target)) return;
+    typingTimer = setTimeout(function(){ typing = isField(document.activeElement); updSticky(); }, 50);
+  });
   function syncSticky(){
     if(!stickyStage) return;
     var key = savedStage || current || "arrive";
     stickyStage.setAttribute("href", "#guides-"+key);
     if(savedStage){ var s = stageByKey[savedStage]; stickyName.innerHTML = biText(esc(s.name.en), esc(s.name.ko)); stickyName.hidden = false; }
     else stickyName.hidden = true;
+    /* the "Ask us" links pass the remembered stage to the form (UX U-3); topic is left alone */
+    document.querySelectorAll('#sticky-cta a[href="#ask"], .hero-ask').forEach(function(a){
+      if(savedStage) a.setAttribute("data-ask-stage", savedStage); else a.removeAttribute("data-ask-stage");
+    });
   }
   function updSticky(){
     var blocked = Object.keys(inView).some(function(k){ return inView[k]; });
-    var show = window.scrollY > 300 && !blocked && !mqDesk.matches;
+    var show = window.scrollY > 300 && !blocked && !typing && !mqDesk.matches;
     sticky.classList.toggle("show", show);
     document.body.classList.toggle("has-sticky", show);
     sticky.setAttribute("aria-hidden", String(!show));

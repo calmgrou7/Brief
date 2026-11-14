@@ -22,7 +22,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stay B: student life in Busan, made simple">
 <meta name="twitter:description" content="Free guides from packing to graduation, and real help in Busan. (Concept demo)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Crect x='1' y='1' width='26' height='26' rx='8' fill='%230B6B66'/%3E%3Cpath d='M6 15.5 Q14 6.5 22 15.5' fill='none' stroke='%23F4B942' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M10 11.2V15.5M18 11.2V15.5' stroke='%23fff' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M5.5 20.5q2.1-1.6 4.25 0t4.25 0 4.25 0 4.25 0' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=Figtree:wght@400;500;600;700&amp;family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet">
@@ -57,11 +59,19 @@
     <symbol id="i-plane" viewBox="0 0 24 24"><path d="M10.5 13.5 4 11l1.5-1.5 7 .5 4-4a2 2 0 0 1 3 3l-4 4 .5 7L14.5 21l-2.5-6.5-3 3V20l-1.5 1-1-3.5L3 16.5l1-1.5h2.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
     <symbol id="i-coin" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="12" r="6.5"/><path d="M10 9v6M8 10.5h3"/><path d="m15.5 17 2 2 4-4.5"/></g></symbol>
     <symbol id="i-brief" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17"/></g></symbol>
-    <symbol id="i-mark" viewBox="0 0 28 28">
-      <rect x="1" y="1" width="26" height="26" rx="8" fill="var(--sea)"/>
-      <path d="M6 15.5 Q14 6.5 22 15.5" fill="none" stroke="var(--sun)" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M10 11.2V15.5M18 11.2V15.5" stroke="var(--on-sea)" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M5.5 20.5q2.1-1.6 4.25 0t4.25 0 4.25 0 4.25 0" fill="none" stroke="var(--on-sea)" stroke-width="1.8" stroke-linecap="round"/>
+    <clipPath id="sb-clip-mark"><rect width="32" height="32" rx="9"/></clipPath>
+    <mask id="sb-mask-footer" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+      <rect width="32" height="32" fill="#fff"/>
+      <path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="#000" stroke-width="3.4" stroke-linejoin="round"/>
+    </mask>
+    <!-- Stay B mark, option A "Bridge B" (design-spec 3). Colour version keeps its colours in dark mode. -->
+    <symbol id="i-mark" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="9" fill="#0B6B66"/>
+      <g clip-path="url(#sb-clip-mark)"><path d="M5.5 21.5 A4.6 6.2 0 0 1 14.7 21.5 A5.4 7.2 0 0 1 25.5 21.5 Z" fill="none" stroke="#FFFFFF" stroke-width="3.4" stroke-linejoin="round"/></g>
+    </symbol>
+    <!-- Single-colour, knocked-out version: follows currentColor (footer). -->
+    <symbol id="i-mark-mono" viewBox="0 0 32 32">
+      <rect width="32" height="32" rx="9" fill="currentColor" mask="url(#sb-mask-footer)"/>
     </symbol>
     <symbol id="skyline" viewBox="0 0 368 96">
       <circle cx="300" cy="26" r="12" fill="var(--sun)"/>
@@ -268,7 +278,7 @@
         <h3 id="off-session-t"><span class="pair"><span lang="en">Pre-arrival info sessions</span><span lang="ko">입국 전 설명회</span></span></h3>
         <p><span data-l="en" lang="en">Meet us in Nepal, with our partner language school, before you fly. Learn about Busan, your school, housing and your first week.</span><span data-l="ko" lang="ko">출국 전 네팔에서 연계 어학원과 함께 만나요. 부산, 학교, 숙소, 첫 주를 미리 알려 드려요.</span></p>
         <p class="small off-scope"><span data-l="en" lang="en">For students already admitted to a school in Korea.</span><span data-l="ko" lang="ko">한국 학교 입학이 정해진 학생을 위한 생활 설명회예요.</span></p>
-        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><button class="btn btn-warm" type="button" data-toast="dates"><span class="pair"><span lang="en">Get session dates</span><span lang="ko">설명회 일정 받기</span></span></button></div>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="arrive" data-ask-topic="dates"><span class="pair"><span lang="en">Get session dates</span><span lang="ko">설명회 일정 받기</span></span></a></div>
       </article>
 
       <article class="off-card long" id="off-firstweek" aria-labelledby="off-firstweek-t">
@@ -319,7 +329,7 @@
         <h3 id="off-discount-t"><span class="pair"><span lang="en">Member discounts</span><span lang="ko">제휴업체 할인</span></span></h3>
         <p><span data-l="en" lang="en">Show your Stay B membership card for discounts at local partners: places to stay, food, phone plans and everyday services.</span><span data-l="ko" lang="ko">Stay B 멤버십 카드를 보여 주면 지역 제휴처(숙소, 식당, 통신, 생활 서비스)에서 할인받아요.</span></p>
         <p class="note-later"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg><span><span data-l="en" lang="en">Partner list will be shared after partner talks.</span><span data-l="ko" lang="ko">제휴처 목록은 협의 후 공개 예정이에요.</span></span></p>
-        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span></div>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#community"><span class="pair"><span lang="en">See the community</span><span lang="ko">커뮤니티 보기</span></span></a></div>
       </article>
 
       <article class="off-card" id="off-meetup" aria-labelledby="off-meetup-t">
@@ -335,7 +345,7 @@
         <span class="flow-ic meet" role="img" data-label-en="Meet in person" data-label-ko="오프라인에서 만나고" aria-label="Meet in person"><svg class="ic-xs" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></span>
         <h3 id="off-career-t"><span class="pair"><span lang="en">Career talks</span><span lang="ko">취업 특강</span></span></h3>
         <p><span data-l="en" lang="en">Talks on job hunting in Korea, writing a Korean-style resume, and Korean for work.</span><span data-l="ko" lang="ko">한국 구직 방법, 한국식 이력서, 일할 때 쓰는 한국어를 배우는 특강.</span></p>
-        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><button class="btn btn-warm" type="button" data-toast="dates"><span class="pair"><span lang="en">Get talk dates</span><span lang="ko">특강 일정 받기</span></span></button></div>
+        <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Planned</span><span data-l="ko" lang="ko">준비 중</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="life" data-ask-topic="dates"><span class="pair"><span lang="en">Get talk dates</span><span lang="ko">특강 일정 받기</span></span></a></div>
       </article>
 
       <div class="off-where">
@@ -450,22 +460,6 @@
           <input class="input" type="text" id="f-name" name="name" required autocomplete="nickname" aria-describedby="e-name">
           <p class="err" id="e-name" hidden></p>
         </div>
-        <div class="field">
-          <label class="fl" for="f-school"><span class="pair"><span lang="en">School</span><span lang="ko">학교</span></span></label>
-          <select class="input" id="f-school" name="school">
-            <option value="partner-uni">Partner university (to be announced) / 제휴 대학(협의 후 공개)</option>
-            <option value="partner-school">Partner language school in Nepal / 네팔 협력 어학원</option>
-            <option value="other">Other / 기타</option>
-            <option value="not-yet">Admitted, not started yet / 입학 예정(입국 전)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="fl" for="f-country"><span class="pair"><span lang="en">Country</span><span lang="ko">국적</span></span></label>
-          <select class="input" id="f-country" name="country">
-            <option value="np" selected>Nepal / 네팔</option>
-            <option value="other">Other / 기타</option>
-          </select>
-        </div>
         <fieldset class="field" aria-describedby="e-stage">
           <legend class="fl"><span class="pair"><span lang="en">Which stage are you in?</span><span lang="ko">지금 어느 단계인가요?</span></span><span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></legend>
           <div class="radios r5" id="stage-choices">
@@ -486,6 +480,7 @@
             <option value="visa">Visa &amp; stay / 체류</option>
             <option value="family">Marriage &amp; family / 결혼·가족</option>
             <option value="firstweek">First-week or settling-in help / 첫 주·정착 도움</option>
+            <option value="dates">Session or talk dates / 설명회·특강 일정</option>
             <option value="other">Other / 기타</option>
           </select>
         </div>
@@ -515,14 +510,36 @@
           <input class="input" type="text" id="f-contact" name="contact" required aria-describedby="e-contact">
           <p class="err" id="e-contact" hidden></p>
         </div>
-        <fieldset class="field">
-          <legend class="fl"><span class="pair"><span lang="en">Preferred language</span><span lang="ko">원하는 언어</span></span></legend>
-          <div class="radios r3">
-            <label class="rc"><input type="radio" name="plang" value="en" checked><span class="dot" aria-hidden="true"></span><span lang="en">English</span></label>
-            <label class="rc"><input type="radio" name="plang" value="ko"><span class="dot" aria-hidden="true"></span><span lang="ko">한국어</span></label>
-            <label class="rc"><input type="radio" name="plang" value="ne" disabled><span class="dot" aria-hidden="true"></span><span><span lang="ne">नेपाली</span> <small>(<span data-l="en" lang="en">soon</span><span data-l="ko" lang="ko">준비 중</span>)</small></span></label>
+        <details class="more-fields" id="more-fields">
+          <summary><span class="pair"><span lang="en">More about me (optional)</span><span lang="ko">나에 대해 더 알려 주기(선택)</span></span><svg class="ic chev" aria-hidden="true" focusable="false"><use href="#i-chev"/></svg></summary>
+          <div class="more-body">
+            <div class="field">
+              <label class="fl" for="f-school"><span class="pair"><span lang="en">School</span><span lang="ko">학교</span></span></label>
+              <select class="input" id="f-school" name="school">
+                <option value="" selected>Choose / 선택</option>
+                <option value="partner-uni">Partner university (to be announced) / 제휴 대학(협의 후 공개)</option>
+                <option value="partner-school">Partner language school in Nepal / 네팔 협력 어학원</option>
+                <option value="other">Other / 기타</option>
+                <option value="not-yet">Admitted, not started yet / 입학 예정(입국 전)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="fl" for="f-country"><span class="pair"><span lang="en">Country</span><span lang="ko">국적</span></span></label>
+              <select class="input" id="f-country" name="country">
+                <option value="np" selected>Nepal / 네팔</option>
+                <option value="other">Other / 기타</option>
+              </select>
+            </div>
+            <fieldset class="field">
+              <legend class="fl"><span class="pair"><span lang="en">Preferred language</span><span lang="ko">원하는 언어</span></span></legend>
+              <div class="radios r3">
+                <label class="rc"><input type="radio" name="plang" value="en" checked><span class="dot" aria-hidden="true"></span><span lang="en">English</span></label>
+                <label class="rc"><input type="radio" name="plang" value="ko"><span class="dot" aria-hidden="true"></span><span lang="ko">한국어</span></label>
+                <label class="rc"><input type="radio" name="plang" value="ne" disabled><span class="dot" aria-hidden="true"></span><span><span lang="ne">नेपाली</span> <small>(<span data-l="en" lang="en">soon</span><span data-l="ko" lang="ko">준비 중</span>)</small></span></label>
+              </div>
+            </fieldset>
           </div>
-        </fieldset>
+        </details>
         <label class="consent" for="f-consent">
           <input type="checkbox" id="f-consent" name="consent" required aria-describedby="e-consent">
           <span><span data-l="en" lang="en">I agree that Stay B may use this information to answer my question, and may share it with a partner administrative agent only if my question needs one.</span><span data-l="ko" lang="ko">질문에 답하기 위해 Stay B가 이 정보를 이용하고, 행정사 상담이 필요한 경우에만 협업 행정사에게 전달하는 데 동의합니다.</span> <span class="req"><span data-l="en" lang="en">required</span><span data-l="ko" lang="ko">필수</span></span></span>
@@ -637,7 +654,7 @@
 <footer class="site-footer">
   <div class="wrap">
     <p class="f-brand">
-      <span class="brand"><svg width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-mark"/></svg><span class="brand-word">Stay<span class="brand-b">B</span></span></span>
+      <span class="brand"><svg width="28" height="28" aria-hidden="true" focusable="false"><use href="#i-mark-mono"/></svg><span class="brand-word">Stay<span class="brand-b">B</span></span></span>
       <span class="muted">Busan · Gyeongnam</span>
     </p>
     <a class="f-partner" href="partners.html"><span data-l="en" lang="en">For universities, language schools and partners</span><span data-l="ko" lang="ko">대학·어학원·협력 기관 안내</span><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>

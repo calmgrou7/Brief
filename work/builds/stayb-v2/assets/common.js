@@ -21,7 +21,6 @@
       idWarn: "This looks like an ID number. Please remove it.",
       toastGuide: "This full guide is being checked by a qualified administrative agent. Need help now? Ask us.",
       toastGuideLink: "Ask us",
-      toastDates: "Demo: dates will be shared when the service starts.",
       toastCommunity: "Demo: community links will be added when the service starts.",
       tbc: "to be confirmed",
       daysLeft: "{n} days left",
@@ -38,7 +37,6 @@
       idWarn: "신분증 번호처럼 보여요. 지워 주세요.",
       toastGuide: "자세한 가이드는 자격 있는 행정사가 감수 중이에요. 지금 도움이 필요하면 질문을 남겨 주세요.",
       toastGuideLink: "질문하기",
-      toastDates: "데모입니다. 일정은 서비스 시작 때 안내해요.",
       toastCommunity: "데모입니다. 커뮤니티 링크는 서비스 시작 때 연결돼요.",
       tbc: "확인 예정",
       daysLeft: "{n}일 남았어요",
@@ -126,7 +124,8 @@
     toast.innerHTML = html;
     toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(hideToast, 4000);
+    /* a toast with a link stays 8 s so there is time to read and tap it (UX U-9) */
+    toastTimer = setTimeout(hideToast, linkKey ? 8000 : 4000);
   }
   function hideToast(){ if(!toast) return; toast.classList.remove("show"); toastTimer = setTimeout(function(){ toast.innerHTML = ""; }, 200); }
   if(toast){
@@ -141,7 +140,6 @@
     e.preventDefault();
     var k = t.getAttribute("data-toast");
     if(k === "guide") showToast("toastGuide", "toastGuideLink", "#ask");
-    else if(k === "dates") showToast("toastDates");
     else showToast("toastCommunity");
   });
 

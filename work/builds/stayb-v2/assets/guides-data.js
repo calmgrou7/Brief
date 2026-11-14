@@ -11,14 +11,16 @@ window.STAYB_GUIDES = {
       desc:{ en:"Packing, housing, first days", ko:"준비물, 숙소, 첫날 계획" },
       help:[
         { href:"#off-session", en:"Pre-arrival info session", ko:"입국 전 설명회" },
-        { href:"#off-firstweek", en:"First-week support", ko:"공항부터 첫 주까지" }
+        { href:"#off-firstweek", en:"First-week support", ko:"공항부터 첫 주까지" },
+        { href:"#ask", en:"Ask us", ko:"질문하기", ask:{ stage:"arrive", topic:"" } }
       ] },
     { key:"settle", n:2, icon:"i-key",
       name:{ en:"Just arrived", ko:"정착 중" },
       desc:{ en:"First 3 months: registration, bank, phone", ko:"입국 후 3개월: 외국인등록, 은행, 휴대폰" },
       help:[
         { href:"#off-settle", en:"Settling-in help", ko:"정착 동행·예약 안내" },
-        { href:"#off-kit", en:"Welcome kit & membership card", ko:"웰컴 키트·멤버십 카드" }
+        { href:"#off-kit", en:"Welcome kit & membership card", ko:"웰컴 키트·멤버십 카드" },
+        { href:"#ask", en:"Ask us", ko:"질문하기", ask:{ stage:"settle", topic:"" } }
       ] },
     { key:"life", n:3, icon:"i-book",
       name:{ en:"Study, life & work", ko:"생활·일" },
@@ -26,7 +28,8 @@ window.STAYB_GUIDES = {
       help:[
         { href:"#off-discount", en:"Member discounts", ko:"제휴업체 할인" },
         { href:"#off-meetup", en:"Meetups & communities", ko:"지역 행사·국가별 모임" },
-        { href:"#off-career", en:"Career talks", ko:"취업 특강" }
+        { href:"#off-career", en:"Career talks", ko:"취업 특강" },
+        { href:"#ask", en:"Ask about part-time work", ko:"아르바이트 질문하기", ask:{ stage:"life", topic:"work" } }
       ] },
     { key:"visa", n:4, icon:"i-cal",
       name:{ en:"Visa & after graduation", ko:"비자·졸업 이후" },
