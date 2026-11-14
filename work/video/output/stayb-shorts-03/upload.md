@@ -3,8 +3,8 @@
 > **행정사 감수 전 게시 금지.** 허용 시간·제한 업종 수치는 넣지 않음. 지금은 내부 초안.
 
 - 파일: `captions_en.srt` · `captions_ko.srt` · `captions_ne_draft_needs-native-review.srt` · `thumbnail.png`(DRAFT 도장 포함) · 영상은 촬영본 대기
-- 음악: 사용 안 함. 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, v2 디자인 명세 글꼴, 라이선스 `stayb-shorts-01/fonts/`). 썸네일 색 v2(청록·노랑·흙빛·크림).
-- 썸네일 문구: `Before your first part-time job` / 보조 `Get permission first`
+- 음악: 사용 안 함. 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, 썸네일은 A안 "에디토리얼 노트" 틀, v2 디자인 명세 글꼴, 라이선스 `stayb-shorts-01/fonts/`). 썸네일 색 v2(청록·노랑·흙빛·크림).
+- 썸네일 문구: `Your first part-time job?`(형광펜 part-time) / 보조 `Get permission first.` · 아래 띠 웜틴트. (A안 규칙 '제목 200px 이상 2~3줄'에 `Before your first part-time job`이 들어가지 않아 편집자가 질문형으로 줄임. 뜻은 같음 — 검토자 확인 필요)
 - 출처 꼬리표 `?src=shorts03`
 - 모든 플랫폼 설명 끝에 필수 한 줄: `Stay B shares general job information. Job introductions are made by registered employment agencies and job centers.`
 

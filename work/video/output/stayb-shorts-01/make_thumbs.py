@@ -1,47 +1,87 @@
-"""Thumbnail (cover) drafts for Stay B shorts 01-03.
-Colors: Stay B v2 tokens (work/design/stayb-v2/design-spec.md 2-1). Fonts: Bricolage Grotesque + Figtree (OFL, ./fonts).
-Usage: python3 make_thumbs.py <output_root>"""
+"""Thumbnail (cover) drafts for Stay B shorts 01-03 - design A "Editorial Note".
+Common frame (instruction 10): series label + number top-left -> title >= 200px, 2-3 lines,
+one keyword on a sun highlighter -> one big object bottom-right -> colour band at the bottom.
+Only the band colour changes per episode: 01 sea, 02 sun (ink text only), 03 warm tint.
+Usage: python3 -B make_thumbs.py <output_root> [--preview <dir>]
+"""
 import sys, os
-from PIL import Image, ImageDraw, ImageFont
-W, H = 1080, 1920
-def hx(s): s = s.lstrip("#"); return tuple(int(s[i:i + 2], 16) for i in (0, 2, 4))
-PAPER = hx("#FBF7F0"); INK = hx("#16302F"); MUTED = hx("#4E605E"); SEA = hx("#0B6B66")
-SUN = hx("#F4B942"); CLAY = hx("#A9481F"); WARM_TINT = hx("#FCEBD7"); SURFACE = hx("#FFFFFF")
-HERE = os.path.dirname(os.path.abspath(__file__))
-def _f(path, w, s):
-    f = ImageFont.truetype(os.path.join(HERE, "fonts", path), s); f.set_variation_by_name(w); return f
-def FH(w, s): return _f("BricolageGrotesque-VF.ttf", w, s)
-def FB(w, s): return _f("Figtree-VF.ttf", w, s)
-def c(d, y, s, f, col):
-    d.text(((W - d.textlength(s, font=f)) / 2, y), s, font=f, fill=col)
-def route(d, x0, x1, y, stops=3):
-    x = x0
-    while x < x1:
-        d.ellipse([x - 4, y - 4, x + 4, y + 4], fill=SEA); x += 22
-    for i in range(stops):
-        sx = x0 + (x1 - x0) * i / (stops - 1)
-        d.ellipse([sx - 14, y - 14, sx + 14, y + 14], fill=SURFACE, outline=SEA, width=6)
-STAMP = "DRAFT · NOT FOR POSTING · needs expert review"
-items = {
-    "stayb-shorts-01": (["New to", "Busan?"], "Your first place to ask", None),
-    "stayb-shorts-02": (["Just arrived?", "Do this first."], "Alien registration checklist", STAMP),
-    "stayb-shorts-03": (["Before your", "first part-time job"], "Get permission first", STAMP),
+from PIL import Image, ImageDraw
+from stayb_draw import *
+
+STAMP = "DRAFT · NOT FOR POSTING · needs expert review"  # kept unchanged (instruction 11)
+BAND_Y = 1340
+
+EPS = {
+    "stayb-shorts-01": dict(num="01", title=["New to", "Busan?"], hl=1, second=None,
+                            sub=["Your first place", "to ask."], sub_col=SEA,
+                            band=SEA, notice_col=SEA_TINT, obj="suitcase", stamp=False),
+    "stayb-shorts-02": dict(num="02", title=["Just", "arrived?"], hl=1, second="Do this first.",
+                            sub=["Alien registration", "checklist"], sub_col=INK,
+                            band=SUN, notice_col=INK, obj="clipboard", stamp=True),
+    "stayb-shorts-03": dict(num="03", title=["Your first", "part-time", "job?"], hl=1, second=None,
+                            sub=["Get permission first."], sub_col=INK,
+                            band=WARM_TINT, notice_col=CLAY, obj="calendar", stamp=True),
 }
-root = sys.argv[1]
-for slug, (head, sub, stamp) in items.items():
-    im = Image.new("RGB", (W, H), PAPER); d = ImageDraw.Draw(im)
-    c(d, 290, "Stay B", FH("Bold", 96), SEA)
-    d.rounded_rectangle([W / 2 - 120, 425, W / 2 + 120, 437], radius=6, fill=SUN)
-    longest = max(head, key=len)
-    fh = FH("Bold", 124)
-    while d.textlength(longest, font=fh) > W - 160: fh = FH("Bold", fh.size - 4)
-    for i, s in enumerate(head): c(d, 640 + i * fh.size * 1.18, s, fh, SEA)
-    c(d, 1050, sub, FB("SemiBold", 56), CLAY)
-    route(d, W / 2 - 260, W / 2 + 260, 1260)
-    c(d, 1520, "Concept · Stay B is a working name", FB("Medium", 30), MUTED)
-    if stamp:  # kept from v1: draft stamp (clay on warm tint, contrast 4.95:1)
-        d.rounded_rectangle([90, 120, W - 90, 210], radius=16, fill=WARM_TINT, outline=CLAY, width=5)
-        sf = FB("Bold", 34)
-        c(d, 165 - 34 * 0.62, stamp, sf, CLAY)
-    os.makedirs(os.path.join(root, slug), exist_ok=True)
-    im.save(os.path.join(root, slug, "thumbnail.png"), optimize=True)
+
+def stamp(im):
+    d = ImageDraw.Draw(im)
+    f = FB("Bold", 32)
+    tw = f.getlength(STAMP)
+    d.rounded_rectangle([LEFT, 236, LEFT + tw + 48, 312], radius=16, fill=WARM_TINT, outline=CLAY, width=5)
+    d.text((LEFT + 24, 274 + cap(f) / 2), STAMP, font=f, fill=CLAY, anchor="ls")
+
+def make(ep):
+    im = Image.new("RGB", (W, H), PAPER)
+    d = ImageDraw.Draw(im)
+    grid(d, 0, 0, W, BAND_Y)
+    d.rectangle([0, BAND_Y, W, H], fill=ep["band"])
+    if ep["band"] == WARM_TINT:  # postcard perforation line on the pale band
+        for x in range(0, W, 28): d.rectangle([x, BAND_Y - 2, x + 14, BAND_Y + 2], fill=CLAY)
+    p = Pen()
+    if ep["obj"] == "suitcase": suitcase(p, 600, 1010, 430, 520)
+    elif ep["obj"] == "clipboard": clipboard(p, 600, 1110, 1010, 1640)
+    else: calendar_clock(p, 640, 1200, 1060, 1660)
+    o = p.done(); im.paste(o, (0, 0), o)
+    notice(d, ep["notice_col"], y=1440 if ep["obj"] != "calendar" else 1420)
+    top = 236
+    if ep["stamp"]: stamp(im); top = 348
+    label_sprite("STAY B · GUIDE " + ep["num"], top, "cream").paste(im)
+    # title: largest size 200-240 that fits inside the right safe line
+    size = 240
+    while max(FD(size).getlength(s) for s in ep["title"]) > SAFE_RIGHT - LEFT and size > 200: size -= 2
+    f = FD(size)
+    assert max(f.getlength(s) for s in ep["title"]) <= SAFE_RIGHT - LEFT, ep["num"]
+    b = top + 110 + cap(f)
+    for i, s in enumerate(ep["title"]):
+        text_sprite(LEFT, b, [(s, INK)], f, hl=0 if i == ep["hl"] else None).paste(im)
+        last_b = b; b += size * 0.95
+    y = last_b + 40
+    if ep["second"]:
+        f2 = FD(120); y += cap(f2) + 20
+        text_sprite(LEFT, y, [(ep["second"], INK)], f2).paste(im); y += 30
+    fs = FB("SemiBold", 60)
+    y += 80
+    for s in ep["sub"]:
+        sp = text_sprite(LEFT, y, [(s, ep["sub_col"])], fs)
+        assert sp.text_right <= SAFE_RIGHT and sp.bottom() <= SAFE_BOTTOM, (ep["num"], s)
+        sp.paste(im); y += 72
+    return im, size
+
+def main():
+    root = sys.argv[1]
+    prev = sys.argv[sys.argv.index("--preview") + 1] if "--preview" in sys.argv else None
+    small = []
+    for slug, ep in EPS.items():
+        im, size = make(ep)
+        os.makedirs(os.path.join(root, slug), exist_ok=True)
+        im.save(os.path.join(root, slug, "thumbnail.png"), optimize=True)
+        print(slug, "title %dpx" % size)
+        small.append(im.resize((270, 480), Image.LANCZOS))
+    if prev:  # 25% size check (270 px wide, phone grid size)
+        os.makedirs(prev, exist_ok=True)
+        sheet = Image.new("RGB", (270 * 3 + 40, 480), WHITE)
+        for i, s in enumerate(small): sheet.paste(s, (i * 290, 0))
+        sheet.save(os.path.join(prev, "thumbs_25pct.png"))
+
+if __name__ == "__main__":
+    main()

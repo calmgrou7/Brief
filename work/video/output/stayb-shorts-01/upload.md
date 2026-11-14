@@ -1,9 +1,9 @@
 # 업로드 패키지: Stay B 숏폼 1편 "Stay B는 이런 곳"
 
 - 상태: **초안. 게시 금지**(대표 승인 + 검토자 통과 + Stay B 공개 여부 결정 후). 지금 영상은 무촬영 모션 시안 `draft.mp4`.
-- 파일: `draft.mp4`(20초, 1080×1920, 무음) · `captions_en.srt` · `captions_ko.srt` · `captions_ne_draft_needs-native-review.srt`(원어민 검수 전 업로드 금지) · `thumbnail.png`
+- 파일: `draft.mp4`(19.8초, 1080×1920, 무음, A안 "에디토리얼 노트" 재제작) · `captions_en.srt` · `captions_ko.srt` · `captions_ne_draft_needs-native-review.srt`(원어민 검수 전 업로드 금지) · `thumbnail.png`
 - 영어 자막은 영상에 이미 들어가 있음. 한국어 srt는 YouTube·TikTok 자막 업로드용(인스타는 자동 자막 대신 영상 그대로).
-- 음악·효과음: **사용 안 함**(무음 트랙만). 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, 라이선스 `fonts/`), 일러스트 직접 제작, 색 v2 디자인 명세. → 저작권 문제 없음.
+- 음악·효과음: **사용 안 함**(무음 트랙만). 폰트 Bricolage Grotesque·Figtree·Gaegu(손글씨 1곳)(모두 SIL OFL 1.1, 라이선스 `fonts/`), 일러스트 직접 제작, 색 v2 디자인 명세. → 저작권 문제 없음.
 - 링크: 도메인 미정 → 모든 `[링크 자리]`는 확정 후 교체. 출처 꼬리표 `?src=shorts01`(마케터 UTM 규칙).
 - 썸네일 문구: `New to Busan?` / 보조 `Your first place to ask`
 

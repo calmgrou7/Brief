@@ -3,8 +3,8 @@
 > **행정사 감수 전 게시 금지.** 아래 문구도 감수 후 수치·표현 확정. 지금은 내부 초안.
 
 - 파일: `captions_en.srt` · `captions_ko.srt` · `captions_ne_draft_needs-native-review.srt` · `thumbnail.png`(DRAFT 도장 포함, 게시 땐 도장 없는 판으로 재생성) · 영상은 촬영본 대기
-- 음악: 사용 안 함. 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, v2 디자인 명세 글꼴, 라이선스 `stayb-shorts-01/fonts/`). 썸네일 색 v2(청록·노랑·흙빛·크림).
-- 썸네일 문구: `Just arrived? Do this first.` / 보조 `Alien registration checklist`
+- 음악: 사용 안 함. 폰트 Bricolage Grotesque·Figtree(SIL OFL 1.1, 썸네일은 A안 "에디토리얼 노트" 틀, v2 디자인 명세 글꼴, 라이선스 `stayb-shorts-01/fonts/`). 썸네일 색 v2(청록·노랑·흙빛·크림).
+- 썸네일 문구: `Just arrived?`(형광펜 arrived?) / `Do this first.` / 보조 `Alien registration checklist` · 아래 띠 햇살 노랑
 - 출처 꼬리표 `?src=shorts02`
 
 ## 추천 업로드 시간 (가정)
