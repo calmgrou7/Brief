@@ -80,6 +80,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .wrap{max-width:1120px;margin:0 auto;padding:0 var(--gutter)}
 section[id],[id^="guide-"],[id^="off-"],[id^="guides-"]{scroll-margin-top:calc(var(--header-h) + 64px)}
 @media (min-width:960px){ section[id],[id^="guide-"],[id^="off-"],[id^="guides-"]{scroll-margin-top:calc(var(--header-h) + 24px)} }
+/* mobile: stage jumps land with the sticky tab strip attached (UX U-8): html padding (header+16) + 50 = header + tab strip (~58) + 8 */
+@media (max-width:959.98px){
+  [id^="guide-"],[id^="guides-"]{scroll-margin-top:50px}
+  /* keep anchored inputs/buttons above the sticky bar (UX U-5) */
+  html{scroll-padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+}
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important} }
 
 /* ---------- language ----------
@@ -437,6 +443,15 @@ html[lang="en"] .community .sec-head h2 .pair>[lang="ko"],html[lang="ko"] .commu
 .field{margin:0 0 20px}
 fieldset.field{border:0;padding:0;min-width:0}
 legend{padding:0}
+.more-fields{margin:0 0 20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.more-fields summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px;font-weight:600;cursor:pointer}
+.more-fields summary::-webkit-details-marker{display:none}
+.more-fields summary:hover{color:var(--sea)}
+.more-fields summary .chev{flex:none;transition:transform .16s}
+.more-fields[open] summary .chev{transform:rotate(180deg)}
+.more-body{padding-top:8px}
+.more-body .field:last-child{margin-bottom:16px}
+.tool .tool-ask{margin-top:4px}
 .fl{display:block;font-weight:600;font-size:16px;margin:0 0 8px;line-height:1.35}
 .fl .pair>[lang]{display:inline}
 html[lang="en"] .fl .pair>[lang="ko"],html[lang="ko"] .fl .pair>[lang="en"]{font-size:14px;font-weight:400;margin-left:6px}
