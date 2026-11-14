@@ -62,7 +62,7 @@ def metadata(doc, page, lang, citations):
     head = doc.find('head')
     title, description = DETAILS[lang][page]
     url = HOST + path_for(page, lang)
-    image = HOST + PREFIX + 'assets/journal/' + ('alley-960.webp' if page == 'partners.html' else 'beach-1600.webp')
+    image = HOST + PREFIX + 'assets/scenes/' + ('campus-wide.webp' if page == 'partners.html' else 'opening-wide.webp')
     etree.SubElement(head, 'title').text = title
     def meta(attr, key, value):
         etree.SubElement(head, 'meta', {attr:key, 'content':value})
@@ -93,6 +93,10 @@ def localize(doc, page, lang):
     for el in doc.xpath('//*[@data-l] | //*[contains(concat(" ",normalize-space(@class)," ")," pair ")]/*[@lang]'):
         if el.get('data-l',el.get('lang')) != lang:
             el.drop_tree()
+    for image in doc.xpath('//img[@data-alt-ko]'):
+        if lang == 'ko':
+            image.set('alt', image.get('data-alt-ko'))
+        del image.attrib['data-alt-ko']
     for el in doc.xpath('//*[@data-label-en]'):
         el.set('aria-label',el.get('data-label-'+lang))
     for el in doc.xpath('//*[@data-url-en]'):
