@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>한장견적 쇼츠</title>
+<style>
+@font-face{font-family:P;src:url(fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+@font-face{font-family:P;src:url(fonts/Pretendard-Black.woff2);font-weight:900}
+:root{--green:#223a32;--green2:#2c4a40;--terra:#a0442f;--terra2:#c8714f;--cream:#faf6ee;--paper:#fff3dc;--beige:#ecd3ad;--ink:#1f2f29}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream)}
+body{font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.03em}
+.scene{position:absolute;inset:0;opacity:0;overflow:hidden}
+.abs{position:absolute}
+.center{left:0;right:0;text-align:center}
+.hl{color:var(--terra)}
+.hl2{color:var(--beige)}
+.big{font-weight:900;font-size:118px;line-height:1.18}
+.mid{font-weight:800;font-size:84px;line-height:1.22}
+.sub{font-weight:700;font-size:50px;line-height:1.4}
+/* S1 */
+#s1{background:var(--cream)}
+.bubble{left:110px;top:330px;max-width:860px;background:#fff;border-radius:48px 48px 48px 12px;padding:44px 56px;font-weight:700;font-size:54px;line-height:1.35;box-shadow:0 24px 60px rgba(34,58,50,.14)}
+.bubble .who{font-size:36px;color:#8a8a80;font-weight:700;margin-bottom:10px}
+.typing{left:110px;top:330px;background:#fff;border-radius:40px;padding:36px 48px;display:flex;gap:16px;box-shadow:0 24px 60px rgba(34,58,50,.14)}
+.typing i{width:22px;height:22px;border-radius:50%;background:#b9b3a6;display:block}
+/* S2 */
+#s2{background:var(--green);color:var(--cream)}
+.todo{left:150px;font-weight:800;font-size:76px;display:flex;align-items:center;gap:36px}
+.todo .n{width:96px;height:96px;border-radius:28px;background:var(--green2);display:flex;align-items:center;justify-content:center;font-size:52px;color:var(--beige)}
+.todo .t{position:relative}
+.todo .strike{position:absolute;left:-8px;top:52%;height:10px;background:var(--terra2);border-radius:6px}
+/* S3 */
+#s3{background:var(--terra);color:var(--paper)}
+.icon{border-radius:26%;box-shadow:0 40px 90px rgba(0,0,0,.28)}
+/* phone */
+#sp{background:var(--cream)}
+.phone{left:50%;width:700px;height:1125px;margin-left:-350px;top:610px;border-radius:84px;background:#141c19;padding:22px;box-shadow:0 60px 120px rgba(34,58,50,.32)}
+.screen{width:100%;height:100%;border-radius:64px;overflow:hidden;position:relative;background:#faf7f0}
+.screen img{position:absolute;left:0;top:0;width:100%;}
+.notch{position:absolute;left:50%;top:20px;width:190px;height:52px;margin-left:-95px;background:#141c19;border-radius:30px;z-index:3}
+.cap{top:150px}
+.capsub{top:290px}
+.tag{display:inline-block;background:var(--green);color:var(--cream);border-radius:999px;padding:12px 34px;font-weight:800;font-size:40px;margin:0 6px}
+.ring{border:10px solid var(--terra);border-radius:40px;position:absolute;z-index:4}
+/* S7 */
+#s7{background:var(--green);color:var(--cream)}
+.chk{left:170px;display:flex;align-items:center;gap:40px;font-weight:900;font-size:92px}
+.chk .b{width:120px;height:120px;border-radius:36px;background:var(--terra);display:flex;align-items:center;justify-content:center}
+/* S8 */
+#s8{background:var(--cream)}
+.search{left:90px;right:90px;top:1000px;height:150px;background:#fff;border-radius:44px;display:flex;align-items:center;padding:0 52px;gap:30px;font-weight:800;font-size:64px;box-shadow:0 24px 60px rgba(34,58,50,.14)}
+.caret{display:inline-block;width:6px;height:70px;background:var(--terra);vertical-align:middle;margin-left:6px}
+.btn{left:140px;right:140px;top:1240px;height:150px;border-radius:40px;background:var(--terra);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:62px}
+.progress{left:0;top:0;height:12px;background:var(--terra);z-index:99}
+</style>
+</head>
+<body>
+
+<!-- S1 HOOK -->
+<div class="scene" id="s1">
+  <div class="abs typing" id="s1typing"><i></i><i></i><i></i></div>
+  <div class="abs bubble" id="s1bubble"><div class="who">고객님</div>사장님, 견적서 오늘 받을 수<br>있을까요? 🙏</div>
+  <div class="abs center big" id="s1t1" style="top:860px">견적서 하나<br>보내려고</div>
+  <div class="abs center big" id="s1t2" style="top:1150px">또 <span class="hl">노트북</span> 켜세요?</div>
+</div>
+
+<!-- S2 PAIN -->
+<div class="scene" id="s2">
+  <div class="abs center mid" style="top:300px" id="s2h">견적 하나 보낼 때마다</div>
+  <div class="abs todo" style="top:620px" id="td0"><div class="n">1</div><div class="t">엑셀 양식 찾기<div class="strike"></div></div></div>
+  <div class="abs todo" style="top:800px" id="td1"><div class="n">2</div><div class="t">금액 다시 계산<div class="strike"></div></div></div>
+  <div class="abs todo" style="top:980px" id="td2"><div class="n">3</div><div class="t">PDF로 변환<div class="strike"></div></div></div>
+  <div class="abs todo" style="top:1160px" id="td3"><div class="n">4</div><div class="t">메신저로 전송<div class="strike"></div></div></div>
+  <div class="abs center mid" style="top:1420px" id="s2f"><span class="hl2">이제 그만.</span></div>
+</div>
+
+<!-- S3 REVEAL -->
+<div class="scene" id="s3">
+  <img class="abs icon" id="s3icon" src="assets/icon.png" style="left:340px;top:420px;width:400px;height:400px">
+  <div class="abs center" id="s3name" style="top:900px;font-weight:900;font-size:170px">한장견적</div>
+  <div class="abs center sub" id="s3sub" style="top:1130px;font-size:58px">토스에서 바로 쓰는 견적서</div>
+</div>
+
+<!-- PHONE SCENES (S4–S6) -->
+<div class="scene" id="sp">
+  <div class="abs center mid cap" id="cap0">견적서부터 <span class="hl">영수증까지</span></div>
+  <div class="abs center capsub" id="sub0"><span class="tag">작성</span><span class="tag">발송</span><span class="tag">수락</span><span class="tag">미입금</span><span class="tag">완료</span></div>
+  <div class="abs center mid cap" id="cap1">사업자 정보는 <span class="hl">한 번만</span></div>
+  <div class="abs center sub capsub" id="sub1">상호·사업자번호를 견적서에 자동 표시</div>
+  <div class="abs center mid cap" id="cap2">매월 <span class="hl">5건 무료</span></div>
+  <div class="abs center sub capsub" id="sub2">부담 없이 지금 바로 시작</div>
+  <div class="abs phone" id="phone">
+    <div class="screen" id="screen">
+      <img id="img0" src="assets/screen1.png">
+      <img id="img1" src="assets/screen2.png">
+      <img id="img2" src="assets/screen3.png">
+      <div class="ring" id="ring"></div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 BENEFITS -->
+<div class="scene" id="s7">
+  <div class="abs center mid" style="top:330px" id="s7h">다운로드? <span class="hl2">필요 없어요</span></div>
+  <div class="abs chk" style="top:660px" id="ck0"><div class="b">✔︎</div>앱 설치 없이</div>
+  <div class="abs chk" style="top:880px" id="ck1"><div class="b">✔︎</div>토스에서 바로</div>
+  <div class="abs chk" style="top:1100px" id="ck2"><div class="b">✔︎</div>폰 하나로 끝</div>
+</div>
+
+<!-- S8 CTA -->
+<div class="scene" id="s8">
+  <img class="abs icon" id="s8icon" src="assets/icon.png" style="left:420px;top:330px;width:240px;height:240px">
+  <div class="abs center mid" id="s8h" style="top:650px">토스 앱에서<br>검색하세요</div>
+  <div class="abs search" id="s8search"><span style="font-size:60px">🔍</span><span id="s8q"></span><span class="caret" id="caret"></span></div>
+  <div class="abs btn" id="s8btn">지금 바로 견적 쓰기</div>
+  <div class="abs center sub" id="s8foot" style="top:1440px;color:#6d6a60;font-size:42px">바로가기 링크는 설명란에 👇</div>
+</div>
+
+<div class="abs progress" id="prog"></div>
+
+<script>
+const TOTAL = 26;
+const $ = id => document.getElementById(id);
+const clamp = (x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p = (t,a,b)=>clamp((t-a)/(b-a));               // linear progress
+const eo = x=>1-Math.pow(1-x,3);                       // ease out cubic
+const eb = x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)}; // ease out back
+const eio = x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+function set(el,{o=1,x=0,y=0,s=1,r=0}={}){el.style.opacity=o;el.style.transform=`translate(${x}px,${y}px) scale(${s}) rotate(${r}deg)`}
+function pop(el,t,a,d=.45,dy=60){const k=p(t,a,a+d);set(el,{o:clamp(k*2),y:(1-eo(k))*dy,s:.9+.1*eb(k)})}
+function sceneVis(id,t,a,b,fade=.25){const el=$(id);let o=0;if(t>=a&&t<b){o=Math.min(p(t,a,a+fade),1-p(t,b-fade,b));if(a===0)o=Math.min(1,1-p(t,b-fade,b))}el.style.opacity=o;return t>=a&&t<b}
+
+// timeline (seconds)
+const S1=[0,3.4],S2=[3.4,7.0],S3=[7.0,9.8],SP=[9.8,19.6],S7=[19.6,22.6],S8=[22.6,26];
+const SH=[[9.8,13.2],[13.2,16.4],[16.4,19.6]];
+
+function render(t){
+  $('prog').style.width=(t/TOTAL*1080)+'px';
+  // S1
+  if(sceneVis('s1',t,...S1)){
+    const ty=$('s1typing'); set(ty,{o:1-p(t,.55,.65)});
+    [...ty.children].forEach((d,i)=>{d.style.transform=`translateY(${-14*Math.max(0,Math.sin((t*9)-i*.9))}px)`});
+    pop($('s1bubble'),t,.6,.4,40);
+    pop($('s1t1'),t,-.2,.4); pop($('s1t2'),t,.25,.45);
+    const sh=t>1.4&&t<1.9?Math.sin(t*80)*8:0; $('s1t2').style.transform+=` translateX(${sh}px)`;
+  }
+  // S2
+  if(sceneVis('s2',t,...S2)){
+    const b=S2[0]; pop($('s2h'),t,b+.05,.4);
+    for(let i=0;i<4;i++){
+      const el=$('td'+i); const a=b+.45+i*.38; const k=p(t,a,a+.35);
+      set(el,{o:k,x:(1-eo(k))*-120});
+      const sk=eio(p(t,b+2.1+i*.12,b+2.45+i*.12));
+      el.querySelector('.strike').style.width=`calc(${sk*100}% + 16px)`;
+      el.querySelector('.t').style.opacity=1-.55*sk;
+    }
+    pop($('s2f'),t,b+2.75,.4);
+  }
+  // S3
+  if(sceneVis('s3',t,...S3)){
+    const b=S3[0]; const k=p(t,b+.1,b+.7);
+    set($('s3icon'),{o:clamp(k*3),s:.3+.7*eb(k),r:(1-eo(k))*-20,y:Math.sin((t-b)*3)*6});
+    pop($('s3name'),t,b+.55,.45,80); pop($('s3sub'),t,b+.95,.45,40);
+  }
+  // Phone scenes
+  if(sceneVis('sp',t,...SP)){
+    const b=SP[0]; const k=p(t,b,b+.7);
+    const ph=$('phone'); ph.style.opacity=clamp(k*2); ph.style.transform=`translateY(${(1-eo(k))*500}px)`;
+    SH.forEach(([a,e],i)=>{
+      const vis=t>=a&&t<e;
+      const c=$('cap'+i), s=$('sub'+i);
+      if(vis){pop(c,t,a+.15,.4); pop(s,t,a+.4,.4,30); const out=p(t,e-.2,e); c.style.opacity*=1-out; s.style.opacity*=1-out;}
+      else {c.style.opacity=0; s.style.opacity=0;}
+      // screenshot slide
+      const img=$('img'+i); const ki=i===0?1:eio(p(t,a-.1,a+.35));
+      const scrollMax=0;
+      const sc=eio(p(t,a+.8,e-.3))*scrollMax;
+      img.style.transform=`translateX(${(1-ki)*660}px) translateY(${-sc}px)`;
+      img.style.zIndex=i+1; img.style.opacity= t<a-.1 && i>0 ? 0 : 1;
+    });
+    // highlight ring
+    const ring=$('ring'); let ro=0;
+    const sw=656/1272; // screen width / image width
+    function ringAt(x,y,w,h,a,e,scroll){const k=p(t,a,a+.35);ro=Math.max(ro,eo(k)*(1-p(t,e-.25,e)));
+      ring.style.left=(x*sw-10)+'px';ring.style.top=(y*sw-10-scroll)+'px';ring.style.width=(w*sw+20)+'px';ring.style.height=(h*sw+20)+'px';ring.style.transform=`scale(${1.15-.15*eb(k)})`}
+    if(t>=10.9&&t<13.2) ringAt(61,1115,1155,273,10.9,13.1,0);
+    else if(t>=14.4&&t<16.4) ringAt(126,583,1022,165,14.4,16.3,0);
+    else if(t>=17.4&&t<19.6) ringAt(835,210,383,562,17.4,19.4,0);
+    ring.style.opacity=ro;
+  }
+  // S7
+  if(sceneVis('s7',t,...S7)){
+    const b=S7[0]; pop($('s7h'),t,b+.05,.4);
+    for(let i=0;i<3;i++){const el=$('ck'+i);const k=p(t,b+.5+i*.45,b+.9+i*.45);set(el,{o:clamp(k*2),x:(1-eo(k))*-100});
+      el.querySelector('.b').style.transform=`scale(${.4+.6*eb(k)})`;}
+  }
+  // S8
+  if(sceneVis('s8',t,...S8)){
+    const b=S8[0]; const k=p(t,b,b+.55);
+    set($('s8icon'),{o:clamp(k*2),s:.5+.5*eb(k)});
+    pop($('s8h'),t,b+.25,.45); pop($('s8search'),t,b+.6,.4,40);
+    const q='한장견적'; const n=Math.floor(clamp((t-(b+1.1))/0.18,0,q.length)); $('s8q').textContent=q.slice(0,n);
+    $('caret').style.opacity=(Math.floor(t*2.5)%2===0||n<q.length)?1:0;
+    pop($('s8btn'),t,b+2.0,.45);
+    const pulse=t>b+2.6?1+.03*Math.sin((t-b)*6):1; $('s8btn').style.transform+=` scale(${pulse})`;
+    pop($('s8foot'),t,b+2.4,.4,20);
+  }
+}
+window.render=render; window.TOTAL=TOTAL;
+render(0);
+</script>
+</body>
+</html>
