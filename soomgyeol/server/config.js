@@ -72,6 +72,12 @@ module.exports = {
     refundRevokesAccess: true,
   },
 
+  // 구글 플레이 앱(TWA)과 웹 도메인 연결. 지문은 플레이 콘솔 > 앱 무결성 > 앱 서명에서 확인합니다.
+  android: {
+    packageName: env.ANDROID_PACKAGE || "app.soomgyeol.breath",
+    certSha256: (env.ANDROID_CERT_SHA256 || "").split(",").map(s => s.trim().toUpperCase()).filter(Boolean),
+  },
+
   auth: {
     sessionDays: 30,
     adminEmail: (env.ADMIN_EMAIL || "").trim().toLowerCase(),

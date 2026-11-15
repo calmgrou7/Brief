@@ -53,6 +53,9 @@ test("소개 웹사이트와 SEO 파일이 열린다", async () => {
   assert.match(await (await fetch(base + "/sitemap.xml")).text(), /<loc>.*\/pricing<\/loc>/);
   assert.match(await (await fetch(base + "/robots.txt")).text(), /Disallow: \/admin/);
   assert.equal((await fetch(base + "/app")).status, 200);
+  assert.equal((await fetch(base + "/account-deletion")).status, 200);
+  const links = await (await fetch(base + "/.well-known/assetlinks.json")).json();
+  assert.ok(Array.isArray(links));
 });
 
 test("가입·로그인·로그아웃·비밀번호 재설정", async () => {

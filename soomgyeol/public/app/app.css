@@ -192,3 +192,4 @@ button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px soli
   background: var(--ink); color: #120f15; padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 500;
   box-shadow: 0 6px 30px rgba(0,0,0,.4);
 }
+@media (max-width: 400px) { .brand small { display: none; } }

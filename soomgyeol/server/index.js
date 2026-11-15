@@ -107,6 +107,14 @@ function createApp({ dbPath = process.env.DB_PATH || path.join(__dirname, "..", 
         return;
       }
       if (pathname === "/sitemap.xml") { res.writeHead(200, { "Content-Type": "application/xml; charset=utf-8" }); res.end(site.sitemap()); return; }
+      if (pathname === "/.well-known/assetlinks.json") {
+        res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "public, max-age=3600" });
+        res.end(JSON.stringify(config.android.certSha256.length ? [{
+          relation: ["delegate_permission/common.handle_all_urls"],
+          target: { namespace: "android_app", package_name: config.android.packageName, sha256_cert_fingerprints: config.android.certSha256 },
+        }] : []));
+        return;
+      }
       if (pathname === "/robots.txt") { res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" }); res.end(site.robots()); return; }
 
       // 웹앱·관리자

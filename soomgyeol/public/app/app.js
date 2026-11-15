@@ -7,6 +7,14 @@ const PATTERN_NAMES = { lava: "용암 호흡", box: "박스 호흡", "478": "달
 const FREE_ALT = { lava: "coherent", "478": "coherent", nadi: "box" };
 const FEELINGS = ["", "많이 무거움", "무거움", "보통", "가벼움", "아주 편안"];
 
+/* 구글 플레이 앱(TWA)으로 열렸는지. 플레이 결제 연동 전까지 앱 안에서는 구매 화면을 보여주지 않습니다.
+   TWA 는 크롬 저장소를 같이 쓰므로, 브라우저와 섞이지 않게 sessionStorage 에만 기록합니다. */
+const IN_PLAY_APP = (() => {
+  const hit = new URLSearchParams(location.search).get("src") === "android" || document.referrer.startsWith("android-app://");
+  try { if (hit) sessionStorage.setItem("sg.android", "1"); return hit || sessionStorage.getItem("sg.android") === "1"; }
+  catch (e) { return hit; }
+})();
+
 const state = {
   me: null,          // /api/me 응답 (로그아웃이면 null)
   config: null,      // /api/config
@@ -230,10 +238,10 @@ function openLimit() {
     <div class="state">
       <div class="big">${u.used} / ${u.limit}회</div>
       <p>무료 요금제는 하루 ${u.limit}회까지 이용할 수 있어요. 오늘 자정(한국 시간)에 다시 채워집니다.</p>
-      <p class="muted">프리미엄은 횟수 걱정 없이 여섯 가지 호흡을 모두 쓸 수 있어요.</p>
-      <div class="actions"><button class="primary" id="limUp">프리미엄 보기</button><button class="ghost-btn" id="limRec">오늘 기록 보기</button></div>
+      ${IN_PLAY_APP ? "" : `<p class="muted">프리미엄은 횟수 걱정 없이 여섯 가지 호흡을 모두 쓸 수 있어요.</p>`}
+      <div class="actions">${IN_PLAY_APP ? "" : `<button class="primary" id="limUp">프리미엄 보기</button>`}<button class="ghost-btn" id="limRec">오늘 기록 보기</button></div>
     </div>`, { size: "small" });
-  $("limUp").addEventListener("click", () => openUpgrade());
+  if ($("limUp")) $("limUp").addEventListener("click", () => openUpgrade());
   $("limRec").addEventListener("click", () => openRecords());
 }
 
@@ -241,6 +249,7 @@ function openLimit() {
 function openUpgrade(req) {
   if (!state.me) { openAuth("signup", "프리미엄은 가입 후 이용할 수 있어요.", () => openUpgrade(req)); return; }
   if (plan() === "premium" && !req) { openAccount(); return; }
+  if (IN_PLAY_APP) { openAppPremiumNotice(req); return; }
   const c = state.config, P = c.prices, F = c.plans.free, PR = c.plans.premium;
   const yearlyMonthly = Math.round(P.yearly.amount / 12);
   const save = Math.round((1 - P.yearly.amount / (P.monthly.amount * 12)) * 100);
@@ -281,6 +290,24 @@ function openUpgrade(req) {
   if (useAlt) useAlt.addEventListener("click", () => { closePage(); window.SGBreath.select(alt); window.SGBreath.start(); });
   const useShort = $("useShort");
   if (useShort) useShort.addEventListener("click", () => { closePage(); window.SGBreath.setMinutes(window.SG.maxMinutes()); window.SGBreath.start(); });
+}
+
+/* 플레이 앱 안: 구매 대신 무료로 할 수 있는 선택지만 안내 */
+function openAppPremiumNotice(req) {
+  const F = state.config.plans.free;
+  const locked = req && window.SG.isLocked(req.pattern);
+  const alt = locked ? FREE_ALT[req.pattern] : null;
+  openPage("프리미엄 전용", `
+    <p class="note-box">${locked ? `${esc(PATTERN_NAMES[req.pattern])}은 프리미엄 호흡이에요.` : req && req.minutes > F.maxMinutes ? `무료로는 한 번에 ${F.maxMinutes}분까지 할 수 있어요.` : "프리미엄 기능이에요."}
+    앱에서 프리미엄을 시작하는 기능은 준비 중이에요.</p>
+    <p class="muted">지금은 공명·박스·한숨 호흡을 하루 ${F.dailySessions}회, 한 번에 ${F.maxMinutes}분까지 무료로 할 수 있어요.</p>
+    ${alt ? `<button class="primary" id="useAlt">${PATTERN_NAMES[alt]}으로 시작</button>` : ""}
+    ${req && !locked && req.minutes > F.maxMinutes ? `<button class="primary" id="useShort">${F.maxMinutes}분으로 시작</button>` : ""}
+    <button class="ghost-btn wide" id="appNoticeClose">닫기</button>`, { size: "small" });
+  const on = (id, fn) => { const el = $(id); if (el) el.addEventListener("click", fn); };
+  on("useAlt", () => { closePage(); window.SGBreath.select(alt); window.SGBreath.start(); });
+  on("useShort", () => { closePage(); window.SGBreath.setMinutes(F.maxMinutes); window.SGBreath.start(); });
+  on("appNoticeClose", closePage);
 }
 
 /* 테스트 결제사 화면. 실결제 연결 시 결제사 결제창으로 바뀝니다. */
@@ -391,7 +418,7 @@ async function openRecords(filters = {}) {
       </form>
       <div id="recList"></div>
       <div class="rec-foot">
-        ${list.hiddenOlder ? `<p class="note-box">${list.historyDays}일보다 오래된 기록 ${list.hiddenOlder}개는 프리미엄에서 볼 수 있어요. 기록은 지워지지 않고 보관돼요. <button class="link" id="recUp">프리미엄 보기</button></p>` : ""}
+        ${list.hiddenOlder ? `<p class="note-box">${list.historyDays}일보다 오래된 기록 ${list.hiddenOlder}개는 프리미엄에서 볼 수 있어요. 기록은 지워지지 않고 보관돼요.${IN_PLAY_APP ? "" : ` <button class="link" id="recUp">프리미엄 보기</button>`}</p>` : ""}
         <a class="ghost-btn" href="/api/sessions/export.csv">CSV로 내보내기</a>
       </div>`;
     renderRecordList(list.items, list.more, filters);
@@ -509,7 +536,7 @@ function renderAccount(me, bill, inquiries, notices) {
   let subActions = "";
   if (sub && ["active", "past_due"].includes(sub.status) && ent.source === "subscription") subActions = `<button class="ghost-btn" id="subCancel">구독 해지</button>`;
   else if (sub && sub.status === "canceled" && sub.periodEnd > Date.now()) subActions = `<button class="primary" id="subResume">해지 취소하고 계속 이용</button>`;
-  if (!prem || ent.source === "grant") subActions += `<button class="primary" id="subUp">프리미엄 시작</button>`;
+  if ((!prem || ent.source === "grant") && !IN_PLAY_APP) subActions += `<button class="primary" id="subUp">프리미엄 시작</button>`;
 
   $("pageBody").innerHTML = `
     ${notices.length ? `<section class="block notices"><h3>공지</h3>${notices.slice(0, 3).map(n => `<details><summary>${esc(n.title)} <small class="muted">${date(n.created_at)}</small></summary><p>${esc(n.body)}</p></details>`).join("")}</section>` : ""}
@@ -612,6 +639,7 @@ function wire() {
     if (!state.me) openAuth("login");
     else if (plan() === "premium") openAccount();
     else if (!state.me.usage.remaining) openLimit();
+    else if (IN_PLAY_APP) toast(`오늘 무료 호흡 ${state.me.usage.remaining}회가 남았어요.`);
     else openUpgrade();
   });
   $("navRecords").addEventListener("click", () => openRecords());
@@ -621,7 +649,7 @@ function route() {
   const h = location.hash.slice(1);
   if (h === "records") openRecords();
   else if (h === "account") openAccount();
-  else if (h === "upgrade") openUpgrade();
+  else if (h === "upgrade" && !IN_PLAY_APP) openUpgrade();
   else if (h === "login") openAuth("login");
   else if (h === "signup") openAuth("signup");
 }

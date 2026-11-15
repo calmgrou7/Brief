@@ -65,7 +65,7 @@ function layout({ path, title, description, body }) {
       <p class="muted">숨결은 휴식과 긴장 완화를 돕는 호흡 안내 서비스이며 의료 기기나 치료법이 아닙니다.</p>
     </div>
     <nav aria-label="정책">
-      <a href="/terms">이용약관</a><a href="/privacy"><b>개인정보처리방침</b></a><a href="/refund">결제·해지·환불</a><a href="/support">고객지원</a>
+      <a href="/terms">이용약관</a><a href="/privacy"><b>개인정보처리방침</b></a><a href="/refund">결제·해지·환불</a><a href="/account-deletion">계정 삭제</a><a href="/support">고객지원</a>
     </nav>
     <p class="biz">상호 ${pending(O.company)} · 대표 ${pending(O.ceo)} · 사업자등록번호 ${pending(O.bizNo)}<br>
     통신판매업 ${pending(O.mailOrderNo)} · ${pending(O.address)} · 문의 ${pending(O.email)}</p>
@@ -275,8 +275,29 @@ function refund() {
   ]);
 }
 
+function accountDeletion() {
+  return layout({
+    path: "/account-deletion", title: "계정 삭제 안내", description: "숨결 계정과 호흡 기록을 삭제하는 방법과 삭제·보관되는 정보를 안내합니다.",
+    body: `<section class="wrap section narrow policy">
+  <p class="eyebrow">계정 삭제</p><h1>숨결 계정 삭제 안내</h1>
+  <h2 class="h3">앱에서 직접 삭제</h2>
+  <ol class="guide">
+    <li>숨결 앱(또는 <a href="/app">웹앱</a>)에 로그인합니다.</li>
+    <li>오른쪽 위 사람 모양 버튼을 눌러 <b>내 정보</b>로 갑니다.</li>
+    <li>맨 아래 <b>탈퇴하기</b>를 열고 비밀번호를 입력한 뒤 <b>계정 삭제</b>를 누릅니다.</li>
+  </ol>
+  <h2 class="h3">로그인할 수 없을 때</h2>
+  <p>가입한 이메일 주소로 ${pending(O.email)} 에 "계정 삭제 요청"을 보내 주세요. 본인 확인 후 7일 안에 처리하고 결과를 알려 드립니다.</p>
+  <h2 class="h3">삭제되는 정보</h2>
+  <p>계정(이메일, 비밀번호, 이름), 호흡 기록(호흡법, 시간, 기분 점수, 메모), 이용량 기록, 로그인 정보가 <b>즉시</b> 삭제되며 되돌릴 수 없습니다.</p>
+  <h2 class="h3">보관되는 정보</h2>
+  <p>결제 기록(주문번호, 금액, 상태)은 전자상거래법에 따라 5년간 보관한 뒤 삭제하며, 계정과의 연결은 끊깁니다. 이용 중인 구독은 탈퇴와 함께 해지됩니다.</p>
+</section>`,
+  });
+}
+
 function sitemap() {
-  const paths = ["/", "/features", "/pricing", "/support", "/terms", "/privacy", "/refund"];
+  const paths = ["/", "/features", "/pricing", "/support", "/terms", "/privacy", "/refund", "/account-deletion"];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths.map(p => `  <url><loc>${config.app.publicUrl}${p}</loc></url>`).join("\n")}
@@ -294,6 +315,6 @@ Sitemap: ${config.app.publicUrl}/sitemap.xml
 }
 
 module.exports = {
-  pages: { "/": home, "/features": features, "/pricing": pricing, "/support": support, "/terms": terms, "/privacy": privacy, "/refund": refund },
+  pages: { "/": home, "/features": features, "/pricing": pricing, "/support": support, "/terms": terms, "/privacy": privacy, "/refund": refund, "/account-deletion": accountDeletion },
   sitemap, robots, layout,
 };
