@@ -1,0 +1,15 @@
+{
+  "name": "soomgyeol",
+  "version": "0.1.0",
+  "private": true,
+  "description": "숨결 호흡 코치: 소개 웹사이트, 웹앱, 이용권·테스트 결제, 관리자",
+  "main": "server/index.js",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch server/index.js",
+    "make-admin": "node --disable-warning=ExperimentalWarning server/cli.js make-admin",
+    "seed-demo": "node --disable-warning=ExperimentalWarning server/cli.js seed-demo",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  }
+}

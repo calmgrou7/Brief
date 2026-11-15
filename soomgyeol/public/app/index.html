@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>숨결 호흡</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07060a">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap">
+<link rel="stylesheet" href="/app/engine.css">
+<link rel="stylesheet" href="/app/app.css">
+</head>
+<body>
+
+
+<div id="app">
+  <canvas id="cv" aria-hidden="true"></canvas>
+
+  <header class="top">
+    <a class="brand" href="/">숨결<small>breath atlas</small></a>
+    <div class="top-right">
+      <button class="pill" id="today" hidden></button>
+      <button class="icon-btn" id="navRecords" aria-label="호흡 보관함">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg>
+      </button>
+      <button class="icon-btn" id="navAccount" aria-label="내 정보">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c1.2-3.6 4-5.2 7-5.2s5.8 1.6 7 5.2"/></svg>
+      </button>
+      <button class="icon-btn" id="openSettings" aria-label="소리와 음성 설정">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="phase" id="phase" aria-live="polite">
+    <div class="ko" id="phKo">용암 호흡</div>
+    <div class="en" id="phEn">Lava Breath</div>
+    <div class="count small" id="phCount">8 · 8</div>
+  </section>
+
+  <section class="caption" id="caption" hidden>
+    <div class="ko" id="capKo"></div>
+    <div class="en" id="capEn"></div>
+  </section>
+
+  <div class="dock">
+    <div class="flow" id="welcomeCard">
+      <h2>숨을 고르면, 마음이 놓여요</h2>
+      <div class="sub">Settle the breath, and the mind follows.</div>
+      <p>바쁜 하루 속 몇 분, 화면의 빛을 따라 숨만 쉬면 됩니다. 지금 당신의 마음에 맞는 호흡을 함께 찾아 드릴게요.</p>
+      <div class="btns">
+        <button class="start" id="enter">들어가기</button>
+        <button class="ghost" id="skipFlow">호흡법 직접 고르기</button>
+      </div>
+      <p class="muted">소리를 켜 두면 음악과 음성 안내가 함께 나와요.</p>
+    </div>
+
+    <div class="flow" id="askCard" hidden></div>
+
+    <div class="flow" id="resultCard" hidden>
+      <div class="eyebrow" id="recoEyebrow">지금 당신에게 맞는 호흡</div>
+      <div>
+        <div class="reco-name" id="recoName"></div>
+        <div class="sub" id="recoEn" style="margin-top:2px"></div>
+      </div>
+      <p id="recoWhy"></p>
+      <div class="reco-meta" id="recoMeta"></div>
+      <p class="muted" id="recoHow"></p>
+      <div class="btns">
+        <button class="start" id="recoStart">이 호흡 시작하기</button>
+        <button class="ghost" id="recoBrowse">다른 호흡 둘러보기</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel" hidden>
+      <nav class="chips" id="chips" aria-label="호흡법 선택"></nav>
+      <div class="info">
+        <div class="eyebrow" id="origin"></div>
+        <p id="effect"></p>
+        <p class="how" id="how"></p>
+        <details id="more">
+          <summary>근거와 주의사항</summary>
+          <div class="grid">
+            <div><strong>근거</strong><span id="evidence"></span></div>
+            <div><strong>주의</strong><span id="caution"></span></div>
+          </div>
+        </details>
+      </div>
+      <div class="row">
+        <div class="seg" id="mins" role="group" aria-label="세션 길이">
+          <button data-m="1">1분</button><button data-m="3">3분</button><button data-m="5">5분</button><button data-m="10">10분</button><button data-m="20">20분</button>
+        </div>
+        <span class="cycles" id="cycles"></span>
+      </div>
+      <button class="start" id="start">시작하기</button>
+      <button class="ghost" id="reask">지금 마음에 맞는 호흡 추천받기</button>
+    </div>
+
+    <div class="run" id="run" hidden>
+      <button class="icon-btn" id="pause" aria-label="일시정지">
+        <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.2" height="14" rx="1"/><rect x="13.8" y="5" width="3.2" height="14" rx="1"/></svg>
+      </button>
+      <div class="meta">
+        <div class="name" id="runName"></div>
+        <div class="time" id="runTime"></div>
+        <div class="bar"><i id="runBar"></i></div>
+      </div>
+      <button class="icon-btn" id="stop" aria-label="그만하기">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="sheet-wrap" id="sheet" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <h2 id="sheetTitle">소리와 안내</h2>
+      <div class="toggle"><label for="sVoice">음성 안내<small>"들이쉬세요", "내쉬세요"를 말로 알려줘요</small></label><input type="checkbox" id="sVoice"></div>
+      <div class="toggle"><label for="sCount">숫자 세기<small>하나, 둘, 셋… 매 초를 소리 내어 세요</small></label><input type="checkbox" id="sCount"></div>
+      <div class="toggle"><label for="sSound">배경 음악<small>호흡에 맞춰 화음이 바뀌는 잔잔한 음악과 종소리</small></label><input type="checkbox" id="sSound"></div>
+      <div class="toggle"><label for="sVibe">진동<small>단계가 바뀔 때 짧게 진동 (지원 기기만)</small></label><input type="checkbox" id="sVibe"></div>
+      <p class="note" id="voiceNote"></p>
+      <p class="note">의료 목적의 치료법이 아닙니다. 숨이 차거나 어지러우면 바로 평소 호흡으로 돌아오세요. 임신 중이거나 심혈관·호흡기 질환이 있다면 숨 멈춤이 있는 호흡법은 전문가와 상의하세요.</p>
+      <button class="close" id="closeSettings">닫기</button>
+    </div>
+  </div>
+
+  <div class="page-wrap" id="page" hidden>
+    <div class="page" role="dialog" aria-modal="true" aria-labelledby="pageTitle">
+      <div class="page-head">
+        <h2 id="pageTitle"></h2>
+        <button class="icon-btn" id="pageClose" aria-label="닫기">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="page-body" id="pageBody"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+
+<script src="/app/app.js"></script>
+<script src="/app/breath.js"></script>
+</body>
+</html>
