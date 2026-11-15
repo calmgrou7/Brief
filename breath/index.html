@@ -157,6 +157,32 @@ details .grid strong { display: block; font-size: 11px; letter-spacing: .12em; c
 .note { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 10px; }
 .close { margin-top: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 14px; padding: 12px; font: 500 15px var(--f-ui); cursor: pointer; }
 
+.flow {
+  max-width: 560px; margin: 0 auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  padding: 18px 16px 16px; display: flex; flex-direction: column; gap: 14px;
+  max-height: 62vh; overflow-y: auto;
+}
+.flow h2 { font-family: var(--f-display); font-size: clamp(21px, 6vw, 26px); font-weight: 700; margin: 0; text-wrap: balance; line-height: 1.35; }
+.flow .sub { font-family: var(--f-latin); font-style: italic; color: var(--muted); font-size: 16px; margin-top: -10px; }
+.flow p { margin: 0; font-size: 14px; line-height: 1.65; }
+.flow p.muted { color: var(--muted); font-size: 13px; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.opts.one { grid-template-columns: 1fr; }
+.opt {
+  min-width: 0; text-align: left; border: 1px solid var(--line); background: rgba(255,255,255,0.03); color: var(--ink);
+  border-radius: 14px; padding: 12px; cursor: pointer; font: 600 15px var(--f-ui); line-height: 1.35;
+}
+.opt small { display: block; color: var(--muted); font-size: 12px; font-weight: 400; margin-top: 3px; }
+.opt:hover { border-color: var(--accent); }
+.opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ghost { align-self: center; background: transparent; border: 0; color: var(--muted); font: 500 14px var(--f-ui); padding: 6px 10px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.reco-name { font-family: var(--f-display); font-size: clamp(28px, 8vw, 34px); font-weight: 700; color: var(--accent); line-height: 1.2; }
+.reco-meta { font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: .04em; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 8px 0; }
+.btns { display: flex; flex-direction: column; gap: 4px; }
+
 @media (min-height: 760px) { .panel { max-height: 50vh; } }
 @media (prefers-reduced-motion: reduce) { .phase .ko, .phase .en, .phase .count { transition: none; } }
 </style>
@@ -186,7 +212,35 @@ details .grid strong { display: block; font-size: 11px; letter-spacing: .12em; c
   </section>
 
   <div class="dock">
-    <div class="panel" id="panel">
+    <div class="flow" id="welcomeCard">
+      <h2>숨을 고르면, 마음이 놓여요</h2>
+      <div class="sub">Settle the breath, and the mind follows.</div>
+      <p>바쁜 하루 속 몇 분, 화면의 빛을 따라 숨만 쉬면 됩니다. 지금 당신의 마음에 맞는 호흡을 함께 찾아 드릴게요.</p>
+      <div class="btns">
+        <button class="start" id="enter">들어가기</button>
+        <button class="ghost" id="skipFlow">호흡법 직접 고르기</button>
+      </div>
+      <p class="muted">소리를 켜 두면 음악과 음성 안내가 함께 나와요.</p>
+    </div>
+
+    <div class="flow" id="askCard" hidden></div>
+
+    <div class="flow" id="resultCard" hidden>
+      <div class="eyebrow" id="recoEyebrow">지금 당신에게 맞는 호흡</div>
+      <div>
+        <div class="reco-name" id="recoName"></div>
+        <div class="sub" id="recoEn" style="margin-top:2px"></div>
+      </div>
+      <p id="recoWhy"></p>
+      <div class="reco-meta" id="recoMeta"></div>
+      <p class="muted" id="recoHow"></p>
+      <div class="btns">
+        <button class="start" id="recoStart">이 호흡 시작하기</button>
+        <button class="ghost" id="recoBrowse">다른 호흡 둘러보기</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel" hidden>
       <nav class="chips" id="chips" aria-label="호흡법 선택"></nav>
       <div class="info">
         <div class="eyebrow" id="origin"></div>
@@ -207,6 +261,7 @@ details .grid strong { display: block; font-size: 11px; letter-spacing: .12em; c
         <span class="cycles" id="cycles"></span>
       </div>
       <button class="start" id="start">시작하기</button>
+      <button class="ghost" id="reask">지금 마음에 맞는 호흡 추천받기</button>
     </div>
 
     <div class="run" id="run" hidden>
@@ -229,7 +284,7 @@ details .grid strong { display: block; font-size: 11px; letter-spacing: .12em; c
       <h2 id="sheetTitle">소리와 안내</h2>
       <div class="toggle"><label for="sVoice">음성 안내<small>"들이쉬세요", "내쉬세요"를 말로 알려줘요</small></label><input type="checkbox" id="sVoice"></div>
       <div class="toggle"><label for="sCount">숫자 세기<small>하나, 둘, 셋… 매 초를 소리 내어 세요</small></label><input type="checkbox" id="sCount"></div>
-      <div class="toggle"><label for="sSound">배경음과 종소리<small>숨 소리 같은 잔잔한 파도음과 전환 종소리</small></label><input type="checkbox" id="sSound"></div>
+      <div class="toggle"><label for="sSound">배경 음악<small>호흡에 맞춰 화음이 바뀌는 잔잔한 음악과 종소리</small></label><input type="checkbox" id="sSound"></div>
       <div class="toggle"><label for="sVibe">진동<small>단계가 바뀔 때 짧게 진동 (지원 기기만)</small></label><input type="checkbox" id="sVibe"></div>
       <p class="note" id="voiceNote"></p>
       <p class="note">의료 목적의 치료법이 아닙니다. 숨이 차거나 어지러우면 바로 평소 호흡으로 돌아오세요. 임신 중이거나 심혈관·호흡기 질환이 있다면 숨 멈춤이 있는 호흡법은 전문가와 상의하세요.</p>
@@ -274,7 +329,7 @@ const PATTERNS = [
     ]
   },
   {
-    id: "478", ko: "달빛 4-7-8", en: "4-7-8 Moon Breath", rhythm: "4 · 7 · 8", accent: "#f1dca0", shape: "moon", mins: 1, minCycles: 4, maxCycles: 8,
+    id: "478", ko: "달빛 4-7-8", en: "4-7-8 Moon Breath", rhythm: "4 · 7 · 8", accent: "#f1dca0", shape: "moon", mode: "minor", mins: 1, minCycles: 4, maxCycles: 8,
     origin: "잠들기 전 이완 호흡",
     phases: [
       { t: "in", d: 4 },
@@ -526,7 +581,7 @@ function resize() {
 let view = { cx: 0, cy: 0, S: 1 }, viewT = { cx: 0, cy: 0, S: 1 }, viewInit = false;
 function layoutTarget() {
   const top = $("phase").getBoundingClientRect().bottom + 8;
-  const dockEl = running() ? $("caption") : $("panel");
+  const dockEl = running() ? $("caption") : ([$("welcomeCard"), $("askCard"), $("resultCard"), $("panel")].find(el => !el.hidden) || $("panel"));
   let bottom = dockEl.hidden ? H - 120 : dockEl.getBoundingClientRect().top - 10;
   if (bottom - top < 120) bottom = top + 120;
   viewT.cx = W / 2;
@@ -602,7 +657,99 @@ function speak(text, rate) {
   } catch (e) {}
 }
 
-let ac = null, noiseGain = null, noiseFilter = null, padGain = null;
+/* Music: a slow chord progression that changes with each breath cycle,
+   a soft pentatonic bell melody that rises on the inhale and falls on the exhale,
+   all through a long reverb and a gentle echo. Plus a quiet breath-like noise. */
+const MIDI = m => 440 * Math.pow(2, (m - 69) / 12);
+const KEY = { lava: 50, box: 53, "478": 45, coherent: 48, sigh: 52, nadi: 55 };
+const PROG = {
+  major: [[0, 4, 7, 11, 14], [-3, 0, 4, 7, 12], [-7, -3, 0, 4, 9], [-5, -1, 2, 7, 9]],   // Imaj9 · vi7 · IVmaj7 · V6sus
+  minor: [[0, 3, 7, 10, 14], [-4, 0, 3, 7, 12], [-7, -4, 0, 3, 10], [-2, 2, 5, 9, 12]]   // im9 · VImaj7 · iv7 · VII
+};
+const SCALE = { major: [0, 2, 4, 7, 9], minor: [0, 3, 5, 7, 10] };
+
+let ac = null, noiseGain = null, noiseFilter = null;
+const music = {
+  ready: false, root: 50, mode: "major", chordIdx: 0, voices: [], nextBell: 0, lastChordAt: 0, lastNote: 2,
+  build() {
+    this.out = ac.createGain(); this.out.gain.value = 0;
+    const comp = ac.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3;
+    this.out.connect(comp).connect(ac.destination);
+    // generated reverb impulse
+    const sec = 4, len = ac.sampleRate * sec, imp = ac.createBuffer(2, len, ac.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = imp.getChannelData(c); for (let i = 0; i < len; i++) d[i] = (R() * 2 - 1) * Math.pow(1 - i / len, 3); }
+    this.rev = ac.createConvolver(); this.rev.buffer = imp;
+    const wet = ac.createGain(); wet.gain.value = 0.7; this.rev.connect(wet).connect(this.out);
+    this.dry = ac.createGain(); this.dry.gain.value = 0.8; this.dry.connect(this.out);
+    this.delay = ac.createDelay(2); this.delay.delayTime.value = 0.62;
+    const fb = ac.createGain(); fb.gain.value = 0.32; const dg = ac.createGain(); dg.gain.value = 0.35;
+    this.delay.connect(fb).connect(this.delay); this.delay.connect(dg); dg.connect(this.rev); dg.connect(this.dry);
+    this.padFilter = ac.createBiquadFilter(); this.padFilter.type = "lowpass"; this.padFilter.frequency.value = 600; this.padFilter.Q.value = 0.5;
+    this.padFilter.connect(this.dry); this.padFilter.connect(this.rev);
+    this.ready = true;
+  },
+  setKey(p) {
+    this.root = KEY[p.id] || 50; this.mode = p.mode || "major";
+    if (this.ready) this.chord(0);
+  },
+  tones() { return PROG[this.mode][this.chordIdx % 4]; },
+  chord(i) {
+    if (!this.ready) return;
+    const t = ac.currentTime;
+    this.voices.forEach(v => { v.g.gain.cancelScheduledValues(t); v.g.gain.setTargetAtTime(0, t, 1.4); v.o.forEach(o => o.stop(t + 8)); });
+    this.voices = [];
+    this.chordIdx = i % 4; this.lastChordAt = t;
+    const tones = this.tones();
+    tones.forEach((off, j) => {
+      const f = MIDI(this.root + 12 + off), g = ac.createGain();
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(j === 0 ? 0.03 : 0.022, t + 3);
+      const o = [-6, 6].map(c => { const o = ac.createOscillator(); o.type = j % 2 ? "triangle" : "sine"; o.frequency.value = f; o.detune.value = c; o.connect(g); o.start(t); return o; });
+      g.connect(this.padFilter); this.voices.push({ g, o });
+    });
+    const bg = ac.createGain(), bo = ac.createOscillator();
+    bo.type = "sine"; bo.frequency.value = MIDI(this.root + tones[0] - (tones[0] < -4 ? 0 : 12));
+    bg.gain.setValueAtTime(0, t); bg.gain.linearRampToValueAtTime(0.05, t + 3);
+    bo.connect(bg).connect(this.dry); bo.start(t); this.voices.push({ g: bg, o: [bo] });
+  },
+  bell(midi, vel) {
+    if (!this.ready || !settings.sound) return;
+    const t = ac.currentTime, f = MIDI(midi), g = ac.createGain();
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.05 * vel, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 4);
+    const o1 = ac.createOscillator(); o1.type = "sine"; o1.frequency.value = f;
+    const o2 = ac.createOscillator(); o2.type = "sine"; o2.frequency.value = f * 2.0;
+    const g2 = ac.createGain(); g2.gain.value = 0.25;
+    o1.connect(g); o2.connect(g2).connect(g);
+    g.connect(this.dry); g.connect(this.delay); g.connect(this.rev);
+    o1.start(t); o2.start(t); o1.stop(t + 4.2); o2.stop(t + 4.2);
+  },
+  // melody notes: pentatonic, two octaves above root, stepping up on inhale and down on exhale
+  melodyNote(dir) {
+    const sc = SCALE[this.mode], span = sc.length * 2;
+    let n = this.lastNote + dir * (1 + (R() < 0.3 ? 1 : 0));
+    if (R() < 0.15) n -= dir;
+    n = Math.max(0, Math.min(span - 1, n)); this.lastNote = n;
+    return this.root + 24 + sc[n % sc.length] + 12 * Math.floor(n / sc.length);
+  },
+  phaseBell(type) {
+    const tones = this.tones();
+    const off = type === "in" ? tones[2] : type === "out" ? tones[0] : tones[1];
+    this.bell(this.root + 24 + off, 1.2);
+  },
+  tick(s) {
+    if (!this.ready) return;
+    const t = ac.currentTime;
+    const active = settings.sound && !(run && run.paused);
+    this.out.gain.setTargetAtTime(active ? (run ? 0.9 : 0.6) : 0, t, 0.8);
+    this.padFilter.frequency.setTargetAtTime(420 + 1500 * s.L, t, 0.4);
+    if (!run && t - this.lastChordAt > 9) this.chord(this.chordIdx + 1);
+    if (active && t > this.nextBell) {
+      const dir = s.ph && s.ph.t === "in" ? 1 : s.ph && s.ph.t === "out" ? -1 : (R() < 0.5 ? 1 : -1);
+      this.bell(this.melodyNote(dir), 0.35 + R() * 0.35);
+      this.nextBell = t + (run ? 0.9 + R() * 1.6 : 1.6 + R() * 2.4) * (R() < 0.2 ? 2 : 1);
+    }
+  }
+};
+
 function ensureAudio() {
   if (ac) { if (ac.state === "suspended") ac.resume(); return; }
   try {
@@ -613,32 +760,19 @@ function ensureAudio() {
     noiseFilter = ac.createBiquadFilter(); noiseFilter.type = "lowpass"; noiseFilter.frequency.value = 400; noiseFilter.Q.value = 0.6;
     noiseGain = ac.createGain(); noiseGain.gain.value = 0;
     src.connect(noiseFilter).connect(noiseGain).connect(ac.destination); src.start();
-    padGain = ac.createGain(); padGain.gain.value = 0;
-    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 700;
-    [110, 164.81, 220.5].forEach((f, j) => { const o = ac.createOscillator(); o.type = j === 1 ? "triangle" : "sine"; o.frequency.value = f; o.connect(lp); o.start(); });
-    lp.connect(padGain).connect(ac.destination);
+    music.build(); music.setKey(current);
   } catch (e) { ac = null; }
 }
-function chime(type) {
-  if (!ac || !settings.sound) return;
-  const f = { in: 528, hold: 660, holdOut: 440, out: 396, ready: 528 }[type] || 528;
-  const t = ac.currentTime;
-  [1, 2.01].forEach((m, j) => {
-    const o = ac.createOscillator(), g = ac.createGain();
-    o.type = "sine"; o.frequency.value = f * m;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(j ? 0.018 : 0.06, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
-    o.connect(g).connect(ac.destination); o.start(t); o.stop(t + 2.5);
-  });
-}
+function chime(type) { if (ac && settings.sound) music.phaseBell(type); }
 function audioFrame(s) {
   if (!ac) return;
   const on = settings.sound && run && !run.paused;
   const t = ac.currentTime;
   let ng = 0;
-  if (on && s.ph && (s.ph.t === "in" || s.ph.t === "out")) ng = 0.05 + 0.1 * Math.sin(Math.PI * s.p);
+  if (on && s.ph && (s.ph.t === "in" || s.ph.t === "out")) ng = 0.025 + 0.05 * Math.sin(Math.PI * s.p);
   noiseGain.gain.setTargetAtTime(ng, t, 0.15);
   noiseFilter.frequency.setTargetAtTime(260 + 900 * s.L, t, 0.2);
-  padGain.gain.setTargetAtTime(on ? 0.012 + 0.008 * s.L : 0, t, 0.6);
+  music.tick(s);
 }
 function vibrate(ms) { if (settings.vibe && navigator.vibrate) try { navigator.vibrate(ms); } catch (e) {} }
 
@@ -668,7 +802,7 @@ function renderInfo() {
   document.querySelectorAll("#mins button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.m === m)));
   const c = cyclesFor(current, m);
   $("cycles").textContent = `${c}회 호흡 · ${fmtClock(c * cycleDur(current))}` + (current.maxCycles && c === current.maxCycles ? " (최대 권장)" : "");
-  if (!run) setPhaseText(current.ko, current.en, current.rhythm, null, true);
+  if (!run && screen === "home") setPhaseText(current.ko, current.en, current.rhythm, null, true);
 }
 function setPhaseText(ko, en, count, color, small) {
   $("phKo").textContent = ko; $("phEn").textContent = en;
@@ -681,7 +815,7 @@ function selectPattern(id) {
   const p = PATTERNS.find(x => x.id === id); if (!p || run) return;
   current = p; store.set("pattern", id);
   idleSeq = decorate(p.phases); idleClock = 0;
-  setShape(p.shape); renderChips(); renderInfo();
+  setShape(p.shape); renderChips(); renderInfo(); music.setKey(p);
 }
 
 function renderToday() {
@@ -700,7 +834,7 @@ function start() {
   ensureAudio();
   const m = minsBy[current.id] || current.mins;
   run = buildRun(current, m);
-  $("panel").hidden = true; $("run").hidden = false; $("caption").hidden = false;
+  hideCards(); $("run").hidden = false; $("caption").hidden = false;
   $("runName").textContent = `${current.ko} · ${current.rhythm}`;
   setPause(false);
   speak("편안하게 앉아, 어깨 힘을 빼세요");
@@ -711,13 +845,13 @@ function finish(completed) {
   const r = run; run = null;
   try { speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
   keepAwake(false);
-  $("panel").hidden = false; $("run").hidden = true; $("caption").hidden = true;
+  $("run").hidden = true; $("caption").hidden = true; show("home");
   if (completed) {
     addLog(Math.round(r.breathTotal));
     setPhaseText("수고하셨어요", "Well done", `${r.cycles}회 · ${fmtClock(r.breathTotal)}`, "var(--exhale)", true);
     speak("수고하셨어요. 천천히 평소 호흡으로 돌아오세요.");
     chime("out");
-    setTimeout(() => { if (!run) renderInfo(); }, 6000);
+    setTimeout(() => { if (!run && screen === "home") renderInfo(); }, 6000);
   } else renderInfo();
   idleClock = 0;
   requestAnimationFrame(layoutTarget);
@@ -740,6 +874,7 @@ function runState(dt) {
     run.idx = i; run.lastCount = 0;
     const lab = LABEL[ph.t];
     if (ph.t !== "ready") {
+      if (ph.ci === 0) music.chord(ph.cycle);
       chime(ph.t); vibrate(ph.t === "in" ? 40 : 25);
       speak(ph.voice || lab[2]);
       const cap = run.p.captions[ph.cycle % run.p.captions.length];
@@ -836,6 +971,88 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 
+/* ───────────── Welcome → question → recommendation ───────────── */
+const MOODS = [
+  { id: "anger", ko: "화가 나요", sub: "열이 오르고 욱해요", p: "lava",
+    why: "들끓는 감정에는 들숨과 날숨을 똑같이, 아주 느리게 쉬는 호흡이 좋아요. 8초씩 오르내리는 리듬이 열기를 천천히 식혀 줍니다." },
+  { id: "tense", ko: "긴장돼요", sub: "발표·면접·중요한 통화 전", p: "box",
+    why: "긴장하면 숨이 얕고 빨라져요. 4초씩 네 박자를 지키는 박스 호흡이 몸을 안정시키고 집중을 되찾게 해 줍니다." },
+  { id: "anxious", ko: "불안하고 답답해요", sub: "가슴이 꽉 막힌 느낌", p: "sigh",
+    why: "답답할 때는 두 번 나눠 들이쉬고 길게 내쉬는 한숨 호흡이 가장 빨리 효과를 봐요. 한두 번만 해도 가슴이 풀립니다." },
+  { id: "busy", ko: "머리가 복잡해요", sub: "생각이 꼬리를 물어요", p: "nadi",
+    why: "좌우 콧구멍을 번갈아 쓰는 교호 호흡은 손과 숨에 주의를 붙잡아 두어, 흩어진 생각을 한 줄로 정리해 줍니다." },
+  { id: "sleep", ko: "잠이 안 와요", sub: "누웠는데 정신이 또렷해요", p: "478",
+    why: "날숨을 들숨의 두 배로 길게 쉬는 4-7-8 호흡은 몸을 잠들 준비 상태로 바꿔 줘요. 누운 채로 따라 해 보세요." },
+  { id: "calm", ko: "그냥 숨 고르고 싶어요", sub: "매일의 작은 습관으로", p: "coherent",
+    why: "특별한 일이 없다면 분당 5.5회의 공명 호흡이 가장 무난해요. 매일 5분이면 심장과 호흡의 리듬이 고르게 맞춰집니다." }
+];
+const TIMES = [
+  { m: 1, ko: "1분", sub: "잠깐 숨 돌리기" },
+  { m: 3, ko: "3분", sub: "차분히 정리하기" },
+  { m: 5, ko: "5분", sub: "충분히 깊게" }
+];
+let screen = "welcome", pickedMood = null;
+const CARDS = { welcome: "welcomeCard", ask: "askCard", result: "resultCard", home: "panel" };
+function hideCards() { Object.values(CARDS).forEach(id => { $(id).hidden = true; }); }
+function show(name) {
+  screen = name; hideCards(); $(CARDS[name]).hidden = false;
+  if (name === "home") renderInfo();
+  requestAnimationFrame(layoutTarget);
+}
+function renderAsk(step) {
+  const card = $("askCard");
+  if (step === 1) {
+    setPhaseText("지금 마음이 어떤가요?", "How are you feeling right now?", "1 / 2", "var(--ink)", true);
+    card.innerHTML = `<div class="opts">${MOODS.map(m => `<button class="opt" data-mood="${m.id}">${m.ko}<small>${m.sub}</small></button>`).join("")}</div>
+      <button class="ghost" data-act="home">건너뛰고 직접 고르기</button>`;
+  } else {
+    setPhaseText("시간은 얼마나 있나요?", "How much time do you have?", "2 / 2", "var(--ink)", true);
+    card.innerHTML = `<div class="opts one">${TIMES.map(t => `<button class="opt" data-min="${t.m}">${t.ko}<small>${t.sub}</small></button>`).join("")}</div>
+      <button class="ghost" data-act="back">이전으로</button>`;
+  }
+  show("ask");
+  const first = card.querySelector(".opt"); if (first) first.focus({ preventScroll: true });
+}
+function renderResult(mins) {
+  const mood = MOODS.find(m => m.id === pickedMood) || MOODS[5];
+  const p = PATTERNS.find(x => x.id === mood.p);
+  minsBy[p.id] = mins; store.set("mins", minsBy);
+  screen = "result"; selectPattern(p.id);
+  const c = cyclesFor(p, mins);
+  setPhaseText("지금 당신에게 필요한 호흡", "Your breath for right now", p.rhythm, "var(--accent)", true);
+  $("recoName").textContent = p.ko;
+  $("recoEn").textContent = p.en;
+  $("recoWhy").textContent = mood.why;
+  $("recoMeta").textContent = `${p.rhythm}  ·  ${c}회 호흡  ·  약 ${fmtClock(c * cycleDur(p))}`;
+  $("recoHow").textContent = p.how;
+  show("result");
+  speak(`지금 당신에게는 ${p.ko}이 좋겠어요.`);
+}
+function welcome() {
+  setPhaseText("어서 오세요", "Welcome to Soomgyeol", "", "var(--ink)", true);
+  show("welcome");
+}
+$("enter").addEventListener("click", () => {
+  ensureAudio();
+  speak("숨결에 오신 걸 환영해요. 잠시 숨을 고르며 마음을 편안하게 내려놓아 볼게요. 지금 마음이 어떤지 골라 주세요.");
+  renderAsk(1);
+});
+$("skipFlow").addEventListener("click", () => { ensureAudio(); show("home"); });
+$("askCard").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.mood) {
+    pickedMood = b.dataset.mood;
+    const m = MOODS.find(x => x.id === pickedMood);
+    screen = "ask"; selectPattern(m.p);           // preview the matching shape while choosing time
+    renderAsk(2);
+  } else if (b.dataset.min) renderResult(+b.dataset.min);
+  else if (b.dataset.act === "back") renderAsk(1);
+  else if (b.dataset.act === "home") show("home");
+});
+$("recoStart").addEventListener("click", start);
+$("recoBrowse").addEventListener("click", () => show("home"));
+$("reask").addEventListener("click", () => { ensureAudio(); renderAsk(1); });
+
 /* ───────────── Events ───────────── */
 $("chips").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) selectPattern(b.dataset.id); });
 $("mins").addEventListener("click", e => {
@@ -872,7 +1089,7 @@ addEventListener("resize", resize);
 
 /* ───────────── Boot ───────────── */
 setShape(current.shape);
-renderChips(); renderInfo(); renderToday();
+renderChips(); renderInfo(); renderToday(); welcome();
 resize();
 requestAnimationFrame(t => { lastT = t; layoutTarget(); requestAnimationFrame(frame); });
 })();
