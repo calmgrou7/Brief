@@ -88,6 +88,7 @@ button:focus-visible, .chip:focus-visible, summary:focus-visible { outline: 2px 
   display: flex; flex-direction: column; gap: 12px;
   max-height: 56vh; overflow-y: auto;
 }
+.panel > *, .flow > * { flex-shrink: 0; }
 .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -14px; padding: 0 14px 2px; }
 .chips::-webkit-scrollbar { display: none; }
 .chip {
