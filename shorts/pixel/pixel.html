@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>한장견적 픽셀 쇼츠</title>
+<style>
+@font-face{font-family:G;src:url(fonts/Galmuri11.woff2);font-weight:400}
+@font-face{font-family:G;src:url(fonts/Galmuri11-Bold.woff2);font-weight:700}
+:root{--ink:#1f2a26;--green:#223a32;--terra:#a0442f;--cream:#faf6ee;--beige:#ecd3ad;--gold:#f2c94c;--sky:#8fd3ff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--cream)}
+body{font-family:G,'Noto Color Emoji',monospace;font-weight:700;color:var(--ink);-webkit-font-smoothing:none;font-smooth:never}
+.scene{position:absolute;inset:0;display:none;overflow:hidden}
+.abs{position:absolute}
+.c{left:0;right:0;text-align:center}
+.t88{font-size:88px;line-height:1.25}
+.t66{font-size:66px;line-height:1.3}
+.t44{font-size:44px;line-height:1.4}
+/* pixel outline text */
+.ol{text-shadow:6px 0 0 #fff,-6px 0 0 #fff,0 6px 0 #fff,0 -6px 0 #fff,6px 6px 0 #fff,-6px -6px 0 #fff,6px -6px 0 #fff,-6px 6px 0 #fff}
+.old{text-shadow:6px 0 0 var(--ink),-6px 0 0 var(--ink),0 6px 0 var(--ink),0 -6px 0 var(--ink),6px 6px 0 var(--ink),-6px -6px 0 var(--ink),6px -6px 0 var(--ink),-6px 6px 0 var(--ink)}
+/* pixel box: stepped corners via box-shadow */
+.px{background:#fff;box-shadow:0 -8px 0 0 var(--ink),0 8px 0 0 var(--ink),-8px 0 0 0 var(--ink),8px 0 0 0 var(--ink),0 16px 0 0 rgba(0,0,0,.18),8px 8px 0 0 rgba(0,0,0,.18)}
+.bub{padding:30px 40px;font-size:44px;line-height:1.45}
+.bub .who{font-size:33px;color:var(--terra);margin-bottom:6px}
+.tail{position:absolute;width:24px;height:24px;background:#fff;box-shadow:8px 0 0 0 var(--ink),-8px 0 0 0 var(--ink),0 8px 0 0 var(--ink)}
+.spr svg,.spr canvas{display:block}
+.pix{image-rendering:pixelated}
+/* scenes */
+.skybg{background:linear-gradient(#6cc4ff 0 18%,#7fcdff 18% 34%,#8fd3ff 34% 52%,#a3dcff 52% 70%,#b8e5ff 70%)}
+.ground{left:0;right:0;top:1500px;bottom:0;background:#a8643c;background-image:linear-gradient(90deg,rgba(0,0,0,.12) 50%,transparent 50%),linear-gradient(rgba(0,0,0,.12) 50%,transparent 50%);background-size:80px 80px,80px 80px;background-blend-mode:normal}
+.grass{left:0;right:0;top:1476px;height:36px;background:#5fbf5a;box-shadow:0 12px 0 0 #3f9e48}
+.cloud{background:#fff;height:48px;box-shadow:24px -24px 0 0 #fff,72px -24px 0 0 #fff,48px -48px 0 0 #fff}
+#s2{background:var(--green);background-image:radial-gradient(rgba(255,255,255,.06) 3px,transparent 4px);background-size:24px 24px}
+#s3{background:#191b2e}
+#rays{left:-500px;top:-500px;width:2080px;height:2080px;background:repeating-conic-gradient(from 0deg,#2a2d52 0 10deg,#191b2e 10deg 20deg)}
+.creambg{background:var(--cream);background-image:radial-gradient(#e6dccb 3px,transparent 4px);background-size:40px 40px}
+.step{width:400px;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;font-size:44px;background:#2c4a40;box-shadow:0 -8px 0 0 #142520,0 8px 0 0 #142520,-8px 0 0 0 #142520,8px 0 0 0 #142520;color:#9fb5ab}
+.step.on{background:#fff;color:var(--ink);box-shadow:0 -8px 0 0 var(--ink),0 8px 0 0 var(--ink),-8px 0 0 0 var(--ink),8px 0 0 0 var(--ink),0 0 0 16px var(--terra)}
+.hp{left:240px;width:600px;top:1110px;height:56px;background:#142520;box-shadow:0 -8px 0 0 #fff,0 8px 0 0 #fff,-8px 0 0 0 #fff,8px 0 0 0 #fff}
+#hpfill{left:0;top:0;bottom:0;background:#e5484d}
+.phone{background:#1d1f22;padding:20px;box-shadow:0 -10px 0 0 var(--ink),0 10px 0 0 var(--ink),-10px 0 0 0 var(--ink),10px 0 0 0 var(--ink),20px 20px 0 0 rgba(0,0,0,.18)}
+.screen{position:relative;overflow:hidden;width:480px;height:791px;background:#faf7f0}
+.screen img{position:absolute;left:0;top:0;width:480px}
+.ring{position:absolute;border:10px solid var(--terra);z-index:5}
+.badge{padding:22px 36px;font-size:44px;background:var(--terra);color:#fff;box-shadow:0 -8px 0 0 var(--ink),0 8px 0 0 var(--ink),-8px 0 0 0 var(--ink),8px 0 0 0 var(--ink)}
+.btn{background:var(--terra);color:#fff;font-size:66px;padding:36px 0;text-align:center;box-shadow:0 -10px 0 0 var(--ink),0 10px 0 0 var(--ink),-10px 0 0 0 var(--ink),10px 0 0 0 var(--ink),0 22px 0 0 #6d2a1c}
+.caret{display:inline-block;width:8px;height:66px;background:var(--terra);vertical-align:-10px;margin-left:4px}
+#wipe{left:0;top:0;z-index:50}
+#flash{inset:0;background:#fff;z-index:49;opacity:0}
+</style>
+</head>
+<body>
+
+<!-- S1 HOOK : 현장에서 견적 요청 -->
+<div class="scene skybg" id="s1">
+  <div class="abs cloud" style="left:110px;top:420px;width:120px"></div>
+  <div class="abs cloud" style="left:760px;top:330px;width:96px"></div>
+  <div class="abs grass"></div><div class="abs ground"></div>
+  <div class="abs spr" id="cone1" style="left:110px;top:1356px"></div>
+  <div class="abs spr" id="cone2" style="left:880px;top:1356px"></div>
+  <div class="abs c t88 ol" id="s1a" style="top:170px">앗, 현장인데…</div>
+  <div class="abs c t66 ol" id="s1b" style="top:300px;color:var(--terra)">견적 요청이 왔다!</div>
+  <div class="abs px bub" id="s1bub" style="left:150px;top:560px;width:780px"><div class="who">고객님</div><span id="s1msg"></span><div class="tail" style="left:540px;bottom:-24px"></div></div>
+  <div class="abs spr" id="s1phone" style="left:700px;top:930px"></div>
+  <div class="abs t44 ol" id="s1ding" style="left:640px;top:870px;color:var(--terra)">띠링!</div>
+  <div class="abs" id="s1hero" style="left:386px;top:1104px"></div>
+  <div class="abs t88 old" id="s1ex" style="left:510px;top:960px;color:var(--gold)">!</div>
+</div>
+
+<!-- S2 PAIN : 견적 하나 보내려면 -->
+<div class="scene" id="s2">
+  <div class="abs c t66" style="top:170px;color:#fff" id="s2h">견적 하나 보내려면…</div>
+  <div class="abs step" id="st0" style="left:100px;top:380px"><div class="spr" id="sp0"></div>사무실 복귀</div>
+  <div class="abs step" id="st1" style="left:580px;top:380px"><div class="spr" id="sp1"></div>노트북 켜기</div>
+  <div class="abs step" id="st2" style="left:100px;top:740px"><div class="spr" id="sp2"></div>엑셀 양식 찾기</div>
+  <div class="abs step" id="st3" style="left:580px;top:740px"><div class="spr" id="sp3"></div>PDF로 변환</div>
+  <div class="abs t44" style="left:120px;top:1112px;color:#fff">HP</div>
+  <div class="abs hp"><div class="abs" id="hpfill"></div></div>
+  <div class="abs t66 old" id="dmg" style="left:760px;top:1020px;color:#ff6b6b">-30</div>
+  <div class="abs" id="s2hero" style="left:386px;top:1230px"></div>
+  <div class="abs spr" id="sweat1"></div><div class="abs spr" id="sweat2"></div>
+  <div class="abs c t44" id="s2f" style="top:1640px;color:var(--beige)">체력이 남아나질 않는다…</div>
+</div>
+
+<!-- S3 ITEM GET -->
+<div class="scene" id="s3">
+  <div class="abs" id="rays"></div>
+  <div class="abs c t88 old" id="s3get" style="top:230px;color:var(--gold)">ITEM GET!</div>
+  <canvas class="abs pix" id="s3icon" width="30" height="30" style="left:420px;width:240px;height:240px"></canvas>
+  <div class="abs spr" id="star0"></div><div class="abs spr" id="star1"></div><div class="abs spr" id="star2"></div><div class="abs spr" id="star3"></div>
+  <div class="abs c t88 old" id="s3name" style="top:790px;color:#fff">한장견적</div>
+  <div class="abs c t44" id="s3sub" style="top:920px;color:var(--beige)">토스에서 바로 쓰는 견적서</div>
+  <div class="abs" id="s3hero" style="left:386px;top:1250px"></div>
+</div>
+
+<!-- S4–S6 : 기능 소개 -->
+<div class="scene creambg" id="sp">
+  <div class="abs c t66 ol" id="cap0" style="top:120px">견적서부터 <span style="color:var(--terra)">영수증까지</span></div>
+  <div class="abs c t66 ol" id="cap1" style="top:120px">사업자 정보는 <span style="color:var(--terra)">한 번만</span></div>
+  <div class="abs c t66 ol" id="cap2" style="top:120px">매달 <span style="color:var(--terra)">5건 무료</span></div>
+  <div class="abs phone" id="phone" style="left:280px;top:290px">
+    <div class="screen">
+      <img id="img0" src="../assets/screen1.png"><img id="img1" src="../assets/screen2.png"><img id="img2" src="../assets/screen3.png">
+      <div class="ring" id="ring"></div>
+    </div>
+  </div>
+  <div class="abs spr" id="coin0"></div><div class="abs spr" id="coin1"></div><div class="abs spr" id="coin2"></div>
+  <div class="abs t66 old" id="plus5" style="left:700px;top:330px;color:var(--gold)">+5</div>
+  <div class="abs" id="sphero" style="left:100px;top:1236px"></div>
+  <div class="abs px bub" id="spbub" style="left:400px;top:1260px;width:560px"><span id="spmsg"></span><div class="tail" style="left:-24px;top:60px;box-shadow:0 8px 0 0 var(--ink),0 -8px 0 0 var(--ink),-8px 0 0 0 var(--ink)"></div></div>
+</div>
+
+<!-- S7 : 전송 완료 -->
+<div class="scene skybg" id="s7">
+  <div class="abs cloud" style="left:150px;top:560px;width:120px"></div>
+  <div class="abs cloud" style="left:800px;top:480px;width:96px"></div>
+  <div class="abs grass"></div><div class="abs ground"></div>
+  <div class="abs c t88 ol" id="s7h" style="top:200px">견적서 <span style="color:var(--terra)">전송 완료!</span></div>
+  <div class="abs" id="s7hero" style="left:80px;top:1116px"></div>
+  <div class="abs" id="s7cust" style="left:700px;top:1116px"></div>
+  <div class="abs t44 ol" style="left:110px;top:1060px" id="s7l1">사장님</div>
+  <div class="abs t44 ol" style="left:740px;top:1060px" id="s7l2">고객님</div>
+  <canvas class="abs pix" id="s7doc" width="30" height="30" style="width:120px;height:120px"></canvas>
+  <div class="abs px bub" id="s7bub" style="left:500px;top:800px;width:500px"><span id="s7msg"></span><div class="tail" style="left:340px;bottom:-24px"></div></div>
+  <div class="abs spr" id="heart0"></div><div class="abs spr" id="heart1"></div><div class="abs spr" id="heart2"></div>
+  <div class="abs badge" id="bd0" style="left:120px;top:400px">앱 설치 없이</div>
+  <div class="abs badge" id="bd1" style="left:560px;top:400px">토스에서 바로</div>
+</div>
+
+<!-- S8 : CTA -->
+<div class="scene creambg" id="s8">
+  <div class="abs c t66 ol" id="s8a" style="top:200px">토스 앱에서</div>
+  <div class="abs c t88 ol" id="s8b" style="top:300px">'<span style="color:var(--terra)">한장견적</span>' 검색!</div>
+  <div class="abs px" id="s8search" style="left:110px;width:860px;top:540px;height:150px;display:flex;align-items:center;padding:0 44px;gap:28px;font-size:66px"><span style="font-size:56px">🔍</span><span id="s8q"></span><span class="caret" id="caret"></span></div>
+  <div class="abs btn" id="s8btn" style="left:110px;width:860px;top:800px">▶ 지금 바로 견적 쓰기</div>
+  <div class="abs" id="s8hero" style="left:170px;top:1060px"></div>
+  <div class="abs" id="s8cust" style="left:630px;top:1060px"></div>
+  <div class="abs spr" id="h8a"></div><div class="abs spr" id="h8b"></div>
+  <div class="abs c t44" id="s8foot" style="top:1470px;color:#6d6a60">바로가기 링크는 설명란에 ▼</div>
+</div>
+
+<div class="abs" id="flash"></div>
+<canvas class="abs" id="wipe" width="1080" height="1920"></canvas>
+
+<script src="characters.js"></script>
+<script>
+const TOTAL = 28;
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const step=(x,n)=>Math.floor(x*n)/n;               // quantize motion → choppy pixel feel
+const snap=v=>Math.round(v/6)*6;                   // snap positions to 6px grid
+
+// ---------- small sprites ----------
+function spr(grid,pal,px){
+  const w=grid[0].length,h=grid.length,r=[];
+  grid.forEach((row,y)=>[...row].forEach((ch,x)=>{if(ch!=='.')r.push(`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${pal[ch]}"/>`)}));
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w*px}" height="${h*px}" shape-rendering="crispEdges">${r.join('')}</svg>`;
+}
+const K='#22252a';
+const S={
+  phone:[["KKKKKKKK","KSSSSSSK","KSRRRRSK","KSSSSSSK","KSLLLLSK","KSSSSSSK","KSLLLSSK","KSSSSSSK","KSLLLLSK","KSSSSSSK","KKKWWKKK","KKKKKKKK"],{K,S:'#eaf6ff',R:'#e5484d',L:'#9aa4ad',W:'#5b6168'}],
+  office:[["..KKKKKK..","..KWWWWK..","..KWBWBK..","..KWWWWK..","..KWBWBK..","KKKWWWWKKK","KWWWBWBWWK","KWBWWWWWBK","KWWWDDWWWK","KKKKDDKKKK"],{K,W:'#d9d4c7',B:'#6a8caf',D:'#8a5a3b'}],
+  laptop:[["..KKKKKKKK..","..KBBBBBBK..","..KBBBBBBK..","..KBBBBBBK..","..KBBBBBBK..","..KKKKKKKK..","KKKKKKKKKKKK","KGGGGGGGGGGK","KKKKKKKKKKKK"],{K,B:'#8fc3f0',G:'#b0b0b8'}],
+  sheet:[["GGGGGGGGGG","GWWGWWGWWG","GGGGGGGGGG","GWWGWWGWWG","GGGGGGGGGG","GWWGWWGWWG","GGGGGGGGGG","GWWGWWGWWG","GGGGGGGGGG"],{G:'#2e8b57',W:'#e8f5ec'}],
+  pdf:[["KKKKKK...","KWWWWKK..","KWWWWKWK.","KWWWWKKKK","KWWWWWWWK","KRRRRRRRK","KRRRRRRRK","KWWWWWWWK","KWLLLLLWK","KWWWWWWWK","KKKKKKKKK"],{K,W:'#ffffff',R:'#e5484d',L:'#9aa4ad'}],
+  cone:[["...O...","..OOO..","..WWW..",".OOOOO.",".WWWWW.","OOOOOOO","KKKKKKK"],{O:'#ff7a1a',W:'#ffffff',K:'#3b3b40'}],
+  sweat:[[".B.","BBB","BBB",".B."],{B:'#5ab4ff'}],
+  star:[["...Y...","...Y...","..YYY..","YYYWYYY","..YYY..","...Y...","...Y..."],{Y:'#f2c94c',W:'#fff8d6'}],
+  coin:[[".YYYY.","YYWYYY","YWYYOY","YWYYOY","YYYOOY",".YYYY."],{Y:'#f2c94c',W:'#fff3b0',O:'#c9952c'}],
+  heart:[[".HH.HH.","HHHHHHH","HWHHHHH",".HHHHH.","..HHH..","...H..."],{H:'#e5484d',W:'#ffb3b3'}],
+};
+const put=(id,k,px)=>{$(id).innerHTML=spr(S[k][0],S[k][1],px)};
+put('cone1','cone',12);put('cone2','cone',12);put('s1phone','phone',10);
+put('sp0','office',14);put('sp1','laptop',13);put('sp2','sheet',14);put('sp3','pdf',13);
+put('sweat1','sweat',14);put('sweat2','sweat',12);
+['star0','star1','star2','star3'].forEach(i=>put(i,'star',10));
+['coin0','coin1','coin2'].forEach(i=>put(i,'coin',14));
+['heart0','heart1','heart2','h8a','h8b'].forEach(i=>put(i,'heart',12));
+
+// characters: 대표(사장님) + 행정 담당(고객 역)
+function chr(id,key,px){const el=$(id);el.innerHTML=`<div class="n">${charSVG(key,px)}</div><div class="b" style="display:none">${charSVG(key,px,true)}</div>`;}
+const HERO='ceo', CUST='admin';
+chr('s1hero',HERO,22);chr('s2hero',HERO,22);chr('s3hero',HERO,22);chr('sphero',HERO,18);
+chr('s7hero',HERO,20);chr('s7cust',CUST,20);chr('s8hero',HERO,20);chr('s8cust',CUST,20);
+function blink(id,t,off=0){const el=$(id);const b=((t+off)%2.6)<.12;el.querySelector('.n').style.display=b?'none':'block';el.querySelector('.b').style.display=b?'block':'none'}
+
+// pixelated app icon
+const icon=new Image();icon.src='../assets/icon.png';
+icon.onload=()=>['s3icon','s7doc'].forEach(id=>{const c=$(id).getContext('2d');c.imageSmoothingEnabled=true;c.drawImage(icon,0,0,30,30)});
+
+// ---------- helpers ----------
+function show(el,o){el.style.visibility=o?'visible':'hidden'}
+function pos(el,x,y,s=1){el.style.transform=`translate(${snap(x)}px,${snap(y)}px) scale(${s})`}
+function popIn(el,t,a,d=.3){const k=p(t,a,a+d);show(el,t>=a);el.style.transform=`scale(${t<a?0:step(eb(k),6)||.2})`}
+function slideIn(el,t,a,dy=48){const k=p(t,a,a+.3);show(el,t>=a);el.style.transform=`translateY(${snap((1-eo(k))*dy)}px)`}
+function typeIt(el,full,t,a,cps=16){const n=Math.floor(clamp((t-a)*cps,0,full.length));el.innerHTML=full.slice(0,n).replace(/\n/g,'<br>')}
+function idle(t,f=2.5){return Math.floor(t*f)%2?-6:0}  // 2-frame bob
+
+// ---------- timeline ----------
+const SC=[['s1',0,3.6],['s2',3.6,7.4],['s3',7.4,10.6],['sp',10.6,21],['s7',21,24.6],['s8',24.6,28]];
+const SH=[[10.6,14.2],[14.2,17.6],[17.6,21]];
+const MSG=['견적서부터 영수증까지\n여기서 끝!','사업자 정보는\n한 번만 등록하면 돼요','매달 5건은\n무료로 써요!'];
+
+// pixel wipe between scenes
+const wc=$('wipe').getContext('2d'); const B=60, COLS=18, ROWS=32;
+const thr=[];let seed=7;for(let i=0;i<COLS*ROWS;i++){seed=(seed*16807)%2147483647;thr.push(seed/2147483647)}
+function wipe(t){
+  wc.clearRect(0,0,1080,1920);
+  let cov=0;
+  for(const [, a] of SC.slice(1)){ if(t>a-.24&&t<a+.24) cov=t<a?p(t,a-.24,a):1-p(t,a,a+.24); }
+  if(cov<=0)return; wc.fillStyle='#1f2a26';
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const d=(x/COLS*.5+y/ROWS*.5)*.6+thr[y*COLS+x]*.4;if(d<cov)wc.fillRect(x*B,y*B,B,B)}
+}
+
+function render(t){
+  SC.forEach(([id,a,b])=>{$(id).style.display=(t>=a&&t<b)?'block':'none'});
+  wipe(t);
+  $('flash').style.opacity=t>=7.4&&t<7.75?1-p(t,7.4,7.75):0;
+
+  // S1
+  if(t<3.6){
+    show($('s1a'),true); slideIn($('s1b'),t,1.5);
+    popIn($('s1phone'),t,.45,.25); $('s1phone').style.transform+=` rotate(${t>.45&&t<1.4?(Math.floor(t*20)%2?8:-8):0}deg)`;
+    show($('s1ding'),t>.5&&t<1.6&&Math.floor(t*6)%2===0);
+    popIn($('s1bub'),t,.75,.25); typeIt($('s1msg'),'사장님~ 견적서 오늘\n받을 수 있을까요? 🙏',t,.95,18);
+    const sh=t>1.6&&t<2.2?(Math.floor(t*24)%2?12:-12):0;
+    pos($('s1hero'),sh,idle(t)); blink('s1hero',t);
+    show($('s1ex'),t>1.6); pos($('s1ex'),0,t>1.6?-step(eo(p(t,1.6,1.8)),4)*40:0);
+  }
+  // S2
+  if(t>=3.6&&t<7.4){
+    const b=3.6; slideIn($('s2h'),t,b+.1);
+    let hp=100;
+    for(let i=0;i<4;i++){const a=b+.45+i*.55;const el=$('st'+i);el.classList.toggle('on',t>=a);popIn(el,t,a-.25,.25);if(t>=a)hp-=[30,25,25,15][i]}
+    hp=Math.max(5,hp); $('hpfill').style.width=step(hp/100,30)*100+'%';
+    const lastHit=[0,1,2,3].map(i=>b+.45+i*.55).filter(a=>t>=a).pop();
+    const dk=lastHit?p(t,lastHit,lastHit+.45):1; show($('dmg'),lastHit&&dk<1); pos($('dmg'),0,-dk*60);
+    $('dmg').textContent=lastHit?'-'+[30,25,25,15][[0,1,2,3].map(i=>b+.45+i*.55).indexOf(lastHit)]:'';
+    const hit=lastHit&&t-lastHit<.18; pos($('s2hero'),hit?(Math.floor(t*30)%2?10:-10):0,idle(t,1.5));
+    $('s2hero').style.filter=hit?'brightness(1.8)':'none'; blink('s2hero',t,.7);
+    const sw=(t*1.6)%1; pos($('sweat1'),360,1180+sw*80); $('sweat1').style.opacity=1-sw;
+    const sw2=(t*1.6+.5)%1; pos($('sweat2'),700,1200+sw2*80); $('sweat2').style.opacity=1-sw2;
+    slideIn($('s2f'),t,b+2.9,24);
+  }
+  // S3
+  if(t>=7.4&&t<10.6){
+    const b=7.4; $('rays').style.transform=`rotate(${step((t-b)*12,1)}deg)`;
+    show($('s3get'),t>b+.25&&(t<b+1.4||Math.floor(t*4)%2===0)); popIn($('s3get'),t,b+.25,.25);
+    const k=eo(p(t,b+.2,b+1.0)); const iy=1150-(1150-470)*k + (t>b+1?Math.round(Math.sin((t-b)*4)*2)*6:0);
+    show($('s3icon'),t>b+.2); $('s3icon').style.top=snap(iy)+'px';
+    [[300,420],[740,430],[330,690],[720,700]].forEach(([x,y],i)=>{const el=$('star'+i);const on=t>b+1&&Math.floor((t+i*.3)*5)%3!==0;show(el,on);pos(el,x,y)});
+    slideIn($('s3name'),t,b+1.05); slideIn($('s3sub'),t,b+1.35,24);
+    const j=t>b+.9&&t<b+2.1?Math.abs(Math.sin((t-b-.9)*Math.PI/.6))*-90:0; pos($('s3hero'),0,j); blink('s3hero',t);
+  }
+  // S4–S6
+  if(t>=10.6&&t<21){
+    const kp=p(t,10.6,11.0); $('phone').style.transform=`translateY(${snap((1-eo(kp))*700)}px)`;
+    SH.forEach(([a,e],i)=>{
+      const vis=t>=a&&t<e; show($('cap'+i),vis); if(vis) slideIn($('cap'+i),t,a+.15);
+      const img=$('img'+i); const ki=i===0?1:eo(p(t,a-.05,a+.3)); img.style.zIndex=i+1;
+      show(img,t>=a-.05||i===0); img.style.transform=`translateX(${snap((1-ki)*480)}px)`;
+    });
+    const si=SH.findIndex(([a,e])=>t>=a&&t<e), [a,e]=SH[si];
+    popIn($('spbub'),t,a+.35,.2); typeIt($('spmsg'),MSG[si],t,a+.5,16);
+    pos($('sphero'),0,idle(t)); blink('sphero',t,.3);
+    // highlight ring (screen px = 480/1272 of source)
+    const R=[[61,1115,1155,273],[126,583,1022,165],[835,210,383,562]][si]; const sw=480/1272;
+    const ring=$('ring'); const ron=t>a+.9&&t<e-.15&&Math.floor(t*4)%2===0;
+    show(ring,ron); Object.assign(ring.style,{left:R[0]*sw-12+'px',top:R[1]*sw-12+'px',width:R[2]*sw+24+'px',height:R[3]*sw+24+'px'});
+    // coins + +5 on the free-plan beat
+    [[620,420],[760,520],[880,400]].forEach(([x,y],i)=>{const el=$('coin'+i);const k=p(t,18.4+i*.15,19.4+i*.15);show(el,si===2&&k>0&&k<1);pos(el,x,y-k*260)});
+    const k5=p(t,18.5,19.6); show($('plus5'),si===2&&k5>0&&k5<1); pos($('plus5'),0,-k5*120);
+  }
+  // S7
+  if(t>=21&&t<24.6){
+    const b=21; slideIn($('s7h'),t,b+.1);
+    pos($('s7hero'),0,idle(t)); pos($('s7cust'),0,t>b+1.5&&t<b+2.3?-Math.abs(Math.sin((t-b-1.5)*Math.PI/.4))*60:idle(t+.2));
+    blink('s7hero',t);blink('s7cust',t,1.1);
+    const k=p(t,b+.5,b+1.4); const doc=$('s7doc'); show(doc,k>0&&k<1);
+    const x=240+(820-240)*k, y=1060-Math.sin(k*Math.PI)*420; doc.style.left=snap(x-60)+'px'; doc.style.top=snap(y-60)+'px';
+    popIn($('s7bub'),t,b+1.5,.2); typeIt($('s7msg'),'벌써 왔어요?! 👍',t,b+1.65,14);
+    [[700,1120],[900,1140],[800,1080]].forEach(([hx,hy],i)=>{const el=$('heart'+i);const kh=p(t,b+1.9+i*.25,b+2.9+i*.25);show(el,kh>0&&kh<1);pos(el,hx,hy-kh*200)});
+    popIn($('bd0'),t,b+2.2,.2); popIn($('bd1'),t,b+2.5,.2);
+  }
+  // S8
+  if(t>=24.6){
+    const b=24.6; slideIn($('s8a'),t,b+.05); slideIn($('s8b'),t,b+.3);
+    popIn($('s8search'),t,b+.6,.2);
+    const q='한장견적'; const n=Math.floor(clamp((t-(b+.95))/.16,0,q.length)); $('s8q').textContent=q.slice(0,n);
+    $('caret').style.opacity=(n<q.length||Math.floor(t*3)%2===0)?1:0;
+    popIn($('s8btn'),t,b+1.7,.2); if(t>b+2.4){const pr=Math.floor((t-b-2.4)*2.5)%2; $('s8btn').style.transform=`translateY(${pr?12:0}px)`; $('s8btn').style.boxShadow=pr?'0 -10px 0 0 var(--ink),0 10px 0 0 var(--ink),-10px 0 0 0 var(--ink),10px 0 0 0 var(--ink),0 10px 0 0 #6d2a1c':''}
+    pos($('s8hero'),0,idle(t,3)); pos($('s8cust'),0,idle(t+.2,3)); blink('s8hero',t);blink('s8cust',t,1.3);
+    [['h8a',470,1300],['h8b',560,1260]].forEach(([id,x,y],i)=>{const kh=((t-b)*.8+i*.5)%1;show($(id),t>b+1);pos($(id),x,y-kh*160);$(id).style.opacity=1-kh});
+    slideIn($('s8foot'),t,b+2.2,20);
+  }
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
