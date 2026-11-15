@@ -1,4 +1,5 @@
-// Usage: node render.js [out.mp4] [fps]  — renders scene.html frame-by-frame into a 1080x1920 MP4
+// Usage: node render.js [out.mp4] [fps] [stills]  — renders an HTML timeline frame-by-frame into a 1080x1920 MP4
+// SCENE=ending/ending.html?theme=dark node render.js out.mp4   (default: scene.html)
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const path = require('path');
@@ -8,7 +9,8 @@ const path = require('path');
   const only = process.argv[4]; // optional: comma-separated seconds -> PNG stills
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1080, height: 1920 }, deviceScaleFactor: 1 });
-  await page.goto('file://' + path.resolve(__dirname, 'scene.html'));
+  const [f, q] = (process.env.SCENE || 'scene.html').split('?');
+  await page.goto('file://' + path.resolve(__dirname, f) + (q ? '?' + q : ''));
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
   if (only) {

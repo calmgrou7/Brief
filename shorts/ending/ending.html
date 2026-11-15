@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>브릿지노드 엔딩컷</title>
+<style>
+@font-face{font-family:P;src:url(../fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(../fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Black.woff2);font-weight:900}
+:root{--orange:#fa3e03;--ink:#16181a;--bg:#ffffff;--muted:#8b8f94;--line:#ececec}
+body.dark{--ink:#f5f5f2;--bg:#111213;--muted:#8d9196;--line:#26282a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:var(--bg);font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.02em;position:relative}
+.abs{position:absolute}
+.center{left:0;right:0;text-align:center}
+/* faint grid + nodes background */
+#grid{inset:0;background-image:linear-gradient(var(--line) 2px,transparent 2px),linear-gradient(90deg,var(--line) 2px,transparent 2px);background-size:120px 120px;background-position:-60px -60px}
+/* symbol */
+#sym{left:341px;top:520px;width:398px;height:174px}
+#sym .layer{position:absolute;inset:0;background:url(assets/symbol.png) 0 0/100% 100% no-repeat}
+.dot{width:30px;height:30px;border-radius:50%;background:var(--orange);margin:-15px 0 0 -15px}
+/* wordmark */
+#word{left:107px;top:800px;width:866px;height:79px}
+#word img{position:absolute;top:0;height:79px}
+body.dark #word img{filter:invert(1) brightness(1.05)}
+#tag{top:925px;font-weight:800;font-size:28px;letter-spacing:.32em;color:var(--orange);padding-left:.32em}
+#line{left:440px;width:200px;top:1030px;height:4px;background:var(--orange);transform-origin:center}
+#kr{top:1090px;font-weight:800;font-size:64px;line-height:1.3}
+#kr .o{color:var(--orange)}
+#cta{left:50%;top:1300px;height:116px;padding:0 64px;border-radius:999px;background:var(--ink);color:var(--bg);display:flex;align-items:center;gap:22px;font-weight:800;font-size:46px;white-space:nowrap}
+#cta .arr{width:58px;height:58px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:36px}
+#foot{top:1452px;font-weight:700;font-size:34px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="abs" id="grid"></div>
+
+<div class="abs" id="sym">
+  <div class="layer" id="pl"></div>
+  <div class="layer" id="pr"></div>
+  <div class="layer" id="arc"></div>
+</div>
+<div class="abs dot" id="d0"></div>
+<div class="abs dot" id="d1"></div>
+
+<div class="abs" id="word"></div>
+
+<div class="abs center" id="tag">IDEAS CONNECT. POSSIBILITIES BEGIN.</div>
+<div class="abs" id="line"></div>
+<div class="abs center" id="kr">좋은 생각이<br><span class="o">좋은 서비스</span>가 되는 곳</div>
+<div class="abs" id="cta">앱·홈페이지 제작 문의<span class="arr">↗</span></div>
+<div class="abs center" id="foot">더 많은 앱은 프로필 링크에서</div>
+
+<script>
+const TOTAL = 7;
+if (new URLSearchParams(location.search).get('theme') === 'dark') document.body.classList.add('dark');
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+
+// symbol geometry (symbol.png is 442x193; displayed at 0.9 → 398x174)
+const SC=398/442, SYM={x:341,y:520};
+const PL=[4,57], PR=[385,438], TOPY=4, BOTY=189;
+// wordmark letters (x offsets / widths in source px, scale 0.68)
+const LX=[0,132,266,348,484,637,760,897,1055,1196], LW=[88,92,32,100,108,77,98,116,99,78], WS=0.68;
+const word=$('word');
+LX.forEach((x,i)=>{const im=document.createElement('img');im.src=`assets/L${i}.png`;im.style.left=(x*WS)+'px';im.style.width=(LW[i]*WS)+'px';word.appendChild(im)});
+const letters=[...word.children];
+
+function clipX(el,x0,x1,yTop){ // clip in symbol-local px (source units)
+  const W=442,H=193;
+  el.style.clipPath=`inset(${yTop/H*100}% ${(W-x1)/W*100}% 0% ${x0/W*100}%)`;
+}
+
+function render(t){
+  // 1) two nodes appear at pillar bases (0.0–0.45)
+  const dk=eb(p(t,0.05,0.45)), gone=p(t,0.95,1.15);
+  [[PL,'d0'],[PR,'d1']].forEach(([P,id],i)=>{
+    const d=$(id); const cx=SYM.x+(P[0]+P[1])/2*SC, by=SYM.y+BOTY*SC;
+    const k=eb(p(t,0.05+i*.12,0.45+i*.12));
+    // dot travels up with the pillar top while it grows
+    const g=eio(p(t,0.45,1.05)); const y=by-(by-(SYM.y+TOPY*SC))*g;
+    d.style.left=cx+'px'; d.style.top=y+'px';
+    d.style.transform=`scale(${k*(1-gone)})`; d.style.opacity=1-gone;
+  });
+  // 2) pillars grow up (0.45–1.05)
+  const g=eio(p(t,0.45,1.05)), top=BOTY-(BOTY-TOPY)*g;
+  clipX($('pl'),PL[0],PL[1],top); clipX($('pr'),PR[0],PR[1],top);
+  // 3) arc draws left→right, connecting them (1.0–1.6)
+  const a=eio(p(t,1.0,1.6)); clipX($('arc'),PL[1],PL[1]+(PR[0]-PL[1])*a,0);
+  // symbol settle bounce
+  const sb=p(t,1.55,1.95); $('sym').style.transform=`scale(${1+.06*Math.sin(sb*Math.PI)})`;
+  // 4) wordmark letters stagger in (1.5–2.6)
+  letters.forEach((el,i)=>{const k=p(t,1.5+i*.07,1.5+i*.07+.4);el.style.opacity=clamp(k*1.8);el.style.transform=`translateY(${(1-eo(k))*46}px)`});
+  // 5) tagline tracking-in (2.5–3.2)
+  const tk=eo(p(t,2.5,3.2)); const tg=$('tag'); tg.style.opacity=tk; tg.style.letterSpacing=(.6-.28*tk)+'em';
+  // 6) accent line + Korean copy (3.0–3.8)
+  $('line').style.transform=`scaleX(${eio(p(t,3.0,3.45))})`;
+  const kk=p(t,3.2,3.7); $('kr').style.opacity=clamp(kk*1.6); $('kr').style.transform=`translateY(${(1-eo(kk))*50}px)`;
+  // 7) CTA + footer (3.9–4.8), gentle pulse while holding
+  const ck=p(t,3.9,4.35); const pulse=t>4.6?1+.025*Math.sin((t-4.6)*5):1;
+  $('cta').style.opacity=clamp(ck*2); $('cta').style.transform=`translateX(-50%) translateY(${(1-eo(ck))*40}px) scale(${(.92+.08*eb(ck))*pulse})`;
+  $('cta').querySelector('.arr').style.transform=`rotate(${t>4.6?8*Math.sin((t-4.6)*5):0}deg)`;
+  const fk=p(t,4.3,4.7); $('foot').style.opacity=fk; $('foot').style.transform=`translateY(${(1-eo(fk))*20}px)`;
+  // background grid slow drift
+  $('grid').style.opacity=.55; $('grid').style.transform=`translateY(${-t*8}px)`;
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
