@@ -682,7 +682,7 @@ const music = {
     const wet = ac.createGain(); wet.gain.value = 0.7; this.rev.connect(wet).connect(this.out);
     this.dry = ac.createGain(); this.dry.gain.value = 0.8; this.dry.connect(this.out);
     this.delay = ac.createDelay(2); this.delay.delayTime.value = 0.62;
-    const fb = ac.createGain(); fb.gain.value = 0.32; const dg = ac.createGain(); dg.gain.value = 0.35;
+    const fb = ac.createGain(); fb.gain.value = 0.2; const dg = ac.createGain(); dg.gain.value = 0.18;
     this.delay.connect(fb).connect(this.delay); this.delay.connect(dg); dg.connect(this.rev); dg.connect(this.dry);
     this.padFilter = ac.createBiquadFilter(); this.padFilter.type = "lowpass"; this.padFilter.frequency.value = 600; this.padFilter.Q.value = 0.5;
     this.padFilter.connect(this.dry); this.padFilter.connect(this.rev);
@@ -696,14 +696,14 @@ const music = {
   chord(i) {
     if (!this.ready) return;
     const t = ac.currentTime;
-    this.voices.forEach(v => { v.g.gain.cancelScheduledValues(t); v.g.gain.setTargetAtTime(0, t, 1.4); v.o.forEach(o => o.stop(t + 8)); });
+    this.voices.forEach(v => { v.g.gain.cancelScheduledValues(t); v.g.gain.setValueAtTime(v.g.gain.value, t); v.g.gain.setTargetAtTime(0, t, 1.6); v.o.forEach(o => o.stop(t + 12)); });
     this.voices = [];
     this.chordIdx = i % 4; this.lastChordAt = t;
     const tones = this.tones();
     tones.forEach((off, j) => {
       const f = MIDI(this.root + 12 + off), g = ac.createGain();
       g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(j === 0 ? 0.03 : 0.022, t + 3);
-      const o = [-6, 6].map(c => { const o = ac.createOscillator(); o.type = j % 2 ? "triangle" : "sine"; o.frequency.value = f; o.detune.value = c; o.connect(g); o.start(t); return o; });
+      const o = [-6, 6].map(c => { const o = ac.createOscillator(); o.type = "sine"; o.frequency.value = f; o.detune.value = c; o.connect(g); o.start(t); return o; });
       g.connect(this.padFilter); this.voices.push({ g, o });
     });
     const bg = ac.createGain(), bo = ac.createOscillator();
@@ -713,14 +713,17 @@ const music = {
   },
   bell(midi, vel) {
     if (!this.ready || !settings.sound) return;
-    const t = ac.currentTime, f = MIDI(midi), g = ac.createGain();
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.05 * vel, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + 4);
+    const t = ac.currentTime, f = MIDI(midi), g = ac.createGain(), peak = 0.032 * vel;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(peak, t + 0.45);          // slow swell, no attack click
+    g.gain.setTargetAtTime(0, t + 0.6, 1.3);                  // long smooth fade
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = Math.min(1600, f * 2.2); lp.Q.value = 0.3;
     const o1 = ac.createOscillator(); o1.type = "sine"; o1.frequency.value = f;
-    const o2 = ac.createOscillator(); o2.type = "sine"; o2.frequency.value = f * 2.0;
-    const g2 = ac.createGain(); g2.gain.value = 0.25;
-    o1.connect(g); o2.connect(g2).connect(g);
+    const o2 = ac.createOscillator(); o2.type = "sine"; o2.frequency.value = f; o2.detune.value = 7;   // gentle chorus, no bright overtone
+    const g2 = ac.createGain(); g2.gain.value = 0.5;
+    o1.connect(lp); o2.connect(g2).connect(lp); lp.connect(g);
     g.connect(this.dry); g.connect(this.delay); g.connect(this.rev);
-    o1.start(t); o2.start(t); o1.stop(t + 4.2); o2.stop(t + 4.2);
+    o1.start(t); o2.start(t); o1.stop(t + 9); o2.stop(t + 9);
   },
   // melody notes: pentatonic, two octaves above root, stepping up on inhale and down on exhale
   melodyNote(dir) {
@@ -728,12 +731,12 @@ const music = {
     let n = this.lastNote + dir * (1 + (R() < 0.3 ? 1 : 0));
     if (R() < 0.15) n -= dir;
     n = Math.max(0, Math.min(span - 1, n)); this.lastNote = n;
-    return this.root + 24 + sc[n % sc.length] + 12 * Math.floor(n / sc.length);
+    return this.root + 12 + sc[n % sc.length] + 12 * Math.floor(n / sc.length);
   },
   phaseBell(type) {
     const tones = this.tones();
     const off = type === "in" ? tones[2] : type === "out" ? tones[0] : tones[1];
-    this.bell(this.root + 24 + off, 1.2);
+    this.bell(this.root + 12 + off, 1.1);
   },
   tick(s) {
     if (!this.ready) return;
@@ -744,8 +747,8 @@ const music = {
     if (!run && t - this.lastChordAt > 9) this.chord(this.chordIdx + 1);
     if (active && t > this.nextBell) {
       const dir = s.ph && s.ph.t === "in" ? 1 : s.ph && s.ph.t === "out" ? -1 : (R() < 0.5 ? 1 : -1);
-      this.bell(this.melodyNote(dir), 0.35 + R() * 0.35);
-      this.nextBell = t + (run ? 0.9 + R() * 1.6 : 1.6 + R() * 2.4) * (R() < 0.2 ? 2 : 1);
+      this.bell(this.melodyNote(dir), 0.45 + R() * 0.3);
+      this.nextBell = t + (run ? 1.8 + R() * 2.2 : 2.6 + R() * 2.8) * (R() < 0.2 ? 1.6 : 1);
     }
   }
 };
