@@ -1,0 +1,879 @@
+<title>숨결 호흡</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07060a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap">
+<style>
+/* Layout: one-screen night stage. Particle canvas fills the screen; phase text floats on top, controls dock at the bottom. */
+:root {
+  --bg: #07060a;
+  --ink: #efe7dc;
+  --muted: #9b928a;
+  --line: rgba(239, 231, 220, 0.12);
+  --panel: rgba(16, 13, 18, 0.82);
+  --hold: #eadcb0;
+  --exhale: #6fc7b4;
+  --accent: #ff6a3d;
+  --f-display: "Gowun Batang", "Noto Serif KR", "Nanum Myeongjo", serif;
+  --f-latin: "Newsreader", "Georgia", serif;
+  --f-ui: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-ui);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+#app { position: relative; height: 100%; overflow: hidden; }
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.top {
+  position: absolute; inset: 0 0 auto 0; z-index: 3;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-top: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { font-family: var(--f-display); font-size: 17px; letter-spacing: 0.04em; }
+.brand small { font-family: var(--f-latin); font-style: italic; color: var(--muted); font-size: 13px; margin-left: 6px; letter-spacing: 0; }
+.top-right { display: flex; align-items: center; gap: 10px; }
+.today { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--line); color: var(--ink);
+  cursor: pointer;
+}
+.icon-btn svg { width: 20px; height: 20px; }
+button:focus-visible, .chip:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.phase {
+  position: absolute; left: 0; right: 0; top: 9%; z-index: 2;
+  text-align: center; pointer-events: none;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.phase .ko { font-family: var(--f-display); font-weight: 700; font-size: clamp(26px, 7.5vw, 40px); color: var(--phase-color, var(--accent)); text-wrap: balance; transition: color .6s; }
+.phase .en { font-family: var(--f-latin); font-size: clamp(19px, 5.4vw, 28px); color: var(--phase-color, var(--accent)); opacity: .92; margin-top: 2px; transition: color .6s; }
+.phase .count { font-family: var(--f-latin); font-size: clamp(48px, 14vw, 76px); line-height: 1.1; margin-top: 10px; color: var(--phase-color, var(--accent)); font-variant-numeric: tabular-nums; min-height: 1.1em; transition: color .6s; }
+.phase .count.small { font-size: clamp(18px, 5vw, 24px); letter-spacing: .12em; margin-top: 16px; color: var(--muted); }
+
+.caption {
+  position: absolute; left: 0; right: 0; bottom: calc(118px + env(safe-area-inset-bottom, 0px)); z-index: 2;
+  text-align: center; pointer-events: none; transition: opacity .8s;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.caption .ko { font-family: var(--f-display); font-size: clamp(17px, 4.8vw, 22px); text-wrap: balance; }
+.caption .en { font-family: var(--f-latin); font-style: italic; font-size: clamp(15px, 4.2vw, 19px); color: var(--muted); margin-top: 2px; }
+
+/* bottom dock */
+.dock {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  padding-right: max(12px, env(safe-area-inset-right, 0px));
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+.panel {
+  max-width: 560px; margin: 0 auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  padding: 14px 14px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  max-height: 56vh; overflow-y: auto;
+}
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -14px; padding: 0 14px 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: 0 0 auto; border: 1px solid var(--line); background: transparent; color: var(--ink);
+  border-radius: 14px; padding: 8px 12px; text-align: left; cursor: pointer; font-family: var(--f-ui);
+}
+.chip b { display: block; font-weight: 600; font-size: 14px; }
+.chip span { display: block; font-size: 11.5px; color: var(--muted); letter-spacing: .06em; font-variant-numeric: tabular-nums; margin-top: 1px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.chip[aria-pressed="true"] span { color: var(--ink); }
+
+.info { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.info p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.info p.how { color: var(--muted); }
+details { border-top: 1px solid var(--line); padding-top: 8px; }
+summary { cursor: pointer; font-size: 13px; color: var(--muted); list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "+ "; color: var(--accent); }
+details[open] summary::before { content: "− "; }
+details .grid { display: grid; gap: 8px; margin-top: 8px; font-size: 13px; line-height: 1.6; }
+details .grid strong { display: block; font-size: 11px; letter-spacing: .12em; color: var(--muted); font-weight: 600; }
+
+.row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.seg button {
+  background: transparent; color: var(--muted); border: 0; padding: 8px 12px; font: 500 13px var(--f-ui);
+  cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--ink); }
+.cycles { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.start {
+  width: 100%; border: 0; border-radius: 16px; padding: 15px; cursor: pointer;
+  background: var(--accent); color: #140b08; font: 600 16px var(--f-ui); letter-spacing: .04em;
+}
+
+.run {
+  max-width: 560px; margin: 0 auto;
+  display: flex; align-items: center; gap: 12px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 18px;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  padding: 10px 12px;
+}
+.run .meta { flex: 1; min-width: 0; }
+.run .meta .name { font-size: 13px; font-weight: 600; }
+.run .meta .time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 3px; background: var(--line); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); }
+
+/* settings sheet */
+.sheet-wrap { position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  width: 100%; max-width: 560px; background: #120f15; border: 1px solid var(--line); border-bottom: 0;
+  border-radius: 22px 22px 0 0; padding: 18px 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sheet h2 { font-family: var(--f-display); font-size: 20px; margin: 0 0 8px; font-weight: 700; }
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.toggle label { font-size: 15px; }
+.toggle small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.toggle input { appearance: none; -webkit-appearance: none; width: 46px; height: 28px; border-radius: 14px; background: #2a2530; position: relative; cursor: pointer; flex: 0 0 auto; transition: background .2s; }
+.toggle input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); transition: transform .2s; }
+.toggle input:checked { background: var(--accent); }
+.toggle input:checked::after { transform: translateX(18px); }
+.toggle input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.note { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 10px; }
+.close { margin-top: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 14px; padding: 12px; font: 500 15px var(--f-ui); cursor: pointer; }
+
+@media (min-height: 760px) { .panel { max-height: 50vh; } }
+@media (prefers-reduced-motion: reduce) { .phase .ko, .phase .en, .phase .count { transition: none; } }
+</style>
+
+<div id="app">
+  <canvas id="cv" aria-hidden="true"></canvas>
+
+  <header class="top">
+    <div class="brand">숨결<small>breath atlas</small></div>
+    <div class="top-right">
+      <span class="today" id="today"></span>
+      <button class="icon-btn" id="openSettings" aria-label="소리와 음성 설정">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="phase" id="phase" aria-live="polite">
+    <div class="ko" id="phKo">용암 호흡</div>
+    <div class="en" id="phEn">Lava Breath</div>
+    <div class="count small" id="phCount">8 · 8</div>
+  </section>
+
+  <section class="caption" id="caption" hidden>
+    <div class="ko" id="capKo"></div>
+    <div class="en" id="capEn"></div>
+  </section>
+
+  <div class="dock">
+    <div class="panel" id="panel">
+      <nav class="chips" id="chips" aria-label="호흡법 선택"></nav>
+      <div class="info">
+        <div class="eyebrow" id="origin"></div>
+        <p id="effect"></p>
+        <p class="how" id="how"></p>
+        <details id="more">
+          <summary>근거와 주의사항</summary>
+          <div class="grid">
+            <div><strong>근거</strong><span id="evidence"></span></div>
+            <div><strong>주의</strong><span id="caution"></span></div>
+          </div>
+        </details>
+      </div>
+      <div class="row">
+        <div class="seg" id="mins" role="group" aria-label="세션 길이">
+          <button data-m="1">1분</button><button data-m="3">3분</button><button data-m="5">5분</button><button data-m="10">10분</button>
+        </div>
+        <span class="cycles" id="cycles"></span>
+      </div>
+      <button class="start" id="start">시작하기</button>
+    </div>
+
+    <div class="run" id="run" hidden>
+      <button class="icon-btn" id="pause" aria-label="일시정지">
+        <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="5" width="3.2" height="14" rx="1"/><rect x="13.8" y="5" width="3.2" height="14" rx="1"/></svg>
+      </button>
+      <div class="meta">
+        <div class="name" id="runName"></div>
+        <div class="time" id="runTime"></div>
+        <div class="bar"><i id="runBar"></i></div>
+      </div>
+      <button class="icon-btn" id="stop" aria-label="그만하기">
+        <svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="sheet-wrap" id="sheet" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <h2 id="sheetTitle">소리와 안내</h2>
+      <div class="toggle"><label for="sVoice">음성 안내<small>"들이쉬세요", "내쉬세요"를 말로 알려줘요</small></label><input type="checkbox" id="sVoice"></div>
+      <div class="toggle"><label for="sCount">숫자 세기<small>하나, 둘, 셋… 매 초를 소리 내어 세요</small></label><input type="checkbox" id="sCount"></div>
+      <div class="toggle"><label for="sSound">배경음과 종소리<small>숨 소리 같은 잔잔한 파도음과 전환 종소리</small></label><input type="checkbox" id="sSound"></div>
+      <div class="toggle"><label for="sVibe">진동<small>단계가 바뀔 때 짧게 진동 (지원 기기만)</small></label><input type="checkbox" id="sVibe"></div>
+      <p class="note" id="voiceNote"></p>
+      <p class="note">의료 목적의 치료법이 아닙니다. 숨이 차거나 어지러우면 바로 평소 호흡으로 돌아오세요. 임신 중이거나 심혈관·호흡기 질환이 있다면 숨 멈춤이 있는 호흡법은 전문가와 상의하세요.</p>
+      <button class="close" id="closeSettings">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/* ───────────── Breathing patterns (reviewed) ───────────── */
+const PATTERNS = [
+  {
+    id: "lava", ko: "용암 호흡", en: "Lava Breath", rhythm: "8 · 8", accent: "#ff6a3d", shape: "volcano", mins: 3,
+    origin: "사마 브리티 · 동일 호흡",
+    phases: [{ t: "in", d: 8 }, { t: "out", d: 8 }],
+    effect: "들숨과 날숨을 같은 길이로 맞춰 들끓는 감정을 고르게 가라앉힙니다. 분당 3.75회의 아주 느린 호흡이에요.",
+    how: "코로 8초 들이쉬어 용암을 끌어올리고, 코로 8초 내쉬며 식힙니다. 8초가 길면 공명 호흡부터 시작하세요.",
+    evidence: "요가의 사마 브리티(Sama Vritti) 프라나야마. 분당 6회 이하의 느린 호흡은 부교감 신경 활성, 심박변이도 증가와 연관됩니다.",
+    caution: "8초 호흡은 초보자에게 길 수 있어요. 숨이 모자라면 억지로 채우지 말고 편한 만큼만 쉬세요.",
+    captions: [
+      ["끓어오르던 마음이 천천히 식어 가요", "The heat inside begins to cool"],
+      ["숨마다 열기가 땅으로 내려가요", "Each breath sends the heat into the ground"],
+      ["어깨와 턱의 힘을 풀어요", "Let your jaw and shoulders soften"],
+      ["식은 바위처럼 단단하고 고요하게", "Steady and still, like cooled stone"]
+    ]
+  },
+  {
+    id: "box", ko: "박스 호흡", en: "Box Breathing", rhythm: "4 · 4 · 4 · 4", accent: "#f2c46b", shape: "box", mins: 3,
+    origin: "쿰바카를 더한 사각 호흡",
+    phases: [{ t: "in", d: 4 }, { t: "hold", d: 4 }, { t: "out", d: 4 }, { t: "holdOut", d: 4 }],
+    effect: "네 단계를 같은 길이로 반복해 긴장된 몸을 진정시키고 집중을 되찾아 줍니다. 발표나 중요한 통화 직전에 좋아요.",
+    how: "빛이 사각형의 한 변을 지날 때마다 들이쉬기 → 멈추기 → 내쉬기 → 멈추기를 4초씩 이어갑니다.",
+    evidence: "미 해군 특수부대 등에서 압박 상황의 긴장 조절에 가르치는 방법. 요가의 숨 멈춤(쿰바카)을 포함한 사마 브리티 변형입니다.",
+    caution: "고혈압이 있거나 임신 중이라면 멈춤을 2초로 줄이거나 생략하세요.",
+    captions: [
+      ["네 변을 따라 숨을 옮겨요", "Carry your breath around four sides"],
+      ["멈춤 속에서 생각도 잠시 멈춰요", "In the pause, thoughts pause too"],
+      ["일정한 박자가 집중을 되찾아줘요", "A steady beat brings focus back"]
+    ]
+  },
+  {
+    id: "478", ko: "달빛 4-7-8", en: "4-7-8 Moon Breath", rhythm: "4 · 7 · 8", accent: "#f1dca0", shape: "moon", mins: 1, minCycles: 4, maxCycles: 8,
+    origin: "잠들기 전 이완 호흡",
+    phases: [
+      { t: "in", d: 4 },
+      { t: "hold", d: 7 },
+      { t: "out", d: 8, ko: "입으로 내쉬기", en: "Out through the mouth", voice: "입으로 후, 내쉬세요" }
+    ],
+    effect: "날숨을 들숨의 두 배로 길게 내쉬어 몸을 이완 모드로 바꿉니다. 잠자리에 누워서 하기 좋아요.",
+    how: "혀끝을 윗니 뒤 잇몸에 대고, 코로 4초 들이쉬고 7초 멈춘 뒤, 입으로 '후—' 소리를 내며 8초 내쉽니다.",
+    evidence: "앤드루 와일 박사가 프라나야마를 바탕으로 정리한 방법. 처음에는 한 번에 4회, 익숙해지면 8회까지 권장합니다.",
+    caution: "처음 한 달은 4회(약 1분)까지만 하세요. 숨 멈춤 때문에 어지러울 수 있으니 앉거나 누워서 합니다.",
+    captions: [
+      ["차오르는 달처럼 천천히 채워요", "Fill slowly, like the rising moon"],
+      ["오늘의 생각은 오늘에 두고 가요", "Leave today's thoughts with today"],
+      ["몸이 이불 속으로 가라앉아요", "Let your body sink into the bed"]
+    ]
+  },
+  {
+    id: "coherent", ko: "공명 호흡", en: "Resonance Breath", rhythm: "5.5 · 5.5", accent: "#6aaeff", shape: "wave", mins: 5,
+    origin: "심박변이도 · 분당 5.5회",
+    phases: [{ t: "in", d: 5.5 }, { t: "out", d: 5.5 }],
+    effect: "분당 약 5.5회의 리듬으로 심장 박동과 호흡이 같은 파도를 타게 합니다. 매일 5분 습관용으로 가장 무난해요.",
+    how: "파도가 차오르면 코로 5.5초 들이쉬고, 빠져나가면 코로 5.5초 내쉽니다. 멈춤 없이 부드럽게 이어갑니다.",
+    evidence: "분당 약 6회 호흡이 심박변이도(HRV)를 최대로 끌어올리는 공명 주파수라는 연구(Lehrer 등)에 기반합니다.",
+    caution: "숨을 크게 쉬려 애쓰지 마세요. 과호흡 느낌이 들면 호흡량을 줄이고 길이만 유지합니다.",
+    captions: [
+      ["밀물처럼 들어오고 썰물처럼 나가요", "In with the tide, out with the tide"],
+      ["심장과 호흡이 같은 박자를 찾아요", "Heart and breath find one rhythm"],
+      ["애쓰지 말고 흐름에 맡겨요", "No effort, just follow the wave"]
+    ]
+  },
+  {
+    id: "sigh", ko: "한숨 호흡", en: "Cyclic Sighing", rhythm: "3 + 1 · 6", accent: "#ff8fa3", shape: "lungs", mins: 5,
+    origin: "주기적 생리적 한숨",
+    phases: [
+      { t: "in", d: 3, to: 0.78, ko: "코로 깊게", en: "Deep in through the nose", voice: "코로 깊게 들이쉬세요" },
+      { t: "in", d: 1, from: 0.78, to: 1, ko: "한 번 더", en: "One more sip", voice: "한 번 더" },
+      { t: "out", d: 6, ko: "입으로 길게", en: "Long sigh out", voice: "입으로 길게 내쉬세요" }
+    ],
+    effect: "두 번 나눠 들이쉬고 길게 내쉬어 폐 속 공기를 시원하게 비웁니다. 긴장될 때 1~3회만 해도 빠르게 진정돼요.",
+    how: "코로 깊게 들이쉬고, 가득 찬 상태에서 코로 짧게 한 번 더 들이쉰 뒤, 입으로 길게 내쉽니다.",
+    evidence: "스탠퍼드 연구(Balban 외, 2023, Cell Reports Medicine)에서 하루 5분 주기적 한숨이 마음챙김 명상보다 기분 개선 효과가 컸습니다.",
+    caution: "두 번째 들숨은 짧고 가볍게. 억지로 밀어 넣지 마세요.",
+    captions: [
+      ["가득 채우고, 시원하게 비워요", "Fill all the way, then let it go"],
+      ["한숨과 함께 긴장이 빠져나가요", "Tension leaves with every sigh"],
+      ["가슴이 넓어지고 가벼워져요", "Your chest feels wide and light"]
+    ]
+  },
+  {
+    id: "nadi", ko: "교호 호흡", en: "Nadi Shodhana", rhythm: "좌 4 · 우 6", accent: "#b9a6ff", shape: "nadi", mins: 3,
+    origin: "하타 요가 · 좌우 콧구멍 교대",
+    phases: [
+      { t: "in", d: 4, side: "L", ko: "왼쪽으로 들이쉬기", en: "In through the left", voice: "왼쪽으로 들이쉬세요" },
+      { t: "out", d: 6, side: "R", ko: "오른쪽으로 내쉬기", en: "Out through the right", voice: "오른쪽으로 내쉬세요" },
+      { t: "in", d: 4, side: "R", ko: "오른쪽으로 들이쉬기", en: "In through the right", voice: "오른쪽으로 들이쉬세요" },
+      { t: "out", d: 6, side: "L", ko: "왼쪽으로 내쉬기", en: "Out through the left", voice: "왼쪽으로 내쉬세요" }
+    ],
+    effect: "좌우 콧구멍을 번갈아 쓰며 호흡의 균형을 맞춥니다. 머리가 복잡할 때, 명상 전에 마음을 정돈하기 좋아요.",
+    how: "오른손 엄지로 오른쪽, 약지로 왼쪽 콧구멍을 번갈아 막습니다. 화면에서 빛나는 쪽으로 숨을 쉬세요.",
+    evidence: "하타 요가의 전통 프라나야마. 소규모 연구들에서 혈압과 불안 감소, 주의력 향상과의 연관이 보고됐습니다.",
+    caution: "코가 막혀 있다면 무리하지 말고 공명 호흡으로 바꾸세요.",
+    captions: [
+      ["왼쪽은 달, 오른쪽은 해", "Left is the moon, right is the sun"],
+      ["두 숨이 가운데서 만나요", "Two breaths meet in the middle"],
+      ["복잡한 생각이 한 줄로 정리돼요", "Scattered thoughts fall into line"]
+    ]
+  }
+];
+
+const LABEL = {
+  in: ["들이쉬기", "Breathe in", "들이쉬세요"],
+  hold: ["멈추기", "Hold", "멈추세요"],
+  out: ["내쉬기", "Breathe out", "내쉬세요"],
+  holdOut: ["비우고 멈추기", "Hold empty", "비우고 멈추세요"]
+};
+const NATIVE = ["", "하나", "둘", "셋", "넷", "다섯", "여섯", "일곱", "여덟", "아홉", "열"];
+
+/* ───────────── Settings & storage ───────────── */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("breath." + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("breath." + k, JSON.stringify(v)); } catch (e) {} }
+};
+const settings = Object.assign({ voice: true, count: true, sound: true, vibe: false }, store.get("settings", {}));
+let current = PATTERNS.find(p => p.id === store.get("pattern", "lava")) || PATTERNS[0];
+const minsBy = store.get("mins", {});
+
+/* ───────────── DOM ───────────── */
+const $ = id => document.getElementById(id);
+const cv = $("cv"), ctx = cv.getContext("2d");
+const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ───────────── Particles ───────────── */
+let W = 0, H = 0, DPR = 1;
+const N = Math.min(2600, Math.round((innerWidth * innerHeight) / 230) + 900);
+const px = new Float32Array(N), py = new Float32Array(N);
+const ax = new Float32Array(N), ay = new Float32Array(N);
+const kk = new Float32Array(N), seed = new Float32Array(N);
+const band = new Uint8Array(N), side = new Uint8Array(N);
+const DUST = 170;
+const dx = new Float32Array(DUST), dy = new Float32Array(DUST), dv = new Float32Array(DUST), dp = new Float32Array(DUST);
+const SPARK = 140;
+const sx = new Float32Array(SPARK), sy = new Float32Array(SPARK), svx = new Float32Array(SPARK), svy = new Float32Array(SPARK), sl = new Float32Array(SPARK);
+let sparkHead = 0;
+
+const R = Math.random;
+const gauss = () => (R() + R() + R() - 1.5) / 1.5;
+const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+const fill = (k, L) => L <= 0.002 ? 0 : clamp01((L * 1.06 - k) / 0.06);
+
+const SHAPES = {
+  volcano: {
+    lit: [[214, 52, 24], [255, 92, 36], [255, 145, 52], [255, 208, 112]],
+    dim: [[120, 30, 14], [132, 36, 16], [140, 42, 18], [150, 52, 20]],
+    glow: [255, 90, 40], emit: true,
+    init(i) {
+      const hw = h => 0.11 + 0.89 * Math.pow(1 - h, 2.6);
+      let x, h; do { x = R() * 2 - 1; h = R(); } while (Math.abs(x) > hw(h));
+      ax[i] = x; ay[i] = 0.75 - h * 1.5; kk[i] = h; band[i] = Math.min(3, (h * 4) | 0);
+    },
+    b(i, s) { return fill(kk[i], s.L); }
+  },
+  box: {
+    lit: [[255, 214, 140], [255, 226, 166], [255, 238, 200], [200, 170, 110]],
+    dim: [[60, 46, 22], [66, 52, 26], [72, 58, 30], [26, 22, 14]],
+    glow: [242, 196, 107],
+    init(i) {
+      if (i % 10 < 7) {
+        const u = R(), e = 0.7, q = (u % 0.25) / 0.25;
+        let x, y;
+        if (u < 0.25) { x = -e; y = e - q * 2 * e; }
+        else if (u < 0.5) { x = -e + q * 2 * e; y = -e; }
+        else if (u < 0.75) { x = e; y = -e + q * 2 * e; }
+        else { x = e - q * 2 * e; y = e; }
+        ax[i] = x + gauss() * 0.028; ay[i] = y + gauss() * 0.028; kk[i] = u; band[i] = Math.min(2, (u * 3) | 0);
+      } else {
+        ax[i] = (R() * 2 - 1) * 0.62; ay[i] = (R() * 2 - 1) * 0.62; kk[i] = -1; band[i] = 3;
+      }
+    },
+    b(i, s) {
+      if (kk[i] < 0) return 0.08 + 0.35 * s.L;
+      const d = ((s.cyc - kk[i]) % 1 + 1) % 1;
+      return d < 0.015 ? 1 : Math.pow(Math.max(0, 1 - d / 0.85), 1.6);
+    }
+  },
+  moon: {
+    lit: [[255, 240, 200], [250, 228, 176], [238, 214, 150], [176, 168, 232]],
+    dim: [[44, 44, 72], [40, 40, 68], [36, 36, 62], [24, 22, 50]],
+    glow: [235, 220, 170],
+    init(i) {
+      if (i % 9 === 0) {
+        const r = 0.84 + R() * 0.22, a = R() * Math.PI * 2;
+        ax[i] = Math.cos(a) * r; ay[i] = Math.sin(a) * r; kk[i] = -1; band[i] = 3;
+      } else {
+        const r = 0.78 * Math.sqrt(R()), a = R() * Math.PI * 2;
+        ax[i] = Math.cos(a) * r; ay[i] = Math.sin(a) * r; kk[i] = r / 0.78; band[i] = Math.min(2, (kk[i] * 3) | 0);
+      }
+    },
+    b(i, s) {
+      if (kk[i] < 0) return 0.25 * s.L;
+      const xn = ax[i] / 0.78, yn = ay[i] / 0.78;
+      const edge = (1 - 2 * s.L) * Math.sqrt(Math.max(0, 1 - yn * yn));
+      return s.L <= 0.002 ? 0 : clamp01((xn - edge) / 0.07 + 0.5);
+    }
+  },
+  wave: {
+    lit: [[80, 170, 255], [110, 200, 255], [160, 228, 255], [90, 140, 240]],
+    dim: [[16, 36, 72], [18, 42, 80], [22, 50, 88], [16, 30, 66]],
+    glow: [90, 160, 255], dynamic: true,
+    init(i) {
+      const j = i % 5; side[i] = j; ax[i] = R() * 2.2 - 1.1; ay[i] = gauss() * 0.022; kk[i] = Math.abs(ax[i]) / 1.1;
+      band[i] = j === 2 ? 2 : j % 2 ? 1 : (j === 0 ? 3 : 0);
+    },
+    pos(i, s) {
+      const j = side[i], x = ax[i];
+      const A = 0.06 + 0.3 * s.L;
+      return (j - 2) * 0.14 + ay[i] - 0.18 * s.L + A * Math.sin(x * 2.6 + s.t * 0.8 + j * 0.6) * (1 - 0.35 * kk[i]);
+    },
+    b(i, s) { return 0.12 + 0.88 * s.L * (1 - 0.45 * kk[i]); }
+  },
+  lungs: {
+    lit: [[255, 132, 152], [255, 168, 180], [255, 206, 202], [255, 232, 224]],
+    dim: [[72, 24, 38], [78, 30, 44], [84, 36, 48], [90, 44, 52]],
+    glow: [255, 130, 160],
+    init(i) {
+      if (i % 9 === 0) {
+        const u = R();
+        if (u < 0.5) { ax[i] = gauss() * 0.025; ay[i] = -0.88 + R() * 0.56; }
+        else { const q = R(), sgn = u < 0.75 ? -1 : 1; ax[i] = sgn * q * 0.3 + gauss() * 0.02; ay[i] = -0.32 + q * 0.22 + gauss() * 0.02; }
+        kk[i] = 0; band[i] = 3;
+      } else {
+        let x, y, ok;
+        do {
+          x = R() * 1.7 - 0.85; y = R() * 1.3 - 0.55;
+          const cx = x < 0 ? -0.43 : 0.43;
+          ok = ((x - cx) / 0.38) ** 2 + ((y - 0.15) / 0.6) ** 2 < 1 && Math.abs(x) > 0.08;
+        } while (!ok);
+        ax[i] = x; ay[i] = y; kk[i] = clamp01((0.75 - y) / 1.3); band[i] = Math.min(2, (kk[i] * 3) | 0);
+      }
+    },
+    b(i, s) { return fill(kk[i], s.L); }
+  },
+  nadi: {
+    lit: [[170, 196, 255], [214, 226, 255], [255, 190, 96], [255, 222, 146]],
+    dim: [[30, 38, 80], [34, 42, 86], [80, 50, 22], [86, 56, 26]],
+    glow: [185, 166, 255],
+    init(i) {
+      const t = R() * Math.PI * 2, den = 1 + Math.sin(t) ** 2;
+      const x = Math.cos(t) / den * 0.98, y = Math.sin(t) * Math.cos(t) / den * 0.98;
+      ax[i] = x + gauss() * 0.05; ay[i] = y + gauss() * 0.05;
+      side[i] = ax[i] < 0 ? 0 : 1;
+      kk[i] = clamp01((0.38 - ay[i]) / 0.76);
+      band[i] = side[i] * 2 + (kk[i] > 0.5 ? 1 : 0);
+    },
+    b(i, s) {
+      const ph = s.ph, mine = side[i] === 0 ? "L" : "R";
+      if (!ph || !ph.side) return 0.12;
+      if (ph.t === "in") return mine === ph.side ? fill(kk[i], s.L) : 0;
+      if (mine === ph.inSide) return fill(kk[i], s.L);
+      if (mine === ph.side) return Math.max(0, 1 - Math.abs(kk[i] - s.L) / 0.14);
+      return 0;
+    }
+  }
+};
+
+let shape = SHAPES[current.shape];
+let palette = [];
+function buildPalette(sh) {
+  palette = [];
+  for (let bnd = 0; bnd < 4; bnd++) for (let l = 0; l < 12; l++) {
+    const f = l / 11, a = sh.lit[bnd], d = sh.dim[bnd];
+    const c = [0, 1, 2].map(j => Math.round(d[j] + (a[j] - d[j]) * f));
+    palette.push(`rgba(${c[0]},${c[1]},${c[2]},${(0.42 + 0.58 * f).toFixed(3)})`);
+  }
+}
+function setShape(name) {
+  shape = SHAPES[name];
+  for (let i = 0; i < N; i++) { seed[i] = R(); shape.init(i); }
+  buildPalette(shape);
+}
+
+function resize() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = cv.clientWidth; H = cv.clientHeight;
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  layoutTarget();
+}
+
+/* where the shape sits: between the phase text and whatever is docked at the bottom */
+let view = { cx: 0, cy: 0, S: 1 }, viewT = { cx: 0, cy: 0, S: 1 }, viewInit = false;
+function layoutTarget() {
+  const top = $("phase").getBoundingClientRect().bottom + 8;
+  const dockEl = running() ? $("caption") : $("panel");
+  let bottom = dockEl.hidden ? H - 120 : dockEl.getBoundingClientRect().top - 10;
+  if (bottom - top < 120) bottom = top + 120;
+  viewT.cx = W / 2;
+  viewT.cy = (top + bottom) / 2;
+  viewT.S = Math.max(40, Math.min(W * 0.42, (bottom - top) * 0.5));
+  if (!viewInit) { view = { ...viewT }; viewInit = true; for (let i = 0; i < N; i++) { px[i] = view.cx + (R() - 0.5) * W; py[i] = view.cy + (R() - 0.5) * H; } }
+}
+
+for (let i = 0; i < DUST; i++) { dx[i] = R(); dy[i] = R(); dv[i] = 0.00005 + R() * 0.00018; dp[i] = R() * 6.28; }
+
+/* ───────────── Sequence & timing ───────────── */
+function decorate(phases) {
+  let level = 0, inSide = null;
+  return phases.map((p, ci) => {
+    const q = Object.assign({}, p, { ci, n: phases.length });
+    if (q.t === "in") { q.from = p.from ?? 0; q.to = p.to ?? 1; inSide = p.side || inSide; }
+    else if (q.t === "out") { q.from = p.from ?? 1; q.to = 0; q.inSide = inSide; }
+    else { q.from = q.to = level; q.inSide = inSide; }
+    level = q.to;
+    return q;
+  });
+}
+const cycleDur = p => p.phases.reduce((a, b) => a + b.d, 0);
+const cyclesFor = (p, m) => Math.min(p.maxCycles || 999, Math.max(p.minCycles || 1, Math.round((m * 60) / cycleDur(p))));
+
+let run = null;          // active session
+let idleClock = 0;       // preview animation clock
+let lastT = performance.now();
+const running = () => !!run;
+
+function buildRun(p, m) {
+  const ph = decorate(p.phases), cycles = cyclesFor(p, m);
+  const seq = [{ t: "ready", d: 4, from: 0.15, to: 0.15 }];
+  for (let c = 0; c < cycles; c++) for (const q of ph) seq.push(Object.assign({ cycle: c }, q));
+  let acc = 0; for (const q of seq) { q.at = acc; acc += q.d; }
+  return { p, seq, total: acc, cycles, elapsed: 0, idx: -1, lastCount: 0, paused: false, breathTotal: acc - 4 };
+}
+
+function phaseAt(seq, e) {
+  for (let i = seq.length - 1; i >= 0; i--) if (e >= seq[i].at) return i;
+  return 0;
+}
+const ease = x => 0.5 - 0.5 * Math.cos(Math.PI * x);
+
+/* idle preview: loop the pattern silently so the shape shows how it moves */
+let idleSeq = decorate(current.phases);
+function idleState(dt) {
+  idleClock += dt;
+  const cd = cycleDur(current), e = idleClock % cd;
+  let acc = 0;
+  for (const q of idleSeq) { if (e < acc + q.d) { const p = (e - acc) / q.d; return { ph: q, p, L: q.from + (q.to - q.from) * ease(p), cyc: (q.ci + p) / q.n }; } acc += q.d; }
+  return { ph: idleSeq[0], p: 0, L: 0, cyc: 0 };
+}
+
+/* ───────────── Audio: voice, chime, breath noise ───────────── */
+let voices = [], koVoice = null;
+function loadVoices() {
+  if (!("speechSynthesis" in window)) { $("voiceNote").textContent = "이 브라우저는 음성 안내를 지원하지 않아 종소리로 안내합니다."; return; }
+  voices = speechSynthesis.getVoices();
+  koVoice = voices.find(v => /^ko/i.test(v.lang) && /google|yuna|heami|sun-hi|natural/i.test(v.name)) || voices.find(v => /^ko/i.test(v.lang)) || null;
+  $("voiceNote").textContent = koVoice ? `음성: ${koVoice.name}` : (voices.length ? "이 기기에서 한국어 음성을 찾지 못했어요. 기기 설정 > 텍스트 음성 변환에서 한국어를 추가하면 더 자연스럽습니다." : "");
+}
+if ("speechSynthesis" in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+
+function speak(text, rate) {
+  if (!settings.voice || !("speechSynthesis" in window) || !text) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ko-KR"; if (koVoice) u.voice = koVoice;
+    u.rate = rate || 0.92; u.pitch = 0.95; u.volume = 1;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+let ac = null, noiseGain = null, noiseFilter = null, padGain = null;
+function ensureAudio() {
+  if (ac) { if (ac.state === "suspended") ac.resume(); return; }
+  try {
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    const len = ac.sampleRate * 4, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+    let last = 0; for (let i = 0; i < len; i++) { last = (last + 0.02 * (R() * 2 - 1)) / 1.02; d[i] = last * 3.2; }
+    const src = ac.createBufferSource(); src.buffer = buf; src.loop = true;
+    noiseFilter = ac.createBiquadFilter(); noiseFilter.type = "lowpass"; noiseFilter.frequency.value = 400; noiseFilter.Q.value = 0.6;
+    noiseGain = ac.createGain(); noiseGain.gain.value = 0;
+    src.connect(noiseFilter).connect(noiseGain).connect(ac.destination); src.start();
+    padGain = ac.createGain(); padGain.gain.value = 0;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 700;
+    [110, 164.81, 220.5].forEach((f, j) => { const o = ac.createOscillator(); o.type = j === 1 ? "triangle" : "sine"; o.frequency.value = f; o.connect(lp); o.start(); });
+    lp.connect(padGain).connect(ac.destination);
+  } catch (e) { ac = null; }
+}
+function chime(type) {
+  if (!ac || !settings.sound) return;
+  const f = { in: 528, hold: 660, holdOut: 440, out: 396, ready: 528 }[type] || 528;
+  const t = ac.currentTime;
+  [1, 2.01].forEach((m, j) => {
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = "sine"; o.frequency.value = f * m;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(j ? 0.018 : 0.06, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+    o.connect(g).connect(ac.destination); o.start(t); o.stop(t + 2.5);
+  });
+}
+function audioFrame(s) {
+  if (!ac) return;
+  const on = settings.sound && run && !run.paused;
+  const t = ac.currentTime;
+  let ng = 0;
+  if (on && s.ph && (s.ph.t === "in" || s.ph.t === "out")) ng = 0.05 + 0.1 * Math.sin(Math.PI * s.p);
+  noiseGain.gain.setTargetAtTime(ng, t, 0.15);
+  noiseFilter.frequency.setTargetAtTime(260 + 900 * s.L, t, 0.2);
+  padGain.gain.setTargetAtTime(on ? 0.012 + 0.008 * s.L : 0, t, 0.6);
+}
+function vibrate(ms) { if (settings.vibe && navigator.vibrate) try { navigator.vibrate(ms); } catch (e) {} }
+
+let wake = null;
+async function keepAwake(on) {
+  try {
+    if (on && "wakeLock" in navigator) wake = await navigator.wakeLock.request("screen");
+    else if (wake) { await wake.release(); wake = null; }
+  } catch (e) { wake = null; }
+}
+
+/* ───────────── UI rendering ───────────── */
+function fmtSec(d) { return (Number.isInteger(d) ? d : d.toFixed(1)) + "초"; }
+function fmtClock(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+
+function renderChips() {
+  $("chips").innerHTML = PATTERNS.map(p => `<button class="chip" data-id="${p.id}" aria-pressed="${p.id === current.id}"><b>${p.ko}</b><span>${p.rhythm}</span></button>`).join("");
+}
+function renderInfo() {
+  document.documentElement.style.setProperty("--accent", current.accent);
+  $("origin").textContent = current.origin;
+  $("effect").textContent = current.effect;
+  $("how").textContent = current.how;
+  $("evidence").textContent = current.evidence;
+  $("caution").textContent = current.caution;
+  const m = minsBy[current.id] || current.mins;
+  document.querySelectorAll("#mins button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.m === m)));
+  const c = cyclesFor(current, m);
+  $("cycles").textContent = `${c}회 호흡 · ${fmtClock(c * cycleDur(current))}` + (current.maxCycles && c === current.maxCycles ? " (최대 권장)" : "");
+  if (!run) setPhaseText(current.ko, current.en, current.rhythm, null, true);
+}
+function setPhaseText(ko, en, count, color, small) {
+  $("phKo").textContent = ko; $("phEn").textContent = en;
+  const c = $("phCount"); c.textContent = count; c.classList.toggle("small", !!small);
+  $("phase").style.setProperty("--phase-color", color || "var(--accent)");
+}
+function phaseColor(t) { return t === "out" ? "var(--exhale)" : t === "hold" || t === "holdOut" ? "var(--hold)" : t === "ready" ? "var(--ink)" : "var(--accent)"; }
+
+function selectPattern(id) {
+  const p = PATTERNS.find(x => x.id === id); if (!p || run) return;
+  current = p; store.set("pattern", id);
+  idleSeq = decorate(p.phases); idleClock = 0;
+  setShape(p.shape); renderChips(); renderInfo();
+}
+
+function renderToday() {
+  const log = store.get("log", {}), today = new Date().toISOString().slice(0, 10);
+  const t = log.date === today ? log : null;
+  $("today").textContent = t ? `오늘 ${t.n}회 · ${Math.round(t.sec / 60)}분` : "";
+}
+function addLog(sec) {
+  const log = store.get("log", {}), today = new Date().toISOString().slice(0, 10);
+  const next = log.date === today ? { date: today, n: log.n + 1, sec: log.sec + sec } : { date: today, n: 1, sec };
+  store.set("log", next); renderToday();
+}
+
+/* ───────────── Session control ───────────── */
+function start() {
+  ensureAudio();
+  const m = minsBy[current.id] || current.mins;
+  run = buildRun(current, m);
+  $("panel").hidden = true; $("run").hidden = false; $("caption").hidden = false;
+  $("runName").textContent = `${current.ko} · ${current.rhythm}`;
+  setPause(false);
+  speak("편안하게 앉아, 어깨 힘을 빼세요");
+  keepAwake(true);
+  layoutTarget();
+}
+function finish(completed) {
+  const r = run; run = null;
+  try { speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
+  keepAwake(false);
+  $("panel").hidden = false; $("run").hidden = true; $("caption").hidden = true;
+  if (completed) {
+    addLog(Math.round(r.breathTotal));
+    setPhaseText("수고하셨어요", "Well done", `${r.cycles}회 · ${fmtClock(r.breathTotal)}`, "var(--exhale)", true);
+    speak("수고하셨어요. 천천히 평소 호흡으로 돌아오세요.");
+    chime("out");
+    setTimeout(() => { if (!run) renderInfo(); }, 6000);
+  } else renderInfo();
+  idleClock = 0;
+  requestAnimationFrame(layoutTarget);
+}
+function setPause(p) {
+  if (!run) return;
+  run.paused = p;
+  $("pauseIcon").innerHTML = p ? '<path d="M8 5.5v13l10.5-6.5z"/>' : '<rect x="7" y="5" width="3.2" height="14" rx="1"/><rect x="13.8" y="5" width="3.2" height="14" rx="1"/>';
+  $("pause").setAttribute("aria-label", p ? "다시 시작" : "일시정지");
+  if (p) { try { speechSynthesis.cancel(); } catch (e) {} setPhaseText("잠시 멈춤", "Paused", "탭하여 이어가기", "var(--ink)", true); }
+  else if (run.idx >= 0) { run.idx = -1; }
+}
+
+function runState(dt) {
+  if (!run.paused) run.elapsed += dt;
+  if (run.elapsed >= run.total) { finish(true); return null; }
+  const i = phaseAt(run.seq, run.elapsed), ph = run.seq[i];
+  const e = run.elapsed - ph.at, p = clamp01(e / ph.d);
+  if (i !== run.idx && !run.paused) {
+    run.idx = i; run.lastCount = 0;
+    const lab = LABEL[ph.t];
+    if (ph.t !== "ready") {
+      chime(ph.t); vibrate(ph.t === "in" ? 40 : 25);
+      speak(ph.voice || lab[2]);
+      const cap = run.p.captions[ph.cycle % run.p.captions.length];
+      if (ph.ci === 0) { $("capKo").textContent = cap[0]; $("capEn").textContent = cap[1]; }
+    }
+  }
+  if (!run.paused) {
+    if (ph.t === "ready") {
+      setPhaseText("준비", "Get ready", String(Math.ceil(ph.d - e)), "var(--ink)");
+    } else {
+      const lab = LABEL[ph.t];
+      const n = Math.min(Math.ceil(ph.d), Math.floor(e) + 1);
+      if (n !== run.lastCount) {
+        if (n >= 2 && settings.count) speak(NATIVE[n] || String(n), 1);
+        run.lastCount = n;
+        setPhaseText(`${ph.ko || lab[0]} ${fmtSec(ph.d)}`, `${ph.en || lab[1]} · ${ph.d} sec`, String(n), phaseColor(ph.t));
+      }
+    }
+    const left = run.total - run.elapsed;
+    $("runTime").textContent = `${ph.t === "ready" ? "곧 시작" : (ph.cycle + 1) + " / " + run.cycles + "회"} · 남은 시간 ${fmtClock(left)}`;
+    $("runBar").style.width = (100 * run.elapsed / run.total).toFixed(2) + "%";
+  }
+  return { ph, p, L: ph.from + (ph.to - ph.from) * ease(p), cyc: ph.t === "ready" ? 0 : (ph.ci + p) / ph.n };
+}
+
+/* ───────────── Render loop ───────────── */
+const buckets = Array.from({ length: 48 }, () => []);
+function frame(now) {
+  const dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+  let s = run ? runState(dt) : null;
+  if (!s) s = idleState(dt);
+  s.t = now / 1000;
+  audioFrame(s);
+
+  const k = 1 - Math.pow(0.02, dt);
+  view.cx += (viewT.cx - view.cx) * k; view.cy += (viewT.cy - view.cy) * k; view.S += (viewT.S - view.S) * k;
+  const { cx, cy, S } = view;
+  const scale = S * (1 + 0.05 * s.L);
+  const jit = reduceMotion ? 0 : 0.006;
+
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "#07060a"; ctx.fillRect(0, 0, W, H);
+
+  // ambient glow follows the breath
+  const g = shape.glow, gr = ctx.createRadialGradient(cx, cy + S * 0.2, 0, cx, cy + S * 0.2, S * 1.5);
+  gr.addColorStop(0, `rgba(${g[0]},${g[1]},${g[2]},${(0.05 + 0.16 * s.L).toFixed(3)})`);
+  gr.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = gr; ctx.fillRect(0, 0, W, H);
+
+  ctx.globalCompositeOperation = "lighter";
+
+  // drifting dust
+  for (let i = 0; i < DUST; i++) {
+    dy[i] -= dv[i] * (1 + s.L); if (dy[i] < -0.02) { dy[i] = 1.02; dx[i] = R(); }
+    const a = 0.12 + 0.28 * (0.5 + 0.5 * Math.sin(s.t * 1.3 + dp[i]));
+    ctx.fillStyle = `rgba(230,224,240,${a.toFixed(2)})`;
+    ctx.fillRect(dx[i] * W + Math.sin(s.t * 0.3 + dp[i]) * 6, dy[i] * H, 1.3, 1.3);
+  }
+
+  // shape particles, batched by colour
+  for (let b = 0; b < 48; b++) buckets[b].length = 0;
+  const follow = 1 - Math.pow(0.0008, dt);
+  for (let i = 0; i < N; i++) {
+    const yy = shape.dynamic ? shape.pos(i, s) : ay[i];
+    const tx = cx + (ax[i] + Math.sin(s.t * 1.3 + seed[i] * 31) * jit) * scale;
+    const ty = cy + (yy + Math.cos(s.t * 1.1 + seed[i] * 17) * jit) * scale;
+    px[i] += (tx - px[i]) * follow; py[i] += (ty - py[i]) * follow;
+    const br = shape.b(i, s);
+    buckets[band[i] * 12 + Math.min(11, (br * 12) | 0)].push(i);
+  }
+  for (let b = 0; b < 48; b++) {
+    const list = buckets[b]; if (!list.length) continue;
+    const lv = b % 12, sz = 1.4 + lv * 0.1;
+    ctx.fillStyle = palette[b];
+    for (let j = 0; j < list.length; j++) { const i = list[j]; ctx.fillRect(px[i], py[i], sz, sz); }
+  }
+
+  // sparks rising from the crater
+  if (shape.emit && !reduceMotion) {
+    const emitting = s.ph && (s.ph.t === "in" || s.ph.t === "hold") ? s.L : 0;
+    const spawn = emitting * 3 * (dt * 60);
+    for (let n = 0; n < spawn; n++) {
+      const i = sparkHead = (sparkHead + 1) % SPARK;
+      sx[i] = (R() - 0.5) * 0.18; sy[i] = -0.76; svx[i] = (R() - 0.5) * 0.12; svy[i] = -(0.15 + R() * 0.35); sl[i] = 1;
+    }
+    for (let i = 0; i < SPARK; i++) {
+      if (sl[i] <= 0) continue;
+      sx[i] += svx[i] * dt; sy[i] += svy[i] * dt; sl[i] -= dt * 0.7;
+      ctx.fillStyle = `rgba(255,${170 + (sl[i] * 60) | 0},90,${Math.max(0, sl[i]).toFixed(2)})`;
+      ctx.fillRect(cx + sx[i] * scale, cy + sy[i] * scale, 1.6, 1.6);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ───────────── Events ───────────── */
+$("chips").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) selectPattern(b.dataset.id); });
+$("mins").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  minsBy[current.id] = +b.dataset.m; store.set("mins", minsBy); renderInfo();
+});
+$("start").addEventListener("click", start);
+$("pause").addEventListener("click", () => setPause(!run.paused));
+$("stop").addEventListener("click", () => finish(false));
+cv.addEventListener("click", () => { if (run) setPause(!run.paused); });
+$("more").addEventListener("toggle", () => requestAnimationFrame(layoutTarget));
+
+const toggles = { sVoice: "voice", sCount: "count", sSound: "sound", sVibe: "vibe" };
+for (const [id, key] of Object.entries(toggles)) {
+  const el = $(id); el.checked = !!settings[key];
+  el.addEventListener("change", () => {
+    settings[key] = el.checked; store.set("settings", settings);
+    if (key === "voice" && !el.checked) try { speechSynthesis.cancel(); } catch (e) {}
+    if (key === "sound" && el.checked) ensureAudio();
+  });
+}
+$("openSettings").addEventListener("click", () => { $("sheet").hidden = false; loadVoices(); $("closeSettings").focus(); });
+$("closeSettings").addEventListener("click", () => { $("sheet").hidden = true; });
+$("sheet").addEventListener("click", e => { if (e.target.id === "sheet") $("sheet").hidden = true; });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") $("sheet").hidden = true;
+  if (e.key === " " && run && e.target === document.body) { e.preventDefault(); setPause(!run.paused); }
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && run && !run.paused) setPause(true);
+  if (!document.hidden && run) keepAwake(true);
+});
+addEventListener("resize", resize);
+
+/* ───────────── Boot ───────────── */
+setShape(current.shape);
+renderChips(); renderInfo(); renderToday();
+resize();
+requestAnimationFrame(t => { lastT = t; layoutTarget(); requestAnimationFrame(frame); });
+})();
+</script>
