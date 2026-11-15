@@ -1,0 +1,70 @@
+{
+  "name": "stay-b",
+  "title": "Stay B 홍보 쇼츠",
+  "fps": 30,
+  "palette": { "bg": "#F5F0E6", "ink": "#1F3A30", "accent": "#B4532A", "soft": "#E9E0CF" },
+  "ending": "projects/bridgenode-ending.json",
+  "scenes": [
+    {
+      "type": "hook",
+      "dur": 2.8,
+      "image": "assets/stay-b/illust.jpg",
+      "label": "BRIDGENODE 제작 사례",
+      "lines": ["부산·경남 유학생,", "첫날부터", "막막하다면?"]
+    },
+    {
+      "type": "phone",
+      "dur": 3.8,
+      "image": "assets/stay-b/hero.jpg",
+      "kicker": "STAY B · 유학생 생활 가이드",
+      "title": "도착 첫날부터\n이곳의 일상까지",
+      "sub": "부산·경남 유학생을 위한 한·영 가이드",
+      "scroll": [0, 0.18]
+    },
+    {
+      "type": "phone",
+      "dur": 3.8,
+      "image": "assets/stay-b/guides.jpg",
+      "kicker": "01  단계별 생활 수첩",
+      "title": "내 단계만 고르면\n할 일이 보여요",
+      "chips": ["입국 전", "정착 중", "생활·일", "비자·졸업 이후"],
+      "scroll": [0, 0.25]
+    },
+    {
+      "type": "phone",
+      "dur": 3.8,
+      "image": "assets/stay-b/desk.jpg",
+      "kicker": "02  우리 지역 생활정보",
+      "title": "캠퍼스·장학금·\n공식기관을 한곳에",
+      "sub": "부산·경남 12개 캠퍼스 주소 검색",
+      "scroll": [0, 0.55]
+    },
+    {
+      "type": "phone",
+      "dur": 3.6,
+      "image": "assets/stay-b/moments.jpg",
+      "kicker": "03  상황별 Q&A",
+      "title": "이럴 땐\n어떻게 할까요?",
+      "sub": "첫 아르바이트, 만료일, 졸업 후 진로까지",
+      "scroll": [0, 0.3]
+    },
+    {
+      "type": "phone",
+      "dur": 3.6,
+      "image": "assets/stay-b/community.jpg",
+      "kicker": "04  다국어 · 커뮤니티",
+      "title": "같은 길을 먼저 간\n학생들과 연결",
+      "chips": ["English", "한국어", "नेपाली"],
+      "scroll": [0, 0.2]
+    },
+    {
+      "type": "cta",
+      "dur": 3.0,
+      "image": "assets/stay-b/illust.jpg",
+      "brand": "Stay B",
+      "title": "부산·경남에서,\n내 집처럼.",
+      "url": "bridgenode-portfolio.onrender.com/stay-b",
+      "button": "지금 둘러보기"
+    }
+  ]
+}

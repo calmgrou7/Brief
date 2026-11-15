@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-kr/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-kr/500.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-kr/700.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-sans-kr/900.css">
+<link rel="stylesheet" href="node_modules/@fontsource/inter-tight/800.css">
+<link rel="stylesheet" href="node_modules/@fontsource/inter-tight/900.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+  body { font-family: 'Noto Sans KR', sans-serif; -webkit-font-smoothing: antialiased; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .layer { position: absolute; inset: 0; }
+  .abs { position: absolute; }
+  .t-kicker { font-weight: 700; font-size: 36px; letter-spacing: .04em; }
+  .t-title { font-weight: 900; font-size: 92px; line-height: 1.16; letter-spacing: -.035em; white-space: pre-line; }
+  .t-sub { font-weight: 500; font-size: 42px; letter-spacing: -.02em; }
+  .chip { display: inline-block; padding: 18px 34px; border-radius: 999px; font-weight: 700; font-size: 40px; margin: 0 14px 18px 0; }
+  .phone { position: absolute; border-radius: 78px; padding: 18px; box-shadow: 0 50px 90px rgba(20,30,25,.28), 0 0 0 2px rgba(0,0,0,.25) inset; }
+  .screen { position: relative; width: 100%; height: 100%; border-radius: 62px; overflow: hidden; background: #fff; }
+  .screen img { position: absolute; left: 0; top: 0; width: 100%; display: block; }
+  .notch { position: absolute; top: 18px; left: 50%; width: 200px; height: 52px; margin-left: -100px; border-radius: 30px; background: #0d0f0e; z-index: 2; }
+  .wipe { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const outCubic = x => 1 - Math.pow(1 - clamp(x), 3);
+const outBack = x => { x = clamp(x); const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const inOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const prog = (t, start, len) => clamp((t - start) / len);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+let CFG = null, current = -1, els = {};
+const stage = document.getElementById('stage');
+
+// ---------- scene builders: create DOM once, return an update(lt) function ----------
+const BUILD = {
+  hook(s, P) {
+    stage.innerHTML = `
+      <div class="layer" style="background:${P.ink}"></div>
+      <img id="bg" class="abs" src="${s.image}" style="left:-40%;top:0;height:1920px;filter:blur(36px) brightness(.55) saturate(1.1);transform-origin:50% 50%">
+      <div class="layer" style="background:linear-gradient(180deg,rgba(15,28,22,.55) 0%,rgba(15,28,22,.1) 45%,rgba(15,28,22,.75) 100%)"></div>
+      <div id="label" class="abs t-kicker" style="left:90px;top:190px;color:#fff;font-size:34px;padding:14px 26px;border:2px solid rgba(255,255,255,.6);border-radius:999px">${esc(s.label || '')}</div>
+      <div id="lines" class="abs" style="left:90px;top:330px;right:60px">
+        ${s.lines.map((l, i) => `<div class="ln" style="font-weight:900;font-size:${i === s.lines.length - 1 ? 132 : 112}px;line-height:1.18;letter-spacing:-.04em;color:${i === s.lines.length - 1 ? '#FFD6B8' : '#fff'}">${esc(l)}</div>`).join('')}
+      </div>
+      <div id="card" class="abs" style="left:60px;top:960px;width:960px;height:694px;border-radius:44px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.45)">
+        <img src="${s.image}" style="width:100%;height:100%;object-fit:cover;transform-origin:60% 60%">
+      </div>`;
+    const bg = stage.querySelector('#bg'), lines = [...stage.querySelectorAll('.ln')], card = stage.querySelector('#card'), cimg = card.querySelector('img'), label = stage.querySelector('#label');
+    return lt => {
+      bg.style.transform = `scale(${1.05 + lt * .03})`;
+      label.style.opacity = outCubic(prog(lt, 0, .3));
+      lines.forEach((l, i) => { const p = outCubic(prog(lt, .05 + i * .22, .4)); l.style.opacity = p; l.style.transform = `translateY(${(1 - p) * 70}px)`; });
+      const pc = outBack(prog(lt, .35, .6));
+      card.style.opacity = clamp(prog(lt, .35, .25));
+      card.style.transform = `translateY(${(1 - pc) * 260}px) rotate(${(1 - pc) * 4}deg)`;
+      cimg.style.transform = `scale(${1.02 + lt * .035})`;
+    };
+  },
+
+  phone(s, P) {
+    const PW = 660, PH = 1360, PX = (1080 - PW) / 2, PY = 700;
+    stage.innerHTML = `
+      <div class="layer" style="background:${P.bg}"></div>
+      <div class="abs" style="width:900px;height:900px;border-radius:50%;background:${P.soft};left:520px;top:1080px"></div>
+      <div class="abs" style="width:360px;height:360px;border-radius:50%;background:${P.accent};opacity:.12;left:-120px;top:540px"></div>
+      <div id="kicker" class="abs t-kicker" style="left:90px;top:170px;color:${P.accent}">${esc(s.kicker || '')}</div>
+      <div id="title" class="abs t-title" style="left:86px;top:232px;right:60px;color:${P.ink}">${esc(s.title || '')}</div>
+      ${s.sub ? `<div id="sub" class="abs t-sub" style="left:90px;top:478px;right:60px;color:${P.ink};opacity:.72">${esc(s.sub)}</div>` : ''}
+      ${s.chips ? `<div id="chips" class="abs" style="left:90px;top:478px;right:40px">${s.chips.map(c => `<span class="chip" style="background:${P.ink};color:#fff">${esc(c)}</span>`).join('')}</div>` : ''}
+      <div id="phone" class="phone" style="left:${PX}px;top:${PY}px;width:${PW}px;height:${PH}px;background:#121614">
+        <div class="screen"><div class="notch"></div><img id="shot" src="${s.image}"></div>
+      </div>`;
+    const q = id => stage.querySelector(id);
+    const kicker = q('#kicker'), title = q('#title'), sub = q('#sub'), chips = q('#chips'), phone = q('#phone'), shot = q('#shot');
+    const chipEls = chips ? [...chips.children] : [];
+    const screenW = PW - 36, screenH = PH - 36;
+    return lt => {
+      const d = s.dur;
+      const pk = outCubic(prog(lt, 0, .35)); kicker.style.opacity = pk; kicker.style.transform = `translateX(${(1 - pk) * -40}px)`;
+      const pt = outCubic(prog(lt, .08, .45)); title.style.opacity = pt; title.style.transform = `translateY(${(1 - pt) * 50}px)`;
+      if (sub) { const p = outCubic(prog(lt, .3, .4)); sub.style.opacity = .72 * p; sub.style.transform = `translateY(${(1 - p) * 30}px)`; }
+      chipEls.forEach((c, i) => { const p = outBack(prog(lt, .35 + i * .12, .4)); c.style.opacity = clamp(prog(lt, .35 + i * .12, .2)); c.style.transform = `scale(${.6 + .4 * p})`; });
+      const pp = outCubic(prog(lt, .05, .6));
+      phone.style.transform = `translateY(${(1 - pp) * 520}px) rotate(${(1 - pp) * -3}deg)`;
+      // scroll the screenshot inside the phone
+      const imgH = shot.naturalHeight ? shot.naturalHeight * screenW / shot.naturalWidth : screenH;
+      const maxScroll = Math.max(0, imgH - screenH);
+      const [a, b] = s.scroll || [0, 0];
+      const ps = inOut(prog(lt, .7, d - 1.0));
+      shot.style.transform = `translateY(${-maxScroll * (a + (b - a) * ps)}px)`;
+    };
+  },
+
+  cta(s, P) {
+    stage.innerHTML = `
+      <div class="layer" style="background:${P.ink}"></div>
+      <div id="disc" class="abs" style="left:190px;top:330px;width:700px;height:700px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 18px rgba(255,255,255,.08)">
+        <img src="${s.image}" style="height:100%;margin-left:-180px">
+      </div>
+      <div id="brand" class="abs" style="left:0;right:0;top:1090px;text-align:center;font-family:'Inter Tight';font-weight:900;font-size:120px;letter-spacing:-.04em;color:#fff">${esc(s.brand)}</div>
+      <div id="title" class="abs t-title" style="left:0;right:0;top:1250px;text-align:center;color:#FFD6B8;font-size:84px">${esc(s.title)}</div>
+      <div id="btn" class="abs" style="left:50%;top:1500px;transform:translateX(-50%);white-space:nowrap;background:${P.accent};color:#fff;font-weight:700;font-size:44px;padding:26px 56px;border-radius:999px">${esc(s.button)} →</div>
+      <div id="url" class="abs" style="left:0;right:0;top:1630px;text-align:center;color:rgba(255,255,255,.75);font-weight:500;font-size:34px">${esc(s.url)}</div>`;
+    const q = id => stage.querySelector(id);
+    const disc = q('#disc'), brand = q('#brand'), title = q('#title'), btn = q('#btn'), url = q('#url');
+    return lt => {
+      const pd = outBack(prog(lt, 0, .6)); disc.style.transform = `scale(${.5 + .5 * pd})`; disc.style.opacity = clamp(prog(lt, 0, .25));
+      [[brand, .2], [title, .4], [url, .8]].forEach(([e, st]) => { const p = outCubic(prog(lt, st, .4)); e.style.opacity = p; e.style.transform = `translateY(${(1 - p) * 40}px)`; });
+      const pb = outBack(prog(lt, .6, .45)); btn.style.opacity = clamp(prog(lt, .6, .2));
+      const pulse = lt > 1.4 ? 1 + .035 * Math.sin((lt - 1.4) * 7) : 1;
+      btn.style.transform = `translateX(-50%) scale(${(.6 + .4 * pb) * pulse})`;
+    };
+  },
+
+  ending(s, P) {
+    const ICON_W = 300, ICON_H = ICON_W * 203 / 470, WORD_W = 720, WORD_H = WORD_W * 114 / 1376;
+    stage.innerHTML = `
+      <div class="layer" style="background:${P.bg}"></div>
+      <div id="line" class="abs" style="left:0;top:958px;height:6px;width:1080px;background:${P.accent};transform-origin:0 50%"></div>
+      <div id="iconWrap" class="abs" style="left:${(1080 - ICON_W) / 2}px;top:${700 - ICON_H / 2}px;width:${ICON_W}px;height:${ICON_H}px">
+        <img src="${s.icon}" style="width:100%;height:100%">
+      </div>
+      <div id="wordWrap" class="abs" style="left:${(1080 - WORD_W) / 2}px;top:870px;width:${WORD_W}px;height:${WORD_H}px;background:${P.bg};z-index:2">
+        <img src="${s.word}" style="width:100%;height:100%">
+      </div>
+      <div id="tag" class="abs" style="left:0;right:0;top:1040px;text-align:center;font-family:'Inter Tight';font-weight:800;font-size:34px;letter-spacing:.18em;color:${P.ink}">${esc(s.tagline)}</div>
+      <div id="sub" class="abs" style="left:0;right:0;top:1110px;text-align:center;font-weight:700;font-size:52px;letter-spacing:-.03em;color:${P.ink}">${esc(s.sub)}</div>
+      <div id="svc" class="abs" style="left:0;right:0;top:1400px;text-align:center;font-weight:500;font-size:38px;color:#555">${esc(s.services)}</div>
+      <div id="contact" class="abs" style="left:50%;top:1470px;transform:translateX(-50%);white-space:nowrap;border:3px solid ${P.ink};color:${P.ink};font-weight:700;font-size:42px;padding:22px 48px;border-radius:999px">${esc(s.contact)}</div>`;
+    const q = id => stage.querySelector(id);
+    const icon = q('#iconWrap'), word = q('#wordWrap'), line = q('#line'), tag = q('#tag'), sub = q('#sub'), svc = q('#svc'), contact = q('#contact');
+    return lt => {
+      // bridge line sweeps across, then icon "lands" on it
+      const pl = inOut(prog(lt, 0, .55)); line.style.transform = `scaleX(${pl})`;
+      line.style.opacity = 1 - prog(lt, .9, .35);
+      const pi = outBack(prog(lt, .25, .6)); icon.style.opacity = clamp(prog(lt, .25, .2));
+      icon.style.transform = `translateY(${(1 - pi) * 140}px) scale(${.7 + .3 * pi})`;
+      const pw = outCubic(prog(lt, .7, .7)); word.style.clipPath = `inset(0 ${(1 - pw) * 100}% 0 0)`;
+      [[tag, 1.25], [sub, 1.5], [svc, 1.95]].forEach(([e, st]) => { const p = outCubic(prog(lt, st, .45)); e.style.opacity = p; e.style.transform = `translateY(${(1 - p) * 30}px)`; });
+      const pc = outBack(prog(lt, 2.15, .5)); contact.style.opacity = clamp(prog(lt, 2.15, .2));
+      contact.style.transform = `translateX(-50%) scale(${.7 + .3 * pc})`;
+    };
+  }
+};
+
+// ---------- timeline ----------
+window.setup = cfg => {
+  CFG = cfg; let acc = 0;
+  CFG.scenes.forEach(s => { s.start = acc; acc += s.dur; });
+  CFG.total = acc; return acc;
+};
+let update = null;
+window.renderAt = t => {
+  const i = Math.max(0, CFG.scenes.findIndex(s => t >= s.start && t < s.start + s.dur) === -1 ? CFG.scenes.length - 1 : CFG.scenes.findIndex(s => t >= s.start && t < s.start + s.dur));
+  const s = CFG.scenes[i];
+  if (i !== current) { current = i; update = BUILD[s.type](s, CFG.palette); }
+  update(t - s.start);
+  // quick exit fade on the final 0.18s of each scene (except the last one)
+  const left = s.start + s.dur - t;
+  stage.style.opacity = (i < CFG.scenes.length - 1 && left < .18) ? .35 + .65 * (left / .18) : 1;
+  return [...stage.querySelectorAll('img')].every(im => im.complete);
+};
+</script>
+</body>
+</html>

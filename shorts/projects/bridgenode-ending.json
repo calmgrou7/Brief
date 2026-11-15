@@ -1,0 +1,18 @@
+{
+  "name": "bridgenode-ending",
+  "title": "브릿지노드 엔딩",
+  "fps": 30,
+  "palette": { "bg": "#FFFFFF", "ink": "#111214", "accent": "#FF4A0D", "soft": "#F2EFEA" },
+  "scenes": [
+    {
+      "type": "ending",
+      "dur": 4.6,
+      "icon": "assets/brand/icon.png",
+      "word": "assets/brand/word.png",
+      "tagline": "IDEAS CONNECT. POSSIBILITIES BEGIN.",
+      "sub": "좋은 생각이 좋은 서비스가 되는 곳",
+      "services": "앱 · 홈페이지 제작 스튜디오",
+      "contact": "프로젝트 문의  010-8950-6400"
+    }
+  ]
+}
