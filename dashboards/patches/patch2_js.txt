@@ -1,0 +1,49 @@
+function missingDocs(c){
+  const a=c.a, m=[];
+  if(c.rev25==null||c.rev24==null) m.push("최근 2년 매출(부가세 과세표준증명)");
+  if(a.debtRatio==null&&!a.impaired) m.push("재무제표(부채·자본)");
+  if(c.opInc==null&&c.netInc==null) m.push("손익계산서");
+  if(c.borrow==null) m.push("금융권 부채증명");
+  if(c.nextDue==null) m.push("대출 만기일");
+  if(c.tax==="미확인") m.push("국세·지방세 완납증명");
+  if(c.delinq==="미확인") m.push("연체 여부");
+  if(c.opened==null&&c.type!=="예비창업") m.push("개업일(사업자등록증)");
+  return m;
+}
+function consultPoints(c){
+  const a=c.a, P=[];
+  if(c.tax==="체납") P.push(["bad","결격","국세·지방세 체납 — 신청 전에 완납이 먼저입니다."]);
+  if(c.delinq==="있음") P.push(["bad","결격","금융권 연체 — 해소 계획부터 확인하세요."]);
+  if(a.impaired) P.push(["bad","결격","자본잠식(자본 "+won(c.equity)+") — 보증·융자가 제한될 수 있어 증자·결산 계획을 물어보세요."]);
+  if(c.overdueUnk) P.push(["bad","확인","만기 지난 대출의 연장·상환 여부를 가장 먼저 확인하세요."+(c.risk?" ("+c.risk.slice(0,60)+(c.risk.length>60?"…":"")+")":"")]);
+  if(c.need!=null) P.push(["","수요","필요자금 "+won(c.need)+(c.uses.length?" · 용도 "+c.uses.join("·"):"")+(c.agencies.length?" · 검토 기관 "+c.agencies.join("·"):"")]);
+  else if(c.type!=="예비창업") P.push(["warn","수요","필요자금과 용도(운전·시설·대환)를 먼저 확인하세요."]);
+  if(a.dday!=null&&a.dday>=0&&a.dday<=60) P.push(["warn","만기","D-"+a.dday+(c.dueAmt?" · "+won(c.dueAmt):"")+" 만기 도래 — 연장·대환 일정을 함께 상담하세요."]);
+  if(a.lev!=null&&a.lev>2) P.push(["warn","부담","차입금이 연매출의 "+a.lev.toFixed(1)+"배 — 신규보다 대환·구조 개선 위주로 검토하세요."]);
+  if(a.growth!=null&&a.growth>=10) P.push(["good","강점","매출이 전년 대비 "+pct(a.growth,1)+" 성장 — 성장성을 강조할 수 있습니다."]);
+  if(a.growth!=null&&a.growth<-10) P.push(["warn","설명","매출이 전년 대비 "+pct(a.growth,1)+" — 감소 사유와 회복 계획을 준비하세요."]);
+  if(c.certs.length||c.patents>0) P.push(["good","강점","보유 "+[c.certs.join("·"),c.patents>0?"특허 "+c.patents+"건":""].filter(Boolean).join(", ")+" — 기술·우대 항목으로 활용을 검토하세요."]);
+  if(c.type==="예비창업") P.push(["","트랙","예비창업 — 창업자금 대상 여부를 확인하세요."]);
+  else if(a.age!=null&&a.age<7) P.push(["","트랙","업력 "+a.age.toFixed(1)+"년(7년 미만) — 창업기업 대상 자금 해당 여부를 확인하세요."]);
+  if(c.revBasis==="WEDLY추정") P.push(["warn","자료","매출이 WEDLY 추정치 — 과세표준증명으로 실제 매출을 받아 두세요."]);
+  const miss=missingDocs(c);
+  if(miss.length) P.push(["warn","자료","받아야 할 자료: "+miss.join(", ")]);
+  return P;
+}
+function briefHTML(c){
+  const a=c.a, dd=ddayInfo(c);
+  const f=(k,v,sub,cl)=>`<div><div class="k">${k}</div><div class="v ${cl||""}">${v}</div>${sub?`<div class="sub">${sub}</div>`:""}</div>`;
+  const facts=[
+    f("필요자금",won(c.need)||"미확정",c.uses.join("·"),c.need==null?"unk":""),
+    f("2025 매출",won(c.rev25)||"미확인",a.growth!=null?"전년 대비 "+pct(a.growth,1):(c.revBasis!=="없음"?c.revBasis:""),c.rev25==null?"unk":a.growth!=null&&a.growth<-10?"warn":""),
+    f("차입잔액"+(a.levRef?"(참고)":""),won(c.borrow)||(a.levRef?won(c.refBorrow):"미확인"),a.lev!=null?"연매출의 "+a.lev.toFixed(2)+"배":"",a.lev!=null&&a.lev>2?"bad":c.borrow==null&&!a.levRef?"unk":""),
+    f("부채비율",a.impaired?"자본잠식":a.debtRatio==null?"미확인":Math.round(a.debtRatio)+"%",a.debtSrc||"",a.impaired?"bad":a.debtRatio==null?"unk":a.debtRatio>400?"warn":""),
+    f("다음 만기",dd?dd[0].replace("만기 ",""):"미확인",c.dueAmt?won(c.dueAmt):"",dd?dd[1]:"unk"),
+    f("납세 / 연체",esc(c.tax)+" / "+esc(c.delinq),"",c.tax==="체납"||c.delinq==="있음"?"bad":c.tax==="미확인"||c.delinq==="미확인"?"unk":"good"),
+    f("업력",c.type==="예비창업"?"예비창업":a.age!=null?a.age.toFixed(1)+"년":"미확인",c.staff!=null?"근로자 "+c.staff+"명":"",a.age==null&&c.type!=="예비창업"?"unk":""),
+    f("인증·특허",[c.certs.join("·"),c.patents>0?"특허 "+c.patents:""].filter(Boolean).join(" / ")||"없음·미확인","",c.certs.length||c.patents>0?"good":"unk")
+  ].join("");
+  const pts=consultPoints(c);
+  return `<div class="brief"><div class="facts">${facts}</div>
+    <div class="points"><h3>정책자금 상담 포인트</h3><ul>${pts.map(([cl,tag,txt])=>`<li class="${cl}"><b>${tag}</b><span>${esc(txt)}</span></li>`).join("")}</ul></div></div>`;
+}

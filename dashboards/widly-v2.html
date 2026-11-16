@@ -181,7 +181,63 @@ textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:1
 @keyframes sh{to{background-position:-200% 0}}
 @media (prefers-reduced-motion:reduce){.skel{animation:none}}
 
+/* 새 레이아웃: 할 일 타일 · 상태 탭 · 목록+상세 두 칸 */
+.todo{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile:hover{border-color:var(--accent)}
+.tile:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tile .l{font-size:12px;color:var(--muted)}
+.tile .v{font-size:22px;font-weight:600;line-height:1.25}
+.tile .s{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.tile.bad .v{color:var(--bad)} .tile.warn .v{color:var(--warn)}
+.stabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.stab{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--muted)}
+.stab:hover{border-color:var(--accent)}
+.stab[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink);font-weight:600}
+.stab .c{font-family:var(--f-data);margin-left:5px;opacity:.75}
+.split{display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);gap:14px;align-items:start}
+.list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 32px);overflow-y:auto;position:sticky;top:16px;padding:2px 4px 2px 2px}
+.row{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--sig);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.row:hover{border-color:var(--accent);border-left-color:var(--sig)}
+.row:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.row[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent);border-left-color:var(--sig)}
+.row .r1{display:flex;gap:8px;align-items:center;min-width:0}
+.row .nm{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .sc{font-family:var(--f-data);font-weight:600;font-size:13px;color:var(--muted)}
+.row .r2{font-size:12px;color:var(--muted)}
+.row .r3{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .r3.none{color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;min-width:0}
+.panel .db{overflow:visible}
+.pane-empty{padding:48px 24px;text-align:center;color:var(--muted)}
+.hchips{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.qa{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.dtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);padding:0 16px;background:var(--surface);position:sticky;top:0;z-index:2;overflow-x:auto}
+.dtab{border:0;background:none;padding:11px 12px;font-size:13.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.dtab:hover{color:var(--ink)}
+.dtab[aria-selected="true"]{color:var(--ink);font-weight:600;border-bottom-color:var(--accent)}
+.dtab .c{font-family:var(--f-data);font-size:11.5px;margin-left:4px;color:var(--muted)}
+.drawer .dtabs{position:static}
+.brief{padding:14px 20px 4px;display:flex;flex-direction:column;gap:12px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.facts div{background:var(--surface);padding:9px 11px;min-width:0}
+.facts .k{font-size:11.5px;color:var(--muted)}
+.facts .v{font-family:var(--f-data);font-weight:600;font-size:14.5px;overflow-wrap:anywhere}
+.facts .sub{font-size:11px;color:var(--muted);font-family:var(--f-body)}
+.points{border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:12px 14px}
+.points h3{margin:0 0 8px;font-size:13px;color:var(--accent)}
+.points ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.points li{display:flex;gap:8px;font-size:13.5px;line-height:1.5}
+.points li b{flex:none;font-size:11px;padding:1px 7px;border-radius:999px;height:fit-content;margin-top:2px;background:var(--surface);color:var(--muted)}
+.points li.bad b{background:var(--bad-bg);color:var(--bad)} .points li.warn b{background:var(--warn-bg);color:var(--warn)} .points li.good b{background:var(--good-bg);color:var(--good)}
+@media (max-width:1100px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 @media (max-width:900px){
+  .todo{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .split{grid-template-columns:1fr}
+  .panel{display:none}
+  .list{max-height:none;position:static;overflow:visible}
   .strip{grid-template-columns:repeat(2,minmax(0,1fr))}
   .kpi{border-bottom:1px solid var(--line)}
   .kpi:nth-child(2n){border-right:0}
@@ -189,6 +245,7 @@ textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:1
   .board{grid-template-columns:1fr;overflow:visible}
 }
 @media (max-width:480px){
+  .todo{grid-template-columns:repeat(2,minmax(0,1fr))}
   .judge{grid-template-columns:repeat(2,minmax(0,1fr))}
   .kv{grid-template-columns:1fr}
   .search{max-width:none;flex-basis:100%}
@@ -208,13 +265,14 @@ textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:1
     </div>
   </header>
 
-  <section class="strip" id="strip" aria-label="요약"></section>
+  <section class="todo" id="strip" aria-label="오늘 확인할 일"></section>
 
   <div id="notice"></div>
 
   <div class="controls" role="toolbar" aria-label="보기 설정">
     <div class="seg" id="viewSeg">
-      <button type="button" data-v="board" aria-pressed="true">보드</button>
+      <button type="button" data-v="list" aria-pressed="true">목록</button>
+      <button type="button" data-v="board" aria-pressed="false">칸 보기</button>
       <button type="button" data-v="table" aria-pressed="false">비교표</button>
     </div>
     <div class="seg" id="groupSeg">
@@ -224,6 +282,8 @@ textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:1
     <input class="search" id="q" type="search" placeholder="업체명·대표자·업종 검색" aria-label="검색">
     <select id="sort" aria-label="정렬">
       <option value="score">참고점수 높은 순</option>
+      <option value="recent">최근 상담 순</option>
+      <option value="name">업체명 순</option>
       <option value="dday">만기 임박 순</option>
       <option value="rev">2025 매출 큰 순</option>
       <option value="lev">차입/매출 높은 순</option>
@@ -231,9 +291,11 @@ textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:1
     </select>
   </div>
 
+  <nav class="stabs" id="stabs" aria-label="판단 상태"></nav>
+
   <main id="main"></main>
 
-  <p class="foot">참고점수는 매출·재무건전성·상환부담·기술력·업력·결격확인 6개 항목(100점)으로 계산한 판단 보조값입니다. 기관 심사 결과나 승인 가능성을 뜻하지 않습니다. 비어 있는 값은 0점으로 계산되며 ‘자료 완성도’에 반영됩니다. 수치를 고치려면 노션 DB를 수정하세요. 보드는 2분마다 다시 읽습니다.</p>
+  <p class="foot">위쪽 숫자 칸을 누르면 해당 업체만 걸러지고, 한 번 더 누르면 풀립니다. 참고점수는 매출·재무건전성·상환부담·기술력·업력·결격확인 6개 항목(100점)으로 계산한 판단 보조값입니다. 기관 심사 결과나 승인 가능성을 뜻하지 않습니다. 비어 있는 값은 0점으로 계산되며 ‘자료 완성도’에 반영됩니다. 수치를 고치려면 노션 DB를 수정하세요. 보드는 2분마다 다시 읽습니다.</p>
 </div>
 
 <div id="drawerRoot"></div>
@@ -261,7 +323,7 @@ const VERDICTS = ["가능","조건부","보류","불가","자금신청중","자�
 const LOG_SOFT_LIMIT = 1900; // 노션 텍스트 칸 한도(2000자) 경고선
 
 const state = {rows:[], status:"loading", err:null, updatedAt:null, hasMore:false,
-  view:"board", group:"judge", q:"", sort:"score", tsort:{key:"score",dir:-1}, openId:null, editIdx:null, delIdx:null};
+  view:"list", group:"judge", stab:"all", focus:null, tab:"log", draft:null, drawerOpen:false, q:"", sort:"score", tsort:{key:"score",dir:-1}, openId:null, editIdx:null, delIdx:null};
 let M = null, unwatch = null, retried = false;
 const SNAP_PATH = "shared/board";
 let DB = null, canSync = false, liveRows = null, lastSnap = null, lastSnapJSON = null, snapWriting = false;
@@ -556,7 +618,7 @@ async function saveLog(c, list, btn, done){
       logDb[c.id]={list,pending:true};
     }
     applyLogs(c); c.a=analyze(c);
-    state.editIdx=null; state.delIdx=null;
+    state.editIdx=null; state.delIdx=null; state.draft=null;
     toast(c.name+" · "+done+(live?"":" (노션 연결 시 자동 반영)"));
     renderDrawer(c,false); render();
   }catch(e){
@@ -588,11 +650,66 @@ async function saveStage(c, stage, btn){
 }
 
 /* ---------- views ---------- */
-function filtered(){
+function lastLog(c){ return c.log[c.log.length-1]||null; }
+function isRecent(c){ const l=lastLog(c); return !!(l&&l.date)&&daysUntil(l.date)>=-7; }
+const FOCUS={
+  pending:c=>c.judge==="미판단"&&c.stage!==ENDED,
+  due:c=>c.overdueUnk||(c.a.dday!=null&&c.a.dday<=60),
+  fund:c=>c.judge==="자금신청중",
+  recent:isRecent,
+  data:c=>c.a.signal==="nodata"
+};
+function inTab(c,t){
+  if(t==="all") return true;
+  if(t==="ended") return c.stage===ENDED;
+  return c.stage!==ENDED&&(JUDGES.includes(c.judge)?c.judge:"미판단")===t;
+}
+function filtered(ignoreTab){
   const q=state.q.trim().toLowerCase();
   let r=state.rows.filter(c=>!q||[c.name,c.ceo,c.industry,c.region,c.bizno,c.mobile,c.tel,c.email].join(" ").toLowerCase().includes(q));
-  const key={score:c=>-c.a.score,dday:c=>(c.overdueUnk?-1e6:0)+(c.a.dday==null?1e9:c.a.dday),rev:c=>-(c.rev25??-1),lev:c=>-(c.a.lev??-1),comp:c=>c.a.comp}[state.sort];
+  if(state.focus&&FOCUS[state.focus]) r=r.filter(FOCUS[state.focus]);
+  if(!ignoreTab&&state.view!=="board") r=r.filter(c=>inTab(c,state.stab));
+  if(state.sort==="name") return r.sort((x,y)=>x.name.localeCompare(y.name,"ko"));
+  const key={score:c=>-c.a.score,dday:c=>(c.overdueUnk?-1e6:0)+(c.a.dday==null?1e9:c.a.dday),rev:c=>-(c.rev25??-1),lev:c=>-(c.a.lev??-1),comp:c=>c.a.comp,
+    recent:c=>-(Date.parse((lastLog(c)||{}).date||"")||0)}[state.sort];
   return r.sort((x,y)=>key(x)-key(y));
+}
+function isInline(){ return state.view==="list"&&window.matchMedia("(min-width:901px)").matches; }
+function judgeCls(j){ return {"가능":"good","조건부":"warn","불가":"bad","자금신청중":"acc","자금신청완료":"fund"}[j]||""; }
+function ddayInfo(c){
+  const d=c.a.dday;
+  if(c.overdueUnk) return ["만기경과 미확인","bad"];
+  if(d==null) return null;
+  if(d<0) return ["만기 경과","bad"];
+  return ["만기 D-"+d,d<=60?"warn":""];
+}
+function rowHTML(c){
+  const l=lastLog(c), dd=ddayInfo(c), ended=c.stage===ENDED;
+  const last=l?[(l.round&&l.round!=="이전 기록")?l.round:"",l.date?l.date.slice(5).replace("-","/"):""].filter(Boolean).join(" · "):"";
+  return `<button class="row sig-${c.a.signal}" type="button" data-row="${esc(c.id)}" aria-current="${state.openId===c.id}">
+    <span class="r1"><span class="nm">${esc(c.name)}</span><span class="chip ${ended?"":judgeCls(c.judge)}">${esc(ended?"상담종료":c.judge)}</span><span class="sc" title="참고점수">${c.a.score}</span></span>
+    <span class="r2">${c.need!=null?`<b style="color:var(--ink)">필요 ${won(c.need)}</b> · `:""}${esc([c.type,c.region,c.stage].filter(Boolean).join(" · "))}${dd?` · <span class="v ${dd[1]}">${dd[0]}</span>`:""}${c.pending?` · <span class="v warn">노션 미반영</span>`:""}${c.review==="보완필요"?` · <span class="v bad">보완필요</span>`:""}</span>
+    <span class="r3${l?"":" none"}">${l?(last?`<b>${esc(last)}</b> — `:"")+esc(l.memo||l.judge||""):"상담 기록 없음"}</span>
+  </button>`;
+}
+function renderList(rows){
+  const main=$("#main");
+  if(!$("#list")) main.innerHTML=`<div class="split"><div class="list" id="list"></div><div class="panel" id="panel"></div></div>`;
+  const list=$("#list"), st=list.scrollTop;
+  list.innerHTML=rows.length?rows.map(rowHTML).join(""):`<div class="empty-col">조건에 맞는 업체가 없습니다. <button class="btn sm" type="button" data-act="clearf">필터 모두 해제</button></div>`;
+  list.scrollTop=st;
+  if(isInline()){
+    if(!rows.some(c=>c.id===state.openId)){ state.openId=rows[0]?rows[0].id:null; state.editIdx=null; state.delIdx=null; state.draft=null; state.tab="log"; }
+    if(!state.openId) $("#panel").innerHTML=`<div class="pane-empty">왼쪽 목록에서 업체를 고르세요.</div>`;
+  }
+}
+function renderTabs(){
+  const el=$("#stabs");
+  if(state.view==="board"||!state.rows.length){ el.hidden=true; return; }
+  el.hidden=false;
+  const base=filtered(true);
+  const tabs=[["all","전체"],...JUDGES.map(j=>[j,j]),["ended","상담종료"]];
+  el.innerHTML=tabs.map(([k,l])=>`<button class="stab" type="button" data-stab="${esc(k)}" aria-pressed="${state.stab===k}">${esc(l)}<span class="c">${base.filter(c=>inTab(c,k)).length}</span></button>`).join("");
 }
 function sigPill(s){ return `<span class="pill sig-${s}">${SIG_LABEL[s]}</span>`; }
 function cls(v,good,warn){ return v==null?"unk":v; }
@@ -672,19 +789,18 @@ function renderTable(rows){
 
 function renderStrip(){
   const r=state.rows, el=$("#strip");
-  if(!r.length){ el.innerHTML=["등록 업체","증빙 차입 합계","만기 경과·임박","판단 대기","평균 자료 완성도"].map(l=>`<div class="kpi"><div class="l">${l}</div><div class="v num">—</div><div class="s">노션 연결 후 표시</div></div>`).join(""); return; }
-  const borrow=r.reduce((t,c)=>t+(c.borrow||0),0), bn=r.filter(c=>c.borrow!=null).length;
-  const due=r.filter(c=>c.overdueUnk||(c.a.dday!=null&&c.a.dday<=60)), over=r.filter(c=>c.overdueUnk).length;
-  const endN=r.filter(c=>c.stage===ENDED).length;
-  const pend=r.filter(c=>c.judge==="미판단"&&c.stage!==ENDED).length;
-  const comp=Math.round(r.reduce((t,c)=>t+c.a.comp,0)/r.length);
-  const sig=s=>r.filter(c=>c.a.signal===s).length;
-  el.innerHTML=`
-   <div class="kpi"><div class="l">등록 업체</div><div class="v num">${r.length}</div><div class="s">양호 ${sig("good")} · 주의 ${sig("warn")} · 위험 ${sig("bad")} · 자료부족 ${sig("nodata")}${endN?` · 상담종료 ${endN}`:""}</div></div>
-   <div class="kpi"><div class="l">증빙 차입 합계</div><div class="v num">${won(borrow)}</div><div class="s">${bn}곳 기준 · 기준일 업체별 상이</div></div>
-   <div class="kpi"><div class="l">만기 경과·임박(60일)</div><div class="v num ${over?"bad":due.length?"warn":""}">${due.length}곳</div><div class="s">${over?`경과·미확인 ${over}곳 우선 확인`:"경과 건 없음"}</div></div>
-   <div class="kpi"><div class="l">판단 대기</div><div class="v num">${pend}곳</div><div class="s">판단 완료 ${r.length-pend-endN}곳${endN?` · 상담종료 ${endN}곳 제외`:""}</div></div>
-   <div class="kpi"><div class="l">평균 자료 완성도</div><div class="v num ${comp<50?"warn":""}">${comp}%</div><div class="s">필수 10개 항목 기준${r.filter(c=>c.review==="보완필요").length?` · 보완필요 ${r.filter(c=>c.review==="보완필요").length}`:""}${r.filter(c=>c.review==="미검수").length?` · 미검수 ${r.filter(c=>c.review==="미검수").length}`:""}</div></div>`;
+  const n=f=>r.filter(f).length, sig=x=>n(c=>c.a.signal===x);
+  const over=n(c=>c.overdueUnk||(c.a.dday!=null&&c.a.dday<0)), due=n(FOCUS.due);
+  const comp=r.length?Math.round(r.reduce((t,c)=>t+c.a.comp,0)/r.length):0;
+  const tiles=[
+    ["all","전체 업체",r.length,`양호 ${sig("good")} · 주의 ${sig("warn")} · 위험 ${sig("bad")}`,""],
+    ["pending","판단 대기",n(FOCUS.pending),"상담 판단 전 업체",""],
+    ["due","만기 경과·임박",due,over?`경과 ${over}곳 우선 확인`:"60일 이내 만기",over?"bad":due?"warn":""],
+    ["fund","자금신청 진행",n(FOCUS.fund),`신청완료 ${n(c=>c.judge==="자금신청완료")}곳`,""],
+    ["recent","최근 7일 상담",n(FOCUS.recent),"상담 기록 기준",""],
+    ["data","자료 부족",n(FOCUS.data),`평균 자료 완성도 ${comp}%`,""]
+  ];
+  el.innerHTML=tiles.map(([k,l,v,s,cl])=>`<button class="tile ${cl}" type="button" data-focus="${k}" aria-pressed="${(state.focus||"all")===k}"><span class="l">${l}</span><span class="v num">${r.length?v:"—"}</span><span class="s">${r.length?s:"노션 연결 후 표시"}</span></button>`).join("");
 }
 
 function renderNotice(){
@@ -727,16 +843,19 @@ function renderLive(){
 function renderSync(){ renderLive(); }
 
 function render(){
-  renderLive(); renderStrip(); renderNotice();
+  renderLive(); renderStrip(); renderNotice(); renderTabs();
   document.querySelectorAll("#viewSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===state.view));
   document.querySelectorAll("#groupSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===state.group));
-  $("#groupSeg").hidden=state.view!=="board"; $("#sort").hidden=state.view!=="board";
+  $("#groupSeg").hidden=state.view!=="board"; $("#sort").hidden=state.view==="table";
   const main=$("#main");
   if(!state.rows.length){
     if(state.status==="loading") main.innerHTML=`<div class="board" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">${'<div class="skel"></div>'.repeat(6)}</div>`;
     else main.innerHTML=state.status==="live"?`<div class="notice"><div class="grow"><h2>등록된 업체가 없습니다</h2><p>노션 「위들리 v2 정책자금 DB」에 ChatGPT가 업체를 등록하면 2분 안에 이 보드에 나타납니다.</p></div></div>`:"";
-  } else if(state.view==="board") renderBoard(filtered()); else renderTable(filtered());
-  if(state.openId){ const c=state.rows.find(x=>x.id===state.openId); if(c) renderDrawer(c,true); }
+  } else if(state.view==="board") renderBoard(filtered());
+  else if(state.view==="table") renderTable(filtered());
+  else renderList(filtered());
+  const c=state.openId&&state.rows.find(x=>x.id===state.openId);
+  if(c&&(isInline()||state.drawerOpen)) renderDrawer(c,true);
 }
 
 /* ---------- drawer ---------- */
@@ -755,30 +874,105 @@ function contactHTML(c){
   if(!rows&&!extra) return `<p class="prose" style="color:var(--muted)">등록된 연락처가 없습니다. 노션 DB의 휴대전화·대표전화·이메일 칸에 입력하세요.</p>`;
   return `<div class="contacts">${rows}</div>${extra?`<p class="prose" style="margin-top:8px;font-size:12.5px">${extra}</p>`:""}${c.contactSrc?`<p style="font-size:11.5px;color:var(--muted);margin:4px 0 0">출처: ${esc(c.contactSrc)}</p>`:""}`;
 }
+function readInputs(keep){
+  if(keep&&$("#memo")){
+    const st=document.querySelector(".stamp[aria-pressed='true']");
+    return {memo:$("#memo").value, judge:st?st.dataset.j:"", round:$("#roundSel")?$("#roundSel").value:"", date:$("#logDate")?$("#logDate").value:"", stage:$("#stageSel")?$("#stageSel").value:""};
+  }
+  return keep&&state.draft?state.draft:{};
+}
 function renderDrawer(c, keepInputs){
-  const a=c.a, root=$("#drawerRoot");
-  const prevMemo=keepInputs&&$("#memo")?$("#memo").value:null;
-  const prevJudge=keepInputs&&root.querySelector(".stamp[aria-pressed='true']")?root.querySelector(".stamp[aria-pressed='true']").dataset.j:null;
-  const list=logOf(c), editing=state.editIdx!=null?list[state.editIdx]:null;
-  const judge=prevJudge||(editing?editing.judge:""), memo=prevMemo!=null?prevMemo:(editing?editing.memo:"");
-  const roundSel=keepInputs&&$("#roundSel")?$("#roundSel").value:(editing?(ROUNDS.includes(editing.round)?editing.round:"1차"):nextRound(list));
-  const dateSel=keepInputs&&$("#logDate")?$("#logDate").value:(editing&&editing.date?editing.date:today());
-  const stageSel=keepInputs&&$("#stageSel")?$("#stageSel").value:c.stage;
+  const inline=isInline(), host=inline?$("#panel"):$("#drawerRoot");
+  if(!host) return;
+  const inp=readInputs(keepInputs);
+  const scroller=inline?host:host.querySelector(".db"), st=keepInputs&&scroller?scroller.scrollTop:0;
+  const body=detailHTML(c,inp,inline);
+  host.innerHTML=inline?body:`<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">${body}</aside>`;
+  const sc=inline?host:host.querySelector(".db"); if(sc) sc.scrollTop=st;
+  if(!keepInputs&&!inline) host.querySelector(".x").focus();
+}
+function missingDocs(c){
+  const a=c.a, m=[];
+  if(c.rev25==null||c.rev24==null) m.push("최근 2년 매출(부가세 과세표준증명)");
+  if(a.debtRatio==null&&!a.impaired) m.push("재무제표(부채·자본)");
+  if(c.opInc==null&&c.netInc==null) m.push("손익계산서");
+  if(c.borrow==null) m.push("금융권 부채증명");
+  if(c.nextDue==null) m.push("대출 만기일");
+  if(c.tax==="미확인") m.push("국세·지방세 완납증명");
+  if(c.delinq==="미확인") m.push("연체 여부");
+  if(c.opened==null&&c.type!=="예비창업") m.push("개업일(사업자등록증)");
+  return m;
+}
+function consultPoints(c){
+  const a=c.a, P=[];
+  if(c.tax==="체납") P.push(["bad","결격","국세·지방세 체납 — 신청 전에 완납이 먼저입니다."]);
+  if(c.delinq==="있음") P.push(["bad","결격","금융권 연체 — 해소 계획부터 확인하세요."]);
+  if(a.impaired) P.push(["bad","결격","자본잠식(자본 "+won(c.equity)+") — 보증·융자가 제한될 수 있어 증자·결산 계획을 물어보세요."]);
+  if(c.overdueUnk) P.push(["bad","확인","만기 지난 대출의 연장·상환 여부를 가장 먼저 확인하세요."+(c.risk?" ("+c.risk.slice(0,60)+(c.risk.length>60?"…":"")+")":"")]);
+  if(c.need!=null) P.push(["","수요","필요자금 "+won(c.need)+(c.uses.length?" · 용도 "+c.uses.join("·"):"")+(c.agencies.length?" · 검토 기관 "+c.agencies.join("·"):"")]);
+  else if(c.type!=="예비창업") P.push(["warn","수요","필요자금과 용도(운전·시설·대환)를 먼저 확인하세요."]);
+  if(a.dday!=null&&a.dday>=0&&a.dday<=60) P.push(["warn","만기","D-"+a.dday+(c.dueAmt?" · "+won(c.dueAmt):"")+" 만기 도래 — 연장·대환 일정을 함께 상담하세요."]);
+  if(a.lev!=null&&a.lev>2) P.push(["warn","부담","차입금이 연매출의 "+a.lev.toFixed(1)+"배 — 신규보다 대환·구조 개선 위주로 검토하세요."]);
+  if(a.growth!=null&&a.growth>=10) P.push(["good","강점","매출이 전년 대비 "+pct(a.growth,1)+" 성장 — 성장성을 강조할 수 있습니다."]);
+  if(a.growth!=null&&a.growth<-10) P.push(["warn","설명","매출이 전년 대비 "+pct(a.growth,1)+" — 감소 사유와 회복 계획을 준비하세요."]);
+  if(c.certs.length||c.patents>0) P.push(["good","강점","보유 "+[c.certs.join("·"),c.patents>0?"특허 "+c.patents+"건":""].filter(Boolean).join(", ")+" — 기술·우대 항목으로 활용을 검토하세요."]);
+  if(c.type==="예비창업") P.push(["","트랙","예비창업 — 창업자금 대상 여부를 확인하세요."]);
+  else if(a.age!=null&&a.age<7) P.push(["","트랙","업력 "+a.age.toFixed(1)+"년(7년 미만) — 창업기업 대상 자금 해당 여부를 확인하세요."]);
+  if(c.revBasis==="WEDLY추정") P.push(["warn","자료","매출이 WEDLY 추정치 — 과세표준증명으로 실제 매출을 받아 두세요."]);
+  if(c.review==="보완필요") P.unshift(["warn","검수","ChatGPT 검수 결과 보완필요 — 기업 정보 탭의 자료 출처·검수 메모를 확인하세요."]);
+  const miss=missingDocs(c);
+  if(miss.length) P.push(["warn","자료","받아야 할 자료: "+miss.join(", ")]);
+  return P;
+}
+function briefHTML(c){
+  const a=c.a, dd=ddayInfo(c);
+  const f=(k,v,sub,cl)=>`<div><div class="k">${k}</div><div class="v ${cl||""}">${v}</div>${sub?`<div class="sub">${sub}</div>`:""}</div>`;
+  const facts=[
+    f("필요자금",won(c.need)||"미확정",c.uses.join("·"),c.need==null?"unk":""),
+    f("2025 매출",won(c.rev25)||"미확인",a.growth!=null?"전년 대비 "+pct(a.growth,1):(c.revBasis!=="없음"?c.revBasis:""),c.rev25==null?"unk":a.growth!=null&&a.growth<-10?"warn":""),
+    f("차입잔액"+(a.levRef?"(참고)":""),won(c.borrow)||(a.levRef?won(c.refBorrow):"미확인"),a.lev!=null?"연매출의 "+a.lev.toFixed(2)+"배":"",a.lev!=null&&a.lev>2?"bad":c.borrow==null&&!a.levRef?"unk":""),
+    f("부채비율",a.impaired?"자본잠식":a.debtRatio==null?"미확인":Math.round(a.debtRatio)+"%",a.debtSrc||"",a.impaired?"bad":a.debtRatio==null?"unk":a.debtRatio>400?"warn":""),
+    f("다음 만기",dd?dd[0].replace("만기 ",""):"미확인",c.dueAmt?won(c.dueAmt):"",dd?dd[1]:"unk"),
+    f("납세 / 연체",esc(c.tax)+" / "+esc(c.delinq),"",c.tax==="체납"||c.delinq==="있음"?"bad":c.tax==="미확인"||c.delinq==="미확인"?"unk":"good"),
+    f("업력",c.type==="예비창업"?"예비창업":a.age!=null?a.age.toFixed(1)+"년":"미확인",c.staff!=null?"근로자 "+c.staff+"명":"",a.age==null&&c.type!=="예비창업"?"unk":""),
+    f("인증·특허",[c.certs.join("·"),c.patents>0?"특허 "+c.patents:""].filter(Boolean).join(" / ")||"없음·미확인","",c.certs.length||c.patents>0?"good":"unk")
+  ].join("");
+  const pts=consultPoints(c);
+  return `<div class="brief"><div class="facts">${facts}</div>
+    <div class="points"><h3>정책자금 상담 포인트</h3><ul>${pts.map(([cl,tag,txt])=>`<li class="${cl}"><b>${tag}</b><span>${esc(txt)}</span></li>`).join("")}</ul></div></div>`;
+}
+function detailHTML(c,inp,inline){
+  const a=c.a, list=logOf(c), editing=state.editIdx!=null?list[state.editIdx]:null;
+  const judge=inp.judge!=null&&inp.judge!==""?inp.judge:(editing?editing.judge:"");
+  const memo=inp.memo!=null?inp.memo:(editing?editing.memo:"");
+  const roundSel=inp.round||(editing?(ROUNDS.includes(editing.round)?editing.round:"1차"):nextRound(list));
+  const dateSel=inp.date||(editing&&editing.date?editing.date:today());
+  const stageSel=inp.stage||c.stage;
   const kv=(k,v,src)=>`<div><div class="k">${k}</div><div class="v">${v}${src?` <span class="src">${src}</span>`:""}</div></div>`;
-  root.innerHTML=`<div class="scrim" data-act="close"></div>
-  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
-    <div class="dh"><div class="t"><h2 id="dTitle">${esc(c.name)}</h2>
-      <div class="meta">${esc([c.ceo&&"대표 "+c.ceo,c.bizno,c.type,c.region].filter(Boolean).join(" · "))}</div>
-      <div class="meta">${esc(c.industry)}${c.asOf?" · 정보기준 "+esc(c.asOf):""}</div>
-      <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">${sigPill(a.signal)}<span class="chip">${esc(c.stage)}</span><span class="chip ${c.review==="검수완료"?"good":c.review==="보완필요"?"bad":""}">검수 ${esc(c.review)}</span><span class="chip">신뢰도 ${esc(c.trust)}</span><span class="chip">자료 ${a.comp}%</span></div></div>
-      <button class="x" data-act="close" type="button" aria-label="닫기">×</button></div>
-    <div class="db">
+  const ended=c.stage===ENDED;
+  const tabs=[["log","상담 기록",list.length],["info","기업 정보",""],["fin","재무·점수",a.score+"점"],["risk","리스크",a.flags.length||""]];
+  let body="";
+  if(state.tab==="info") body=`
       <section class="sec"><h3>연락처</h3>${contactHTML(c)}</section>
-      ${logSection(c,list,editing,judge,memo,roundSel,dateSel)}
+      <section class="sec"><h3>기본 정보</h3><div class="kv">
+        ${kv("대표자",esc(c.ceo)||"미확인")}${kv("사업자번호",esc(c.bizno)||"미확인")}
+        ${kv("사업자유형",esc(c.type)||"미확인")}${kv("지역",esc(c.region)||"미확인")}
+        ${kv("업종",esc(c.industry)||"미확인")}${kv("개업일 / 업력",(c.opened||"—")+(a.age!=null?" ("+a.age.toFixed(1)+"년)":""))}
+        ${kv("상시근로자",c.staff!=null?c.staff+"명":"미확인")}${kv("정보기준일",c.asOf||"미확인")}
+      </div></section>
+      <section class="sec"><h3>자금 수요</h3><div class="kv">
+        ${kv("필요자금",won(c.need)||"미확정")}${kv("자금용도",c.uses.length?esc(c.uses.join(", ")):"미확인")}
+      </div>${c.agencies.length?`<div class="chips" style="margin-top:8px">${c.agencies.map(x=>`<span class="chip acc">${esc(x)}</span>`).join("")}</div>`:""}</section>
+      <section class="sec"><h3>기술력</h3><div class="kv">
+        ${kv("인증",c.certs.length?esc(c.certs.join(", ")):"없음·미확인")}${kv("특허",c.patents!=null?c.patents+"건":"미확인")}
+        ${kv("수출(최근연도)",c.exportUsd!=null?"$"+c.exportUsd.toLocaleString("en-US"):"없음·미확인")}${kv("자료 신뢰도",esc(c.trust))}
+      </div></section>
+      ${c.evid||c.verify?`<section class="sec"><h3>자료 출처 · 증빙</h3>${c.verify?`<p class="prose" style="color:var(--muted);margin-bottom:6px">${esc(c.verify)}</p>`:""}${c.evid?`<p class="prose">${esc(c.evid)}</p>`:""}</section>`:""}
+      ${c.next?`<section class="sec"><h3>다음 조치</h3><p class="prose">${esc(c.next)}</p></section>`:""}`;
+  else if(state.tab==="fin") body=`
       <section class="sec"><h3>참고점수 ${a.score} / 100</h3><div class="breakdown">
         ${a.parts.map(p=>`<div class="br"><span>${p.k}</span><div class="track"><div class="fill" style="width:${p.got/p.max*100}%"></div></div><span class="pt">${p.got}/${p.max}</span><span class="note">${esc(p.note)}</span></div>`).join("")}
       </div></section>
-      ${a.flags.length?`<section class="sec"><h3>확인할 리스크</h3><div class="flags">${a.flags.map(f=>`<div class="flag ${f[0]}"><b>${f[0]==="bad"?"결격":f[0]==="warn"?"주의":"메모"}</b><span>${esc(f[1])}</span></div>`).join("")}</div></section>`:""}
       <section class="sec"><h3>매출 추이</h3>${bars(c)}</section>
       <section class="sec"><h3>재무비율</h3><div class="kv">
         ${kv("부채비율",a.impaired?'<span class="v bad">자본잠식</span>':a.debtRatio==null?"미확인":Math.round(a.debtRatio)+"%",a.debtSrc)}
@@ -794,30 +988,26 @@ function renderDrawer(c, keepInputs){
         ${kv("차입/연매출",a.lev==null?"계산 불가":a.lev.toFixed(2)+"배",a.levRef?"참고값 기준":"")}
         ${kv("다음 만기",c.nextDue?c.nextDue+(a.dday!=null?(a.dday<0?" (경과)":" (D-"+a.dday+")"):""):"미확인",c.overdueUnk?"연장 미확인":"")}
         ${kv("만기 금액",won(c.dueAmt)||"미확인")}
-        ${kv("필요자금",won(c.need)||"미확정",c.uses.join("·"))}
         ${kv("납세 / 연체",esc(c.tax)+" / "+esc(c.delinq))}
-      </div></section>
-      <section class="sec"><h3>기술력·업력</h3><div class="kv">
-        ${kv("인증",c.certs.length?esc(c.certs.join(", ")):"없음·미확인")}
-        ${kv("특허",c.patents!=null?c.patents+"건":"미확인")}
-        ${kv("수출(최근연도)",c.exportUsd!=null?"$"+c.exportUsd.toLocaleString("en-US"):"없음·미확인")}
-        ${kv("업력 / 근로자",(a.age!=null?a.age.toFixed(1)+"년":"—")+" / "+(c.staff!=null?c.staff+"명":"—"))}
-      </div></section>
-      ${c.agencies.length?`<section class="sec"><h3>신청 검토 기관</h3><div class="chips">${c.agencies.map(x=>`<span class="chip acc">${esc(x)}</span>`).join("")}</div></section>`:""}
-      ${c.evid||c.verify?`<section class="sec"><h3>자료 출처 · 검수 메모</h3>${c.verify?`<p class="prose" style="color:var(--muted);margin-bottom:6px">출처: ${esc(c.verify)}</p>`:""}${c.evid?`<p class="prose">${esc(c.evid)}</p>`:""}</section>`:""}
-      ${c.risk?`<section class="sec"><h3>핵심 리스크(노션 기록)</h3><p class="prose">${esc(c.risk)}</p></section>`:""}
-      ${c.next?`<section class="sec"><h3>다음 조치</h3><p class="prose">${esc(c.next)}</p></section>`:""}
+      </div></section>`;
+  else if(state.tab==="risk") body=`
+      ${a.flags.length?`<section class="sec"><h3>자동 점검 결과</h3><div class="flags">${a.flags.map(f=>`<div class="flag ${f[0]}"><b>${f[0]==="bad"?"결격":f[0]==="warn"?"주의":"메모"}</b><span>${esc(f[1])}</span></div>`).join("")}</div></section>`:`<section class="sec"><p class="prose" style="color:var(--muted)">자동 점검에서 걸린 리스크가 없습니다.</p></section>`}
+      ${c.risk?`<section class="sec"><h3>핵심 리스크(노션 기록)</h3><p class="prose">${esc(c.risk)}</p></section>`:""}`;
+  else body=`
+      ${logSection(c,list,editing,judge,memo,roundSel,dateSel)}
       ${state.source!=="live"?`<section class="sec"><h3>진행상태</h3><p class="prose"><b>${esc(c.stage)}</b></p></section>`:`<section class="sec"><h3>진행상태 — 노션에 저장</h3>
         <div class="save-row"><select id="stageSel" aria-label="진행상태">${(STAGES.includes(c.stage)?STAGES:[c.stage,...STAGES]).map(s=>`<option value="${esc(s)}"${s===stageSel?" selected":""}>${esc(s)}</option>`).join("")}</select>
         <button class="btn primary" id="stageBtn" type="button">노션에 저장</button><span class="save-msg" id="stageMsg">현재 노션 값: ${esc(c.stage)}</span></div>
-      </section>`}
-      <section class="sec" style="display:flex;gap:8px;flex-wrap:wrap">
-        ${c.report?`<a class="btn" href="${esc(c.report)}" target="_blank" rel="noopener">종합 보고서 열기</a>`:""}
-        <a class="btn" href="${esc(c.url)}" target="_blank" rel="noopener">노션 행 편집</a>
-      </section>
-    </div>
-  </aside>`;
-  if(!keepInputs) root.querySelector(".x").focus();
+      </section>`}`;
+  return `<div class="dh"><div class="t"><h2 id="dTitle">${esc(c.name)}</h2>
+      <div class="meta">${esc([c.ceo&&"대표 "+c.ceo,c.bizno,c.type,c.region].filter(Boolean).join(" · "))}</div>
+      <div class="meta">${esc(c.industry)}${c.asOf?" · 정보기준 "+esc(c.asOf):""}</div>
+      <div class="hchips">${sigPill(a.signal)}<span class="chip ${ended?"":judgeCls(c.judge)}">${esc(ended?"상담종료":c.judge)}</span><span class="chip">${esc(c.stage)}</span>${c.review?`<span class="chip ${c.review==="검수완료"?"good":c.review==="보완필요"?"bad":""}">검수 ${esc(c.review)}</span>`:""}<span class="chip">참고점수 ${a.score}</span><span class="chip">자료 ${a.comp}%</span></div>
+      <div class="qa">${c.mobile?`<button class="btn sm" type="button" data-copy="${esc(c.mobile)}">${esc(c.mobile)} 복사</button>`:""}<a class="btn sm" href="${esc(c.url)}" target="_blank" rel="noopener">노션 행 편집</a>${c.report?`<a class="btn sm" href="${esc(c.report)}" target="_blank" rel="noopener">종합 보고서</a>`:""}</div>
+    </div>${inline?"":`<button class="x" data-act="close" type="button" aria-label="닫기">×</button>`}</div>
+    ${briefHTML(c)}
+    <div class="dtabs" role="tablist">${tabs.map(([k,l,n])=>`<button class="dtab" type="button" role="tab" data-tab="${k}" aria-selected="${state.tab===k}">${l}${n!==""?`<span class="c">${n}</span>`:""}</button>`).join("")}</div>
+    <div class="db">${body}</div>`;
 }
 function logSection(c,list,editing,judge,memo,roundSel,dateSel){
   const live=canWriteLog();
@@ -836,7 +1026,6 @@ function logSection(c,list,editing,judge,memo,roundSel,dateSel){
   const len=fmtLog(list).length;
   return `<section class="sec"><h3>상담 기록 — ${offline?"이 페이지에 임시 저장":"노션에 저장"} (${list.length}건)</h3>
     ${offline?`<div class="flag warn" style="margin-bottom:10px"><b>임시</b><span>노션에 연결되지 않은 화면입니다. 여기서 쓴 기록은 이 페이지에 먼저 저장되고, 다음에 노션이 연결된 상태로 열면 자동으로 노션에 옮겨집니다.${c.pending?" 이 업체에 아직 노션에 옮기지 않은 기록이 있습니다.":""} <button class="btn sm" type="button" data-act="mcp">노션 연결 다시 시도</button></span></div>`:""}
-    ${history}
     <div class="logform">
       <div class="save-row" style="font-size:13px;font-weight:600">${editing?"기록 수정":"새 상담 기록"}</div>
       <div class="save-row"><label for="roundSel" style="font-size:12px;color:var(--muted)">차수</label><select id="roundSel">${ROUNDS.map(r=>`<option${r===roundSel?" selected":""}>${r}</option>`).join("")}</select>
@@ -845,10 +1034,19 @@ function logSection(c,list,editing,judge,memo,roundSel,dateSel){
       <textarea id="memo" placeholder="예: KB 3억 연장 증빙 받으면 지역신보 대환으로 진행 / 다음 상담 때 부채증명서 받기">${esc(memo)}</textarea>
       <div class="save-row"><button class="btn primary" id="saveBtn" type="button">${editing?"수정 저장":"기록 추가"}</button>${editing?`<button class="btn" id="cancelEdit" type="button">수정 취소</button>`:""}
         <span class="save-msg" id="saveMsg">${len>LOG_SOFT_LIMIT?"기록이 길어져 노션 칸 한도(2000자)에 가깝습니다. 오래된 기록 메모를 줄여 주세요.":"가장 최근 기록의 판단이 보드 칸에 반영됩니다."}</span></div>
-    </div></section>`;
+    </div>
+    <div style="margin-top:14px">${history}</div></section>`;
 }
-function openDrawer(id){ const c=state.rows.find(x=>x.id===id); if(!c) return; state.openId=id; state.editIdx=null; state.delIdx=null; renderDrawer(c,false); }
-function closeDrawer(){ state.openId=null; state.editIdx=null; state.delIdx=null; $("#drawerRoot").innerHTML=""; }
+function resetDetail(){ state.editIdx=null; state.delIdx=null; state.draft=null; state.tab="log"; }
+function openDrawer(id){ const c=state.rows.find(x=>x.id===id); if(!c) return; state.openId=id; resetDetail(); state.drawerOpen=true; renderDrawer(c,false); }
+function closeDrawer(){ state.drawerOpen=false; state.editIdx=null; state.delIdx=null; state.draft=null; if(!isInline()) state.openId=null; $("#drawerRoot").innerHTML=""; }
+function selectRow(id){
+  const c=state.rows.find(x=>x.id===id); if(!c) return;
+  if(!isInline()){ openDrawer(id); return; }
+  state.openId=id; resetDetail();
+  document.querySelectorAll("#list .row").forEach(r=>r.setAttribute("aria-current",r.dataset.row===id));
+  renderDrawer(c,false); $("#panel").scrollTop=0;
+}
 
 function selectText(btn){
   const el=btn.parentElement.querySelector(".cv"); if(!el) return;
@@ -861,10 +1059,14 @@ function toast(t){ const r=$("#toastRoot"); r.innerHTML=`<div class="toast" role
 document.addEventListener("click",e=>{
   const t=e.target;
   const card=t.closest(".card,tbody tr"); if(card&&card.dataset.id){ openDrawer(card.dataset.id); return; }
+  const row=t.closest("[data-row]"); if(row){ selectRow(row.dataset.row); return; }
+  const fo=t.closest("[data-focus]"); if(fo){ const k=fo.dataset.focus; state.focus=(k==="all"||state.focus===k)?null:k; render(); return; }
+  const sb=t.closest("[data-stab]"); if(sb){ state.stab=sb.dataset.stab; render(); return; }
+  const tb=t.closest("[data-tab]"); if(tb){ const c=state.rows.find(x=>x.id===state.openId); if(!c) return; state.draft=readInputs(true); state.tab=tb.dataset.tab; renderDrawer(c,true); return; }
   const th=t.closest("th[data-k]"); if(th){ const k=th.dataset.k; state.tsort=state.tsort.key===k?{key:k,dir:-state.tsort.dir}:{key:k,dir:-1}; render(); return; }
   const v=t.closest("#viewSeg button"); if(v){ state.view=v.dataset.v; render(); return; }
   const g=t.closest("#groupSeg button"); if(g){ state.group=g.dataset.g; render(); return; }
-  const act=t.closest("[data-act]"); if(act){ if(act.dataset.act==="close") closeDrawer(); if(act.dataset.act==="reload") load(true); if(act.dataset.act==="mcp") retryMcp(); return; }
+  const act=t.closest("[data-act]"); if(act){ if(act.dataset.act==="close") closeDrawer(); if(act.dataset.act==="reload") load(true); if(act.dataset.act==="mcp") retryMcp(); if(act.dataset.act==="clearf"){ state.focus=null; state.stab="all"; state.q=""; $("#q").value=""; render(); } return; }
   const cp=t.closest("[data-copy]"); if(cp){
     const v=cp.dataset.copy, done=()=>toast(v+" 복사했습니다");
     try{ navigator.clipboard.writeText(v).then(done,()=>selectText(cp)); }catch(err){ selectText(cp); }
@@ -896,7 +1098,7 @@ document.addEventListener("click",e=>{
   }
 });
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape"&&state.openId) closeDrawer();
+  if(e.key==="Escape"&&state.drawerOpen) closeDrawer();
   if(e.key==="Enter"&&e.target.matches("tbody tr")) openDrawer(e.target.dataset.id);
 });
 $("#q").addEventListener("input",e=>{ state.q=e.target.value; render(); });
