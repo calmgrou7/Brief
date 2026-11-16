@@ -51,3 +51,7 @@ cd android && ./gradlew bundleRelease   # .aab (keystore.properties 필요, 아�
 - 업로드할 때마다 `versionCode` +1.
 - 서버 환경 변수 `ANDROID_CERT_SHA256` 에 업로드 키 + 플레이 앱 서명 키 지문을 넣으면 `/.well-known/assetlinks.json` 이 생성됩니다.
 - 등록 절차·스토어 문구·데이터 보안 답변: `android/PLAY_STORE.md`.
+
+## 그림·그래프
+- 가운데 호흡 그림(입자)과 관리자·보관함 그래프를 고칠 때는 **`soomgyeol/docs/VISUALS.md`** 의 규칙을 따릅니다.
+- 핵심: 들숨 = 차오르고 밝아짐, 멈춤 = 정지, 날숨 = 식고 어두워짐. 그래프는 실제 데이터만, 정해진 색표, 외부 차트 라이브러리 금지.

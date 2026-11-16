@@ -6,6 +6,7 @@
   - 실행·구조: [`soomgyeol/README.md`](soomgyeol/README.md)
   - 진행 상황·남은 일·결정 사항: [`soomgyeol/docs/HANDOFF.md`](soomgyeol/docs/HANDOFF.md)
   - 구글 플레이 등록: [`soomgyeol/android/PLAY_STORE.md`](soomgyeol/android/PLAY_STORE.md)
+  - 그림·그래프 표현 규칙: [`soomgyeol/docs/VISUALS.md`](soomgyeol/docs/VISUALS.md)
 - **코딩 에이전트 안내**: [`AGENTS.md`](AGENTS.md)
 - [`breath/index.html`](breath/index.html): 초기 단일 파일 프로토타입(참고용)
 
