@@ -38,7 +38,7 @@ npm run dev                  # http://localhost:3000
 3. `ANTHROPIC_API_KEY` 설정 (비용을 줄이려면 `CLAUDE_MODEL` 변경 가능)
 4. `LEAD_WEBHOOK_URL`에 Zapier/n8n 웹훅 연결 (아래 자동화 참고)
 5. `NEXT_PUBLIC_OPERATOR_NAME`, 개인정보처리방침의 책임자 정보 입력 → **법률 검토**
-6. Vercel 배포 (환경변수 동일하게 입력)
+6. 배포: Render 웹 서비스 `bodam-check` (이 브랜치 push 시 자동 배포)
 
 ## 자동화 (1인 운영)
 리드가 접수되면 `LEAD_WEBHOOK_URL`로 아래 JSON을 보냅니다.
@@ -47,7 +47,10 @@ npm run dev                  # http://localhost:3000
   "grade": "HOT", "score": 82, "interest": "claim", "channel": "toss",
   "findings": ["수술비 청구 누락 가능성", "..."], "message": "...", "created_at": "..." }
 ```
-추천 Zap: **웹훅 수신 → 구글시트 행 추가 → (grade=HOT이면) 내 휴대폰 알림 + 고객에게 접수 알림톡**.
+**기본 구성 (무료, 외부 서비스 불필요):** 구글시트 + Apps Script → 시트에 행 추가 + HOT 리드는 메일 알림.
+설치 방법은 [`docs/automation/lead-sheet.gs`](docs/automation/lead-sheet.gs) 상단 주석에 있습니다.
+웹훅 본문에는 `secret`(= `LEAD_WEBHOOK_SECRET`)이 함께 가므로 받는 쪽에서 위조 요청을 거를 수 있습니다.
+알림톡 자동 발송이 필요해지면 같은 웹훅을 Zapier/n8n으로 바꾸면 됩니다.
 같은 번호로 다시 신청하면 `lead.returning` 이벤트가 오고, 기존 고객에 채널 이력이 합쳐집니다.
 
 ## 문서

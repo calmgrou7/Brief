@@ -8,7 +8,8 @@ export async function notifyLead(payload: Record<string, unknown>) {
     await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      // 받는 쪽(Apps Script 등)에서 위조 요청을 거르기 위한 공유 비밀값
+      body: JSON.stringify({ ...payload, secret: process.env.LEAD_WEBHOOK_SECRET || "" }),
       signal: AbortSignal.timeout(5000),
     });
   } catch (e) {

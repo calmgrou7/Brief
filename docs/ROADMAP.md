@@ -18,9 +18,13 @@
 **목표:** 광고 1만~30만 원으로 리드당 비용(CPL)과 점검 → 신청 전환율 검증
 
 - [x] 점검 퀴즈, 결과 부분 공개, AI 상담, 청구 가이드, 상담 신청, 관리자 대시보드
-- [ ] Supabase 연결 + Vercel 배포 + 도메인
+- [x] Supabase 스키마 적용 (bridgenode 프로젝트, `bd_` 테이블)
+- [x] Render 배포 (https://bodam-check.onrender.com)
+- [ ] Render에 `SUPABASE_SERVICE_ROLE_KEY` 입력 (대시보드에서 직접)
+- [ ] 도메인 연결
 - [ ] SOLAPI 문자 인증 연결
-- [ ] Zapier: 리드 → 구글시트 → HOT 알림
+- [x] 리드 시트 생성 + Apps Script 작성 (`docs/automation/lead-sheet.gs`)
+- [ ] Apps Script 웹 앱 배포 → URL을 `LEAD_WEBHOOK_URL`에 입력
 - [ ] 메타/네이버 광고 랜딩: `/check?utm_source=meta&utm_campaign=...`
 - [ ] 1주 데이터로 문항·결과 문구 A/B 조정
 
