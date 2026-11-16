@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:P;font-weight:500;src:url(../font/package/dist/web/static/woff2/Pretendard-Medium.woff2)}
+@font-face{font-family:P;font-weight:700;src:url(../font/package/dist/web/static/woff2/Pretendard-Bold.woff2)}
+@font-face{font-family:P;font-weight:800;src:url(../font/package/dist/web/static/woff2/Pretendard-ExtraBold.woff2)}
+@font-face{font-family:P;font-weight:900;src:url(../font/package/dist/web/static/woff2/Pretendard-Black.woff2)}
+:root{--navy:#0A1B33;--navy2:#13305A;--gold:#FFC93C;--sky:#7FC4FF;--white:#FFFFFF;--muted:#A9BCD6;--red:#FF5A5A}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--navy);font-family:P,sans-serif;color:var(--white);letter-spacing:-0.02em}
+#bg{position:absolute;inset:0;background:radial-gradient(1200px 900px at 50% 38%,#1B3F73 0%,var(--navy) 70%)}
+#grid{position:absolute;inset:-200px;background-image:linear-gradient(rgba(127,196,255,.06) 2px,transparent 2px),linear-gradient(90deg,rgba(127,196,255,.06) 2px,transparent 2px);background-size:90px 90px}
+#prog{position:absolute;left:0;top:0;height:12px;background:var(--gold);width:0}
+#head{position:absolute;top:110px;left:0;right:0;display:flex;justify-content:center;gap:18px}
+.chip{font-weight:700;font-size:36px;padding:12px 28px;border-radius:999px;border:3px solid var(--sky);color:var(--sky)}
+.chip.brand{background:var(--white);color:var(--navy);border-color:var(--white);font-weight:900}
+#title{position:absolute;top:220px;left:60px;right:60px;text-align:center;font-weight:900;font-size:82px;line-height:1.18}
+#title em{font-style:normal;color:var(--gold)}
+.scene{position:absolute;left:60px;right:60px;top:500px;height:680px;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0}
+#cap{position:absolute;left:50px;right:50px;top:1250px;text-align:center}
+#cap .box{display:inline-block;background:rgba(5,14,28,.82);border-radius:28px;padding:26px 40px;font-weight:800;font-size:64px;line-height:1.3;border:3px solid rgba(255,255,255,.08)}
+#cap b{color:var(--gold);font-weight:900}
+.big{font-weight:900;font-size:120px;line-height:1.1;text-align:center}
+.mid{font-weight:800;font-size:76px;line-height:1.2;text-align:center}
+.small{font-weight:700;font-size:44px;color:var(--muted);text-align:center}
+.gold{color:var(--gold)}.sky{color:var(--sky)}
+/* s1 doc */
+.doc{width:360px;height:460px;background:#F3F7FD;border-radius:26px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;padding-top:60px}
+.doc .ln{width:240px;height:22px;background:#C9D6E8;border-radius:11px;margin:16px 0}
+.doc .lbl{color:var(--navy);font-weight:900;font-size:64px;margin-bottom:24px}
+.q{position:absolute;right:-90px;top:-70px;width:200px;height:200px;border-radius:50%;background:var(--gold);color:var(--navy);font-weight:900;font-size:150px;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+/* s2 */
+.strike{position:relative;display:inline-block;color:var(--muted)}
+.strike i{position:absolute;left:-10px;top:52%;height:14px;background:var(--red);border-radius:7px;width:0}
+.arrow{font-size:100px;color:var(--sky);font-weight:900;margin:10px 0}
+.pill{background:var(--gold);color:var(--navy);font-weight:900;font-size:110px;padding:20px 50px;border-radius:30px}
+/* s3 */
+.eq{display:flex;align-items:center;gap:30px}
+.tile{background:var(--navy2);border:4px solid var(--sky);border-radius:30px;padding:30px 40px;font-weight:900;font-size:88px}
+.xwrap{position:relative}
+.x{position:absolute;inset:-30px;display:flex;align-items:center;justify-content:center;font-size:330px;font-weight:900;color:var(--red);line-height:1}
+.badge{margin-top:60px;background:var(--white);color:var(--navy);font-weight:900;font-size:72px;padding:18px 44px;border-radius:999px}
+/* s5 flow */
+.flow{display:flex;align-items:center;gap:22px}
+.node{width:250px;height:250px;border-radius:50%;background:var(--navy2);border:5px solid var(--sky);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:76px}
+.node.g{border-color:var(--gold);color:var(--gold)}
+.fa{font-size:70px;color:var(--muted);font-weight:900}
+.banner{margin-top:70px;background:var(--gold);color:var(--navy);font-weight:900;font-size:62px;padding:24px 44px;border-radius:24px;text-align:center;line-height:1.25}
+/* s6 */
+.three{font-size:420px;font-weight:900;color:var(--gold);line-height:1}
+/* s7 list */
+.row{display:flex;align-items:center;gap:34px;width:880px;background:rgba(19,48,90,.9);border:4px solid rgba(127,196,255,.35);border-radius:30px;padding:34px 44px;margin:18px 0}
+.row .n{width:110px;height:110px;border-radius:50%;background:var(--sky);color:var(--navy);font-weight:900;font-size:66px;display:flex;align-items:center;justify-content:center;flex:none}
+.row .t{font-weight:900;font-size:76px}
+.row.on{border-color:var(--gold)}.row.on .n{background:var(--gold)}
+/* s8 */
+.cta{background:var(--white);color:var(--navy);border-radius:36px;padding:50px 56px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.45);width:900px}
+.cta .k{font-weight:900;font-size:92px;line-height:1.15}
+.cta .s{font-weight:700;font-size:44px;color:#4A5D78;margin-top:14px}
+.btn{margin-top:36px;display:inline-block;background:var(--gold);color:var(--navy);font-weight:900;font-size:58px;padding:24px 50px;border-radius:999px}
+#end{position:absolute;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0}
+</style></head><body>
+<div id="bg"></div><div id="grid"></div><div id="prog"></div>
+<div id="head"><span class="chip brand">벤처의 기준</span><span class="chip">신규 벤처확인</span></div>
+<div id="title">특허 없으면<br><em>벤처 못 받나요?</em></div>
+
+<div class="scene" id="s1"><div class="doc"><div class="lbl">특허증</div><div class="ln"></div><div class="ln" style="width:200px"></div><div class="ln"></div><div class="ln" style="width:160px"></div><div class="q">?</div></div></div>
+
+<div class="scene" id="s2"><div class="big strike">벤처인증<i id="s2i"></i></div><div class="arrow">▼</div><div class="pill" id="s2p">벤처기업확인</div><div class="small" style="margin-top:28px">정확한 공식 명칭</div></div>
+
+<div class="scene" id="s3"><div class="eq"><div class="tile">특허</div><div class="mid">=</div><div class="xwrap"><div class="tile">필수 조건</div><div class="x" id="s3x">✕</div></div></div><div class="badge" id="s3b">필수 아님</div></div>
+
+<div class="scene" id="s4"><div class="small">많은 대표님들이</div><div class="big" style="margin-top:20px">진짜 막히는 곳은<br><span class="gold">따로</span> 있습니다</div></div>
+
+<div class="scene" id="s5"><div class="flow"><div class="node" id="n1">기술</div><div class="fa" id="a1">▶</div><div class="node" id="n2">시장</div><div class="fa" id="a2">▶</div><div class="node g" id="n3">성장</div></div><div class="banner" id="s5b">평가자가 이해할 수 있게<br>정리하는 것</div></div>
+
+<div class="scene" id="s6"><div class="mid">신청 전, 먼저 확인할 것</div><div class="three" id="s6n">3</div><div class="small">가지</div></div>
+
+<div class="scene" id="s7"><div class="row" id="r1"><div class="n">1</div><div class="t">확인 유형</div></div><div class="row" id="r2"><div class="n">2</div><div class="t">부족한 자료</div></div><div class="row" id="r3"><div class="n">3</div><div class="t">준비 순서</div></div></div>
+
+<div class="scene" id="s8"><div class="big" id="s8q">우리 회사는<br><span class="gold">어디서부터?</span></div><div class="cta" id="s8c" style="position:absolute;top:50%;left:50%;margin:-280px 0 0 -450px"><div class="k">벤처확인<br>사전검토</div><div class="s">신규 · 재확인 · 투자 연계 | 전국 상담</div><div class="btn">프로필 링크에서 신청 ▶</div></div></div>
+
+<div id="cap"><div class="box" id="capbox"></div></div>
+
+<div id="end"><div class="chip brand" style="font-size:64px;padding:22px 50px">벤처의 기준</div><div class="mid" style="margin-top:50px">전국 벤처기업확인<br>컨설팅</div><div class="btn" style="margin-top:60px">프로필 링크 ▶ 사전검토</div></div>
+
+<script>
+const OFF=1.2, D=window.DUR||42.5;
+const caps=[[1.30,2.15,"대표님,"],[2.20,4.90,"<b>특허가 없어서</b>|벤처인증을 미루고 계신가요?"],[5.44,7.50,"벤처인증,|정확한 이름은"],[7.52,9.35,"<b>벤처기업확인</b>인데요"],[9.55,12.30,"특허가 꼭 있어야 하는|제도는 <b>아닙니다</b>"],[12.60,15.60,"실제로 많은 대표님들이|막히는 곳은 <b>따로</b> 있습니다"],[15.91,18.60,"우리 기술이 시장에서|어떻게 <b>성장</b>하는지"],[18.70,21.75,"<b>평가자가 이해할 수 있게</b>|정리하는 부분입니다"],[21.99,26.20,"그래서 신청 전에|먼저 확인할 건 <b>세 가지</b>"],[26.54,29.20,"우리 회사에 맞는 <b>유형</b>"],[29.30,30.95,"지금 부족한 <b>자료</b>"],[31.03,33.00,"그리고 준비 <b>순서</b>입니다"],[33.56,37.25,"우리 회사는|어디서부터 준비하면 될지"],[37.37,41.80,"프로필 링크에서|<b>벤처확인 사전검토</b> 신청"]];
+const scenes=[["s1",1.2,5.3],["s2",5.3,9.45],["s3",9.45,12.45],["s4",12.45,15.8],["s5",15.8,21.85],["s6",21.85,26.35],["s7",26.35,33.3],["s8",33.3,99]];
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>1-Math.pow(1-cl(x),3);
+const $=id=>document.getElementById(id);
+function pop(el,t,t0,dur=.35){const p=ease((t-t0)/dur);el.style.opacity=p;el.style.transform=`scale(${.7+.3*p})`}
+let lastCap=-2;
+window.render=function(T){
+  const t=T+OFF;
+  $("prog").style.width=(cl(T/D)*100)+"%";
+  $("grid").style.transform=`translate(${-(T*12)%90}px,${-(T*8)%90}px)`;
+  // title shrink after hook
+  for(const [id,a,b] of scenes){const el=$(id);const fi=ease((t-a)/.3), fo=ease((b-t)/.25);const o=Math.min(fi,fo);el.style.opacity=o;el.style.transform=`translateY(${(1-fi)*60}px)`}
+  // caption
+  let ci=caps.findIndex(c=>t>=c[0]&&t<c[1]);
+  const box=$("capbox");
+  if(ci<0){box.parentElement.style.opacity=0}else{
+    if(ci!==lastCap){box.innerHTML=caps[ci][2].split("|").join("<br>");lastCap=ci}
+    const p=ease((t-caps[ci][0])/.18);box.parentElement.style.opacity=p;box.parentElement.style.transform=`translateY(${(1-p)*24}px)`}
+  // s1
+  $("s1").querySelector(".q").style.transform=`scale(${.6+.4*ease((t-2.6)/.35)}) rotate(${Math.sin(t*3)*6}deg)`;
+  // s2
+  $("s2i").style.width=(ease((t-6.0)/.5)*110)+"%"; pop($("s2p"),t,7.52);
+  // s3
+  pop($("s3x"),t,10.9,.25); pop($("s3b"),t,11.6,.3);
+  // s5
+  pop($("n1"),t,16.15);pop($("a1"),t,16.6);pop($("n2"),t,16.83);pop($("a2"),t,17.4);pop($("n3"),t,17.63);pop($("s5b"),t,18.7);
+  // s6
+  pop($("s6n"),t,25.1,.4);
+  // s7
+  [["r1",26.54],["r2",29.30],["r3",31.03]].forEach(([id,a],i,arr)=>{const el=$(id);const p=ease((t-a)/.35);el.style.opacity=.15+.85*p;el.style.transform=`translateX(${(1-p)*-80}px)`;const nx=arr[i+1];el.classList.toggle("on",t>=a&&(!nx||t<nx[1]))});
+  // s8
+  pop($("s8c"),t,37.37,.4); $("s8q").style.opacity=1-ease((t-37.2)/.25);
+  // end card
+  $("end").style.opacity=ease((T-(D-1.6))/.35);
+  $("title").style.opacity=1;
+}
+render(0);
+</script></body></html>
