@@ -36,8 +36,13 @@ interface Store {
 }
 
 // ───────── Supabase ─────────
+// 테이블 접두어 (기본 bd_). 다른 서비스와 같은 Supabase 프로젝트를 공유할 때 충돌 방지.
+const PREFIX = process.env.TABLE_PREFIX ?? "bd_";
+
 class SupabaseStore implements Store {
-  constructor(private db: SupabaseClient) {}
+  private client: SupabaseClient;
+  constructor(client: SupabaseClient) { this.client = client; }
+  private get db() { return { from: (t: Table) => this.client.from(PREFIX + t) }; }
   async insert<T extends Row>(table: Table, row: T) {
     const { data, error } = await this.db.from(table).insert(row).select().single();
     if (error) throw new Error(`[db] insert ${table}: ${error.message}`);
