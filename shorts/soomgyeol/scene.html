@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>숨결 쇼츠</title>
+<link rel="stylesheet" href="fonts/gowun/700.css">
+<style>
+@font-face{font-family:P;src:url(../fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(../fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+:root{--dark:#1f1712;--cream:#f8f0e0;--ink:#3a281c;--terra:#9a4a2e;--olive:#6b7a45;--sage:#b9c48f;--sand:#e6d6b8}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:var(--cream);font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.02em}
+.serif{font-family:'Gowun Batang',serif;font-weight:700;letter-spacing:-0.01em}
+.abs{position:absolute}
+.c{left:0;right:0;text-align:center}
+.layer{position:absolute;inset:0;opacity:0}
+#bgDark{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,#2b2019 0%,#1f1712 60%,#17110d 100%)}
+#bgCream{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#fbf5e9 0%,#f8f0e0 55%,#f1e5cf 100%)}
+.leaf{position:absolute;top:0}
+/* notifications */
+.noti{left:120px;width:840px;height:148px;border-radius:40px;background:rgba(255,255,255,.94);display:flex;align-items:center;gap:30px;padding:0 40px;box-shadow:0 30px 60px rgba(0,0,0,.35);font-size:44px;font-weight:700;color:#2a2a2a}
+.noti .ic{width:84px;height:84px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:48px;flex:0 0 auto}
+.noti small{display:block;font-size:30px;color:#8a8a8a;font-weight:500;margin-bottom:4px}
+#orb{left:0;top:0}
+.cnt{font-family:'Gowun Batang',serif;font-weight:700;color:#fbf3e4;font-size:190px;line-height:1}
+/* phone */
+.phone{left:240px;top:400px;width:600px;height:963px;border-radius:72px;background:#2a1d15;padding:20px;box-shadow:0 50px 100px rgba(58,40,28,.3)}
+.screen{width:560px;height:923px;border-radius:54px;overflow:hidden;position:relative;background:var(--cream)}
+.screen img{position:absolute;left:0;top:0;width:560px}
+.ring{position:absolute;border:8px solid var(--terra);border-radius:999px;z-index:5}
+.cap{font-size:76px;line-height:1.25}
+.sub{font-size:46px;font-weight:700;color:#7a6654}
+.chip{display:inline-block;padding:16px 34px;border-radius:999px;border:4px solid var(--sand);font-size:42px;font-weight:700;color:var(--ink);background:#fffaf0;margin:0 6px}
+.btn{border-radius:999px;background:var(--terra);color:#fff8ee;font-weight:800;font-size:56px;text-align:center;padding:40px 0}
+.search{border-radius:44px;background:#fffaf0;border:4px solid var(--sand);height:150px;display:flex;align-items:center;gap:28px;padding:0 50px;font-size:64px;font-weight:800}
+.caret{display:inline-block;width:6px;height:70px;background:var(--terra);vertical-align:middle;margin-left:6px}
+#preload{position:absolute;left:0;top:0;opacity:0;font-family:'Gowun Batang';font-weight:700;width:10px;overflow:hidden;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="bgCream"></div>
+<div id="bgDark"></div>
+<svg class="leaf" id="leafL" width="200" height="360" viewBox="0 0 100 180" style="left:30px;top:140px"></svg>
+<svg class="leaf" id="leafR" width="200" height="360" viewBox="0 0 100 180" style="right:30px;top:140px;transform:scaleX(-1)"></svg>
+<canvas class="abs" id="orb" width="1080" height="1920"></canvas>
+
+<!-- S1 : 알림 폭탄 -->
+<div class="layer" id="s1">
+  <div class="abs c serif" id="s1a" style="top:250px;font-size:64px;color:#cdbca6">하루 종일</div>
+  <div class="abs c serif" id="s1b" style="top:345px;font-size:96px;color:#fbf3e4">숨 쉴 틈 있었나요?</div>
+  <div class="abs noti" id="n0" style="top:660px"><div class="ic" style="background:#ffe1d6">⏰</div><div><small>캘린더</small>회의 5분 전</div></div>
+  <div class="abs noti" id="n1" style="top:832px"><div class="ic" style="background:#fff1c9">💬</div><div><small>메시지</small>읽지 않은 메시지 32개</div></div>
+  <div class="abs noti" id="n2" style="top:1004px"><div class="ic" style="background:#e3ecff">📧</div><div><small>메일</small>새 메일 12통</div></div>
+  <div class="abs noti" id="n3" style="top:1176px"><div class="ic" style="background:#ffdede">📌</div><div><small>할 일</small>마감 D-1</div></div>
+  <div class="abs noti" id="n4" style="top:1348px"><div class="ic" style="background:#e5f6e8">🔔</div><div><small>알림</small>새 알림 99+</div></div>
+</div>
+
+<!-- S2 : 잠깐 -->
+<div class="layer" id="s2">
+  <div class="abs c serif" id="s2a" style="top:330px;font-size:150px;color:#fbf3e4">잠깐,</div>
+  <div class="abs c serif" id="s2b" style="top:1430px;font-size:64px;color:#e8dcc8;line-height:1.4">딱 한 번만<br>같이 숨 쉬어요</div>
+</div>
+
+<!-- S3 : 같이 호흡 -->
+<div class="layer" id="s3">
+  <div class="abs c serif" id="s3h" style="top:250px;font-size:104px;color:#fbf3e4">들이쉬고</div>
+  <div class="abs c cnt" id="s3n" style="top:745px">4</div>
+  <div class="abs c serif" id="s3g" style="top:1470px;font-size:54px;color:#e8dcc8">빛이 커지는 만큼 천천히 들이쉬어요</div>
+</div>
+
+<!-- S4 : 브랜드 -->
+<div class="layer" id="s4">
+  <div class="abs c serif" id="s4a" style="top:330px;font-size:80px">어때요,<br>조금 편해졌죠?</div>
+  <img class="abs" id="s4icon" src="assets/icon.png" style="left:390px;top:700px;width:300px;height:300px;border-radius:72px;box-shadow:0 30px 70px rgba(58,40,28,.25)">
+  <div class="abs c serif" id="s4name" style="top:1060px;font-size:150px">숨결</div>
+  <div class="abs c sub" id="s4sub" style="top:1270px">빛과 소리를 따라 나에게 맞는 호흡</div>
+</div>
+
+<!-- S5–S7 : 앱 화면 -->
+<div class="layer" id="sp">
+  <div class="abs c serif cap" id="cap0" style="top:120px">기분과 시간만 고르면</div>
+  <div class="abs c sub" id="sub0" style="top:240px">오늘의 호흡을 찾아줘요</div>
+  <div class="abs c serif cap" id="cap1" style="top:120px">1분부터 20분까지</div>
+  <div class="abs c sub" id="sub1" style="top:240px">여유 시간에 맞춰 골라요</div>
+  <div class="abs c serif cap" id="cap2" style="top:120px">음성 안내와 배경 음악</div>
+  <div class="abs c sub" id="sub2" style="top:240px">눈 감고 따라만 하세요</div>
+  <div class="abs phone" id="phone"><div class="screen">
+    <img id="img0" src="assets/screen1.png"><img id="img1" src="assets/screen2.png"><img id="img2" src="assets/screen3.png">
+    <div class="ring" id="ring"></div>
+  </div></div>
+</div>
+
+<!-- S8 : CTA -->
+<div class="layer" id="s8">
+  <div class="abs c serif" id="s8a" style="top:250px;font-size:84px;line-height:1.3">앱 설치 없이<br><span style="color:var(--terra)">토스에서 바로</span></div>
+  <div class="abs search" id="s8s" style="left:110px;width:860px;top:620px"><span style="font-size:56px">🔍</span><span id="s8q"></span><span class="caret" id="caret"></span></div>
+  <div class="abs btn" id="s8btn" style="left:110px;width:860px;top:840px">지금 숨 고르러 가기</div>
+  <div class="abs c" id="s8chips" style="top:1080px"><span class="chip">1분이면 충분</span><span class="chip">음성 안내</span></div>
+  <div class="abs c sub" id="s8foot" style="top:1440px;font-size:40px">바로가기 링크는 설명란에 👇</div>
+</div>
+<div id="preload"></div>
+
+<script>
+const TOTAL = 32.5;
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const ss=x=>x*x*(3-2*x);
+const lerp=(a,b,k)=>a+(b-a)*k;
+function fadeUp(el,t,a,d=.6,dy=40){const k=p(t,a,a+d);el.style.opacity=ss(k);el.style.transform=`translateY(${(1-eo(k))*dy}px)`}
+function outAt(el,t,a,d=.4){el.style.opacity=parseFloat(el.style.opacity||1)*(1-p(t,a,a+d))}
+// make every glyph load (Korean font is split by unicode-range)
+$('preload').textContent=document.body.innerText;
+
+// leaf branches like the app
+function leaf(svg,color){let h=`<path d="M70 4 C 60 60, 52 110, 22 176" stroke="${color}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  [[62,40,-1],[58,62,1],[52,92,-1],[46,116,1],[38,142,-1]].forEach(([x,y,s])=>{h+=`<ellipse cx="${x+s*14}" cy="${y}" rx="15" ry="7" transform="rotate(${s*-35} ${x+s*14} ${y})" fill="${color}"/>`});svg.innerHTML=h}
+
+// breathing orb: dotted spiral blob + tick rays (inspired by the app's visual)
+const oc=$('orb').getContext('2d');
+function orb(t,R,cx,cy,dot,line,alpha=1,glow=0){
+  if(alpha<=0||R<=0)return;
+  oc.save();oc.globalAlpha=alpha;
+  if(glow>0){const g=oc.createRadialGradient(cx,cy,R*.2,cx,cy,R*1.9);g.addColorStop(0,`rgba(214,224,160,${.22*glow})`);g.addColorStop(1,'rgba(214,224,160,0)');oc.fillStyle=g;oc.beginPath();oc.arc(cx,cy,R*1.9,0,7);oc.fill()}
+  const ph=t*.6;
+  const edge=a=>R*(1+.055*Math.sin(8*a+ph)+.025*Math.sin(5*a-ph*1.3));
+  oc.strokeStyle=line;oc.lineWidth=2.4;
+  for(let k=0;k<3;k++){oc.beginPath();for(let i=0;i<=180;i++){const a=i/180*Math.PI*2;const r=edge(a)*(1-k*.025);const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;i?oc.lineTo(x,y):oc.moveTo(x,y)}oc.stroke()}
+  oc.fillStyle=dot;
+  const rings=26;
+  for(let i=1;i<=rings;i++){const f=i/rings;const n=Math.floor(10+f*92);
+    for(let j=0;j<n;j++){const a0=j/n*Math.PI*2;const a=a0+f*2.4+ph*.25*(1-f);const r=edge(a0)*f*.94;
+      oc.beginPath();oc.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1.6+f*1.4,0,7);oc.fill()}}
+  oc.strokeStyle=line;oc.lineWidth=4;oc.lineCap='round';
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2;const L=i%2?R*.08:R*.14;const r0=R*1.22;oc.beginPath();oc.moveTo(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0);oc.lineTo(cx+Math.cos(a)*(r0+L),cy+Math.sin(a)*(r0+L));oc.stroke()}
+  oc.restore();
+}
+
+const SC=[['s1',0,3.4],['s2',3.4,6.4],['s3',6.4,16.4],['s4',16.4,19.4],['sp',19.4,29],['s8',29,32.5]];
+const SH=[[19.4,22.6],[22.6,25.8],[25.8,29]];
+const RINGS=[[113,1590,1047,187],[97,1298,825,160],[233,1270,807,154]];
+const INH=[6.7,10.7], HOLD=[10.7,11.6], EXH=[11.6,16.1];
+
+function render(t){
+  // scene opacity with soft crossfades
+  SC.forEach(([id,a,b])=>{$(id).style.opacity=t<a||t>=b?0:Math.min(a===0?1:ss(p(t,a,a+.35)),1-ss(p(t,b-.3,b)))});
+  // background dark → cream after the breath
+  const cream=ss(p(t,16.0,16.9)); $('bgDark').style.opacity=1-cream;
+  const leafCol=cream>.5?'#6b7a45':'#8e9a63'; leaf($('leafL'),leafCol); leaf($('leafR'),leafCol);
+  const lo=t<3.4?0:t<6.4?ss(p(t,3.6,4.4)):t<19.2?1:1-ss(p(t,19.2,19.6)); $('leafL').style.opacity=$('leafR').style.opacity=lo*.9;
+  oc.clearRect(0,0,1080,1920);
+
+  // S1 notifications pile up and shake
+  if(t<3.6){
+    $('s1a').style.opacity=1; fadeUp($('s1b'),t,-.6,.5);
+    for(let i=0;i<5;i++){const el=$('n'+i);const a=.35+i*.4;const k=p(t,a,a+.35);
+      const jit=t>a+.35?Math.sin(t*38+i)*Math.min(6,(t-2)*6):0;
+      el.style.opacity=ss(k); el.style.transform=`translateY(${(1-eo(k))*-80}px) rotate(${(i%2?1.5:-1.5)+jit*.15}deg) translateX(${jit}px)`;}
+  }
+  // S2 freeze: notifications drift away, orb appears
+  if(t>=3.4&&t<6.4){
+    fadeUp($('s2a'),t,3.6,.7); fadeUp($('s2b'),t,4.6,.7,30);
+    const k=ss(p(t,4.2,5.4)); orb(t,lerp(40,150,k),540,960,'#c9d39b','#8f9a63',k,k*.6);
+  }
+  // S3 guided breath
+  if(t>=6.4&&t<16.4){
+    let R, label, guide, n='';
+    if(t<INH[0]){R=150;label='들이쉬고';guide='빛이 커지는 만큼 천천히 들이쉬어요';n='4'}
+    else if(t<INH[1]){const k=eio(p(t,...INH));R=lerp(150,330,k);label='들이쉬고';guide='빛이 커지는 만큼 천천히 들이쉬어요';n=String(4-Math.floor((t-INH[0])))}
+    else if(t<HOLD[1]){R=330+Math.sin((t-HOLD[0])*6)*3;label='잠깐 멈추고';guide='그대로, 편안하게';n=''}
+    else {const k=eio(p(t,...EXH));R=lerp(330,150,k);label='천천히 내쉬고';guide='빛이 작아지는 만큼 길게 내쉬어요';n=String(Math.max(1,5-Math.floor((t-EXH[0])/.9)))}
+    if($('s3h').textContent!==label)$('s3h').textContent=label;
+    if($('s3g').textContent!==guide)$('s3g').textContent=guide;
+    $('s3n').textContent=n;
+    // little pulse on each count change
+    const frac=t<INH[1]?(t-INH[0])%1:(t-EXH[0])%.9/.9;$('s3n').style.transform=`scale(${1+.08*(1-ss(clamp(frac*3)))})`;
+    $('s3n').style.opacity=t<INH[0]?.0:1;
+    const glow=clamp((R-150)/180);
+    orb(t,R,540,960,`rgb(${lerp(201,226,glow)},${lerp(211,232,glow)},${lerp(155,180,glow)})`,'#a3ae74',1,.6+glow*.8);
+  }
+  // S4 brand on cream
+  if(t>=16.4&&t<19.4){
+    fadeUp($('s4a'),t,16.5,.6); outAt($('s4a'),t,17.4,.4);
+    const k=p(t,17.5,18.2); $('s4icon').style.opacity=ss(k); $('s4icon').style.transform=`scale(${.85+.15*eo(k)})`;
+    fadeUp($('s4name'),t,17.8,.6); fadeUp($('s4sub'),t,18.1,.6,24);
+    orb(t,230+Math.sin(t*1.2)*14,540,850,'#d9cfa8','#d6c79c',.35*(1-p(t,17.3,17.8)));
+  }
+  // S5–S7 phone
+  if(t>=19.4&&t<29){
+    const kp=p(t,19.4,20.1); $('phone').style.transform=`translateY(${(1-eo(kp))*600}px)`;
+    SH.forEach(([a,e],i)=>{const vis=t>=a&&t<e;const c=$('cap'+i),s=$('sub'+i);
+      if(vis){fadeUp(c,t,a+.15,.5);fadeUp(s,t,a+.4,.5,24);outAt(c,t,e-.3,.3);outAt(s,t,e-.3,.3)}else{c.style.opacity=0;s.style.opacity=0}
+      const img=$('img'+i);img.style.zIndex=i+1;const k=i===0?1:ss(p(t,a-.2,a+.35));img.style.opacity=k;});
+    const si=SH.findIndex(([a,e])=>t>=a&&t<e),[a,e]=SH[si],R=RINGS[si],sw=560/1272;
+    const rk=p(t,a+.9,a+1.3);const ro=ss(rk)*(1-p(t,e-.35,e-.1));
+    Object.assign($('ring').style,{opacity:ro,left:R[0]*sw-10+'px',top:R[1]*sw-10+'px',width:R[2]*sw+20+'px',height:R[3]*sw+20+'px',transform:`scale(${1.08-.08*eo(rk)})`});
+  }
+  // S8 CTA
+  if(t>=29){
+    orb(t,200+Math.sin((t-29)*1.6)*30,540,1500,'#ddd3ad','#d6c79c',.45);
+    fadeUp($('s8a'),t,29.05,.5);
+    const ks=p(t,29.5,29.9);$('s8s').style.opacity=ss(ks);$('s8s').style.transform=`translateY(${(1-eo(ks))*30}px)`;
+    const q='숨결';const n=Math.floor(clamp((t-29.9)/.25,0,q.length));$('s8q').textContent=q.slice(0,n);
+    $('caret').style.opacity=(n<q.length||Math.floor(t*2.5)%2===0)?1:0;
+    const kb=p(t,30.5,30.9);$('s8btn').style.opacity=ss(kb);$('s8btn').style.transform=`scale(${(.94+.06*eo(kb))*(t>31.2?1+.02*Math.sin((t-31.2)*4):1)})`;
+    fadeUp($('s8chips'),t,30.9,.5,20); fadeUp($('s8foot'),t,31.3,.5,16);
+  }
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
