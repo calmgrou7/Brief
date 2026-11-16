@@ -49,6 +49,11 @@ tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
 .tag.off{background:#fbf3e2;color:#8a6a1c}
 .tag.gray{background:#f0f1f4;color:#6b7280}
 .nbadge{background:#e0533d;color:#fff;border-radius:999px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:auto}
+.kpi.link{cursor:pointer;transition:border-color .15s, transform .15s}
+.kpi.link:hover{border-color:var(--brand-2);transform:translateY(-2px)}
+.bar[data-month]{cursor:pointer} .bar[data-month]:hover i{background:var(--accent)}
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap} th.sortable:hover{color:var(--brand-2)}
+th.sortable .ar{font-size:10px;margin-left:3px;opacity:.35} th.sortable.on .ar{opacity:1;color:var(--brand-2)}
 .tag.new{background:#e7f6ee;color:#1e7a4c;font-weight:700}
 .av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;color:var(--brand);font-weight:700;flex:none}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
@@ -172,7 +177,7 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID()
 function blankMember(name){
   return {id:'', name, birthYear:'', company:'', title:'', products:'', industry:'',
     phone:'', email:'', address:'', website:'', joined:'', guardianId:'', status:'active', memo:'',
-    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:'', isFounder:false, isNew:false, rosterNo:''};
+    photo:'', companyImage:'', cardImage:'', photoPath:'', companyImagePath:'', cardImagePath:'', isFounder:false, isNew:false, rosterNo:'', intro:''};
 }
 
 const IMG_KEYS = {photo:'photoPath', companyImage:'companyImagePath', cardImage:'cardImagePath'};
@@ -180,12 +185,12 @@ const fromMember = r => ({id:r.id, name:r.name, birthYear:r.birth_year||'', comp
   products:r.products||'', industry:r.industry||'', phone:r.phone||'', email:r.email||'', address:r.address||'', website:r.website||'',
   joined:r.joined||'', guardianId:r.guardian_id||'', status:r.status||'active', memo:r.memo||'',
   photoPath:r.photo_path||'', companyImagePath:r.company_image_path||'', cardImagePath:r.card_image_path||'',
-  photo:'', companyImage:'', cardImage:'', isFounder:!!r.is_founder, isNew:!!r.is_new, rosterNo:r.roster_no ?? ''});
+  photo:'', companyImage:'', cardImage:'', isFounder:!!r.is_founder, isNew:!!r.is_new, rosterNo:r.roster_no ?? '', intro:r.intro||''});
 const toMember = m => ({name:m.name, birth_year:m.birthYear||'', company:m.company||'', title:m.title||'',
   products:m.products||'', industry:m.industry||'', phone:m.phone||'', website:(m.website||'').trim(), email:(m.email||'').trim().toLowerCase(),
   address:m.address||'', joined:m.joined||'', guardian_id:m.guardianId||null, status:m.status||'active', memo:m.memo||'',
   photo_path:m.photoPath||'', company_image_path:m.companyImagePath||'', card_image_path:m.cardImagePath||'',
-  is_founder:!!m.isFounder, is_new:!!m.isNew});
+  is_founder:!!m.isFounder, is_new:!!m.isNew, intro:m.intro||''});
 const fromTerm = r => ({id:r.id, memberId:r.member_id, positionId:r.position_id, start:r.started_on, end:r.ended_on||''});
 const fromEvent = r => ({id:r.id, title:r.title, category:r.category||'', date:r.event_date, location:r.location||'',
   host:r.host_id||'', attendees:r.attendees ?? '', text:r.body||'', docs:r.docs||[], memo:r.memo||''});
@@ -222,6 +227,17 @@ const Store = {
     this.db = {members:ms.map(fromMember),
       positions:ps.map(r=>({id:r.id, name:r.name, single:r.single, order:r.sort_order})),
       terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory), applications:[]};
+    this.db.finance = [];
+    try{   // 재무보고 (표가 없거나 실패해도 나머지 화면은 열리도록)
+      const {data, error} = await sb.from('jw_finance').select('*');
+      if(!error) this.db.finance = (data||[]).map(fromFinance);
+      const fp = this.db.finance.flatMap(f=>f.images);
+      if(fp.length){
+        const {data:su} = await sb.storage.from(BUCKET).createSignedUrls(fp, 60*60*12);
+        const map = Object.fromEntries((su||[]).filter(x=>x.signedUrl).map(x=>[x.path, x.signedUrl]));
+        this.db.finance.forEach(f=>f.images.forEach(pth=>{ if(map[pth]) f.imageUrls[pth] = map[pth]; }));
+      }
+    }catch(e){ console.warn('재무보고를 불러오지 못했습니다', e); }
     this.db.pwStates = {};
     if(this.me.officer){  // 비밀번호 상태 (회원 로그인 기능이 설치된 경우)
       try{ const {data} = await sb.rpc('jw_password_states'); (data||[]).forEach(r=>this.db.pwStates[r.member_id] = r); }catch(e){}
@@ -270,8 +286,8 @@ const IMPORT_FIELDS = [   // [엑셀 키, DB 열, 화면 이름, 회원 속성]
   ['phone','phone','전화번호','phone'], ['company','company','근무처','company'], ['title','title','직함','title'],
   ['products','products','제품·서비스','products'], ['industry','industry','업종','industry'], ['address','address','주소','address'],
   ['website','website','홈페이지','website'], ['email','email','이메일','email'], ['birthYear','birth_year','출생연도','birthYear'],
-  ['memo','memo','비고','memo']];
-const EXPORT_HEAD = ['ID','NO','입회년월','성명','추천인','전화번호','근무처','직함','제품·서비스','업종','주소','홈페이지','이메일','출생연도','창립','신입','상태','비고','직책(참고)'];
+  ['memo','memo','비고','memo'], ['intro','intro','사업소개','intro']];
+const EXPORT_HEAD = ['ID','NO','입회년월','성명','추천인','전화번호','근무처','직함','제품·서비스','업종','주소','홈페이지','이메일','출생연도','창립','신입','상태','비고','사업소개','직책(참고)'];
 const isYes = v => /^(o|ㅇ|y|yes|1|예|v|✓|✔|●|true)$/i.test(String(v||'').trim());
 
 /* 표(2차원 배열) → {rows, has}. 머리글 줄을 자동으로 찾음 (제목 줄이 있어도 됨) */
@@ -286,7 +302,7 @@ function rowsFromTable(table){
   const ix = {id:exact(/^ID$/i), no:exact(/^(NO|번호|순번)$/i), joined:col('입회'), name:exact(/^(성명|회원명|이름)$/),
     guardian:col('추천'), phone:col('전화','연락처','휴대'), company:col('근무처','회사','상호'), title:col('직함','직위'),
     address:col('주소'), website:col('홈페이지','웹사이트','URL'), email:col('이메일','메일','email'), birthYear:col('출생'),
-    memo:col('비고','메모'), founder:exact(/^창립/), isNew:exact(/^신입/), status:exact(/^상태$/),
+    memo:col('비고','메모'), intro:col('사업소개','소개'), founder:exact(/^창립/), isNew:exact(/^신입/), status:exact(/^상태$/),
     // 예전 명부는 '업종' 칸에 제품·서비스를 적었음 → 제품 칸이 따로 없으면 업종을 제품으로 읽음
     products: prodCol >= 0 ? prodCol : col('업종'), industry: prodCol >= 0 ? col('업종') : -1};
   const toJoined = v => {
@@ -477,14 +493,14 @@ async function applyImport(plan, {absentOff}){
 /* 수정용 엑셀 내려받기: 올릴 때와 같은 양식 (ID 열로 회원을 정확히 찾음) */
 async function exportMembersXlsx(list, filename){
   const X = await loadXLSX();
-  const rows = list.map(m=>{ const t = currentTerm(m.id);
+  const rows = list.map(m=>{ const t = currentTerm(m.id), pn = posNames(m.id).join(' · ');
     return [m.id, m.rosterNo || '', m.joined ? m.joined.replace('-','.') : '', m.name, member(m.guardianId)?.name || '',
       m.phone, m.company, m.title, m.products, m.industry, m.address, m.website, m.email, m.birthYear,
-      m.isFounder ? 'O' : '', m.isNew ? 'O' : '', m.status === 'inactive' ? '휴면' : '활동', m.memo,
-      t ? position(t.positionId)?.name || '' : ''];
+      m.isFounder ? 'O' : '', m.isNew ? 'O' : '', m.status === 'inactive' ? '휴면' : '활동', m.memo, m.intro,
+      pn];
   });
   const ws = X.utils.aoa_to_sheet([EXPORT_HEAD, ...rows]);
-  ws['!cols'] = [10,5,9,9,9,15,20,10,30,14,36,22,24,8,5,5,6,30,10].map(w=>({wch:w}));
+  ws['!cols'] = [10,5,9,9,9,15,20,10,30,14,36,22,24,8,5,5,6,30,40,14].map(w=>({wch:w}));
   const guide = X.utils.aoa_to_sheet([
     ['정우회 회원명부 수정 방법'], [''],
     ['1. 「회원명부」 시트에서 내용을 고친 뒤 저장하고, 사이트 관리 → 회원 일괄 등록·변경에 올립니다.'],
@@ -525,7 +541,11 @@ async function readTableFile(f){
 const D = () => Store.db;
 const member = id => D().members.find(m=>m.id===id);
 const position = id => D().positions.find(p=>p.id===id);
-const currentTerm = mid => D().terms.find(t=>t.memberId===mid && !t.end);
+/* 현재 직책: 한 사람이 여러 직책을 겸직할 수 있음 (직책 순서대로) */
+const currentTerms = mid => D().terms.filter(t=>t.memberId===mid && !t.end)
+  .sort((a,b)=>(position(a.positionId)?.order ?? 99) - (position(b.positionId)?.order ?? 99));
+const currentTerm = mid => currentTerms(mid)[0];
+const posNames = mid => currentTerms(mid).map(t=>position(t.positionId)?.name || '임원');
 const isOfficer = mid => !!currentTerm(mid);
 const recruits = mid => D().members.filter(m=>m.guardianId===mid);
 const activeMembers = () => D().members.filter(m=>m.status!=='inactive');
@@ -558,13 +578,13 @@ function avatar(m, size){
 function typeTag(m){
   const t = currentTerm(m.id);
   if(m.status==='inactive') return '<span class="tag gray">휴면</span>';
-  const base = t ? `<span class="tag off">${esc(position(t.positionId)?.name||'임원')}</span>` : `<span class="tag">${m.isNew?'신입회원':'일반회원'}</span>`;
+  const base = t ? posNames(m.id).map(n=>`<span class="tag off">${esc(n)}</span>`).join(' ') : `<span class="tag">${m.isNew?'신입회원':'일반회원'}</span>`;
   return (t && m.isNew ? '<span class="tag new">신입</span> ' : '') + (m.isNew && !t ? base.replace('class="tag"','class="tag new"') : base);
 }
 /* 글자 구분 (CSV·PNG·연락처 메모용) */
 const typeText = m => { const t = currentTerm(m.id);
   if(m.status==='inactive') return '휴면';
-  return t ? (m.isNew ? '신입 · ' : '') + (position(t.positionId)?.name||'임원') : (m.isNew ? '신입회원' : '일반회원'); };
+  return t ? (m.isNew ? '신입 · ' : '') + posNames(m.id).join(' · ') : (m.isNew ? '신입회원' : '일반회원'); };
 const joinedLabel = m => m.joined ? m.joined.replace('-', '.') : m.isFounder ? '<span class="tag off">창립</span>' : '<span class="muted">기존회원</span>';
 const memberLink = m => m ? `<a href="#/member/${m.id}">${esc(m.name)}</a>` : '<span class="muted">-</span>';
 
@@ -613,9 +633,9 @@ function closeModal(){ $('#modal-root').innerHTML=''; }
 /* ===================== 라우팅 ===================== */
 const ROUTES = [
   ['dashboard','🏠','대시보드'],['members','👥','회원명부'],['guardians','🤝','추천인'],
-  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['settings','⚙️','관리'],
+  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['finance','💰','재무보고'],['settings','⚙️','관리'],
 ];
-const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().getFullYear())};
+const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().getFullYear()), sort:{key:'joined', dir:'desc'}, finYear:String(new Date().getFullYear())};
 
 function render(){
   if(!Store.ready) return;
@@ -634,7 +654,7 @@ function render(){
   const meLink = mine ? `<a href="#/member/${mine.id}/edit" class="${page==='member'&&id===mine.id?'on':''}" style="${page==='member'&&id===mine.id?'':'background:rgba(255,255,255,.12);color:#fff'}"><span>✏️</span>내 정보 수정</a>` : '';
   $('#nav').innerHTML = meLink + ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('');
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
-              officers:Officers, events:Events, history:History, settings:Settings}[page] || Dashboard;
+              officers:Officers, events:Events, history:History, finance:Finance, settings:Settings}[page] || Dashboard;
   $('#view').innerHTML = fn();
   bind[page]?.(id, sub);
   window.scrollTo(0,0);
@@ -826,15 +846,15 @@ function Dashboard(){
   ${can.admin() && pendingCount() ? `<a href="#/settings" class="panel" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-color:#f0b3a7;background:#fff7f5;color:var(--ink)">
     <span>📝 새 회원 가입 신청 <b>${pendingCount()}건</b>이 승인을 기다리고 있습니다.</span><span class="btn sm pri">확인하기</span></a>` : ''}
   <div class="grid kpis">
-    <div class="panel kpi"><div class="l">전체 회원</div><div class="n">${ms.length}</div><div class="l">기존회원 포함</div></div>
-    <div class="panel kpi"><div class="l">${year}년 신규 입회</div><div class="n">${newThisYear}</div><div class="l">명</div></div>
-    <div class="panel kpi"><div class="l">현 임원</div><div class="n">${officers}</div><div class="l"><a href="#/officers">직책 관리 →</a></div></div>
-    <div class="panel kpi"><div class="l">다음 행사</div><div class="n">${next ? (dday===0?'D-DAY':'D-'+dday) : '-'}</div>
-      <div class="l">${next ? esc(next.title) : '<a href="#/events">행사 등록 →</a>'}</div></div>
+    <div class="panel kpi link" data-go="all"><div class="l">전체 회원</div><div class="n">${ms.length}</div><div class="l">기존회원 포함 · 명부 보기 →</div></div>
+    <div class="panel kpi link" data-go="new"><div class="l">${year}년 신규 입회</div><div class="n">${newThisYear}</div><div class="l">명 · 명단 보기 →</div></div>
+    <div class="panel kpi link" data-go="officers"><div class="l">현 임원</div><div class="n">${officers}</div><div class="l">임원진 보기 →</div></div>
+    <div class="panel kpi link" data-go="events" data-year="${next ? next.date.slice(0,4) : ''}"><div class="l">다음 행사</div><div class="n">${next ? (dday===0?'D-DAY':'D-'+dday) : '-'}</div>
+      <div class="l">${next ? esc(next.title) + ' →' : '행사 등록 →'}</div></div>
   </div>
   <div class="grid two" style="margin-top:16px">
-    <div class="panel"><h2>월별 입회 추이</h2>
-      ${months.length ? `<div class="bars">${months.map(k=>`<div class="bar"><b>${byMonth[k]}</b><i style="height:${byMonth[k]/max*130}px"></i><span>${k.slice(2).replace('-','.')}</span></div>`).join('')}</div>`
+    <div class="panel"><h2>월별 입회 추이 <span class="muted" style="font-size:12px;font-weight:400">막대를 누르면 입회자 명단</span></h2>
+      ${months.length ? `<div class="bars">${months.map(k=>`<div class="bar" data-month="${k}" title="${k.replace('-','.')} 입회자 보기"><b>${byMonth[k]}</b><i style="height:${byMonth[k]/max*130}px"></i><span>${k.slice(2).replace('-','.')}</span></div>`).join('')}</div>`
         : '<div class="empty">입회 기록이 없습니다.</div>'}
     </div>
     <div class="panel"><h2>추천인 TOP 5 <a class="muted" style="font-size:13px;font-weight:400" href="#/guardians">전체 보기</a></h2>
@@ -870,8 +890,24 @@ function filteredMembers(){
     if(ui.year==='founder' && !m.isFounder) return false;
     if(ui.year && ui.year!=='old' && ui.year!=='founder' && !m.joined.startsWith(ui.year)) return false;
     return true;
-  }).sort((a,b)=>(b.joined||'0').localeCompare(a.joined||'0') || a.name.localeCompare(b.name,'ko'));
+  }).sort(memberSorter());
 }
+/* 회원명부 정렬: 표 머리글을 누르면 오름차순 ↔ 내림차순 (빈 값은 항상 맨 뒤) */
+const SORT_KEYS = {
+  name: m=>m.name, type: m=>typeText(m), company: m=>m.company, products: m=>m.products,
+  joined: m=>m.joined || (m.isFounder ? '0000-00' : ''), guardian: m=>member(m.guardianId)?.name || ''};
+function memberSorter(){
+  const {key, dir} = ui.sort, get = SORT_KEYS[key] || SORT_KEYS.joined, sign = dir === 'asc' ? 1 : -1;
+  return (a,b)=>{
+    const x = get(a) || '', y = get(b) || '';
+    if(!x !== !y) return x ? -1 : 1;
+    return sign * String(x).localeCompare(String(y), 'ko') || a.name.localeCompare(b.name, 'ko');
+  };
+}
+const sortTh = (key, label, cls='') => {
+  const on = ui.sort.key === key;
+  return `<th class="sortable ${on?'on':''} ${cls}" data-sort="${key}">${label}<span class="ar">${on ? (ui.sort.dir === 'asc' ? '▲' : '▼') : '▲▼'}</span></th>`;
+};
 function Members(){
   const years = [...new Set(D().members.map(m=>m.joined.slice(0,4)).filter(Boolean))].sort().reverse();
   const list = filteredMembers();
@@ -887,6 +923,8 @@ function Members(){
       <option value="">전체 구분</option><option value="officer">임원</option><option value="new">신입회원</option><option value="regular">일반회원</option><option value="inactive">휴면</option>
     </select>
     <select class="input" id="year"><option value="">전체 입회연도</option>${years.map(y=>`<option>${y}</option>`).join('')}<option value="founder">창립회원</option><option value="old">기존회원</option></select>
+    ${ui.view==='card'?`<select class="input" id="csort">${[['joined','입회순'],['name','이름순'],['company','회사순'],['guardian','추천인순']].map(([k,l])=>`<option value="${k}" ${ui.sort.key===k?'selected':''}>${l}</option>`).join('')}</select>
+      <button class="btn sm" id="cdir">${ui.sort.dir==='asc'?'오름차순 ▲':'내림차순 ▼'}</button>`:''}
     <div class="row"><button class="btn sm ${ui.view==='table'?'pri':''}" data-v="table">표</button><button class="btn sm ${ui.view==='card'?'pri':''}" data-v="card">카드</button></div>
   </div></div>
   <div id="mlist">${memberList(list)}</div>`;
@@ -901,7 +939,7 @@ function memberList(list){
       <div class="muted" style="font-size:13px;margin-top:8px">입회 ${joinedLabel(m)} · 추천인 ${esc(member(m.guardianId)?.name||'-')}</div>
     </div>`).join('')}</div>`;
   return `<div class="panel" style="padding:0;overflow-x:auto"><table>
-    <tr><th></th><th>이름</th><th>구분</th><th class="hide-m">회사</th><th class="hide-m">제품(서비스)</th><th>입회</th><th>추천인</th></tr>
+    <tr><th></th>${sortTh('name','이름')}${sortTh('type','구분')}${sortTh('company','회사','hide-m')}${sortTh('products','제품(서비스)','hide-m')}${sortTh('joined','입회')}${sortTh('guardian','추천인')}</tr>
     ${list.map(m=>`<tr class="click" data-href="#/member/${m.id}"><td style="width:48px">${avatar(m)}</td><td><b>${esc(m.name)}</b></td>
       <td>${typeTag(m)}</td><td class="hide-m">${esc(m.company)||'<span class="muted">-</span>'}</td>
       <td class="hide-m">${esc(m.products)||'<span class="muted">-</span>'}</td><td>${joinedLabel(m)}</td><td>${esc(member(m.guardianId)?.name||'-')}</td></tr>`).join('')}
@@ -984,6 +1022,11 @@ function profileExportHTML(m, img){
     <table style="width:100%;border-collapse:collapse;margin-top:14px;border:1px solid ${C.line}">
       ${row('전화', esc(m.phone))}${row('이메일', esc(m.email))}${row('홈페이지', esc(m.website ? webLabel(m.website) : ''))}
       ${row('주소', esc(m.address))}${row('업종', esc(m.industry))}
+    </table>
+    ${m.intro ? `<div style="margin-top:14px;border:1px solid ${C.line};border-radius:12px;padding:14px 16px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:6px;color:${C.brand}">사업 소개</div>
+      <div style="white-space:pre-wrap;font-size:15px;line-height:1.7;color:${C.ink}">${esc(m.intro)}</div></div>` : ''}
+    <table style="display:none">
     </table>
     <div style="margin-top:16px;font-size:13px;color:${C.sub};text-align:right">정우회 회원 프로필 · ${today().replace(/-/g,'.')}</div>
   </div>`;
@@ -1143,8 +1186,13 @@ function MemberDetail(id){
           <tr><th>업종</th><td>${esc(m.industry)||'-'}</td></tr>
         </table>
       </div>
+      <div class="panel"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">사업 소개</h2>
+          ${can.edit(m)?`<button class="btn sm" id="introEdit">${m.intro?'수정':'작성하기'}</button>`:''}</div>
+        ${m.intro ? `<div style="white-space:pre-wrap;line-height:1.7">${esc(m.intro)}</div>`
+          : `<div class="muted" style="font-size:14px">${can.edit(m) ? '회사와 사업을 소개해 주세요. 주요 제품·서비스, 강점, 찾는 거래처나 협업 분야를 적으면 회원 간 연결에 도움이 됩니다.' : '아직 작성된 사업 소개가 없습니다.'}</div>`}
+      </div>
       <div class="panel"><h2>정우회 활동</h2>
-        <div>현재: ${t?`${m.isNew?'신입 · ':''}<b>${esc(position(t.positionId)?.name)}</b> <span class="muted">(${t.start}~)</span>`:esc(typeText(m))}</div>
+        <div>현재: ${t?`${m.isNew?'신입 · ':''}${currentTerms(m.id).map(x=>`<b>${esc(position(x.positionId)?.name)}</b> <span class="muted">(${x.start}~)</span>`).join(' · ')}${currentTerms(m.id).length>1?' <span class="tag">겸직</span>':''}`:esc(typeText(m))}</div>
         ${past.length?`<div class="muted" style="margin-top:6px">이전 직책: ${past.map(p=>`${esc(position(p.positionId)?.name)} (${p.start}~${p.end})`).join(', ')}</div>`:''}
         ${can.officer() && m.status!=='inactive' ? (()=>{ const ps = D().pwStates?.[m.id];
           const st = !ps ? '처음 비밀번호 (휴대폰 뒷 4자리, 아직 로그인 안 함)' : ps.locked ? '<span style="color:var(--warn)">잠김 (5회 오류)</span>' : ps.self_set ? '본인이 설정함' : '처음 비밀번호 사용 중';
@@ -1174,6 +1222,8 @@ function memberForm(m){
       ${f('email','로그인 이메일','email','',lock)}${f('joined','입회월 (비우면 기존회원)','month','',lock)}
       ${f('address','주소','text','full')}
       ${f('website','홈페이지','text','full')}
+      <label class="full">사업 소개 <span style="font-size:12px">(회사·사업 소개, 주요 제품·서비스, 강점, 찾는 거래처나 협업 분야 등)</span>
+        <textarea class="input" name="intro" rows="6" maxlength="2000" placeholder="예) 부산·경남 지역 위생용품·일회용품 전문 유통 20년. 식당·병원·관공서 납품. 정우회 회원사 대량 주문 시 특별 단가 제공.">${esc(m.intro)}</textarea></label>
       <label class="full" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="isFounder" ${m.isFounder?'checked':''} ${lock}> 창립회원
         <input type="checkbox" name="isNew" ${m.isNew?'checked':''} ${lock} style="margin-left:18px"> 신입회원</label>
       <label>추천인<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
@@ -1278,21 +1328,38 @@ function assignForm(){
   const ms = activeMembers().sort((a,b)=>a.name.localeCompare(b.name,'ko'));
   const pos = [...D().positions].sort((a,b)=>a.order-b.order);
   openModal(`<h2>직책 지정·변경</h2>
-    <p class="muted" style="margin-top:-6px;font-size:13px">기존 직책은 시작일 기준으로 자동 종료되어 이력으로 남습니다.</p>
+    <p class="muted" style="margin-top:-6px;font-size:13px">한 사람이 여러 직책을 겸직할 수 있습니다. 1인 직책은 새로 지정하면 기존 담당자가 자동 해제됩니다.</p>
     <form class="form" id="af">
-      <label>회원<select class="input" name="memberId" required>${ms.map(m=>`<option value="${m.id}">${esc(m.name)}${isOfficer(m.id)?' ('+esc(position(currentTerm(m.id).positionId)?.name)+')':''}</option>`).join('')}</select></label>
+      <label>회원<select class="input" name="memberId" required>${ms.map(m=>`<option value="${m.id}">${esc(m.name)}${isOfficer(m.id)?' ('+esc(posNames(m.id).join(', '))+')':''}</option>`).join('')}</select></label>
       <label>직책<select class="input" name="positionId" required>${pos.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label>
       <label>임기 시작일<input class="input" type="date" name="start" value="${today()}" required></label>
       <label style="justify-content:flex-end"><span><input type="checkbox" name="hist" checked> 연혁에 자동 기록</span></label>
+      <div class="full" id="modeBox" style="display:none;background:var(--soft);border-radius:8px;padding:10px 12px;font-size:14px">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">이 회원은 이미 <b id="curPos"></b> 직책을 맡고 있습니다.</div>
+        <label style="flex-direction:row;gap:6px;align-items:center;color:var(--ink)"><input type="radio" name="mode" value="add" checked> 기존 직책은 그대로 두고 <b>겸직으로 추가</b></label>
+        <label style="flex-direction:row;gap:6px;align-items:center;color:var(--ink);margin-top:4px"><input type="radio" name="mode" value="replace"> 기존 직책을 끝내고 <b>이 직책으로 변경</b></label>
+      </div>
       <div class="full row" style="justify-content:flex-end"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
     </form>`, root=>{
+    const sel = root.querySelector('select[name=memberId]');
+    const syncMode = ()=>{ const names = posNames(sel.value); root.querySelector('#modeBox').style.display = names.length ? '' : 'none'; root.querySelector('#curPos').textContent = names.join(', '); };
+    sel.onchange = syncMode; syncMode();
     root.querySelector('#af').onsubmit = async e=>{
       e.preventDefault();
-      const {memberId, positionId, start, hist} = Object.fromEntries(new FormData(e.target));
-      const cur = currentTerm(memberId);
-      if(cur && cur.positionId===positionId) return toast('이미 같은 직책입니다.');
-      await q(sb.rpc('jw_assign_position', {p_member:memberId, p_position:positionId, p_start:start, p_add_history:!!hist}));
-      closeModal(); toast(`${member(memberId).name} → ${position(positionId).name}`); Store.refresh();
+      const {memberId, positionId, start, hist, mode} = Object.fromEntries(new FormData(e.target));
+      const p = position(positionId), m = member(memberId), mine = currentTerms(memberId);
+      if(mine.some(t=>t.positionId===positionId)) return toast('이미 맡고 있는 직책입니다.');
+      const btn = e.submitter; btn.disabled = true;
+      try{
+        const ending = [];
+        if(mode === 'replace') ending.push(...mine.map(t=>t.id));
+        if(p.single) ending.push(...D().terms.filter(t=>!t.end && t.positionId===positionId).map(t=>t.id));
+        if(ending.length) await q(sb.from('jw_terms').update({ended_on:start}).in('id', [...new Set(ending)]));
+        await q(sb.from('jw_terms').insert({member_id:memberId, position_id:positionId, started_on:start}));
+        const concurrent = mode !== 'replace' && mine.length;
+        if(hist) await q(sb.from('jw_history').insert({happened_on:start, title:`${m.name} ${p.name} 취임${concurrent ? ' (겸직)' : ''}`, description:'', source:'officer'}));
+        closeModal(); toast(`${m.name} → ${p.name}${concurrent ? ' (겸직)' : ''}`); Store.refresh();
+      }catch(err){ btn.disabled = false; }
     };
   });
 }
@@ -1521,6 +1588,215 @@ async function approveApplication(a, {guardianId, joined, isNew}){
   return row.id;
 }
 
+/* ===================== 재무보고 =====================
+   매월 모임통장 입출금·찬조 내역을 정리해 회원 모두가 볼 수 있게 공개
+   - 작성: 임원(재무·총무 등)·관리자 / 열람: 로그인한 회원 전체
+   - 카카오뱅크 '거래내역 엑셀'을 올리면 입금·출금·잔액을 자동으로 채움 (내용에 '찬조'가 있으면 찬조로 표시)
+   - 영수증·캡처 이미지 첨부 가능 */
+const won = n => (Math.round(+n || 0)).toLocaleString('ko-KR') + '원';
+const fromFinance = r => ({id:r.id, period:r.period, opening:+r.opening_balance || 0, items:Array.isArray(r.items) ? r.items : [],
+  note:r.note || '', images:Array.isArray(r.images) ? r.images : [], imageUrls:{}, updatedBy:r.updated_by || '', updatedAt:r.updated_at});
+function finTotals(f){
+  const inc = f.items.filter(i=>i.kind==='in').reduce((s,i)=>s + (+i.amount||0), 0);
+  const exp = f.items.filter(i=>i.kind==='out').reduce((s,i)=>s + (+i.amount||0), 0);
+  const spo = f.items.filter(i=>i.kind==='in' && i.sponsor).reduce((s,i)=>s + (+i.amount||0), 0);
+  return {inc, exp, spo, closing: f.opening + inc - exp};
+}
+const finSorted = () => [...(D().finance||[])].sort((a,b)=>b.period.localeCompare(a.period));
+const prevClosing = period => { const p = finSorted().find(f=>f.period < period); return p ? finTotals(p).closing : 0; };
+
+function Finance(){
+  const all = finSorted();
+  const years = [...new Set([String(new Date().getFullYear()), ...all.map(f=>f.period.slice(0,4))])].sort().reverse();
+  const list = all.filter(f=>f.period.startsWith(ui.finYear));
+  const sum = list.reduce((s,f)=>{ const t = finTotals(f); s.inc += t.inc; s.exp += t.exp; s.spo += t.spo; return s; }, {inc:0, exp:0, spo:0});
+  const latest = all[0];
+  const months = [...list].reverse();
+  const max = Math.max(1, ...months.map(f=>{ const t = finTotals(f); return Math.max(t.inc, t.exp); }));
+  const kindLabel = i => i.kind === 'in' ? (i.sponsor ? '<span class="tag new">찬조</span>' : '<span class="tag">입금</span>') : '<span class="tag off">출금</span>';
+  return `
+  <div class="head"><div><h1>재무보고</h1><div class="muted" style="font-size:13px;margin-top:4px">정우회 모임통장 월별 입출금·찬조 내역을 투명하게 공개합니다.</div></div>
+    <div class="row"><select class="input" id="fy">${years.map(y=>`<option ${y===ui.finYear?'selected':''}>${y}</option>`).join('')}</select>
+    ${can.officer()?'<button class="btn pri" id="fadd">+ 월 보고 등록</button>':''}</div></div>
+  <div class="grid kpis">
+    <div class="panel kpi"><div class="l">${ui.finYear}년 수입</div><div class="n" style="font-size:22px;color:var(--ok)">${won(sum.inc)}</div></div>
+    <div class="panel kpi"><div class="l">${ui.finYear}년 지출</div><div class="n" style="font-size:22px;color:var(--warn)">${won(sum.exp)}</div></div>
+    <div class="panel kpi"><div class="l">${ui.finYear}년 찬조</div><div class="n" style="font-size:22px">${won(sum.spo)}</div></div>
+    <div class="panel kpi"><div class="l">현재 잔액 ${latest ? `(${latest.period.replace('-','.')} 말)` : ''}</div><div class="n" style="font-size:22px">${latest ? won(finTotals(latest).closing) : '-'}</div></div>
+  </div>
+  ${months.length ? `<div class="panel" style="margin-top:16px"><h2>월별 수입·지출 <span class="muted" style="font-size:12px;font-weight:400"><span style="color:var(--ok)">■</span> 수입 <span style="color:var(--warn)">■</span> 지출</span></h2>
+    <div class="bars" style="height:170px">${months.map(f=>{ const t = finTotals(f); return `<div class="bar" style="flex-direction:row;align-items:flex-end;gap:3px;justify-content:center" title="${f.period}: 수입 ${won(t.inc)} / 지출 ${won(t.exp)}">
+      <i style="height:${t.inc/max*130}px;background:var(--ok);max-width:20px"></i><i style="height:${t.exp/max*130}px;background:var(--warn);max-width:20px"></i></div>`; }).join('')}</div>
+    <div class="row" style="justify-content:space-around;font-size:12px;color:var(--sub)">${months.map(f=>`<span>${+f.period.slice(5)}월</span>`).join('')}</div></div>` : ''}
+  <div style="margin-top:16px">
+  ${list.length ? list.map(f=>{ const t = finTotals(f);
+    return `<div class="panel" style="margin-bottom:14px">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">${f.period.slice(0,4)}년 ${+f.period.slice(5)}월 보고</h2>
+        ${can.officer()?`<div class="row"><button class="btn sm" data-fedit="${f.id}">수정</button><button class="btn sm danger" data-fdel="${f.id}">삭제</button></div>`:''}
+      </div>
+      <div class="row" style="gap:16px;margin:10px 0;font-size:14px;flex-wrap:wrap">
+        <span>전월 이월 <b>${won(f.opening)}</b></span><span style="color:var(--ok)">수입 <b>${won(t.inc)}</b></span>
+        <span style="color:var(--warn)">지출 <b>${won(t.exp)}</b></span>${t.spo?`<span>찬조 <b>${won(t.spo)}</b></span>`:''}<span>월말 잔액 <b>${won(t.closing)}</b></span>
+      </div>
+      ${f.note?`<div style="white-space:pre-wrap;background:var(--soft);border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.6;margin-bottom:10px">${esc(f.note)}</div>`:''}
+      ${f.items.length?`<details ${list[0]===f?'open':''}><summary style="cursor:pointer;font-size:14px;color:var(--brand-2)">거래 내역 ${f.items.length}건</summary>
+        <div style="overflow-x:auto;margin-top:8px"><table><tr><th>날짜</th><th>구분</th><th>내용</th><th class="hide-m">메모</th><th style="text-align:right">금액</th></tr>
+        ${f.items.map(i=>`<tr><td style="white-space:nowrap">${esc((i.date||'').slice(5).replace('-','.'))}</td><td>${kindLabel(i)}</td><td>${esc(i.desc)}</td><td class="hide-m muted">${esc(i.memo||'')}</td>
+          <td style="text-align:right;white-space:nowrap;color:${i.kind==='in'?'var(--ok)':'var(--warn)'}">${i.kind==='in'?'+':'-'}${won(i.amount)}</td></tr>`).join('')}</table></div></details>`:''}
+      ${f.images.length?`<div class="row" style="margin-top:10px">${f.images.map(pth=>f.imageUrls[pth]?`<a href="${f.imageUrls[pth]}" target="_blank" rel="noopener"><img src="${f.imageUrls[pth]}" style="height:72px;border-radius:6px;border:1px solid var(--line)"></a>`:'').join('')}</div>`:''}
+      <div class="muted" style="font-size:12px;margin-top:8px;text-align:right">${f.updatedBy?esc(f.updatedBy)+' · ':''}${(f.updatedAt||'').slice(0,10).replace(/-/g,'.')} 업데이트</div>
+    </div>`; }).join('')
+  : `<div class="empty">${ui.finYear}년 재무보고가 아직 없습니다.${can.officer()?'<br>카카오뱅크 거래내역 엑셀을 올리면 입금·출금이 자동으로 정리됩니다.':''}</div>`}
+  </div>`;
+}
+
+/* 은행 거래내역 표 → 거래 항목. 카카오뱅크(거래일시·구분·거래금액·거래 후 잔액·내용·메모)와
+   입금액/출금액 열이 따로 있는 일반 은행 양식을 모두 인식 */
+function parseBankTable(table){
+  const norm = v => String(v ?? '').replace(/\s+/g,' ').trim();
+  const hi = table.findIndex(r=>{ const h = r.map(norm).join('|'); return /(거래일|일시|일자|날짜)/.test(h) && /(금액|입금|출금)/.test(h); });
+  if(hi < 0) throw new Error('거래내역 머리글(거래일시·금액)을 찾지 못했습니다. 카카오뱅크에서 내려받은 엑셀인지 확인해 주세요.');
+  const head = table[hi].map(norm);
+  const col = (...ns) => head.findIndex(h=>ns.some(n=>h.includes(n)));
+  const c = {date:col('거래일시','거래일자','거래일','일시','일자','날짜'), kind:head.findIndex(h=>/^구분$|입출금|입\/출/.test(h)),
+    amount:head.findIndex(h=>/^(거래금액|금액)$/.test(h)), inAmt:col('입금액','입금 금액','맡기신'), outAmt:col('출금액','출금 금액','찾으신'),
+    bal:col('잔액'), desc:col('내용','적요','거래처','받는분','보낸분','기재'), memo:col('메모','비고')};
+  const num = v => { if(typeof v === 'number') return v; const n = parseFloat(String(v||'').replace(/[^\d.-]/g,'')); return isFinite(n) ? n : 0; };
+  const toDate = v => {
+    if(typeof v === 'number'){ const d = new Date(Math.round((v - 25569) * 864e5)); return d.toISOString().slice(0,10); }
+    const m = norm(v).match(/(\d{4})[.\/-]\s?(\d{1,2})[.\/-]\s?(\d{1,2})/); return m ? `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}` : '';
+  };
+  const rows = [];
+  for(const r of table.slice(hi+1)){
+    const date = c.date >= 0 ? toDate(r[c.date]) : '';
+    if(!date) continue;
+    let amt = 0, kind = '';
+    if(c.inAmt >= 0 || c.outAmt >= 0){
+      const ia = c.inAmt >= 0 ? num(r[c.inAmt]) : 0, oa = c.outAmt >= 0 ? num(r[c.outAmt]) : 0;
+      if(ia){ kind = 'in'; amt = ia; } else if(oa){ kind = 'out'; amt = oa; }
+    }
+    if(!kind && c.amount >= 0){
+      const a = num(r[c.amount]); const k = c.kind >= 0 ? norm(r[c.kind]) : '';
+      kind = /출금|지출|출/.test(k) || a < 0 ? 'out' : 'in'; amt = Math.abs(a);
+    }
+    if(!amt) continue;
+    const desc = c.desc >= 0 ? norm(r[c.desc]) : '', memo = c.memo >= 0 ? norm(r[c.memo]) : '';
+    rows.push({date, kind, amount:amt, desc, memo, sponsor: kind === 'in' && /찬조|후원|협찬/.test(desc + ' ' + memo),
+      bal: c.bal >= 0 ? num(r[c.bal]) : null});
+  }
+  // 은행 엑셀은 최신순이 많음 → 날짜 오름차순으로 (같은 날은 원래 순서 반대로)
+  const asc = rows.length > 1 && rows[0].date > rows[rows.length-1].date ? rows.reverse() : rows;
+  asc.sort((a,b)=>a.date.localeCompare(b.date));
+  const periods = {}; asc.forEach(i=>{ const p = i.date.slice(0,7); periods[p] = (periods[p]||0) + 1; });
+  const period = Object.entries(periods).sort((a,b)=>b[1]-a[1])[0]?.[0] || '';
+  return {items: asc, period, months: Object.keys(periods).sort()};
+}
+/* 첫 거래의 '거래 후 잔액'에서 그 거래를 되돌리면 = 전월 이월 잔액 */
+const bankOpening = list => list.length && list[0].bal != null ? list[0].bal - (list[0].kind === 'in' ? list[0].amount : -list[0].amount) : null;
+
+function financeForm(f){
+  const isNew = !f;
+  const period0 = f ? f.period : today().slice(0,7);
+  let items = f ? f.items.map(i=>({...i})) : [];
+  let images = f ? [...f.images] : [];
+  const newImgs = [];
+  const rowHtml = (i, n) => `<tr data-n="${n}">
+    <td><input class="input" type="date" data-k="date" value="${esc(i.date||'')}" style="width:140px;padding:6px"></td>
+    <td><select class="input" data-k="kind" style="padding:6px"><option value="in" ${i.kind==='in'?'selected':''}>입금</option><option value="out" ${i.kind==='out'?'selected':''}>출금</option></select></td>
+    <td><input class="input" data-k="desc" value="${esc(i.desc||'')}" placeholder="예: 11월 회비 홍길동" style="min-width:160px;padding:6px"></td>
+    <td><input class="input" data-k="amount" inputmode="numeric" value="${i.amount||''}" style="width:110px;padding:6px;text-align:right"></td>
+    <td style="text-align:center"><input type="checkbox" data-k="sponsor" ${i.sponsor?'checked':''} title="찬조"></td>
+    <td><button type="button" class="btn sm danger" data-rm>✕</button></td></tr>`;
+  openModal(`<h2>${isNew?'월 재무보고 등록':`${f.period.replace('-','.')} 재무보고 수정`}</h2>
+    <div class="panel" style="background:var(--soft);border:none;padding:12px 14px;margin-bottom:12px">
+      <b style="font-size:14px">📥 카카오뱅크 거래내역 엑셀 불러오기</b>
+      <p class="muted" style="font-size:12.5px;margin:4px 0 8px;line-height:1.6">카카오뱅크 앱 → 모임통장 → 거래내역 → 엑셀 저장(이메일)로 받은 파일을 올리면 입금·출금·전월 잔액이 자동으로 채워집니다.
+        암호가 걸린 파일은 엑셀에서 열어 암호 없이 다시 저장한 뒤 올려 주세요. 내용·메모에 '찬조'가 있으면 찬조로 표시됩니다.</p>
+      <input type="file" id="bankFile" accept=".xlsx,.xls,.csv" class="input">
+    </div>
+    <form id="ff">
+      <div class="form">
+        <label>보고 월<input class="input" type="month" name="period" value="${period0}" required ${isNew?'':'readonly'}></label>
+        <label>전월 이월 잔액 (원)<input class="input" name="opening" inputmode="numeric" value="${f ? f.opening : prevClosing(period0)}"></label>
+      </div>
+      <div style="margin-top:12px"><b style="font-size:14px">거래 내역</b> <span class="muted" style="font-size:12px">(찬조 칸 체크 = 찬조금)</span></div>
+      <div style="overflow-x:auto;max-height:36vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px">
+        <table><thead><tr><th>날짜</th><th>구분</th><th>내용</th><th>금액</th><th>찬조</th><th></th></tr></thead><tbody id="frows"></tbody></table></div>
+      <div class="row" style="justify-content:space-between;margin-top:8px"><button type="button" class="btn sm" id="faddrow">+ 행 추가</button><span id="ftot" class="muted" style="font-size:13px"></span></div>
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub);margin-top:12px">월 보고 요약 (회원에게 보이는 설명)
+        <textarea class="input" name="note" rows="3" placeholder="예) 11월 정기모임 식대 지출, 송년회 찬조 3건 입금">${esc(f?.note||'')}</textarea></label>
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub);margin-top:10px">영수증·캡처 이미지 (여러 장 가능)
+        <input class="input" type="file" id="fimgs" accept="image/*" multiple></label>
+      <div class="row" id="fimgPrev" style="margin-top:6px"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:14px"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+    </form>`, root=>{
+    const tbody = root.querySelector('#frows');
+    const read = () => [...tbody.querySelectorAll('tr')].map(tr=>({
+      date: tr.querySelector('[data-k=date]').value, kind: tr.querySelector('[data-k=kind]').value,
+      desc: tr.querySelector('[data-k=desc]').value.trim(), amount: Math.abs(parseFloat(tr.querySelector('[data-k=amount]').value.replace(/[^\d.-]/g,'')) || 0),
+      sponsor: tr.querySelector('[data-k=sponsor]').checked, memo: items[+tr.dataset.n]?.memo || ''}));
+    const total = () => { const it = read(); const t = finTotals({opening: +String(root.querySelector('[name=opening]').value).replace(/[^\d.-]/g,'') || 0, items: it});
+      root.querySelector('#ftot').textContent = `수입 ${won(t.inc)} · 지출 ${won(t.exp)} · 찬조 ${won(t.spo)} · 월말 잔액 ${won(t.closing)}`; };
+    const draw = () => { tbody.innerHTML = items.map(rowHtml).join('');
+      tbody.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ items = read(); items.splice(+b.closest('tr').dataset.n, 1); draw(); });
+      tbody.querySelectorAll('input,select').forEach(x=>x.oninput = total); total(); };
+    const drawImgs = () => { root.querySelector('#fimgPrev').innerHTML = images.map((p,k)=>`<span class="tag gray">기존 이미지 ${k+1} <a href="#" data-rmimg="${k}">✕</a></span>`).join(' ')
+        + newImgs.map((x,k)=>`<img src="${x}" style="height:48px;border-radius:4px">`).join('');
+      root.querySelectorAll('[data-rmimg]').forEach(a=>a.onclick=e=>{ e.preventDefault(); images.splice(+a.dataset.rmimg,1); drawImgs(); }); };
+    draw(); drawImgs();
+    root.querySelector('[name=opening]').oninput = total;
+    root.querySelector('#faddrow').onclick = () => { items = read(); items.push({date: (root.querySelector('[name=period]').value||period0) + '-01', kind:'in', desc:'', amount:'', sponsor:false}); draw(); };
+    root.querySelector('#bankFile').onchange = async e => {
+      const file = e.target.files[0]; if(!file) return;
+      try{
+        const res = parseBankTable(await readTableFile(file));
+        if(!res.items.length) return toast('거래 내역을 찾지 못했습니다.');
+        let use = res.items;
+        if(res.months.length > 1){
+          const pick = isNew ? res.period : root.querySelector('[name=period]').value;
+          if(confirm(`파일에 ${res.months.map(m=>m.replace('-','.')).join(', ')} 거래가 있습니다.\n${pick.replace('-','.')} 거래만 불러올까요? (취소 = 전부 불러오기)`)) use = res.items.filter(i=>i.date.startsWith(pick));
+        }
+        const opening = bankOpening(use);
+        items = use.map(({bal, ...i})=>i);
+        if(isNew && use.length) root.querySelector('[name=period]').value = use[0].date.slice(0,7);
+        if(opening != null) root.querySelector('[name=opening]').value = Math.round(opening);
+        draw(); toast(`거래 ${use.length}건을 불러왔습니다. 금액과 찬조 표시를 확인해 주세요.`);
+      }catch(err){ toast(err.message || '파일을 읽지 못했습니다. 암호가 걸린 파일인지 확인해 주세요.'); }
+      e.target.value = '';
+    };
+    root.querySelector('#fimgs').onchange = async e => {
+      for(const file of e.target.files){ try{ newImgs.push(await readImage(file, 1400)); }catch(err){} }
+      e.target.value = ''; drawImgs();
+    };
+    root.querySelector('#ff').onsubmit = async e => {
+      e.preventDefault();
+      const fd = Object.fromEntries(new FormData(e.target));
+      const period = fd.period || period0;
+      const rows = read().filter(i=>i.amount > 0);
+      const exist = (D().finance||[]).find(x=>x.period === period);
+      if(isNew && exist && !confirm(`${period.replace('-','.')} 보고가 이미 있습니다. 덮어쓸까요?`)) return;
+      const btn = e.submitter; btn.disabled = true; btn.textContent = '저장 중…';
+      try{
+        const id = f?.id || exist?.id || uid();
+        const paths = [...images];
+        for(let k = 0; k < newImgs.length; k++){
+          const path = `finance/${id}/${Date.now()}-${k}.jpg`;
+          await q(sb.storage.from(BUCKET).upload(path, dataUrlToBlob(newImgs[k]), {contentType:'image/jpeg', upsert:false}));
+          paths.push(path);
+        }
+        const removed = (f?.images || exist?.images || []).filter(p=>!paths.includes(p));
+        if(removed.length) sb.storage.from(BUCKET).remove(removed);
+        const me = member(Store.me.memberId);
+        await q(sb.from('jw_finance').upsert({id, period, opening_balance: Math.round(+String(fd.opening).replace(/[^\d.-]/g,'') || 0),
+          items: rows, note: fd.note || '', images: paths, updated_by: me ? me.name : (Store.me.admin ? '관리자' : ''), updated_at: new Date().toISOString()}, {onConflict:'period'}));
+        ui.finYear = period.slice(0,4);
+        closeModal(); toast('재무보고를 저장했습니다.'); Store.refresh();
+      }catch(err){ btn.disabled = false; btn.textContent = '저장'; }
+    };
+  });
+}
+
 /* ===================== 화면: 관리·백업 ===================== */
 function Settings(){
   return `
@@ -1571,16 +1847,43 @@ function bindRowLinks(){
   document.querySelectorAll('[data-href]').forEach(el=>el.onclick=()=>location.hash=el.dataset.href);
 }
 const bind = {
-  dashboard: bindRowLinks,
+  dashboard(){
+    bindRowLinks();
+    document.querySelectorAll('[data-go]').forEach(el=>el.onclick=()=>{
+      const go = el.dataset.go;
+      if(go === 'all' || go === 'new'){ ui.q = ''; ui.type = ''; ui.year = go === 'new' ? String(new Date().getFullYear()) : ''; location.hash = '#/members'; }
+      else if(go === 'officers') location.hash = '#/officers';
+      else if(go === 'events'){ if(el.dataset.year) ui.eventYear = el.dataset.year; location.hash = '#/events'; }
+    });
+    document.querySelectorAll('.bar[data-month]').forEach(el=>el.onclick=()=>{
+      const k = el.dataset.month;
+      const list = activeMembers().filter(m=>m.joined===k).sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+      openModal(`<h2>${k.replace('-','.')} 입회 회원 <span class="muted" style="font-size:15px">${list.length}명</span></h2>
+        <table><tr><th></th><th>이름</th><th>회사</th><th class="hide-m">제품(서비스)</th><th>추천인</th></tr>
+        ${list.map(m=>`<tr class="click" data-href="#/member/${m.id}"><td style="width:44px">${avatar(m)}</td><td><b>${esc(m.name)}</b></td><td>${esc(m.company)||'-'}</td>
+          <td class="hide-m">${esc(m.products)||'-'}</td><td>${esc(member(m.guardianId)?.name||'-')}</td></tr>`).join('')}</table>
+        <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn" data-close>닫기</button></div>`, root=>{
+        root.querySelectorAll('[data-href]').forEach(r=>r.onclick=()=>{ closeModal(); location.hash = r.dataset.href; });
+      });
+    });
+  },
   members(){
     bindRowLinks();
     $('#type').value = ui.type; $('#year').value = ui.year;
-    const refresh = ()=>{ $('#mlist').innerHTML = memberList(filteredMembers()); bindRowLinks();
+    const bindSort = ()=>document.querySelectorAll('th[data-sort]').forEach(th=>th.onclick=()=>{
+      const k = th.dataset.sort;
+      ui.sort = ui.sort.key === k ? {key:k, dir: ui.sort.dir === 'asc' ? 'desc' : 'asc'} : {key:k, dir: k === 'joined' ? 'desc' : 'asc'};
+      refresh();
+    });
+    const refresh = ()=>{ $('#mlist').innerHTML = memberList(filteredMembers()); bindRowLinks(); bindSort();
       $('.head h1 span').textContent = filteredMembers().length+'명'; };
+    bindSort();
     $('#q').oninput = e=>{ ui.q=e.target.value; refresh(); };
     $('#type').onchange = e=>{ ui.type=e.target.value; refresh(); };
     $('#year').onchange = e=>{ ui.year=e.target.value; refresh(); };
     document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{ ui.view=b.dataset.v; render(); });
+    if($('#csort')) $('#csort').onchange = e=>{ ui.sort = {key:e.target.value, dir: e.target.value==='joined'?'desc':'asc'}; render(); };
+    if($('#cdir')) $('#cdir').onclick = ()=>{ ui.sort.dir = ui.sort.dir==='asc'?'desc':'asc'; render(); };
     if($('#add')) $('#add').onclick = ()=>memberForm();
     if($('#vcf')) $('#vcf').onclick = ()=>{
       const list = filteredMembers().filter(m=>m.phone && m.status!=='inactive');
@@ -1601,6 +1904,7 @@ const bind = {
     if($('#pwreset')) $('#pwreset').onclick = ()=>resetPassword(m);
     if(sub === 'edit' && can.edit(m)){ history.replaceState(null, '', '#/member/' + m.id); memberForm(m); }
     $('#png').onclick = e=>saveProfilePng(m, e.currentTarget);
+    if($('#introEdit')) $('#introEdit').onclick = ()=>{ memberForm(m); setTimeout(()=>{ const t = document.querySelector('#mf textarea[name=intro]'); if(t){ t.scrollIntoView({block:'center'}); t.focus(); } }, 50); };
     if($('#vcf1')) $('#vcf1').onclick = ()=>{ downloadVcf([m], `정우회_${m.name}.vcf`); toast('연락처 파일을 저장했습니다.'); };
   },
   officers(){
@@ -1630,6 +1934,18 @@ const bind = {
       const copy = {...src, date:(y+1)+src.date.slice(4), title:src.title.replace(String(y), String(y+1)), docs:[], attendees:''};
       await q(sb.from('jw_events').insert(toEvent(copy)));
       ui.eventYear = String(y+1); toast(`${y+1}년으로 복제했습니다. 날짜를 확인해주세요.`); Store.refresh();
+    });
+  },
+  finance(){
+    $('#fy').onchange = e=>{ ui.finYear = e.target.value; render(); };
+    if($('#fadd')) $('#fadd').onclick = ()=>financeForm();
+    document.querySelectorAll('[data-fedit]').forEach(b=>b.onclick=()=>financeForm(D().finance.find(f=>f.id===b.dataset.fedit)));
+    document.querySelectorAll('[data-fdel]').forEach(b=>b.onclick=async()=>{
+      const f = D().finance.find(x=>x.id===b.dataset.fdel);
+      if(!confirm(`${f.period.replace('-','.')} 재무보고를 삭제할까요?`)) return;
+      await q(sb.from('jw_finance').delete().eq('id', f.id));
+      if(f.images.length) sb.storage.from(BUCKET).remove(f.images);
+      toast('삭제했습니다.'); Store.refresh();
     });
   },
   history(){
