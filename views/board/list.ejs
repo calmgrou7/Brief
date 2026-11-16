@@ -1,0 +1,48 @@
+<%- include('../partials/head') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= boardInfo.name %></h1>
+    <p><%= boardInfo.line %></p>
+  </div>
+  <div class="container"><%- include('_tabs') %></div>
+</section>
+<section class="section--s" style="padding-bottom:var(--section-gap-s)">
+  <div class="container">
+    <div class="board-tools">
+      <form method="get" role="search">
+        <label class="visually-hidden" for="q">검색어</label>
+        <input id="q" name="q" type="search" value="<%= q %>" placeholder="제목, 내용 검색">
+        <button class="btn btn--small" type="submit">검색</button>
+      </form>
+      <% if (boardInfo.publicWrite) { %>
+        <a class="btn btn--primary btn--small" href="<%= base %>/board/<%= board %>/write">문의 남기기</a>
+      <% } else { %>
+        <span class="count">글 <%= total %>개</span>
+      <% } %>
+    </div>
+    <% if (!posts.length) { %>
+      <p class="empty"><%= q ? '찾는 글이 없습니다.' : '아직 올라온 글이 없습니다.' %></p>
+    <% } else { %>
+      <ul class="posts">
+        <% posts.forEach((p) => { %>
+          <li><a href="<%= base %>/board/<%= board %>/<%= p.id %>">
+            <span>
+              <strong><% if (p.is_pinned) { %><span class="tag tag--accent">고정</span><% } %><% if (p.is_secret) { %><span class="tag">비밀글</span><% } %><%= p.title %></strong>
+              <% if (p.excerpt) { %><span class="ex"><%= p.excerpt %></span><% } %>
+              <% if (board === 'qna') { %><span class="meta"><%= p.author %>, <%= p.answer ? '답변 완료' : '답변 대기' %></span><% } %>
+            </span>
+            <time datetime="<%= p.created_at.slice(0,10) %>"><%= fmtDate(p.created_at) %></time>
+          </a></li>
+        <% }) %>
+      </ul>
+    <% } %>
+    <% if (pages > 1) { %>
+      <nav class="pager" aria-label="페이지">
+        <% for (let i = 1; i <= pages; i++) { %>
+          <% if (i === page) { %><span aria-current="page"><%= i %></span><% } else { %><a href="?page=<%= i %><%= q ? '&q=' + encodeURIComponent(q) : '' %>"><%= i %></a><% } %>
+        <% } %>
+      </nav>
+    <% } %>
+  </div>
+</section>
+<%- include('../partials/foot') %>

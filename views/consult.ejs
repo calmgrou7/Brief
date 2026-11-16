@@ -1,0 +1,24 @@
+<%- include('partials/head') %>
+<section class="page-head">
+  <div class="container">
+    <h1>자금 진단 신청</h1>
+    <p>열 가지 항목을 아시는 만큼만 적어 주세요. 비어 있는 칸은 통화하면서 함께 채웁니다.</p>
+  </div>
+</section>
+<section class="section--s section" style="padding-top:var(--space-2xl)">
+  <div class="container apply">
+    <div class="apply__head">
+      <h2 class="visually-hidden">신청서</h2>
+      <dl class="apply__facts" style="margin-top:0">
+        <div><dt>대표번호</dt><dd><% if (site.phone) { %><a href="tel:<%= site.phone.replace(/[^0-9+]/g, '') %>"><%= site.phone %></a><% } else { %><span class="missing">대표번호 미입력</span><% } %></dd></div>
+        <div><dt>상담 시간</dt><dd><%= site.hours %></dd></div>
+        <% if (site.kakao_url) { %><div><dt>카카오톡</dt><dd><a href="<%= site.kakao_url %>" rel="noopener">채널로 문의</a></dd></div><% } %>
+        <div><dt>준비물</dt><dd>없어도 됩니다. 필요한 자료는 통화 뒤 목록으로 보내 드립니다.</dd></div>
+      </dl>
+    </div>
+    <div class="apply__form">
+      <%- include('partials/consult-form', { source: 'consult' }) %>
+    </div>
+  </div>
+</section>
+<%- include('partials/foot') %>

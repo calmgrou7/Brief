@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title ? title + ' | ' + site.company_name : site.company_name + ' | 병원·약국·동물병원 자금 컨설팅' %></title>
+<meta name="description" content="<%= site.meta_description %>">
+<meta property="og:title" content="<%= site.company_name %>">
+<meta property="og:description" content="<%= site.meta_description %>">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#c7ccd3">
+<link rel="icon" href="<%= base %>/static/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="<%= base %>/static/pretendard/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="<%= base %>/static/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+<div class="family">
+  <div class="container">
+    <span><span class="family__note">브릿지노드가 운영하는 의료 자금 상담 창구입니다.</span></span>
+    <a href="<%= site.bridgenode_url %>" rel="noopener">브릿지노드 홈</a>
+  </div>
+</div>
+<header class="nav">
+  <div class="container">
+    <a class="wordmark" href="<%= base %>/"><%= site.company_name %> <small>v2</small></a>
+    <nav class="nav__links" aria-label="주요 메뉴">
+      <a href="<%= base %>/#sources">자금 구조</a>
+      <a href="<%= base %>/#steps">진행 순서</a>
+      <a href="<%= base %>/board/column" <%- path.startsWith('/board/column') ? 'aria-current="page"' : '' %>>자금 칼럼</a>
+      <a href="<%= base %>/board/qna" <%- path.startsWith('/board/qna') ? 'aria-current="page"' : '' %>>상담 문의</a>
+      <a class="btn btn--primary btn--small" href="<%= base %>/consult">자금 진단 신청</a>
+    </nav>
+    <details class="nav__menu">
+      <summary>메뉴</summary>
+      <nav class="nav__sheet" aria-label="모바일 메뉴">
+        <a href="<%= base %>/#sources">자금 구조</a>
+        <a href="<%= base %>/#steps">진행 순서</a>
+        <a href="<%= base %>/board/column">자금 칼럼</a>
+        <a href="<%= base %>/board/qna">상담 문의</a>
+        <a href="<%= base %>/board/notice">공지사항</a>
+        <a class="btn btn--primary" href="<%= base %>/consult">자금 진단 신청</a>
+      </nav>
+    </details>
+  </div>
+</header>
+<main id="main">

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title><%= title %> | 관리자</title>
+<link rel="icon" href="<%= base %>/static/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="<%= base %>/static/pretendard/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="<%= base %>/static/css/admin.css">
+</head>
+<body>
+<div class="app">
+  <nav class="rail" aria-label="관리자 메뉴">
+    <a class="rail__name" href="<%= base %>/admin"><%= site.company_name %></a>
+    <a class="link" href="<%= base %>/admin" <%- path === '/admin' || path === '/admin/' ? 'aria-current="page"' : '' %>>대시보드</a>
+    <a class="link" href="<%= base %>/admin/leads" <%- path.startsWith('/admin/leads') ? 'aria-current="page"' : '' %>>상담 신청</a>
+    <a class="link" href="<%= base %>/admin/posts" <%- path.startsWith('/admin/posts') ? 'aria-current="page"' : '' %>>게시글</a>
+    <a class="link" href="<%= base %>/admin/settings" <%- path.startsWith('/admin/settings') ? 'aria-current="page"' : '' %>>사이트 설정</a>
+    <div class="rail__foot">
+      <a href="<%= base %>/" target="_blank" rel="noopener">사이트 보기</a>
+      <form method="post" action="<%= base %>/admin/logout"><button type="submit">로그아웃 (<%= admin.username %>)</button></form>
+    </div>
+  </nav>
+  <main class="main">
+    <% if (typeof flash !== 'undefined' && flash) { %><p class="flash" role="status"><%= flash %></p><% } %>

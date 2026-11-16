@@ -1,0 +1,51 @@
+<%- include('_head') %>
+<div class="top">
+  <h1><%= lead.clinic_name %> <span class="pill pill--<%= lead.status %>"><%= lead.status %></span></h1>
+  <div class="actions">
+    <a class="btn" href="tel:<%= String(lead.phone).replace(/[^0-9+]/g, '') %>">전화 걸기</a>
+    <a class="btn" href="<%= base %>/admin/leads">목록</a>
+  </div>
+</div>
+<div class="cols">
+  <section>
+    <table class="t lead-sheet">
+      <tbody>
+        <tr><th>접수 번호</th><td>#<%= lead.id %>, <%= lead.created_at %></td></tr>
+        <% LEAD_FIELDS.forEach(([k, label]) => { %>
+          <tr><th><%= label %></th><td><%= lead[k] || '-' %></td></tr>
+        <% }) %>
+        <tr><th>신청 위치</th><td><%= lead.source === 'home' ? '메인 페이지' : '신청 페이지' %></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <div class="box">
+      <h2>상태</h2>
+      <form method="post" action="<%= base %>/admin/leads/<%= lead.id %>/status" class="actions">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <label class="visually-hidden" for="status">상태</label>
+        <select id="status" name="status" style="width:auto">
+          <% STATUSES.forEach((s) => { %><option <%= lead.status === s ? 'selected' : '' %>><%= s %></option><% }) %>
+        </select>
+        <button class="btn btn--primary" type="submit">바꾸기</button>
+      </form>
+    </div>
+    <div class="box">
+      <h2>상담 메모</h2>
+      <form method="post" action="<%= base %>/admin/leads/<%= lead.id %>/note">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <label class="visually-hidden" for="note">메모</label>
+        <textarea id="note" name="body" rows="4" placeholder="통화 내용, 다음 연락일, 받을 서류"></textarea>
+        <p style="margin-top:var(--space-xs)"><button class="btn" type="submit">메모 남기기</button></p>
+      </form>
+      <% if (notes.length) { %>
+        <ul class="notes"><% notes.forEach((n) => { %><li><time><%= n.created_at %></time><%= n.body %></li><% }) %></ul>
+      <% } %>
+    </div>
+    <form method="post" action="<%= base %>/admin/leads/<%= lead.id %>/delete" onsubmit="return confirm('이 신청을 지울까요? 되돌릴 수 없습니다.')">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <button class="btn btn--danger" type="submit">신청 삭제</button>
+    </form>
+  </section>
+</div>
+<%- include('_foot') %>

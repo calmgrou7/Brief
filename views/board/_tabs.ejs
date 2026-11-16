@@ -1,0 +1,5 @@
+<nav class="tabs" aria-label="게시판">
+  <% Object.entries(BOARDS).forEach(([k, b]) => { %>
+    <a href="<%= base %>/board/<%= k %>" <%- k === board ? 'aria-current="page"' : '' %>><%= b.name %></a>
+  <% }) %>
+</nav>

@@ -1,0 +1,35 @@
+<%- include('_head') %>
+<div class="top"><h1>게시글</h1>
+  <div class="actions">
+    <a class="btn" href="<%= base %>/admin/posts/new?board=notice">공지 쓰기</a>
+    <a class="btn btn--primary" href="<%= base %>/admin/posts/new?board=column">칼럼 쓰기</a>
+  </div>
+</div>
+<div class="filters">
+  <a href="<%= base %>/admin/posts" aria-current="<%= !boardFilter %>">전체</a>
+  <% Object.entries(BOARDS).forEach(([k, b]) => { %><a href="?board=<%= k %>" aria-current="<%= boardFilter === k %>"><%= b.name %></a><% }) %>
+</div>
+<% if (!posts.length) { %><p class="empty">글이 없습니다.</p><% } else { %>
+<div class="wrap"><table class="t">
+  <thead><tr><th>#</th><th>게시판</th><th>제목</th><th>작성자</th><th>상태</th><th>조회</th><th>작성일</th></tr></thead>
+  <tbody>
+  <% posts.forEach((p) => { %>
+    <tr>
+      <td class="mono"><%= p.id %></td>
+      <td><%= BOARDS[p.board] ? BOARDS[p.board].name : p.board %></td>
+      <td><a href="<%= base %>/admin/posts/<%= p.id %>"><%= p.title %></a></td>
+      <td><%= p.author %></td>
+      <td>
+        <% if (!p.published) { %><span class="pill pill--보류">숨김</span><% } %>
+        <% if (p.is_pinned) { %><span class="pill">고정</span><% } %>
+        <% if (p.is_secret) { %><span class="pill">비밀</span><% } %>
+        <% if (p.board === 'qna') { %><span class="pill <%= p.answer ? '' : 'pill--신규' %>"><%= p.answer ? '답변 완료' : '답변 대기' %></span><% } %>
+      </td>
+      <td class="mono"><%= p.views %></td>
+      <td class="mono"><%= p.created_at.slice(0,10) %></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table></div>
+<% } %>
+<%- include('_foot') %>

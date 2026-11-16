@@ -1,0 +1,35 @@
+<%- include('_head') %>
+<div class="top"><h1>상담 신청 <span class="help"><%= total %>건</span></h1>
+  <a class="btn" href="<%= base %>/admin/leads.csv?status=<%= encodeURIComponent(status) %>&q=<%= encodeURIComponent(q) %>">이 목록 CSV 받기</a></div>
+<div class="filters">
+  <a href="<%= base %>/admin/leads" aria-current="<%= !status %>">전체</a>
+  <% STATUSES.forEach((s) => { %><a href="?status=<%= encodeURIComponent(s) %>" aria-current="<%= status === s %>"><%= s %></a><% }) %>
+  <form method="get">
+    <input type="hidden" name="status" value="<%= status %>">
+    <label class="visually-hidden" for="q">검색</label>
+    <input id="q" type="search" name="q" value="<%= q %>" placeholder="병원명, 이름, 번호, 지역">
+    <button class="btn" type="submit">검색</button>
+  </form>
+</div>
+<% if (!leads.length) { %><p class="empty">조건에 맞는 신청이 없습니다.</p><% } else { %>
+<div class="wrap"><table class="t">
+  <thead><tr><th>#</th><th>접수</th><th>상태</th><th>병원</th><th>담당자</th><th>카드매출/월</th><th>장비(5년)</th><th>필요 자금</th><th>시점</th></tr></thead>
+  <tbody>
+  <% leads.forEach((l) => { %>
+    <tr>
+      <td class="mono"><%= l.id %></td>
+      <td class="mono"><%= l.created_at.slice(2,16) %></td>
+      <td><span class="pill pill--<%= l.status %>"><%= l.status %></span></td>
+      <td><a href="<%= base %>/admin/leads/<%= l.id %>"><%= l.clinic_name %></a><br><span class="help"><%= [l.clinic_type, l.region].filter(Boolean).join(', ') %></span></td>
+      <td><%= l.contact_name %><br><span class="help"><%= l.phone %></span></td>
+      <td class="mono"><%= l.card_monthly || '-' %></td>
+      <td class="mono"><%= l.equipment_5y || '-' %></td>
+      <td class="mono"><%= l.need_amount || '-' %></td>
+      <td><%= l.need_by || '-' %></td>
+    </tr>
+  <% }) %>
+  </tbody>
+</table></div>
+<% if (pages > 1) { %><nav class="pager"><% for (let i = 1; i <= pages; i++) { %><% if (i === page) { %><span aria-current="page"><%= i %></span><% } else { %><a href="?page=<%= i %>&status=<%= encodeURIComponent(status) %>&q=<%= encodeURIComponent(q) %>"><%= i %></a><% } %><% } %></nav><% } %>
+<% } %>
+<%- include('_foot') %>

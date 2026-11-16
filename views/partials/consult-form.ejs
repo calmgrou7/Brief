@@ -1,0 +1,133 @@
+<%
+  const f = form || {};
+  const err = errors || {};
+  const v = (k) => f[k] || '';
+  const inv = (k) => err[k] ? 'aria-invalid="true" aria-describedby="e-' + k + '"' : '';
+  const picked = f.purposesArr || String(f.purposes || '').split(', ').filter(Boolean);
+%>
+<form class="form" method="post" action="<%= base %>/consult" novalidate>
+  <% if (Object.keys(err).length) { %>
+    <p class="form-alert" role="alert">빠진 칸이 있습니다. 표시된 곳을 확인해 주세요.</p>
+  <% } %>
+  <input type="hidden" name="source" value="<%= source %>">
+  <div class="hp" aria-hidden="true"><label>웹사이트<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+  <fieldset>
+    <legend>병원 정보</legend>
+    <div class="grid2">
+      <div class="field">
+        <label for="clinic_name">병원(약국)명<em>필수</em></label>
+        <input id="clinic_name" name="clinic_name" type="text" value="<%= v('clinic_name') %>" placeholder="예: 채움내과의원" required <%- inv('clinic_name') %>>
+        <% if (err.clinic_name) { %><p class="error" id="e-clinic_name"><%= err.clinic_name %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="clinic_type">업종</label>
+        <select id="clinic_type" name="clinic_type">
+          <option value="">선택</option>
+          <% CLINIC_TYPES.forEach((t) => { %><option <%= v('clinic_type') === t ? 'selected' : '' %>><%= t %></option><% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="contact_name">성함<em>필수</em></label>
+        <input id="contact_name" name="contact_name" type="text" value="<%= v('contact_name') %>" autocomplete="name" required <%- inv('contact_name') %>>
+        <% if (err.contact_name) { %><p class="error" id="e-contact_name"><%= err.contact_name %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="phone">연락처<em>필수</em></label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" value="<%= v('phone') %>" placeholder="010-0000-0000" autocomplete="tel" required <%- inv('phone') %>>
+        <% if (err.phone) { %><p class="error" id="e-phone"><%= err.phone %></p><% } %>
+      </div>
+      <div class="field">
+        <label for="region">지역</label>
+        <input id="region" name="region" type="text" value="<%= v('region') %>" placeholder="예: 서울 송파구">
+      </div>
+      <div class="field">
+        <label for="contact_time">통화 편한 시간</label>
+        <input id="contact_time" name="contact_time" type="text" value="<%= v('contact_time') %>" placeholder="예: 점심 1시 전후">
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>자금 진단표 <small>아시는 만큼만 적어 주세요</small></legend>
+    <div class="grid2">
+      <div class="field">
+        <label for="annual_revenue"><span class="no">1</span>연매출</label>
+        <input id="annual_revenue" name="annual_revenue" type="text" value="<%= v('annual_revenue') %>" placeholder="예: 35억">
+      </div>
+      <div class="field">
+        <label for="net_income"><span class="no">2</span>당기순이익</label>
+        <input id="net_income" name="net_income" type="text" value="<%= v('net_income') %>" placeholder="예: 4억">
+      </div>
+      <div class="field">
+        <label for="card_monthly"><span class="no">3</span>월평균 카드매출</label>
+        <input id="card_monthly" name="card_monthly" type="text" value="<%= v('card_monthly') %>" placeholder="예: 1억 2천">
+      </div>
+      <div class="field">
+        <label for="nhis_monthly"><span class="no">4</span>월평균 공단매출</label>
+        <input id="nhis_monthly" name="nhis_monthly" type="text" value="<%= v('nhis_monthly') %>" placeholder="예: 1억 8천">
+      </div>
+      <div class="field">
+        <label for="tax_bracket"><span class="no">5</span>종합소득세 구간</label>
+        <select id="tax_bracket" name="tax_bracket">
+          <option value="">선택</option>
+          <% TAX_BRACKETS.forEach((t) => { %><option <%= v('tax_bracket') === t ? 'selected' : '' %>><%= t %></option><% }) %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="need_amount"><span class="no">6</span>필요한 자금</label>
+        <input id="need_amount" name="need_amount" type="text" value="<%= v('need_amount') %>" placeholder="예: 5억">
+      </div>
+      <div class="field field--wide">
+        <span class="label" id="purposes-label"><span class="no">7</span>자금 사용처</span>
+        <div class="checks" role="group" aria-labelledby="purposes-label">
+          <% PURPOSES.forEach((p) => { %>
+            <label class="check"><input type="checkbox" name="purposes" value="<%= p %>" <%= picked.includes(p) ? 'checked' : '' %>><span><%= p %></span></label>
+          <% }) %>
+        </div>
+      </div>
+      <div class="field field--wide">
+        <label for="purpose_detail">사용처를 자세히</label>
+        <textarea id="purpose_detail" name="purpose_detail" placeholder="예: 기존 대출 9억 5천 상환, 임대 재계약으로 보증금 증액"><%= v('purpose_detail') %></textarea>
+      </div>
+      <div class="field">
+        <label for="need_by"><span class="no">8</span>언제까지 필요하신지</label>
+        <input id="need_by" name="need_by" type="text" value="<%= v('need_by') %>" placeholder="예: 7월 중순">
+      </div>
+      <div class="field">
+        <label for="equipment_5y"><span class="no">9</span>5년 이내 들인 의료장비</label>
+        <input id="equipment_5y" name="equipment_5y" type="text" value="<%= v('equipment_5y') %>" placeholder="예: 6억 ~ 7억">
+      </div>
+      <div class="field">
+        <label for="kcb"><span class="no">10</span>신용점수 KCB</label>
+        <input id="kcb" name="kcb" type="text" inputmode="numeric" value="<%= v('kcb') %>" placeholder="모르시면 비워 두세요">
+      </div>
+      <div class="field">
+        <label for="nice">신용점수 NICE</label>
+        <input id="nice" name="nice" type="text" inputmode="numeric" value="<%= v('nice') %>" placeholder="모르시면 비워 두세요">
+      </div>
+      <div class="field field--wide">
+        <label for="email">이메일</label>
+        <input id="email" name="email" type="email" value="<%= v('email') %>" placeholder="자료를 메일로 받고 싶으시면" autocomplete="email" <%- inv('email') %>>
+        <% if (err.email) { %><p class="error" id="e-email"><%= err.email %></p><% } %>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="agree">
+    <input id="agree" type="checkbox" name="agree" value="yes" <%= f.agree === 'yes' ? 'checked' : '' %> <%- inv('agree') %>>
+    <div>
+      <label for="agree">상담을 위한 개인정보 수집·이용에 동의합니다. (필수)</label>
+      <details>
+        <summary>무엇을, 얼마나 보관하나요</summary>
+        <p>수집 항목: 병원명, 성함, 연락처, 이메일, 위에 적어 주신 매출과 자금 정보. 목적: 자금 상담과 회신. 보관: 상담 종료 후 1년, 요청하시면 즉시 삭제합니다. 동의하지 않으셔도 되지만, 그 경우 접수가 되지 않습니다.</p>
+      </details>
+      <% if (err.agree) { %><p class="error" id="e-agree"><%= err.agree %></p><% } %>
+    </div>
+  </div>
+
+  <div class="form__submit">
+    <p>신용 조회는 하지 않습니다. 적어 주신 내용으로만 1차 검토합니다.</p>
+    <button class="btn btn--primary" type="submit">진단표 보내기</button>
+  </div>
+</form>

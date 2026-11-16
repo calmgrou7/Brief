@@ -1,0 +1,42 @@
+<%- include('_head') %>
+<div class="top"><h1>대시보드</h1><a class="btn" href="<%= base %>/admin/leads.csv">전체 엑셀(CSV) 받기</a></div>
+<div class="stats">
+  <a href="<%= base %>/admin/leads?status=신규"><b class="hot"><%= counts['신규'] %></b><span>새 신청, 전화 대기</span></a>
+  <a href="<%= base %>/admin/leads"><b><%= week %></b><span>최근 7일 접수</span></a>
+  <% ['상담중','서류접수','심사중','실행완료'].forEach((s) => { %>
+    <a href="<%= base %>/admin/leads?status=<%= encodeURIComponent(s) %>"><b><%= counts[s] %></b><span><%= s %></span></a>
+  <% }) %>
+</div>
+<div class="cols">
+  <section class="panel">
+    <h2>최근 신청</h2>
+    <% if (!recent.length) { %><p class="empty">아직 들어온 신청이 없습니다.</p><% } else { %>
+    <div class="wrap"><table class="t">
+      <thead><tr><th>접수</th><th>상태</th><th>병원</th><th>담당자</th><th>필요 자금</th><th>시점</th></tr></thead>
+      <tbody>
+      <% recent.forEach((l) => { %>
+        <tr>
+          <td class="mono"><%= l.created_at.slice(5,16) %></td>
+          <td><span class="pill pill--<%= l.status %>"><%= l.status %></span></td>
+          <td><a href="<%= base %>/admin/leads/<%= l.id %>"><%= l.clinic_name %></a> <span class="help"><%= l.clinic_type %></span></td>
+          <td><%= l.contact_name %><br><span class="help"><%= l.phone %></span></td>
+          <td class="mono"><%= l.need_amount || '-' %></td>
+          <td><%= l.need_by || '-' %></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table></div>
+    <% } %>
+  </section>
+  <section class="panel">
+    <h2>답변 기다리는 문의</h2>
+    <% if (!openQna.length) { %><p class="empty">모두 답변했습니다.</p><% } else { %>
+    <table class="t"><tbody>
+      <% openQna.forEach((p) => { %>
+        <tr><td><a href="<%= base %>/admin/posts/<%= p.id %>"><%= p.title %></a><br><span class="help"><%= p.author %>, <%= p.created_at.slice(0,10) %></span></td></tr>
+      <% }) %>
+    </tbody></table>
+    <% } %>
+  </section>
+</div>
+<%- include('_foot') %>

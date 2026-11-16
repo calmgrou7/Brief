@@ -1,0 +1,35 @@
+<%- include('../partials/head') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= post.title %></h1>
+    <p><a href="<%= base %>/board/<%= board %>"><%= boardInfo.name %> 목록으로</a></p>
+  </div>
+</section>
+<div class="container article">
+  <% if (written) { %><p class="article__meta" role="status">글이 등록되었습니다. 답변이 달리면 이 글에서 확인하실 수 있습니다. 비밀글은 작성할 때 정한 비밀번호로 다시 열 수 있습니다.</p><% } %>
+  <div class="article__meta">
+    <span><%= post.author %></span>
+    <time datetime="<%= post.created_at.slice(0,10) %>"><%= fmtDate(post.created_at) %></time>
+    <% if (post.is_secret) { %><span class="tag">비밀글</span><% } %>
+  </div>
+  <div class="article__body"><%- html %></div>
+  <% if (board === 'qna') { %>
+    <% if (post.answer) { %>
+      <section class="answer" aria-labelledby="answer-title">
+        <h2 id="answer-title">채움파트너스 답변</h2>
+        <div class="article__body" style="grid-column:auto"><%- answerHtml %></div>
+      </section>
+    <% } else { %>
+      <p class="answer answer--wait">담당자가 확인 중입니다. 급하시면 대표번호로 전화 주세요.</p>
+    <% } %>
+  <% } %>
+  <div class="article__cta">
+    <p>우리 병원 숫자로 직접 확인해 보시겠어요?</p>
+    <a class="btn btn--primary" href="<%= base %>/consult">자금 진단 신청</a>
+  </div>
+  <nav class="article__nav" aria-label="이전 글, 다음 글">
+    <% if (next) { %><a href="<%= base %>/board/<%= board %>/<%= next.id %>"><b>다음 글</b><span><%= next.is_secret ? '비밀글입니다' : next.title %></span></a><% } %>
+    <% if (prev) { %><a href="<%= base %>/board/<%= board %>/<%= prev.id %>"><b>이전 글</b><span><%= prev.is_secret ? '비밀글입니다' : prev.title %></span></a><% } %>
+  </nav>
+</div>
+<%- include('../partials/foot') %>

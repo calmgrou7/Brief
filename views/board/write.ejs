@@ -1,0 +1,51 @@
+<%- include('../partials/head') %>
+<% const f = form || {}; const err = errors || {}; const inv = (k) => err[k] ? 'aria-invalid="true" aria-describedby="e-' + k + '"' : ''; %>
+<section class="page-head">
+  <div class="container">
+    <h1>문의 남기기</h1>
+    <p>병원 규모나 매출처럼 민감한 내용은 비밀글로 남겨 주세요. 담당자만 봅니다.</p>
+  </div>
+</section>
+<section class="section--s" style="padding-block:var(--space-2xl) var(--section-gap-s)">
+  <div class="container narrow">
+    <form class="form" method="post" novalidate>
+      <% if (Object.keys(err).length) { %><p class="form-alert" role="alert">빠진 칸이 있습니다. 표시된 곳을 확인해 주세요.</p><% } %>
+      <div class="hp" aria-hidden="true"><label>웹사이트<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="grid2">
+        <div class="field">
+          <label for="author">이름 또는 병원명<em>필수</em></label>
+          <input id="author" name="author" type="text" value="<%= f.author || '' %>" <%- inv('author') %>>
+          <% if (err.author) { %><p class="error" id="e-author"><%= err.author %></p><% } %>
+        </div>
+        <div class="field">
+          <label for="password">비밀번호<em>필수</em></label>
+          <input id="password" name="password" type="password" autocomplete="new-password" <%- inv('password') %>>
+          <p class="hint">비밀글을 다시 열 때 씁니다.</p>
+          <% if (err.password) { %><p class="error" id="e-password"><%= err.password %></p><% } %>
+        </div>
+        <div class="field field--wide">
+          <label for="title">제목<em>필수</em></label>
+          <input id="title" name="title" type="text" value="<%= f.title || '' %>" <%- inv('title') %>>
+          <% if (err.title) { %><p class="error" id="e-title"><%= err.title %></p><% } %>
+        </div>
+        <div class="field field--wide">
+          <label for="body">내용<em>필수</em></label>
+          <textarea id="body" name="body" rows="9" placeholder="예: 개원 4년 차 내과입니다. 내년 초 임대 재계약 때 보증금이 2억 오르는데…" <%- inv('body') %>><%= f.body || '' %></textarea>
+          <% if (err.body) { %><p class="error" id="e-body"><%= err.body %></p><% } %>
+        </div>
+      </div>
+      <div class="checks" style="margin-bottom:var(--space-md)">
+        <label class="check"><input type="checkbox" name="is_secret" value="1" <%= f.is_secret !== 0 ? 'checked' : '' %>><span>비밀글로 쓰기</span></label>
+      </div>
+      <div class="agree">
+        <input id="agree" type="checkbox" name="agree" value="yes" <%- inv('agree') %>>
+        <div>
+          <label for="agree">답변을 위한 개인정보 수집·이용에 동의합니다. (필수)</label>
+          <% if (err.agree) { %><p class="error" id="e-agree"><%= err.agree %></p><% } %>
+        </div>
+      </div>
+      <div class="form__submit"><a href="<%= base %>/board/qna">목록으로</a><button class="btn btn--primary" type="submit">등록</button></div>
+    </form>
+  </div>
+</section>
+<%- include('../partials/foot') %>

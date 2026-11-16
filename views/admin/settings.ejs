@@ -1,0 +1,39 @@
+<%- include('_head') %>
+<div class="top"><h1>사이트 설정</h1></div>
+<% if (error) { %><p class="alert" role="alert"><%= error %></p><% } %>
+<form method="post" action="<%= base %>/admin/settings" class="box">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <h2>회사 정보 (푸터와 상담 안내에 표시)</h2>
+  <div class="row">
+    <div class="f"><label for="company_name">상호</label><input id="company_name" name="company_name" type="text" value="<%= site.company_name %>"></div>
+    <div class="f"><label for="ceo_name">대표자</label><input id="ceo_name" name="ceo_name" type="text" value="<%= site.ceo_name %>"></div>
+    <div class="f"><label for="phone">대표번호</label><input id="phone" name="phone" type="text" value="<%= site.phone %>" placeholder="예: 1600-0000"></div>
+    <div class="f"><label for="hours">상담 시간</label><input id="hours" name="hours" type="text" value="<%= site.hours %>"></div>
+    <div class="f"><label for="email">이메일</label><input id="email" name="email" type="text" value="<%= site.email %>"></div>
+    <div class="f"><label for="kakao_url">카카오톡 채널 주소</label><input id="kakao_url" name="kakao_url" type="url" value="<%= site.kakao_url %>" placeholder="https://pf.kakao.com/..."></div>
+    <div class="f"><label for="address">주소</label><input id="address" name="address" type="text" value="<%= site.address %>"></div>
+    <div class="f"><label for="biz_no">사업자등록번호</label><input id="biz_no" name="biz_no" type="text" value="<%= site.biz_no %>"></div>
+    <div class="f"><label for="broker_no">대출모집인 등록번호</label><input id="broker_no" name="broker_no" type="text" value="<%= site.broker_no %>"><p class="hint">금융상품 광고 시 표시가 필요할 수 있습니다.</p></div>
+    <div class="f"><label for="bridgenode_url">브릿지노드 홈 주소</label><input id="bridgenode_url" name="bridgenode_url" type="url" value="<%= site.bridgenode_url %>"></div>
+  </div>
+  <div class="f"><label for="meta_description">검색 결과 설명문</label><textarea id="meta_description" name="meta_description" rows="2"><%= site.meta_description %></textarea></div>
+  <h2 style="margin-top:var(--space-lg)">자동 알림</h2>
+  <div class="f">
+    <label for="webhook_url">새 신청 알림 웹훅 주소</label>
+    <input id="webhook_url" name="webhook_url" type="url" value="<%= site.webhook_url %>" placeholder="https://hooks.zapier.com/... 또는 Slack/Make 웹훅">
+    <p class="hint">새 자금 진단 신청과 상담 문의 글이 들어오면 이 주소로 JSON을 보냅니다. Zapier나 Make에 연결하면 카카오 알림톡, 문자, 구글 시트, 메일로 바로 받을 수 있습니다. 비워 두면 보내지 않습니다.</p>
+  </div>
+  <button class="btn btn--primary" type="submit">저장</button>
+</form>
+<form method="post" action="<%= base %>/admin/password" class="box">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <h2>비밀번호 변경</h2>
+  <div class="row">
+    <div class="f"><label for="current">현재 비밀번호</label><input id="current" name="current" type="password" autocomplete="current-password"></div>
+    <div></div>
+    <div class="f"><label for="next">새 비밀번호 (8자 이상)</label><input id="next" name="next" type="password" autocomplete="new-password"></div>
+    <div class="f"><label for="confirm">새 비밀번호 확인</label><input id="confirm" name="confirm" type="password" autocomplete="new-password"></div>
+  </div>
+  <button class="btn" type="submit">비밀번호 바꾸기</button>
+</form>
+<%- include('_foot') %>

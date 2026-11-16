@@ -1,0 +1,43 @@
+</main>
+<footer class="footer">
+  <div class="container">
+    <div class="footer__mast">
+      <p class="footer__name"><%= site.company_name %></p>
+      <nav class="footer__links" aria-label="하단 메뉴">
+        <a href="<%= base %>/consult">자금 진단 신청</a>
+        <a href="<%= base %>/board/column">자금 칼럼</a>
+        <a href="<%= base %>/board/qna">상담 문의</a>
+        <a href="<%= base %>/board/notice">공지사항</a>
+        <a href="<%= base %>/privacy">개인정보 처리방침</a>
+        <a href="<%= site.bridgenode_url %>" rel="noopener">브릿지노드</a>
+      </nav>
+    </div>
+    <div class="footer__info">
+      <dl>
+        <dt>상호</dt><dd><%= site.company_name %></dd>
+        <% if (site.ceo_name) { %><dt>대표</dt><dd><%= site.ceo_name %></dd><% } %>
+        <dt>대표번호</dt><dd><% if (site.phone) { %><a href="tel:<%= site.phone.replace(/[^0-9+]/g, '') %>"><%= site.phone %></a><% } else { %><span class="missing">대표번호 미입력</span><% } %></dd>
+        <dt>상담 시간</dt><dd><%= site.hours %></dd>
+        <% if (site.address) { %><dt>주소</dt><dd><%= site.address %></dd><% } %>
+        <% if (site.biz_no) { %><dt>사업자등록번호</dt><dd><%= site.biz_no %></dd><% } %>
+        <% if (site.broker_no) { %><dt>대출모집인 등록번호</dt><dd><%= site.broker_no %></dd><% } %>
+      </dl>
+      <div class="footer__legal">
+        <p>대출 한도와 금리, 기간은 금융회사의 심사 결과에 따라 달라지며, 상담 결과가 승인을 뜻하지는 않습니다.</p>
+        <p>과도한 빚은 경영에 부담이 될 수 있습니다. 중도상환수수료와 연체 시 불이익을 계약 전에 반드시 확인하세요.</p>
+        <p>절세 효과는 병원별 소득과 비용 구조에 따라 다르며, 최종 판단은 담당 세무사와 확인하시기 바랍니다.</p>
+      </div>
+    </div>
+    <div class="footer__copy">
+      <span>© <%= new Date().getFullYear() %> <%= site.company_name %></span>
+      <a href="<%= base %>/admin">관리자</a>
+    </div>
+  </div>
+</footer>
+<div class="dock" aria-label="빠른 상담">
+  <% if (site.phone) { %><a class="btn btn--on-ink" href="tel:<%= site.phone.replace(/[^0-9+]/g, '') %>">전화 상담</a><% } %>
+  <a class="btn btn--primary" href="<%= base %>/consult">자금 진단 신청</a>
+</div>
+<script src="<%= base %>/static/js/site.js" defer></script>
+</body>
+</html>
