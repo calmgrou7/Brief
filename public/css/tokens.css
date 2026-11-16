@@ -10,21 +10,23 @@
   --container: 1440px; --gutter: 64px; --gap-columns: 32px; --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
   --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
 
-  /* Almanac: 회청색 지면, 청흑색 잉크, 마젠타 한 가지 */
-  --color-paper: oklch(84% 0.012 245); --color-paper-2: oklch(81% 0.012 245); --color-paper-3: oklch(77% 0.012 245);
-  --color-ink: oklch(16% 0.020 245); --color-ink-2: oklch(24% 0.018 245); --color-muted: oklch(38% 0.016 245);
-  --color-rule: oklch(73% 0.013 240); --color-rule-2: oklch(32% 0.018 240);
-  --color-accent: oklch(45% 0.180 350); --color-accent-2: oklch(37% 0.160 350); --color-accent-ink: oklch(97% 0.006 245); --color-focus: oklch(46% 0.190 350);
-  --color-sheet: oklch(93.5% 0.008 245);
-  --color-on-ink: oklch(93.5% 0.008 245); --color-on-ink-muted: oklch(72% 0.012 245); --color-on-ink-rule: oklch(34% 0.018 245);
-  --color-accent-on-ink: oklch(72% 0.150 350);
-  --tint-accent: oklch(45% 0.180 350 / 0.08);
+  /* Specimen: 귀리색 종이, 따뜻한 먹색, 잉크 블루 한 가지 */
+  --color-paper: oklch(96.5% 0.016 82); --color-paper-2: oklch(93.5% 0.02 80); --color-paper-3: oklch(89% 0.024 78);
+  --color-ink: oklch(17% 0.012 60); --color-ink-2: oklch(28% 0.014 60); --color-muted: oklch(49% 0.014 65);
+  --color-rule: oklch(80% 0.018 75); --color-rule-2: oklch(66% 0.02 72);
+  --color-accent: oklch(45% 0.18 262); --color-accent-2: oklch(38% 0.16 262); --color-accent-ink: oklch(97% 0.012 82); --color-focus: oklch(50% 0.18 262);
+  --color-guide: oklch(55% 0.16 262 / 0.5);
+  --color-sheet: oklch(98.5% 0.008 82);
+  --color-on-ink: oklch(96.5% 0.016 82); --color-on-ink-muted: oklch(74% 0.016 75); --color-on-ink-rule: oklch(34% 0.012 60);
+  --color-accent-on-ink: oklch(80% 0.09 262);
+  --tint-accent: oklch(45% 0.18 262 / 0.06);
+  --color-primary: oklch(17% 0.012 60); --color-primary-hover: oklch(30% 0.014 60); --color-primary-ink: oklch(96.5% 0.016 82);
 
-  /* 한글은 각 서체 뒤의 Pretendard / Noto Serif KR 이 받는다 */
-  --font-display: "Hanken Grotesk", "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Newsreader", "Noto Serif KR", ui-serif, Georgia, serif;
-  --font-outlier: "IBM Plex Mono", "Pretendard Variable", Pretendard, ui-monospace, monospace;
-  --font-ui: "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
-  --radius-card: 0; --radius-pill: 2px; --rule-hair: 1px; --rule-bar: 2px; --shadow-card: none;
-  --tracking-display: -0.02em; --display-weight: 600;
+  /* 영문·숫자는 Bodoni Moda, 한글 제목은 나눔명조, 본문은 Geist + Pretendard */
+  --font-display: "Bodoni Moda", "Nanum Myeongjo", ui-serif, Georgia, serif;
+  --font-body: "Geist", "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
+  --font-outlier: "Geist Mono", "Pretendard Variable", Pretendard, ui-monospace, monospace;
+  --font-ui: "Geist", "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;
+  --radius-card: 0; --radius-pill: 0; --rule-hair: 1px; --rule-bar: 1px; --shadow-card: none;
+  --tracking-display: -0.02em; --display-weight: 400; --display-optical: 96;
 }

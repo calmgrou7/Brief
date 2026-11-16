@@ -34,4 +34,4 @@ http://localhost:3000 에서 확인. 첫 실행 때 관리자 계정(`admin`)이
 
 ## 디자인
 
-Hallmark 스킬(`.claude/skills/hallmark`, Almanac 테마) 규칙으로 제작. 색과 서체는 모두 `public/css/tokens.css`의 토큰으로만 바꿉니다.
+Hallmark 스킬(`.claude/skills/hallmark`, Specimen 테마: 귀리색 종이, Bodoni Moda + 나눔명조, 잉크 블루) 규칙으로 제작. 색과 서체는 모두 `public/css/tokens.css`의 토큰으로만 바꿉니다.
