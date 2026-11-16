@@ -1305,9 +1305,16 @@ function Officers(){
   <div class="head"><h1>임원진</h1>
     <div class="row">
       <label class="row muted" style="font-size:13px;gap:4px"><input type="checkbox" id="orgVacant" ${ui.orgVacant!==false?'checked':''}> 공석 포함</label>
-      <button class="btn" id="orgpng">🖼 조직도 이미지 저장</button>
+      <button class="btn" id="orgpng">⬇ 조직도 이미지 저장</button>
       ${can.admin()?'<button class="btn" id="pos">직책 설정</button><button class="btn pri" id="assign">+ 직책 지정·변경</button>':''}
     </div></div>
+  ${(()=>{ const tiers = orgTiers(ui.orgVacant!==false);
+    if(!tiers.length) return '<div class="empty" style="margin-bottom:16px">지정된 임원이 없습니다.</div>';
+    const photos = Object.fromEntries(tiers.flat().filter(b=>b.m && b.m.photo).map(b=>[b.m.id, b.m.photo]));
+    return `<div class="muted" id="orgHint" style="display:none;font-size:12px;margin:-6px 0 6px">↔ 옆으로 밀어서 전체를 볼 수 있습니다</div>
+      <div class="panel" id="orgBox" style="margin-bottom:16px;padding:12px;overflow-x:auto"><div id="orgWrap" style="position:relative;overflow:hidden">
+      <div id="orgInner" style="transform-origin:top left;width:max-content">${orgChartHTML(tiers, photos)}</div></div></div>`; })()}
+  <h2 style="margin:6px 0 10px">직책별 담당</h2>
   <div class="cards">
     ${pos.map(p=>{ const hs = current.filter(t=>t.positionId===p.id);
       return `<div class="panel"><div class="muted" style="font-size:13px">${esc(p.name)}${p.single?'':' · 복수'}</div>
@@ -1908,7 +1915,19 @@ const bind = {
     if($('#vcf1')) $('#vcf1').onclick = ()=>{ downloadVcf([m], `정우회_${m.name}.vcf`); toast('연락처 파일을 저장했습니다.'); };
   },
   officers(){
-    $('#orgVacant').onchange = e=>{ ui.orgVacant = e.target.checked; };
+    $('#orgVacant').onchange = e=>{ ui.orgVacant = e.target.checked; render(); };
+    // 조직도를 화면 너비에 맞게 축소 (너무 작아지면 가로 스크롤)
+    const fit = ()=>{ const wrap = $('#orgWrap'), inner = $('#orgInner'); if(!wrap || !inner) return;
+      inner.style.transform = 'none'; wrap.style.height = 'auto'; wrap.style.width = 'auto';
+      const w = inner.offsetWidth, h = inner.offsetHeight, avail = wrap.parentElement.clientWidth - 24;
+      const sc = Math.max(Math.min(1, avail / w), 0.45);
+      inner.style.transform = `scale(${sc})`; wrap.style.height = Math.ceil(h * sc) + 'px'; wrap.style.width = Math.ceil(w * sc) + 'px';
+      const box = $('#orgBox'), over = box.scrollWidth > box.clientWidth + 2;
+      $('#orgHint').style.display = over ? '' : 'none';
+      if(over) box.scrollLeft = (box.scrollWidth - box.clientWidth) / 2;   // 회장이 있는 가운데부터 보이게
+    };
+    fit(); setTimeout(fit, 300);
+    window.onresize = ()=>{ if(location.hash.startsWith('#/officers')) fit(); };
     $('#orgpng').onclick = e=>saveOrgPng(e.currentTarget, $('#orgVacant').checked);
     if(!can.admin()) return;
     $('#assign').onclick = assignForm;
