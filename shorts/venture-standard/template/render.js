@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const {spawn}=require('child_process');
 (async()=>{
  const [html,mode,out,dur]=process.argv.slice(2);const D=parseFloat(dur);
- const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:1920}});
+ const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:parseInt(process.env.H||'1920')}});
  await p.addInitScript(`window.DUR=${D}`);
  await p.goto('file://'+html);await p.evaluate(()=>document.fonts.ready);await p.waitForTimeout(300);
  if(mode==='still'){for(const t of (process.env.STILLS||'2.5,6.6,11.8,14,19.5,25.6,31.5,39,42').split(',').map(Number)){await p.evaluate(t=>render(t),t);await p.screenshot({path:`${out}/still_${t}.png`})}}
