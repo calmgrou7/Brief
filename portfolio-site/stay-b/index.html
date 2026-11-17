@@ -154,7 +154,11 @@
 <!-- 2. Hero -->
 <section id="hero" class="j-hero scene-hero" aria-labelledby="hero-title">
   <div class="scene-cover">
-    <picture id="scene-picture"><source media="(max-width: 719px)" srcset="/stay-b/assets/scenes/opening-detail.webp"><img src="/stay-b/assets/scenes/opening-wide.webp" alt="An open notebook joins Busan’s bridge and Jinju’s riverside, where two students share their notes." width="1440" height="810" fetchpriority="high"></source></picture>
+    <div class="scene-media">
+      <picture id="scene-picture"><source media="(max-width: 719px)" srcset="/stay-b/assets/scenes/opening-detail.webp"><img src="/stay-b/assets/scenes/opening-wide.webp" alt="An open notebook joins Busan’s bridge and Jinju’s riverside, where two students share their notes." width="1440" height="810" fetchpriority="high"></source></picture>
+      <video id="scene-film" class="scene-film" data-file="opening-loop.mp4" muted="" loop="" playsinline="" preload="none" aria-hidden="true" tabindex="-1"></video>
+      <button type="button" class="scene-playback" aria-controls="scene-film" hidden=""></button>
+    </div>
     <div class="j-hero-type">
     <p class="j-loc"><span data-l="en" lang="en">Busan &amp; Gyeongnam, South Korea</span></p>
     <h1 id="hero-title"><span data-l="en" lang="en">Find your feet.<br><em>Feel at home.</em></span></h1>
@@ -258,7 +262,7 @@
     </div>
     
 
-    <figure class="j-photo scene-chapter"><div class="j-photo-frame"><img src="/stay-b/assets/scenes/arrival-detail.webp" alt="A student unfolds a map beside her suitcase at a station on the Busan coast." width="760" height="548" loading="lazy" decoding="async"></div><figcaption><span data-l="en" lang="en">First afternoon in Busan</span></figcaption></figure></div>
+    <figure class="j-photo scene-chapter"><div class="j-photo-frame"><img src="/stay-b/assets/scenes/arrival-detail.webp" alt="A student unfolds a map beside her suitcase at a station on the Busan coast." width="760" height="548" loading="lazy" decoding="async"><video id="scene-film-arrival" class="scene-film" data-file="arrival-loop.mp4" muted="" loop="" playsinline="" preload="none" aria-hidden="true" tabindex="-1"></video><button type="button" class="scene-playback" aria-controls="scene-film-arrival" hidden=""></button></div><figcaption><span data-l="en" lang="en">First afternoon in Busan</span></figcaption></figure></div>
     <div class="off-grid">
       <article class="off-card" id="off-session" aria-labelledby="off-session-t">
         <details class="j-service"><summary><span class="j-service-title" id="off-session-t"><span class="pair"><span lang="en">Pre-arrival info sessions</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Before I arrive</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
@@ -387,7 +391,7 @@
 
 <!-- 7. Community -->
 <section class="community sec" id="community" aria-labelledby="community-title">
-  <div class="wrap j-community"><figure class="j-photo scene-chapter"><div class="j-photo-frame"><img src="/stay-b/assets/scenes/supper-detail.webp" alt="Three friends share gimbap at a neighbourhood shop after class." width="760" height="548" loading="lazy" decoding="async"></div><figcaption><span data-l="en" lang="en">A table for three after class</span></figcaption></figure><div class="j-community-body">
+  <div class="wrap j-community"><figure class="j-photo scene-chapter"><div class="j-photo-frame"><img src="/stay-b/assets/scenes/supper-detail.webp" alt="Three friends share gimbap at a neighbourhood shop after class." width="760" height="548" loading="lazy" decoding="async"><video id="scene-film-supper" class="scene-film" data-file="supper-loop.mp4" muted="" loop="" playsinline="" preload="none" aria-hidden="true" tabindex="-1"></video><button type="button" class="scene-playback" aria-controls="scene-film-supper" hidden=""></button></div><figcaption><span data-l="en" lang="en">A table for three after class</span></figcaption></figure><div class="j-community-body">
     <div class="sec-head">
       <h2 id="community-title"><span data-l="en" lang="en">Student communities</span></h2>
       <p class="lead"><span data-l="en" lang="en">For the questions you would ask another student. These groups will open with the pilot.</span></p>
