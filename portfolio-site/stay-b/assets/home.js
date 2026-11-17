@@ -318,6 +318,7 @@
   /* ---------- sticky bar (< 960px) ---------- */
   var sticky = document.getElementById("sticky-cta"), stickyStage = document.getElementById("sticky-stage"),
       stickyName = document.getElementById("sticky-stage-name");
+  if(!sticky) return;
   var stickyLinks = sticky.querySelectorAll("a");
   var inView = {};
   /* hide the bar while someone is typing, so it never covers the field (UX U-5) */
