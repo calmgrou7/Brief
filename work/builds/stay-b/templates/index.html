@@ -163,6 +163,11 @@
         <strong><span data-l="en" lang="en">Visas &amp; graduation</span><span data-l="ko" lang="ko">비자와 졸업 이후</span> <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></strong>
         <small><span data-l="en" lang="en">Plan your next step</span><span data-l="ko" lang="ko">체류 일정과 졸업 후 계획</span></small>
       </a></li>
+      <li><a href="#guides-invite" data-stage="invite" class="ed-stage">
+        <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg>
+        <strong><span data-l="en" lang="en">Inviting family</span><span data-l="ko" lang="ko">가족 초청</span> <svg class="ed-icon" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></strong>
+        <small><span data-l="en" lang="en">A visit or a longer stay</span><span data-l="ko" lang="ko">부모님 방문과 배우자·자녀 동반</span></small>
+      </a></li>
   </ul>
 </section>
 
@@ -230,6 +235,14 @@
 
     <figure class="j-photo scene-chapter"><div class="j-photo-frame"><img src="assets/scenes/arrival-detail.webp" alt="A student unfolds a map beside her suitcase at a station on the Busan coast." data-alt-ko="부산에 도착한 유학생이 캐리어 옆에서 지도를 펼친다." width="760" height="548" loading="lazy" decoding="async"><video id="scene-film-arrival" class="scene-film" data-file="arrival-loop.mp4" muted="" loop="" playsinline="" preload="none" aria-hidden="true" tabindex="-1"></video><button type="button" class="scene-playback" aria-controls="scene-film-arrival" hidden=""></button></div><figcaption><span data-l="en" lang="en">First afternoon in Busan</span><span data-l="ko" lang="ko">부산에서 맞는 첫 오후</span></figcaption></figure></div>
     <div class="off-grid">
+      <article class="off-card" id="off-family-consult" aria-labelledby="off-family-consult-t">
+        <details class="j-service"><summary><span class="j-service-title" id="off-family-consult-t"><span data-l="en" lang="en">Residence &amp; family invitation consultations</span><span data-l="ko" lang="ko">체류·가족 초청 상담</span></span><span class="ticket"><span data-l="en" lang="en">Partner administrative agent</span><span data-l="ko" lang="ko">협력 행정사</span></span><span class="j-plus" aria-hidden="true"></span></summary>
+          <div class="j-service-content">
+            <p><span data-l="en" lang="en">Preparing for a parent’s visit, or hoping to live with your spouse or children in Korea? Use the checklist to identify what you want to ask. Stay B plans to connect individual cases with a qualified administrative agent.</span><span data-l="ko" lang="ko">부모님을 잠시 초대하고 싶으신가요? 배우자·자녀와 한국에서 함께 지낼 계획인가요? 체크리스트에서 궁금한 점을 정리해 보세요. 개인별 체류·초청 상담은 자격을 갖춘 협력 행정사와 연계할 예정이에요.</span></p>
+            <div class="off-foot"><span class="chip badge-planned"><span data-l="en" lang="en">Demo · enquiries are not sent</span><span data-l="ko" lang="ko">시연용 · 실제 접수 전</span></span><a class="btn btn-warm" href="#ask" data-ask-stage="invite" data-ask-topic="invitation"><span data-l="en" lang="en">Preview a family enquiry</span><span data-l="ko" lang="ko">가족 초청 문의 체험</span></a><a class="link" href="#ask" data-ask-stage="visa" data-ask-topic="visa"><span data-l="en" lang="en">Ask about my stay</span><span data-l="ko" lang="ko">내 체류 문의</span></a></div>
+          </div>
+        </details>
+      </article>
       <article class="off-card" id="off-session" aria-labelledby="off-session-t">
         <details class="j-service"><summary><span class="j-service-title" id="off-session-t"><span class="pair"><span lang="en">Pre-arrival info sessions</span><span lang="ko">입국 전 설명회</span></span></span><span class="ticket"><span class="pair inline"><span lang="en">Before I arrive</span><span lang="ko">입국 전</span></span></span><span class="j-plus" aria-hidden="true"></span></summary>
         <div class="j-service-content">
@@ -410,6 +423,7 @@
             <label class="rc"><input type="radio" name="stage" value="settle"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Just arrived</span><span lang="ko">정착 중</span></span></label>
             <label class="rc"><input type="radio" name="stage" value="life"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Study, life &amp; work</span><span lang="ko">생활·일</span></span></label>
             <label class="rc"><input type="radio" name="stage" value="visa"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Visa &amp; after graduation</span><span lang="ko">비자·졸업 이후</span></span></label>
+            <label class="rc"><input type="radio" name="stage" value="invite"><span class="dot" aria-hidden="true"></span><span data-l="en" lang="en">Inviting family</span><span data-l="ko" lang="ko">가족 초청</span></label>
             <label class="rc"><input type="radio" name="stage" value="else"><span class="dot" aria-hidden="true"></span><span class="pair"><span lang="en">Something else</span><span lang="ko">기타</span></span></label>
           </div>
           <p class="err" id="e-stage" hidden></p>
@@ -422,6 +436,9 @@
             <option value="work">Part-time work / 아르바이트</option>
             <option value="visa">Visa &amp; stay / 체류</option>
             <option value="family">Marriage &amp; family / 결혼·가족</option>
+            <option value="break" data-l="en">School breaks</option><option value="break" data-l="ko">방학 생활</option>
+            <option value="invitation" data-l="en">Inviting family</option><option value="invitation" data-l="ko">가족 초청</option>
+            <option value="family-trip" data-l="en">Family travel</option><option value="family-trip" data-l="ko">가족 관광</option>
             <option value="firstweek">First-week or settling-in help / 첫 주·정착 도움</option>
             <option value="dates">Session or talk dates / 설명회·특강 일정</option>
             <option value="other">Other / 기타</option>
@@ -582,6 +599,7 @@
       <a class="stage-btn" role="listitem" href="#guides-settle" data-stage="settle"><span class="stop">2</span><b><span data-l="en" lang="en">Just arrived</span><span data-l="ko" lang="ko">정착 중</span></b></a>
       <a class="stage-btn" role="listitem" href="#guides-life" data-stage="life"><span class="stop">3</span><b><span data-l="en" lang="en">Study, life &amp; work</span><span data-l="ko" lang="ko">생활·일</span></b></a>
       <a class="stage-btn" role="listitem" href="#guides-visa" data-stage="visa"><span class="stop">4</span><b><span data-l="en" lang="en">Visa &amp; after graduation</span><span data-l="ko" lang="ko">비자·졸업 이후</span></b></a>
+      <a class="stage-btn" role="listitem" href="#guides-invite" data-stage="invite"><span class="stop">5</span><b><span data-l="en" lang="en">Inviting family</span><span data-l="ko" lang="ko">가족 초청</span></b></a>
     </div>
     <p class="final-links">
       <a class="link" href="#ask"><span class="pair inline"><span lang="en">Ask us</span><span lang="ko">질문하기</span></span></a>

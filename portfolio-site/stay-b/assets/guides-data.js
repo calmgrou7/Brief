@@ -1,4 +1,4 @@
-/* Stay B guide hub content: 4 stages x 15 cards (planning v2, section 4-4).
+/* Stay B guide hub content: student stages and practical guides.
    Edit copy here only. Each text has en + ko; add "ne" later with the same shape.
    Markers inside text:
      [[tbc]]        -> "to be confirmed / 확인 예정" chip (facts waiting for agent review)
@@ -37,6 +37,13 @@ window.STAYB_GUIDES = {
       help:[
         { href:"#off-career", en:"Career talks", ko:"취업 특강" },
         { href:"#ask", en:"Ask us", ko:"질문하기", ask:{ stage:"visa", topic:"visa" } }
+      ] },
+    { key:"invite", n:5, icon:"i-chat",
+      name:{ en:"Inviting family", ko:"가족 초청" },
+      desc:{ en:"Plan a visit or a longer stay together", ko:"단기 방문과 동반 거주 준비" },
+      help:[
+        { href:"#off-family-consult", en:"Residence & family consultations", ko:"체류·가족 초청 상담 안내" },
+        { href:"#ask", en:"Preview a family enquiry", ko:"가족 초청 문의 체험", ask:{ stage:"invite", topic:"invitation" } }
       ] }
   ],
 
@@ -158,6 +165,22 @@ window.STAYB_GUIDES = {
       points:{"en": ["Before planning a family visit or a change of status, contact immigration or your consulate.", "Have your question and current status ready when contacting 1345."], "ko": ["가족 방문이나 체류자격 변경을 준비할 때 출입국 기관 또는 영사관에 먼저 문의하세요.", "1345에 문의할 때는 현재 체류자격과 궁금한 점을 정리해 두세요."]},
       note:{ en:"Family coming to visit you in Korea? NOWRO Korea can help with family trips. (coming soon)", ko:"가족이 한국에 방문할 때도, NOWRO Korea가 가족 여행을 도와요. (연결 예정)" },
       source:{"en": "Korea Immigration Service", "ko": "법무부 출입국·외국인정책본부"},
-      guideUrl:"https://www.immigration.go.kr/immigration_eng/1862/subview.do" }
+      guideUrl:"https://www.immigration.go.kr/immigration_eng/1862/subview.do" },
+
+    /* ---------- 5. Inviting family ---------- */
+    { id:"5-1", stage:"invite", list:"check", tool:"family-checklist",
+      title:{ en:"A short visit from my parents", ko:"부모님 단기 방문" },
+      sum:{ en:"For a graduation, school break or family reunion. Tick each item as you prepare.", ko:"졸업식이나 방학에 부모님을 초대할 때, 준비한 항목에 표시해 보세요." },
+      points:{
+        en:["Agree on the purpose of the visit and tentative arrival and departure dates with your parents.","Decide where your parents will stay and who will cover travel and living costs.","Find the Korean embassy or consulate serving their place of residence. Ask which application process and documents apply to their situation."],
+        ko:["부모님과 방문 목적, 입국·귀국 희망일을 정했어요.","부모님이 머물 숙소와 항공료·생활비를 누가 부담할지 정리했어요.","부모님 거주지를 담당하는 한국 공관을 찾아, 우리 가족에게 맞는 신청 절차와 서류를 문의했어요."] },
+      source:{ en:"Korea Visa Portal", ko:"대한민국 비자포털" }, guideUrl:"https://www.visa.go.kr/" },
+    { id:"5-2", stage:"invite", list:"check", tool:"family-checklist",
+      title:{ en:"Living with my spouse or children", ko:"배우자·자녀 동반 거주" },
+      sum:{ en:"Prepare these questions before discussing a longer stay with an adviser.", ko:"가족과 한국에서 함께 살 계획이라면 상담 전 아래 항목을 하나씩 확인해 보세요." },
+      points:{
+        en:["List who hopes to join you, your family relationship and how long you plan to live together.","Check your own status and study dates. Ask which arrangements may be available for your family.","Ask the responsible office which family records it accepts and whether translation or certification is needed.","Write down your questions about housing, living costs and the timing of the move."],
+        ko:["함께 살 가족이 누구인지, 나와의 관계와 희망 체류기간을 정리했어요.","내 체류자격과 재학 일정을 확인하고, 우리 가족이 선택할 수 있는 동반 거주 방법을 문의했어요.","담당 기관에 가족관계 증빙으로 어떤 서류를 받는지, 번역이나 인증이 필요한지 문의했어요.","숙소, 생활비, 가족이 합류할 시기에 관해 상담할 질문을 적어 두었어요."] },
+      source:{ en:"Korea Visa Portal", ko:"대한민국 비자포털" }, guideUrl:"https://www.visa.go.kr/" }
   ]
 };

@@ -139,7 +139,14 @@ def render_handbook(doc, guides, lang):
             etree.SubElement(entry,'summary').text = card['title'][lang]
             points = ''.join('<li>'+safe(p)+'</li>' for p in card['points'][lang])
             tag = 'ol' if card['list']=='num' else 'ul'
-            markup = '<div class="j-entry-content"><p>'+safe(card['sum'][lang])+'</p><'+tag+'>'+points+'</'+tag+'>'
+            attrs = ''
+            if card.get('tool') == 'family-checklist':
+                attrs = ' class="family-checklist"'
+                points = ''.join('<li><label><input type="checkbox"><span>'+safe(p)+'</span></label></li>' for p in card['points'][lang])
+            markup = '<div class="j-entry-content"><p>'+safe(card['sum'][lang])+'</p><'+tag+attrs+'>'+points+'</'+tag+'>'
+            if card.get('tool') == 'family-checklist':
+                label = 'Explore a family consultation' if lang=='en' else '체류·가족 초청 상담 안내'
+                markup += '<p><a href="#off-family-consult">'+label+'</a></p>'
             if card.get('note'):
                 markup += '<p>'+safe(card['note'][lang])+'</p>'
             markup += '<p>'+('Source: ' if lang=='en' else '출처 · ')+safe(card['source'][lang])+'</p>'

@@ -17,6 +17,11 @@
   }
   function both(o){ return biText(rich(o.en), rich(o.ko)); }
   function pts(card){
+    if(card.tool === "family-checklist"){
+      return '<ul class="family-checklist">' + card.points[S.getLang()].map(function(p){
+        return '<li><label><input type="checkbox"><span>'+rich(p)+'</span></label></li>';
+      }).join("") + '</ul>';
+    }
     var cls = card.list === "check" ? "check" : card.list === "num" ? "num" : "dot";
     var tag = card.list === "num" ? "ol" : "ul";
     function list(l){
@@ -38,6 +43,7 @@
     if(c.note) h += '<p class="card-note'+(c.notePh ? ' ph' : '')+'">'+both(c.note)+'</p>';
     h += '<p class="src"><b>'+pair("Official source:","공식 출처:","inline")+'</b>'+both(c.source)+'</p>';
     h += '<div class="card-foot">';
+    if(c.tool === "family-checklist") h += '<a class="link" href="#off-family-consult">'+biText("Explore a family consultation","체류·가족 초청 상담 안내")+'</a>';
     if(c.guideUrl) h += '<a class="link" href="'+esc(c.guideUrl)+'">'+pair("Open official guidance","공식 안내 보기","inline")+'</a>';
     else h += '<button class="btn-soon" type="button" data-toast="guide"><svg class="ic-s" aria-hidden="true" focusable="false"><use href="#i-clock"/></svg>'+pair("Full guide · coming soon","자세한 가이드 · 준비 중","inline")+'</button>';
     h += '</div></div></details></article>';
@@ -140,7 +146,7 @@
   }
   function route(hash, fromClick){
     var m;
-    if((m = /^#guides-(arrive|settle|life|visa)$/.exec(hash))){
+    if((m = /^#guides-([a-z]+)$/.exec(hash)) && stageByKey[m[1]]){
       var p = selectStage(m[1], {remember:true});
       S.scrollToEl(p, true);
       return true;
@@ -269,14 +275,18 @@
 
     var stage = form.querySelector('input[name="stage"]:checked').value;
     var topic = fTopic.value;
-    /* planning 4-8: B = part-time work / visa / marriage-family topic, or the visa stage. Everything else = A. */
-    var agent = (topic === "work" || topic === "visa" || topic === "family" || stage === "visa");
+    var leisure = topic === "break" || topic === "family-trip";
+    var agent = !leisure && (["work","visa","family","invitation"].indexOf(topic) !== -1 || stage === "visa" || (!topic && stage === "invite"));
     var html = agent
       ? '<span class="res-badge agent">'+pair("Partner agent","협업 행정사 연결","inline")+'</span>'
       : '<span class="res-badge faq">'+pair("Guides first","정보로 먼저 안내","inline")+'</span>';
     html += '<h3 id="res-title">'+pair("Thank you. Here is where your question would go.","감사합니다. 질문은 이렇게 처리됩니다.")+'</h3>';
     html += '<p class="msg">' + (topic === "dates" && !agent
       ? biText("In the live service, we would send you the dates on the channel you chose, once places and dates are set after partner talks.","실제 서비스에서는 장소·일정이 협의 후 정해지면, 고른 채널로 일정을 보내 드려요.")
+      : topic === "break"
+      ? biText("The student support route starts with your school-break dates and what you’d like to do in Busan or Gyeongnam.","방학 생활 문의는 학생 생활 안내로 이어져요. 방학 일정과 부산·경남에서 해 보고 싶은 활동을 바탕으로 안내할 예정이에요.")
+      : topic === "family-trip"
+      ? biText("The family travel route starts with your travel dates, the places your family wants to see and how you plan to get around.","가족 관광 문의는 여행 안내로 이어져요. 가족이 머무는 기간과 가고 싶은 곳, 이동 방법을 바탕으로 부산·경남 일정을 안내할 예정이에요.")
       : agent
       ? biText("This may need a professional opinion. In the live service, we would organise the basic facts and pass your question to a qualified partner administrative agent, who would contact you directly.","전문가 판단이 필요할 수 있는 질문이에요. 실제 서비스에서는 기본 사실을 정리해 자격을 갖춘 협업 행정사에게 전달하고, 행정사가 직접 연락드립니다.")
       : biText("This looks like an everyday question. In the live service, we would first send you the right guide, and a team member would follow up if you need more. For first-week or settling-in help, we would tell you how to join.","생활 질문으로 보여요. 실제 서비스에서는 맞는 정보를 먼저 보내 드리고, 더 필요하면 담당자가 이어서 도와요. 첫 주·정착 도움이라면 신청 방법을 안내해 드려요.")) + '</p>';
