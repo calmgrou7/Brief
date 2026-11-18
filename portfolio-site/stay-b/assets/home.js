@@ -202,6 +202,24 @@
     var st = a.getAttribute("data-ask-stage"), tp = a.getAttribute("data-ask-topic");
     var r = form.querySelector('input[name="stage"][value="'+st+'"]'); if(r){ r.checked = true; clearGroup("stage"); }
     if(tp){ var sel = document.getElementById("f-topic"); sel.value = tp; }
+    var selectedBox = document.getElementById("service-selection");
+    var requested = a.getAttribute("data-ask-service");
+    var serviceNames = {
+      firstweek: ["First-week support", "첫 정착 지원"],
+      accompaniment: ["Everyday accompaniment", "은행·통신 생활 동행"],
+      family: ["Family invitation consultation", "가족 초청 상담"],
+      residence: ["Residence consultation", "내 체류 상담"],
+      session: ["Pre-arrival session", "입국 전 설명회"],
+      career: ["Career talk", "취업 특강"]
+    };
+    if(selectedBox){
+      var chosen = serviceNames[requested];
+      selectedBox.hidden = !chosen;
+      selectedBox.textContent = chosen ? (document.documentElement.lang === "ko" ? "선택한 서비스 · " + chosen[1] : "Selected service · " + chosen[0]) : "";
+      selectedBox.dataset.stage = st || "";
+      selectedBox.dataset.topic = tp || "";
+    }
+
     /* expiry tool -> form: carry the date over (not stored anywhere; UX U-4) */
     if(a.id === "tool-ask"){
       var td = document.getElementById("tool-date"), fe = document.getElementById("f-expiry");
@@ -212,6 +230,17 @@
   });
 
   /* ---------- ask form (demo) ---------- */
+  form.addEventListener("change", function(){
+    var box = document.getElementById("service-selection");
+    var stageInput = form.querySelector('input[name="stage"]:checked');
+    if(box && !box.hidden && (!stageInput || stageInput.value !== box.dataset.stage || document.getElementById("f-topic").value !== box.dataset.topic)){
+      box.hidden = true; box.textContent = "";
+    }
+  });
+  form.addEventListener("reset", function(){
+    var box = document.getElementById("service-selection");
+    if(box){ box.hidden = true; box.textContent = ""; }
+  });
   /* optional fields: folded on mobile, open on desktop (UX U-7) */
   var more = document.getElementById("more-fields");
   function layoutMore(){ if(more) more.open = mqDesk.matches; }
@@ -279,7 +308,7 @@
     var agent = !leisure && (["work","visa","family","invitation"].indexOf(topic) !== -1 || stage === "visa" || (!topic && stage === "invite"));
     var html = agent
       ? '<span class="res-badge agent">'+pair("Partner agent","협업 행정사 연결","inline")+'</span>'
-      : '<span class="res-badge faq">'+pair("Guides first","정보로 먼저 안내","inline")+'</span>';
+      : '<span class="res-badge faq">'+(topic === "firstweek" ? pair("Settlement support team","정착 지원 담당","inline") : pair("Guides first","정보로 먼저 안내","inline"))+'</span>';
     html += '<h3 id="res-title">'+pair("Thank you. Here is where your question would go.","감사합니다. 질문은 이렇게 처리됩니다.")+'</h3>';
     html += '<p class="msg">' + (topic === "dates" && !agent
       ? biText("In the live service, we would send you the dates on the channel you chose, once places and dates are set after partner talks.","실제 서비스에서는 장소·일정이 협의 후 정해지면, 고른 채널로 일정을 보내 드려요.")
@@ -287,6 +316,8 @@
       ? biText("The student support route starts with your school-break dates and what you’d like to do in Busan or Gyeongnam.","방학 생활 문의는 학생 생활 안내로 이어져요. 방학 일정과 부산·경남에서 해 보고 싶은 활동을 바탕으로 안내할 예정이에요.")
       : topic === "family-trip"
       ? biText("The family travel route starts with your travel dates, the places your family wants to see and how you plan to get around.","가족 관광 문의는 여행 안내로 이어져요. 가족이 머무는 기간과 가고 싶은 곳, 이동 방법을 바탕으로 부산·경남 일정을 안내할 예정이에요.")
+      : topic === "firstweek" && !agent
+      ? biText("For a service enquiry, the support team would check your requested visit, area and dates, then explain availability, scope and cost before you decide.","서비스 문의는 정착 지원 담당자가 맡아요. 원하는 업무·지역·일정을 확인하고, 가능한 일정과 지원 범위·비용을 안내한 뒤 이용 여부를 결정할 수 있어요.")
       : agent
       ? biText("This may need a professional opinion. In the live service, we would organise the basic facts and pass your question to a qualified partner administrative agent, who would contact you directly.","전문가 판단이 필요할 수 있는 질문이에요. 실제 서비스에서는 기본 사실을 정리해 자격을 갖춘 협업 행정사에게 전달하고, 행정사가 직접 연락드립니다.")
       : biText("This looks like an everyday question. In the live service, we would first send you the right guide, and a team member would follow up if you need more. For first-week or settling-in help, we would tell you how to join.","생활 질문으로 보여요. 실제 서비스에서는 맞는 정보를 먼저 보내 드리고, 더 필요하면 담당자가 이어서 도와요. 첫 주·정착 도움이라면 신청 방법을 안내해 드려요.")) + '</p>';
@@ -359,3 +390,4 @@
   if(mqDesk.addEventListener) mqDesk.addEventListener("change", updSticky);
   syncSticky(); updSticky();
 })();
+
