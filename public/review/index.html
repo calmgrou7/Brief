@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>NBN 검토 의견</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 한 줄 폭 설문지. 바뀐 점 확인 → 질문 7개 → 의견 복사 */
+:root {
+  --bg: #f6eeec; --surface: #fffaf8; --ink: #1b1618; --ink-2: #6b5d60; --line: #dcc8c5; --gold: #a5813f; --shelf: #ead8d5;
+  --f-mark: "Marcellus", serif; --f-display: "Gowun Batang", serif; --f-body: "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif; --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #121012; --surface: #1b181a; --ink: #f1e9e6; --ink-2: #b3a4a6; --line: #3a3135; --gold: #d4b26c; --shelf: #2a2326; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #121012; --surface: #1b181a; --ink: #f1e9e6; --ink-2: #b3a4a6; --line: #3a3135; --gold: #d4b26c; --shelf: #2a2326; color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.65; }
+.wrap { max-width: 720px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 36px 64px; display: grid; gap: 18px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-family: var(--f-display); font-size: clamp(24px, 4vw, 32px); line-height: 1.35; }
+p { margin: 0; }
+.kicker { font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; color: var(--gold); text-transform: uppercase; }
+.mark { font-family: var(--f-mark); letter-spacing: .3em; font-size: 22px; }
+.muted { color: var(--ink-2); }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 12px; min-width: 0; }
+.changes { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14.5px; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a { font-size: 13.5px; text-decoration: none; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink); background: var(--bg); }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+legend { padding: 0; margin-bottom: 4px; font-weight: 700; font-size: 15.5px; }
+legend small { display: block; font-weight: 400; font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.q { font-family: var(--f-mono); font-size: 11px; color: var(--gold); letter-spacing: .12em; }
+.opt { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); cursor: pointer; font-size: 14.5px; }
+.opt:has(input:checked) { border-color: var(--ink); background: var(--shelf); }
+.opt input { margin-top: 5px; accent-color: var(--ink); }
+.opt em { font-style: normal; font-size: 12.5px; color: var(--ink-2); display: block; }
+textarea, input[type=text] { font: inherit; font-size: 14.5px; width: 100%; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+textarea { min-height: 80px; resize: vertical; }
+.btn { font: inherit; font-weight: 500; font-size: 14.5px; border: 1px solid var(--ink); background: var(--ink); color: var(--surface); padding: 12px 24px; border-radius: 999px; cursor: pointer; }
+.btn.line { background: transparent; color: var(--ink); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 20; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div style="display:grid;gap:8px">
+    <p class="mark">NBN</p>
+    <p class="kicker">Review · 대표님 검토</p>
+    <h1>중개 플랫폼 방향으로 바꾼 내용, 의견을 들려주세요</h1>
+    <p class="muted">고르기만 하시면 됩니다. 마지막에 "의견 복사"를 눌러 카카오톡으로 보내 주세요. 작성 중인 내용은 이 휴대폰에 임시 저장됩니다.</p>
+  </div>
+
+  <section class="box">
+    <h2 style="font-size:17px">이번에 바뀐 것</h2>
+    <ol class="changes">
+      <li>모든 페이지에서 NBN을 <strong>"뷰티 비즈니스 중개 플랫폼"</strong>으로 소개합니다.</li>
+      <li>"NBN이 하는 일 / 파트너가 하는 일"을 나눠서 보여줍니다.</li>
+      <li>모락 고지문을 참고한 <strong>"확인해 주세요"</strong> 안내를 홈페이지, 창업 플래너, 파트너 등록, 해외 바이어, 공간 매물, 상담 신청에 넣었습니다.</li>
+      <li>상담 신청 후 보낼 곳에 대표님 전화·이메일을 넣었습니다.</li>
+      <li>모바일 명함과 홈페이지 하단에 중개 플랫폼 문구를 넣었습니다.</li>
+    </ol>
+    <div class="links">
+      <a href="https://beauty-connect-4gjp.onrender.com/nbn/#notice" target="_blank" rel="noopener">홈페이지 이용 안내</a>
+      <a href="https://beauty-connect-4gjp.onrender.com/platform/" target="_blank" rel="noopener">플랫폼</a>
+      <a href="https://beauty-connect-4gjp.onrender.com/platform/#transition" target="_blank" rel="noopener">공간 매물 안내</a>
+      <a href="https://beauty-connect-4gjp.onrender.com/card/" target="_blank" rel="noopener">모바일 명함</a>
+    </div>
+  </section>
+
+  <form class="box" id="rv" style="gap:22px" onsubmit="return false">
+    <fieldset><legend><span class="q">Q1</span><br>플랫폼 이름<small>캡처에 "뷰잇은 뷰티 운영의 중개 플랫폼"이라고 적어 주셨어요.</small></legend>
+      <label class="opt"><input type="radio" name="q1" value="회사는 NBN, 플랫폼 이름은 뷰잇"><span>회사는 NBN, 플랫폼 서비스 이름은 "뷰잇"<em>예: "뷰잇은 NBN이 운영하는 뷰티 중개 플랫폼입니다"</em></span></label>
+      <label class="opt"><input type="radio" name="q1" value="전부 NBN"><span>전부 NBN으로 통일</span></label>
+      <label class="opt"><input type="radio" name="q1" value="전부 뷰잇"><span>전부 뷰잇으로 변경</span></label>
+      <label class="opt"><input type="radio" name="q1" value="기타"><span>기타 (아래 의견란에 적어 주세요)</span></label>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q2</span><br>NBN이 직접 하는 일의 범위<small>지금은 "상담·컨설팅만 직접, 나머지는 파트너"로 적었습니다.</small></legend>
+      <label class="opt"><input type="radio" name="q2" value="상담·컨설팅만 직접"><span>상담·컨설팅만 직접 (지금 그대로)</span></label>
+      <label class="opt"><input type="radio" name="q2" value="상담·컨설팅 + 공동구매 등 일부 직접 판매"><span>상담·컨설팅 + 공동구매 등 일부 직접 판매<em>직접 판매하면 통신판매업 신고와 판매자 책임이 생깁니다</em></span></label>
+      <label class="opt"><input type="radio" name="q2" value="상담·컨설팅 + 교육 직접 운영"><span>상담·컨설팅 + 교육(예: 두피 리추얼 과정) 직접 운영</span></label>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q3</span><br>연결 수수료 공개 수준</legend>
+      <label class="opt"><input type="radio" name="q3" value="수수료가 있다는 사실만 공개"><span>수수료가 있다는 사실만 공개 (추천)</span></label>
+      <label class="opt"><input type="radio" name="q3" value="수수료 비율까지 공개"><span>수수료 비율까지 공개</span></label>
+      <label class="opt"><input type="radio" name="q3" value="다시 상의"><span>다시 상의하고 싶어요</span></label>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q4</span><br>샵인샵·양도 공간 매물 게시</legend>
+      <label class="opt"><input type="radio" name="q4" value="예시로 계속 보여주기"><span>지금처럼 예시로 보여주기</span></label>
+      <label class="opt"><input type="radio" name="q4" value="실제 매물 확인 후 게시"><span>실제 매물을 확인한 뒤에만 게시</span></label>
+      <label class="opt"><input type="radio" name="q4" value="매물 보드는 당분간 빼기"><span>매물 보드는 당분간 빼기</span></label>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q5</span><br>대표 사이트로 쓸 페이지<small>명함의 newbeautynexus.com에 연결할 페이지입니다.</small></legend>
+      <label class="opt"><input type="radio" name="q5" value="NBN 홈페이지(화장품 라인업)"><span>NBN 홈페이지 (화장품 라인업 디자인)</span></label>
+      <label class="opt"><input type="radio" name="q5" value="플랫폼(블랙·골드)"><span>플랫폼 (블랙·골드, 서비스 20·창업 플래너)</span></label>
+      <label class="opt"><input type="radio" name="q5" value="홈페이지를 첫 화면으로, 플랫폼은 연결"><span>홈페이지를 첫 화면으로, 플랫폼은 메뉴로 연결</span></label>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q6</span><br>상담을 받을 채널 (여러 개 선택)</legend>
+      <label class="opt"><input type="checkbox" name="q6" value="전화·문자" checked><span>전화·문자 (010-6789-9291)</span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="이메일" checked><span>이메일 (beautynexus@naver.com)</span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="카카오톡 채널"><span>카카오톡 채널 <em>채널 주소를 의견란에 적어 주세요</em></span></label>
+      <label class="opt"><input type="checkbox" name="q6" value="위챗"><span>위챗 <em>위챗 ID를 의견란에 적어 주세요</em></span></label>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q7</span><br>"확인해 주세요" 문구 중 바꾸거나 빼고 싶은 것</legend>
+      <textarea id="q7" placeholder="예: '이용이 제한될 수 있습니다'는 너무 딱딱해요"></textarea>
+    </fieldset>
+
+    <fieldset><legend><span class="q">Q8</span><br>그 밖의 의견</legend>
+      <textarea id="q8" placeholder="추가하고 싶은 서비스, 디자인, 파트너 등 무엇이든"></textarea>
+    </fieldset>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" id="make">의견 정리하기</button></div>
+  </form>
+
+  <section class="box" id="out" hidden>
+    <h2 style="font-size:17px">정리된 의견</h2>
+    <p class="muted" style="font-size:13.5px">복사해서 카카오톡으로 보내 주세요.</p>
+    <textarea id="out-text" readonly rows="12"></textarea>
+    <div><button class="btn line" type="button" id="copy">의견 복사</button></div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const f = $('#rv'), KEY = 'nbn:review';
+  const toast = m => { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2000); };
+  const read = () => {
+    const r = n => (f.querySelector(`[name=${n}]:checked`) || {}).value || '';
+    return { q1: r('q1'), q2: r('q2'), q3: r('q3'), q4: r('q4'), q5: r('q5'), q6: [...f.querySelectorAll('[name=q6]:checked')].map(x => x.value), q7: $('#q7').value.trim(), q8: $('#q8').value.trim() };
+  };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(read())); } catch {} };
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (d) {
+      ['q1', 'q2', 'q3', 'q4', 'q5'].forEach(n => { const el = d[n] && f.querySelector(`[name=${n}][value="${CSS.escape(d[n])}"]`); if (el) el.checked = true; });
+      if (Array.isArray(d.q6)) f.querySelectorAll('[name=q6]').forEach(x => x.checked = d.q6.includes(x.value));
+      $('#q7').value = d.q7 || ''; $('#q8').value = d.q8 || '';
+    }
+  } catch {}
+  f.addEventListener('input', save); f.addEventListener('change', save);
+  $('#make').addEventListener('click', () => {
+    const a = read(), dash = v => v || '(선택 안 함)';
+    $('#out-text').value = `[NBN 검토 의견]\n1. 플랫폼 이름: ${dash(a.q1)}\n2. 직접 하는 일: ${dash(a.q2)}\n3. 수수료 공개: ${dash(a.q3)}\n4. 공간 매물: ${dash(a.q4)}\n5. 대표 사이트: ${dash(a.q5)}\n6. 상담 채널: ${a.q6.join(', ') || '(선택 안 함)'}\n7. 고지문 수정: ${a.q7 || '-'}\n8. 기타 의견: ${a.q8 || '-'}`;
+    $('#out').hidden = false; $('#out').scrollIntoView({ block: 'center' });
+  });
+  $('#copy').addEventListener('click', () => { const t = $('#out-text'); navigator.clipboard.writeText(t.value).then(() => toast('복사했습니다'), () => { t.select(); toast('선택된 내용을 복사해 주세요'); }); });
+})();
+</script>
+
+</body>
+</html>

@@ -23,3 +23,7 @@
 ## 모바일 명함
 
 - `card/index.html` + `card/photo.jpg` — 김은지 대표 모바일 명함 (전화·문자·이메일, 연락처 저장 vCard, 서비스 5, 상담·홈페이지 링크, 명함 주소 QR). `public/card/`로 배포된다.
+
+## 대표님 검토 의견 페이지
+
+- `review/index.html` — 중개 플랫폼 전환 내용 확인 + 질문 8개 → 정리된 의견을 복사해 카카오톡으로 전달. `public/review/`로 배포된다.

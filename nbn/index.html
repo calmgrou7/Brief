@@ -146,6 +146,27 @@ textarea { min-height: 90px; resize: vertical; }
 footer { border-top: 1px solid var(--line); padding-block: 36px 48px; text-align: center; display: grid; gap: 8px; justify-items: center; }
 footer b { font-family: var(--f-mark); font-weight: 400; letter-spacing: .3em; font-size: 20px; }
 footer p { font-size: 12.5px; color: var(--ink-2); }
+
+/* 확인해 주세요 (중개 플랫폼 고지) */
+.notice { --nb-bg: var(--surface); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 18px; display: grid; gap: 12px; }
+.notice h3 { display: flex; align-items: center; gap: 10px; font-size: 18px; margin: 0; }
+.notice h3 svg { width: 26px; height: 26px; flex: none; fill: var(--ink-2); }
+.notice ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.notice li { position: relative; padding-left: 16px; font-size: 14px; color: var(--ink-2); line-height: 1.65; }
+.notice li::before { content: ""; position: absolute; left: 2px; top: .72em; width: 4px; height: 4px; background: var(--ink-2); }
+.notice li strong { color: var(--ink); font-weight: 700; }
+.notice.compact { padding: 16px 18px 14px; }
+.notice.compact h3 { font-size: 15.5px; }
+.notice.compact h3 svg { width: 22px; height: 22px; }
+.notice.compact li { font-size: 13.5px; }
+.roles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.roles > div { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; display: grid; gap: 8px; align-content: start; }
+.roles > div:first-child { border-color: var(--gold); }
+.roles ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+.sendto { font-size: 14px; font-weight: 500; }
+.sendto a, footer a { text-decoration: none; border-bottom: 1px solid var(--line); }
+footer .fine { max-width: 34em; }
+@media (max-width: 560px) { .roles { grid-template-columns: 1fr; } }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 20; }
 
 @media (max-width: 980px) { .lineup { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -184,6 +205,7 @@ footer p { font-size: 12.5px; color: var(--ink-2); }
       <a href="#lineup">라인업</a>
       <a href="#ingredients">전성분</a>
       <a href="#howto">사용법</a>
+      <a href="#notice">이용 안내</a>
       <a href="#contact" class="cta">상담 신청</a>
     </nav>
   </div>
@@ -194,7 +216,7 @@ footer p { font-size: 12.5px; color: var(--ink-2); }
     <p class="sub">NEW BEAUTY NEXUS · BEAUTY BUSINESS CONNECTOR</p>
     <h1>NBN</h1>
     <p class="slogan">뷰티의 모든 연결을, 더 쉽고 더 똑똑하게</p>
-    <p class="lead">창업부터 매출 확대, 판로 개척, 해외 진출, 사업 전환까지. 지금 필요한 사람·제품·기술·정보를 골라 연결해 드립니다.</p>
+    <p class="lead">NBN은 뷰티 창업과 운영에 필요한 사람·제품·기술·정보를 잇는 <strong>뷰티 비즈니스 중개 플랫폼</strong>입니다. 창업부터 매출 확대, 판로 개척, 해외 진출, 사업 전환까지 검증된 파트너를 비교해 연결해 드립니다.</p>
     <div class="btns"><a class="btn" href="#contact">무료 상담 신청</a><a class="btn line" href="#lineup">서비스 라인업 보기</a></div>
     <div class="shelf" aria-label="NBN 서비스 라인업 5종">
       <a href="#p1" aria-label="No.01 START"><svg class="pd" viewBox="0 0 80 170" style="--body:var(--p1)"><use href="#s-dropper"/><text class="tx" x="40" y="104" text-anchor="middle">NBN</text><text class="tx2" x="40" y="118" text-anchor="middle">START</text></svg><span>01 START</span></a>
@@ -295,6 +317,18 @@ footer p { font-size: 12.5px; color: var(--ink-2); }
     </div>
   </section>
 
+  <!-- 이용 안내 -->
+  <section id="notice">
+    <div class="wrap" style="max-width:880px">
+      <div class="sec-head"><p class="kicker">Notice</p><h2>이용 전에 확인해 주세요</h2><p class="muted">NBN이 하는 일과 파트너가 하는 일을 나눠서 안내합니다.</p></div>
+      <div class="roles">
+        <div><p class="kicker">NBN이 하는 일</p><ul><li>상담·컨설팅 (직접 제공)</li><li>파트너 검증과 비교안 제공</li><li>계약 전 조건 확인 도움</li><li>사후 점검, 문제 발생 시 소통·조율</li></ul></div>
+        <div><p class="kicker">파트너가 하는 일</p><ul><li>교육·제품·장비·시공·매물 제공</li><li>가격·일정·조건 정보 제공</li><li>고객과 직접 계약, 서비스 이행</li><li>서비스 품질에 대한 책임</li></ul></div>
+      </div>
+      <aside class="notice "><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><rect x="10.8" y="10" width="2.4" height="8" rx="1.2" fill="var(--nb-bg)"/><circle cx="12" cy="6.6" r="1.5" fill="var(--nb-bg)"/></svg>확인해 주세요</h3><ul><li><strong>뉴뷰티넥서스(NBN)는 뷰티 비즈니스 중개 플랫폼입니다.</strong> 뷰티 창업·운영에 필요한 교육기관, 화장품·장비 공급사, 시공·마케팅 업체, 공간 매물, 해외 바이어를 연결합니다.</li><li>교육·제품·장비·시공·매물 등 개별 서비스는 각 파트너가 직접 제공하며, 가격·일정·조건 등 세부 내용은 파트너가 제공한 정보를 기준으로 합니다.</li><li>계약은 고객과 파트너가 직접 맺으며, 개별 서비스의 제공과 품질에 대한 책임은 해당 파트너에게 있습니다. 문제가 생기면 NBN이 파트너와의 소통과 조율을 도와 드립니다.</li><li>파트너 사정에 따라 가격·일정·조건이 바뀌거나 매물이 마감될 수 있습니다. 계약 전에 최신 조건을 꼭 확인해 주세요.</li><li>NBN이 직접 제공하는 서비스는 상담·컨설팅이며, 그 범위와 비용은 계약서에 따로 적습니다.</li><li>파트너에게서 받는 연결 수수료는 수수료 공개 정책에 따라 계약 전에 미리 알려 드립니다.</li><li>상담 신청은 본인 정보로 해 주세요. 다른 사람의 정보를 무단으로 입력하거나 부정한 방법으로 이용하면 이용이 제한될 수 있습니다.</li><li>개별 서비스의 세부 내용은 해당 파트너에게, 연결과 상담에 관한 문의는 NBN(<a href="tel:01067899291">010-6789-9291</a> · <a href="mailto:beautynexus@naver.com">beautynexus@naver.com</a>)으로 해 주세요.</li></ul></aside>
+    </div>
+  </section>
+
   <!-- 상담 -->
   <section id="contact">
     <div class="wrap consult">
@@ -324,7 +358,8 @@ footer p { font-size: 12.5px; color: var(--ink-2); }
         <div class="done" id="done" hidden>
           <p class="kicker">Last step</p>
           <h3>신청 내용을 보내 주세요</h3>
-          <p class="muted" style="font-size:13.5px">베타 운영 중이라 아래 내용을 복사해 카카오톡·문자·위챗으로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+          <p class="muted" style="font-size:13.5px">베타 운영 중이라 아래 내용을 복사해 문자·카카오톡·위챗이나 이메일로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+          <p class="sendto">보낼 곳 · <a href="tel:01067899291">010-6789-9291</a> · <a href="mailto:beautynexus@naver.com">beautynexus@naver.com</a></p>
           <textarea id="done-text" readonly rows="5"></textarea>
           <div><button class="btn line" type="button" id="copy">내용 복사</button></div>
         </div>
@@ -335,8 +370,9 @@ footer p { font-size: 12.5px; color: var(--ink-2); }
 
 <footer>
   <b>NBN</b>
-  <p>NEW BEAUTY NEXUS · Connecting K-Beauty, Creating New Business Opportunities</p>
-  <p>K-Beauty Beyond Borders</p>
+  <p>NEW BEAUTY NEXUS · 뷰티 비즈니스 중개 플랫폼 · 대표 김은지</p>
+  <p><a href="tel:01067899291">010-6789-9291</a> · <a href="mailto:beautynexus@naver.com">beautynexus@naver.com</a></p>
+  <p class="fine">NBN은 뷰티 비즈니스 중개 플랫폼으로, 개별 서비스의 제공과 그에 대한 책임은 각 파트너에게 있습니다.</p>
 </footer>
 <div class="toast" id="toast" role="status" hidden></div>
 

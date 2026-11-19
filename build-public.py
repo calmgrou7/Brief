@@ -32,3 +32,10 @@ pathlib.Path('public/card').mkdir(parents=True, exist_ok=True)
 pathlib.Path('public/card/index.html').write_text(card_page, encoding='utf-8')
 shutil.copy('card/photo.jpg', 'public/card/photo.jpg')
 print('card built')
+
+# 대표님 검토 의견 페이지 → public/review/
+rv = pathlib.Path('review/index.html').read_text(encoding='utf-8')
+rv_page = '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<meta name="robots" content="noindex">\n' + rv.replace('<div class="wrap">', '</head>\n<body>\n<div class="wrap">', 1) + '\n</body>\n</html>\n'
+pathlib.Path('public/review').mkdir(parents=True, exist_ok=True)
+pathlib.Path('public/review/index.html').write_text(rv_page, encoding='utf-8')
+print('review built')

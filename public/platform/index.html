@@ -98,6 +98,26 @@ textarea { min-height: 84px; resize: vertical; }
 fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
 legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
 .note { font-size: 12.5px; background: var(--sunken); border-radius: 8px; padding: 8px 12px; color: var(--ink-2); }
+
+/* 확인해 주세요 (중개 플랫폼 고지) */
+.notice { --nb-bg: var(--surface); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 22px 18px; display: grid; gap: 12px; }
+.notice h3 { display: flex; align-items: center; gap: 10px; font-size: 18px; margin: 0; }
+.notice h3 svg { width: 26px; height: 26px; flex: none; fill: var(--ink-2); }
+.notice ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.notice li { position: relative; padding-left: 16px; font-size: 14px; color: var(--ink-2); line-height: 1.65; }
+.notice li::before { content: ""; position: absolute; left: 2px; top: .72em; width: 4px; height: 4px; background: var(--ink-2); }
+.notice li strong { color: var(--ink); font-weight: 700; }
+.notice.compact { padding: 16px 18px 14px; }
+.notice.compact h3 { font-size: 15.5px; }
+.notice.compact h3 svg { width: 22px; height: 22px; }
+.notice.compact li { font-size: 13.5px; }
+.roles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.roles > div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.roles > div:first-child { border-color: var(--gold); }
+.roles .pill { justify-self: start; }
+.roles ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+footer.site a { text-decoration: none; color: var(--ink); }
+@media (max-width: 600px) { .roles { grid-template-columns: 1fr; } }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; z-index: 20; }
 
 /* 홈 */
@@ -249,9 +269,9 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
 <section class="view" id="v-home">
   <div class="hero">
     <div>
-      <p class="eyebrow">Beauty Business Solution · K-Beauty Beyond Borders</p>
+      <p class="eyebrow">Beauty Business Platform · K-Beauty Beyond Borders</p>
       <h1>뷰티 비즈니스의<br>시작부터 전환까지,<br><em>필요한 연결</em>을 설계합니다</h1>
-      <p class="lead">연결 자체가 아니라 연결로 얻는 결과를 드립니다. 창업, 매출 확대, 판로 개척, 해외 진출, 사업 전환까지 지금 단계에 필요한 사람·제품·기술·정보를 검증된 파트너 중에서 비교해 연결합니다.</p>
+      <p class="lead">뉴뷰티넥서스는 뷰티 창업과 운영에 필요한 사람·제품·기술·정보를 잇는 <strong>뷰티 비즈니스 중개 플랫폼</strong>입니다. 연결 자체가 아니라 연결로 얻는 결과를 위해, 검증된 파트너를 비교해 연결합니다.</p>
       <div class="cta">
         <a class="btn gold" href="#consult">무료 상담 신청</a>
         <a class="btn ghost" href="#plan">창업 비용 미리 계산하기</a>
@@ -303,9 +323,17 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     <ol class="how">
       <li><h3>무료 상담 30분</h3><p>현재 상황과 목표, 예산을 듣고 방향을 잡습니다.</p></li>
       <li><h3>맞춤 설계</h3><p>필요한 항목과 비용, 순서를 한 장의 계획서로 정리합니다.</p></li>
-      <li><h3>비교 연결</h3><p>항목마다 검증된 파트너 2곳 이상을 조건과 함께 비교해 드립니다.</p></li>
+      <li><h3>비교 연결</h3><p>항목마다 검증된 파트너 2곳 이상을 조건과 함께 비교해 드립니다. 계약은 고객과 파트너가 직접 맺습니다.</p></li>
       <li><h3>사후 관리</h3><p>오픈·계약 후 30·60·90일에 점검하고 다음 단계를 제안합니다.</p></li>
     </ol>
+  </div>
+
+  <div class="grid" style="gap:14px">
+    <div class="head"><p class="eyebrow">Our Role</p><h2>NBN은 연결하고, 파트너는 제공합니다</h2></div>
+    <div class="roles">
+      <div><span class="pill gold">NBN이 하는 일</span><ul><li>상담·컨설팅 (직접 제공)</li><li>파트너 검증과 비교안 제공</li><li>계약 전 조건 확인 도움</li><li>사후 점검, 문제 발생 시 소통·조율</li></ul></div>
+      <div><span class="pill">파트너가 하는 일</span><ul><li>교육·제품·장비·시공·매물 제공</li><li>가격·일정·조건 정보 제공</li><li>고객과 직접 계약, 서비스 이행</li><li>서비스 품질에 대한 책임</li></ul></div>
+    </div>
   </div>
 
   <div class="promise">
@@ -389,6 +417,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
         <tbody id="pf-rows"></tbody>
       </table>
     </div>
+    <aside class="notice compact"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><rect x="10.8" y="10" width="2.4" height="8" rx="1.2" fill="var(--nb-bg)"/><circle cx="12" cy="6.6" r="1.5" fill="var(--nb-bg)"/></svg>확인해 주세요</h3><ul><li>배분 비율은 업계 사례를 참고한 <strong>예시</strong>입니다. 실제 비용은 파트너 견적에 따라 달라집니다.</li><li>표의 파트너는 유형 예시이며, 실제 업체는 상담 후 2곳 이상의 비교안으로 안내합니다.</li><li>업체 선택과 계약은 고객이 직접 하며, 각 업체 서비스의 이행과 품질에 대한 책임은 해당 업체에 있습니다.</li></ul></aside>
     <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn gold" href="#consult" id="pf-cta">이 계획으로 상담 신청</a><a class="btn ghost" href="#transition">샵인샵·인수 매물 보기</a></div>
   </div>
 </section>
@@ -454,6 +483,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     <div><b>마케팅·예약</b><small>플레이스·SNS 운영, 예약·CRM 세팅</small></div>
     <div><b>해외 바이어·에이전트</b><small>중국·동남아 수입사, 현지 창업 파트너</small></div>
   </div>
+  <aside class="notice compact"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><rect x="10.8" y="10" width="2.4" height="8" rx="1.2" fill="var(--nb-bg)"/><circle cx="12" cy="6.6" r="1.5" fill="var(--nb-bg)"/></svg>파트너 등록 전 확인해 주세요</h3><ul><li>NBN은 중개 플랫폼으로, 고객과 파트너 사이 계약의 당사자가 아닙니다.</li><li>파트너는 제공하는 정보(가격·일정·자격·인허가)의 정확성과 서비스 이행에 책임을 집니다.</li><li>가격·일정·조건이 바뀌면 NBN과 고객에게 바로 알려 주세요.</li><li>연결 수수료 조건은 서면으로 계약하며, 수수료가 있다는 사실을 고객에게 공개하는 데 동의해야 합니다.</li><li>허위 정보를 제공하거나 고객 불만을 처리하지 않으면 연결이 중단될 수 있습니다.</li></ul></aside>
   <div class="grid g2" style="align-items:start">
     <div class="panel grid" style="gap:10px">
       <h3>파트너 검증 기준</h3>
@@ -486,7 +516,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
     <article class="card"><span class="pill gold" style="justify-self:start">18 · SOURCING</span><h3 class="bil">한국 화장품 제조사 발굴·연결<span class="zh">韩国化妆品厂商寻找与对接</span></h3><p class="muted">조건에 맞는 제조사·브랜드 후보를 비교표, 샘플, 견적과 함께 드립니다. 거래가 성사되면 소싱·거래 수수료가 발생합니다.</p></article>
     <article class="card"><span class="pill gold" style="justify-self:start">19 · SKILL</span><h3 class="bil">한국 뷰티 교육·기술 파트너 연결<span class="zh">韩国美容教育与技术合作对接</span></h3><p class="muted">교육기관 수강, 샵 견학, 기술 파트너 미팅을 연결합니다. 연수 일정이 필요하면 3–5일 투어로 묶어 드립니다.</p></article>
   </div>
-  <p class="note">국가별 화장품 수입·판매 규정, 인증(중국 NMPA 등), 통관, 표시사항은 거래 전에 별도로 확인합니다. · 各国化妆品进口与销售法规、认证、清关及标签要求需在交易前另行确认。</p>
+  <aside class="notice compact"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><rect x="10.8" y="10" width="2.4" height="8" rx="1.2" fill="var(--nb-bg)"/><circle cx="12" cy="6.6" r="1.5" fill="var(--nb-bg)"/></svg>확인해 주세요 · 注意事项</h3><ul><li>NBN은 해외 바이어와 한국 공급사·교육기관을 연결하는 중개 플랫폼입니다. · NBN为连接海外买家与韩国供应商、教育机构的中介平台。</li><li>거래 계약·대금·물류는 바이어와 공급사가 직접 진행하며, 제품 품질과 납품 책임은 공급사에 있습니다. · 交易合同、货款及物流由买卖双方直接进行，产品质量与交付由供应商负责。</li><li>국가별 화장품 수입·판매 규정, 인증(중국 NMPA 등), 통관, 표시사항은 거래 전에 별도로 확인합니다. · 各国化妆品进口与销售法规、认证、清关及标签要求需在交易前另行确认。</li></ul></aside>
   <form class="panel grid" id="buyer-form" style="gap:14px">
     <h3 class="bil">소싱 · 연수 요청서<span class="zh">采购 / 研修需求表</span></h3>
     <div class="grid g3">
@@ -516,7 +546,7 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
   </div>
   <div class="grid" style="gap:12px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h3>공간 매물 보드</h3><div class="chips" id="sp-filter"></div></div>
-    <p class="note">아래 매물은 예시입니다. 실제 매물은 상담 후 조건에 맞춰 안내드립니다. 상가 임대차·부동산 중개에 해당하는 부분은 공인중개사와 함께 진행하며, 샵인샵(전대)은 건물주 동의와 영업신고 가능 여부를 먼저 확인합니다.</p>
+    <aside class="notice compact"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><rect x="10.8" y="10" width="2.4" height="8" rx="1.2" fill="var(--nb-bg)"/><circle cx="12" cy="6.6" r="1.5" fill="var(--nb-bg)"/></svg>매물 확인해 주세요</h3><ul><li>아래 매물은 <strong>예시</strong>입니다. 실제 매물은 상담 후 조건에 맞춰 안내합니다.</li><li>매물 정보는 등록한 원장님이 제공한 내용을 기준으로 하며, 계약 전에 반드시 현장을 확인해 주세요.</li><li>상가 임대차·부동산 중개에 해당하는 부분은 공인중개사와 함께 진행합니다.</li><li>샵인샵(전대)은 건물주 동의와 영업신고 가능 여부를 먼저 확인합니다.</li><li>매물은 등록자 사정에 따라 예고 없이 마감되거나 조건이 바뀔 수 있습니다.</li></ul></aside>
     <div class="grid g3" id="sp-list"></div>
   </div>
 </section>
@@ -545,9 +575,11 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
         <h3 id="cf-prep-title"></h3>
         <ul class="steps" id="cf-prep"></ul>
       </div>
+      <aside class="notice compact"><h3><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11"/><rect x="10.8" y="10" width="2.4" height="8" rx="1.2" fill="var(--nb-bg)"/><circle cx="12" cy="6.6" r="1.5" fill="var(--nb-bg)"/></svg>확인해 주세요</h3><ul><li>상담은 NBN이 직접 진행하며, 일정은 사정에 따라 조정될 수 있습니다.</li><li>상담 신청은 본인 정보로 해 주세요. 다른 사람의 정보를 무단으로 입력하면 이용이 제한될 수 있습니다.</li><li>파트너 연결이 필요하면 동의를 다시 받은 뒤 필요한 정보만 전달합니다.</li><li>연결된 파트너의 서비스 제공과 책임은 해당 파트너에게 있으며, NBN은 소통과 조율을 돕습니다.</li></ul></aside>
       <div class="panel grid" id="cf-done" style="gap:10px;border-color:var(--gold)" hidden>
         <h3>마지막 단계: 신청 내용을 보내 주세요</h3>
-        <p class="muted">베타 운영 중이라 아래 내용을 복사해 카카오톡·문자·위챗으로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+        <p class="muted">베타 운영 중이라 아래 내용을 복사해 문자·카카오톡·위챗이나 이메일로 보내 주시면 상담 일정을 잡아 드립니다.</p>
+        <p style="font-weight:700">보낼 곳 · <a href="tel:01067899291">010-6789-9291</a> · <a href="mailto:beautynexus@naver.com">beautynexus@naver.com</a></p>
         <textarea id="cf-text" readonly rows="6"></textarea>
         <div><button class="btn" type="button" id="cf-copy">내용 복사</button></div>
       </div>
@@ -558,8 +590,9 @@ footer.site b { font-family: var(--f-mark); font-weight: 400; color: var(--gold)
 
 <footer class="site">
   <div class="wrap">
-    <span><b>NEW BEAUTY NEXUS</b> · 뷰티 비즈니스 솔루션 · Connecting K-Beauty, Creating New Business Opportunities</span>
+    <span><b>NEW BEAUTY NEXUS</b> · 뷰티 비즈니스 중개 플랫폼 · 대표 김은지 · <a href="tel:01067899291">010-6789-9291</a> · <a href="mailto:beautynexus@naver.com">beautynexus@naver.com</a></span>
     <span>베타 버전 · 화면의 업체·매물·비율은 예시입니다</span>
+    <span style="flex-basis:100%">NBN은 뷰티 비즈니스 중개 플랫폼으로, 개별 서비스의 제공과 그에 대한 책임은 각 파트너에게 있습니다. 서비스 세부 내용은 해당 파트너에게 문의해 주세요.</span>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" hidden></div>
