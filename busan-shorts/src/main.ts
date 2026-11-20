@@ -21,7 +21,7 @@ const { filter } = inkDefs(svg, 'ink');
 glowDefs(svg);
 document.querySelector('#stage')!.appendChild(svg);
 
-const XF = 0.7;            // crossfade seconds
+const XF = EP.xf ?? 0.7;   // crossfade seconds
 const OUTRO = EP.outro ?? 2.6;   // CTA hold after the last scene's captions
 const scenes: Scene[] = EP.makers.map((m) => m(svg, filter));
 const starts: number[] = [];
@@ -42,11 +42,11 @@ interface Cap { at: number; until: number; el: HTMLDivElement; spans: HTMLElemen
 const huds = scenes.map((s, i) => {
   const box = document.createElement('div');
   box.style.cssText = 'position:absolute;inset:0;opacity:0';
-  box.innerHTML = `<div class="label"><span class="han">${s.title.han}</span><span class="num">${String(i + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')}</span><h1>${s.title.name}</h1><div class="bar"></div></div>`;
+  box.innerHTML = `<div class="label"${s.title.name ? '' : ' style="display:none"'}><span class="han">${s.title.han}</span><span class="num"${EP.ad ? ' style="display:none"' : ''}>${String(i + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')}</span><h1>${s.title.name}</h1><div class="bar"></div></div>`;
   hud.appendChild(box);
   const caps: Cap[] = s.caps.map((c, k) => {
     const d = document.createElement('div');
-    d.className = 'cap';
+    d.className = c.pos === 'top' ? 'cap top' : 'cap';
     d.innerHTML = c.lines.map((l) => `<span>${l}</span>`).join('') + (c.sub ? `<span class="sub">${c.sub}</span>` : '');
     box.appendChild(d);
     const until = k < s.caps.length - 1 ? s.caps[k + 1].at : s.dur;
@@ -116,7 +116,7 @@ run((_t, dt) => {
   setText(palette(lerp(scenes[main].tau[0], scenes[main].tau[1], clamp((T - starts[main]) / scenes[main].dur, 0, 1))));
   // outro CTA over the last scene
   const tl = T - (starts[scenes.length - 1] + scenes[scenes.length - 1].dur);
-  cta.style.opacity = tl > 0 ? '1' : '0';
+  cta.style.opacity = tl > 0 && EP.cta.lines.length ? '1' : '0';
   reveal(ctaSpans, tl, 99);
   chip.style.opacity = f(1 - ease((tl - 0.2) / 0.4) * 0);
 });
@@ -125,5 +125,5 @@ run((_t, dt) => {
 (window as any).__caps = scenes.flatMap((s, i) => s.caps.map((c, k) => ({
   a: starts[i] + c.at,
   b: starts[i] + (k < s.caps.length - 1 ? s.caps[k + 1].at : s.dur),
-  text: c.lines.join('\n'),
-}))).concat([{ a: starts[scenes.length - 1] + scenes[scenes.length - 1].dur, b: TOTAL, text: EP.cta.lines.join(' ') + (EP.cta.sub ? '\n' + EP.cta.sub : '') }]);
+  text: (c.lines.join('\n') + (c.sub ? '\n' + c.sub : '')).replace(/<[^>]+>/g, ''),
+}))).concat(EP.cta.lines.length ? [{ a: starts[scenes.length - 1] + scenes[scenes.length - 1].dur, b: TOTAL, text: EP.cta.lines.join(' ') + (EP.cta.sub ? '\n' + EP.cta.sub : '') }] : []);

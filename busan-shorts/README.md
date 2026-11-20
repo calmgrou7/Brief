@@ -25,6 +25,7 @@ node scripts/render.mjs                      # out/busan_lineart_shorts.mp4 + .s
 |---|---|---|---|
 | `busan` | 부산 5대 명소 하루 산책 | HERITAGE STUDIO B | `out/busan_lineart_shorts.mp4` |
 | `gamcheon` | 감천문화마을 아침→밤 (전경·계단 골목·물고기 골목·지붕 위 노을·밤) | HERITAGE STUDIO B × NOWRO KOREA | `out/gamcheon_lineart_shorts.mp4` |
+| `nowro` | 나우로 부산 광고 쇼츠 (훅→문제→해결→기능2개→CTA, 22초). 기획안 `docs/nowro_busan_ad_plan.md` | NOWRO KOREA | `out/nowro_busan_ad_shorts.mp4` |
 
 `node scripts/render.mjs --ep gamcheon` · 미리보기 `npm run dev` 후 `/?ep=gamcheon` · 에피소드 추가는 `src/episodes.ts`.
 

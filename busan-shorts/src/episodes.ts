@@ -10,6 +10,7 @@ import { gcStairs } from './scenes/gc/stairs.ts';
 import { gcFish } from './scenes/gc/fish.ts';
 import { gcRoof } from './scenes/gc/roof.ts';
 import { gcNight } from './scenes/gc/night.ts';
+import { adHook, adChaos, adReveal, adEvents, adCourse, adCta } from './scenes/nowro/ad.ts';
 
 export type Maker = (svg: SVGSVGElement, filter: string) => Scene;
 export interface Episode {
@@ -21,6 +22,10 @@ export interface Episode {
   /** production credit shown under the outro */
   credit?: { by: string; names: string };
   outro?: number;
+  /** crossfade seconds between scenes */
+  xf?: number;
+  /** ad layout: no scene numbering */
+  ad?: boolean;
 }
 
 export const EPISODES: Record<string, Episode> = {
@@ -37,5 +42,12 @@ export const EPISODES: Record<string, Episode> = {
     cta: { lines: ['감천문화마을,', '사람이 사는 미술관'], sub: '주민이 사는 마을이에요 · 조용히 걸어주세요' },
     credit: { by: 'PRODUCED BY', names: 'HERITAGE STUDIO B  ×  NOWRO KOREA' },
     outro: 3.4,
+  },
+  nowro: {
+    id: 'nowro', out: 'nowro_busan_ad_shorts',
+    makers: [adHook, adChaos, adReveal, adEvents, adCourse, adCta],
+    chip: '<b>NOWRO KOREA</b> · 나우로 부산',
+    cta: { lines: [] },
+    outro: 0.5, xf: 0.45, ad: true,
   },
 };

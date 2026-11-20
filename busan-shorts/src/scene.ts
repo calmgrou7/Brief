@@ -7,7 +7,7 @@ export interface Scene {
   /** time of day at the scene's start and end (lib/daynight τ) */
   tau: [number, number];
   title: { han: string; name: string };
-  caps: Array<{ at: number; lines: string[]; sub?: string }>;
+  caps: Array<{ at: number; lines: string[]; sub?: string; pos?: 'top' | 'bottom' }>;
   update(t: number, dt: number, P: Palette, tau: number): void;
 }
 
