@@ -1812,12 +1812,12 @@ function financeForm(f){
    - 설정(배경·위치)은 jw_templates('nametag')에 저장 → 임원 모두 같은 설정 사용 */
 const NT_PRESETS = [['90x60','정우회 명찰 90×60mm'],['100x70','가로 명찰 100×70mm'],['70x100','세로 명찰 70×100mm'],['90x55','명함형 90×55mm'],['54x86','카드형 54×86mm'],['custom','직접 입력']];
 const NT_DPI = 300;
-/* 기본값: 정우회 명찰 디자인(상단 빨강~주황 물결 + 로고, 하단 띠, 오른쪽 아래 JW 워터마크)에 맞춘 배치 */
+/* 기본값: 정우회 명찰 디자인 (위에서부터 상호 → 이름 → 직책, 가운데 정렬, 검정) */
 const ntDefault = () => ({size:'90x60', w:90, h:60, bgPath:'', fields:{
-  title:  {on:true,  x:46, y:41, size:8,   color:'#d32b1b', bold:true,  src:'position'},
-  name:   {on:true,  x:46, y:58, size:17,  color:'#222222', bold:true,  spaced:true},
-  company:{on:true,  x:46, y:75, size:7,   color:'#555555', bold:false},
-  photo:  {on:false, x:16, y:58, size:36}}});
+  company:{on:true,  x:50, y:38, size:7.5, color:'#111111', bold:false},
+  name:   {on:true,  x:50, y:55, size:16,  color:'#111111', bold:true,  spaced:true},
+  title:  {on:true,  x:50, y:70, size:6.5, color:'#111111', bold:false, src:'position', spaced:true},
+  photo:  {on:false, x:16, y:55, size:36}}});
 const NT_LABEL = {title:'직함', name:'이름', company:'상호', photo:'사진'};
 const nt = {cfg:null, bgImg:null, bgData:'', boxes:{}, sel:new Set(), filter:'all', q:'', loaded:false};
 
@@ -1827,7 +1827,8 @@ function ntText(key, m){
   if(key === 'company') return m.company || '';
   if(key === 'title'){
     const pos = posNames(m.id).join(' · ') || (m.isNew ? '신입회원' : '회원');
-    return f.src === 'company' ? (m.title || '') : f.src === 'both' ? [m.title, pos].filter(Boolean).join(' / ') : pos;
+    const t = f.src === 'company' ? (m.title || '') : f.src === 'both' ? [m.title, pos].filter(Boolean).join(' / ') : pos;
+    return f.spaced && t.length <= 4 && !/\s/.test(t) ? t.split('').join(' ') : t;
   }
   return '';
 }
@@ -1851,7 +1852,7 @@ function ntDraw(ctx, W, H, m, photoImg){
     ctx.restore();
     boxes.photo = {x:cx - d/2, y:cy - d/2, w:d, h:d};
   }
-  for(const key of ['title','name','company']){
+  for(const key of ['company','name','title']){
     const f = nt.cfg.fields[key]; if(!f.on) continue;
     const text = ntText(key, m); if(!text) continue;
     let px = f.size / 100 * H;
@@ -1897,6 +1898,7 @@ function Nametag(){
         <option value="company" ${x.src==='company'?'selected':''}>회사 직함 (예: 대표)</option>
         <option value="both" ${x.src==='both'?'selected':''}>회사 직함 / 정우회 직책</option></select>`:''}
     ${key==='name'?`<label class="row" style="gap:6px;font-size:13px;margin-top:6px"><input type="checkbox" data-f="name" data-p="spaced" ${x.spaced?'checked':''}> 글자 사이 띄우기 (김 동 관)</label>`:''}
+    ${key==='title'?`<label class="row" style="gap:6px;font-size:13px;margin-top:6px"><input type="checkbox" data-f="title" data-p="spaced" ${x.spaced?'checked':''}> 짧은 직책 글자 사이 띄우기 (재 무)</label>`:''}
   </div>`; };
   const list = ntMembers();
   return `
@@ -1915,7 +1917,7 @@ function Nametag(){
         <div style="text-align:center"><canvas id="ntCanvas" style="border:1px solid var(--line);border-radius:6px;touch-action:none;cursor:move;max-width:100%"></canvas></div>
         <div class="row" style="justify-content:space-between;margin-top:6px"><span id="ntPreviewName" class="muted" style="font-size:12.5px"></span><button class="btn sm" id="ntReset">위치 초기화</button></div>
       </div>
-      ${['title','name','company','photo'].map(fieldCtl).join('')}
+      ${['company','name','title','photo'].map(fieldCtl).join('')}
     </div>
     <div class="panel">
       <div class="row" style="justify-content:space-between"><h2 style="margin:0">출력할 회원 <span class="muted" style="font-size:14px" id="ntCount">${nt.sel.size}명 선택</span></h2>
