@@ -22,7 +22,7 @@ function sprig(g: Element, x: number, y: number, s: number, flip = 1) {
 }
 
 /** A person at a desk with a laptop. tension 0..1 raises the shoulders, drops the head, jitters the typing hand. */
-function deskPerson(parent: Element, x: number, y: number, s: number) {
+export function deskPerson(parent: Element, x: number, y: number, s: number, shirt = OLIVE, mug = TERRA) {
   const g = G(parent);
   g.setAttribute('transform', `translate(${x} ${y}) scale(${s}) translate(-40 -120)`);
   // chair and desk
@@ -35,14 +35,14 @@ function deskPerson(parent: Element, x: number, y: number, s: number) {
   S(g, 'M105 62.5 L99 36 L101.6 35.6 L107.6 62.2Z', SP);
   const glow = el('ellipse', { cx: 96, cy: 52, rx: 16, ry: 14, fill: 'url(#glow-white)', opacity: 0 }, g);
   // a mug
-  C(g, 'M120 64 L121 54 L129 54 L130 64Z', TERRA, SP * 0.9);
+  C(g, 'M120 64 L121 54 L129 54 L130 64Z', mug, SP * 0.9);
   P(g, 'M130 56 q4 1 0 6', SP * 0.8);
   const steam = P(g, '', SP * 0.7);
   const legs = [limb(g, 4.6), limb(g, 4.6)];
   legs.forEach((l) => solid(l, '#4a3b33'));
   const shoes = [B(g, ''), B(g, '')];
   const farArm = limb(g, 3.8);
-  const torso = C(g, '', OLIVE);
+  const torso = C(g, '', shirt);
   const head = el('ellipse', { rx: 4, ry: 4.9, fill: PAPER, stroke: 'currentColor', 'stroke-width': 1.35 }, g);
   head.classList.add('pp');
   const hair = B(g, '');
@@ -72,12 +72,12 @@ function deskPerson(parent: Element, x: number, y: number, s: number) {
 }
 
 /** Wall clock whose second hand ticks (fast when tense). */
-function clock(g: Element, x: number, y: number, r: number) {
+export function clock(g: Element, x: number, y: number, r: number, hand = TERRA) {
   S(g, oval(x, y, r, r), SP * 1.2);
   P(g, Array.from({ length: 12 }, (_, i) => { const a = (i / 12) * Math.PI * 2; return `M${f(x + Math.sin(a) * r * 0.82)} ${f(y - Math.cos(a) * r * 0.82)} L${f(x + Math.sin(a) * r * 0.92)} ${f(y - Math.cos(a) * r * 0.92)}`; }).join(' '), SP * 0.6);
   P(g, `M${x} ${y} L${x + r * 0.45} ${y - r * 0.2} M${x} ${y} L${x - r * 0.1} ${y - r * 0.68}`, SP * 1.3);
   const sec = P(g, '', SP * 0.7);
-  sec.setAttribute('stroke', TERRA);
+  sec.setAttribute('stroke', hand);
   return (t: number, speed: number) => {
     const a = Math.floor(t * speed) / 60 * Math.PI * 2 + 0.6;
     sec.setAttribute('d', `M${x} ${y} L${f(x + Math.sin(a) * r * 0.8)} ${f(y - Math.cos(a) * r * 0.8)}`);

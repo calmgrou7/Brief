@@ -77,7 +77,7 @@ const setText = (Pl: Palette) => {
   frame.style.setProperty('--ink', night ? '#f6eedb' : '#1c1c1c');
   frame.style.setProperty('--paper', night ? 'rgba(14,18,36,.85)' : 'rgba(253,252,248,.95)');
   frame.style.setProperty('--scrim', night ? 'rgba(14,18,36,.58)' : 'rgba(253,252,248,.66)');
-  frame.style.setProperty('--accent', night ? '#f2b766' : '#d9772b');
+  frame.style.setProperty('--accent', EP.accent ? EP.accent[night ? 1 : 0] : (night ? '#f2b766' : '#d9772b'));
 };
 
 // ---------------------------------------------------------------- loop

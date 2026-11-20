@@ -10,6 +10,7 @@ import { gcStairs } from './scenes/gc/stairs.ts';
 import { gcFish } from './scenes/gc/fish.ts';
 import { gcRoof } from './scenes/gc/roof.ts';
 import { gcNight } from './scenes/gc/night.ts';
+import { bzHook, bzChaos, bzReveal, bzFilter, bzSave, bzCta } from './scenes/biz/ad.ts';
 import { soHook, soMood, soPick, soBreathe, soRelax, soCta } from './scenes/soom/ad.ts';
 import { adHook, adChaos, adReveal, adEvents, adCourse, adCta } from './scenes/nowro/ad.ts';
 
@@ -29,6 +30,8 @@ export interface Episode {
   ad?: boolean;
   /** caption highlight colours (<em>) */
   hl?: { bg: string; ink: string };
+  /** sub-caption colour (day, night) */
+  accent?: [string, string];
 }
 
 export const EPISODES: Record<string, Episode> = {
@@ -60,5 +63,14 @@ export const EPISODES: Record<string, Episode> = {
     cta: { lines: [] },
     outro: 0.5, xf: 0.55, ad: true,
     hl: { bg: '#a9502f', ink: '#f7eedd' },
+  },
+  biz: {
+    id: 'biz', out: 'bizfunding_ad_shorts',
+    makers: [bzHook, bzChaos, bzReveal, bzFilter, bzSave, bzCta],
+    chip: '<b>기업정책지원사업</b> · 토스 미니앱',
+    cta: { lines: [] },
+    outro: 0.5, xf: 0.45, ad: true,
+    hl: { bg: '#00c48c', ink: '#0f2f55' },
+    accent: ['#1f8f6a', '#5ee0b4'],
   },
 };
