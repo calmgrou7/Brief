@@ -10,6 +10,7 @@ import { gcStairs } from './scenes/gc/stairs.ts';
 import { gcFish } from './scenes/gc/fish.ts';
 import { gcRoof } from './scenes/gc/roof.ts';
 import { gcNight } from './scenes/gc/night.ts';
+import { mtHook, mtVs, mtReveal, mtDuel, mtGrow, mtCta } from './scenes/math/ad.ts';
 import { bzHook, bzChaos, bzReveal, bzFilter, bzSave, bzCta } from './scenes/biz/ad.ts';
 import { soHook, soMood, soPick, soBreathe, soRelax, soCta } from './scenes/soom/ad.ts';
 import { adHook, adChaos, adReveal, adEvents, adCourse, adCta } from './scenes/nowro/ad.ts';
@@ -32,6 +33,8 @@ export interface Episode {
   hl?: { bg: string; ink: string };
   /** sub-caption colour (day, night) */
   accent?: [string, string];
+  /** music generator in scripts/music/<name>.py, mixed in after the render */
+  music?: string;
 }
 
 export const EPISODES: Record<string, Episode> = {
@@ -72,5 +75,15 @@ export const EPISODES: Record<string, Episode> = {
     outro: 0.5, xf: 0.45, ad: true,
     hl: { bg: '#00c48c', ink: '#0f2f55' },
     accent: ['#1f8f6a', '#5ee0b4'],
+  },
+  math: {
+    id: 'math', out: 'mathgod_ad_shorts',
+    makers: [mtHook, mtVs, mtReveal, mtDuel, mtGrow, mtCta],
+    chip: '<b>미니 수학의신</b> · 토스 미니앱',
+    cta: { lines: [] },
+    outro: 0.5, xf: 0.45, ad: true,
+    hl: { bg: '#d8f57a', ink: '#154438' },
+    accent: ['#2f7a5c', '#d8f57a'],
+    music: 'math',
   },
 };

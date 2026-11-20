@@ -61,6 +61,20 @@ if (stillsArg) {
   await new Promise((r) => ff.on('close', r));
   console.log(`\ndone: ${out} (${total.toFixed(1)}s)`);
 
+  // optional music: scripts/music/<name>.py writes a WAV timed to the scene starts, then it replaces the silent track
+  const music = await page.evaluate(() => window.__music);
+  if (music) {
+    const wav = out.replace(/\.mp4$/, '.wav');
+    const tl = out.replace(/\.mp4$/, '.timeline.json');
+    writeFileSync(tl, JSON.stringify({ total, starts }));
+    await new Promise((res, rej) => spawn('python3', [path.join(root, 'scripts', 'music', `${music}.py`), tl, wav], { stdio: 'inherit' }).on('close', (c) => c ? rej(new Error('music failed')) : res()));
+    const tmp = out.replace(/\.mp4$/, '.tmp.mp4');
+    await new Promise((res, rej) => spawn('ffmpeg', ['-y', '-loglevel', 'error', '-i', out, '-i', wav, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', tmp], { stdio: 'inherit' }).on('close', (c) => c ? rej(new Error('mux failed')) : res()));
+    const { renameSync } = await import('node:fs');
+    renameSync(tmp, out);
+    console.log(`music: ${music} mixed in`);
+  }
+
   // narration SRT, one cue per caption, timed to when it appears on screen
   const caps = await page.evaluate(() => window.__caps);
   if (caps) {

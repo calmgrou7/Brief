@@ -11,6 +11,7 @@ import { EPISODES } from './episodes.ts';
 const q = new URLSearchParams(location.search);
 const EP = EPISODES[q.get('ep') ?? 'busan'] ?? EPISODES.busan;
 (window as any).__ep = EP.out;
+(window as any).__music = EP.music ?? null;
 if (q.has('capture')) document.body.classList.add('capture');
 const frame = document.querySelector<HTMLDivElement>('#frame')!;
 const fit = () => { if (!q.has('capture')) frame.style.transform = `scale(${Math.min(innerWidth / 1080, innerHeight / 1920) * 0.98})`; };

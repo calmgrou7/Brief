@@ -28,6 +28,7 @@ node scripts/render.mjs                      # out/busan_lineart_shorts.mp4 + .s
 | `nowro` | 나우로 부산 광고 쇼츠 (훅→문제→해결→기능2개→CTA, 22초). 기획안 `docs/nowro_busan_ad_plan.md` | NOWRO KOREA | `out/nowro_busan_ad_shorts.mp4` |
 | `soom` | 숨결 광고 쇼츠 (긴장→마음 고르기→추천→같이 숨쉬기→CTA, 24.6초). 기획안 `docs/soomgyeol_ad_plan.md` | 숨결 | `out/soomgyeol_ad_shorts.mp4` |
 | `biz` | 기업정책지원사업 광고 쇼츠 (서류 더미→기관 창 난립→조건 설정→저장·PDF→CTA, 22초). 기획안 `docs/bizfunding_ad_plan.md` | 기업정책지원사업 | `out/bizfunding_ad_shorts.mp4` |
+| `math` | 미니 수학의신 광고 쇼츠 (졸린 공부→VS 카운트다운→대결→레벨 업→CTA, 21.8초, **오리지널 음악 포함**). 기획안 `docs/mathgod_ad_plan.md` | 미니 수학의신 | `out/mathgod_ad_shorts.mp4` |
 
 `node scripts/render.mjs --ep gamcheon` · 미리보기 `npm run dev` 후 `/?ep=gamcheon` · 에피소드 추가는 `src/episodes.ts`.
 
@@ -38,3 +39,7 @@ node scripts/render.mjs                      # out/busan_lineart_shorts.mp4 + .s
 ## 새 명소 추가하기
 `src/scenes/`에 장면 파일을 하나 추가하고(`gamcheon.ts` 참고: `title`, `caps`, `tau`=시간대, `update`),
 `src/main.ts`의 `makers` 배열에 넣은 뒤 `node scripts/render.mjs`.
+
+## 음악
+에피소드에 `music: '<이름>'`을 주면 렌더 후 `scripts/music/<이름>.py`가 장면 시작 시각에 맞춘 WAV를 합성해 영상에 합친다.
+샘플·외부 음원 없이 numpy로 직접 합성한 오리지널이라 저작권 걱정이 없다. (예: `scripts/music/math.py`)
