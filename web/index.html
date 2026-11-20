@@ -1810,13 +1810,14 @@ function financeForm(f){
    - 미리보기에서 글자를 끌어서 위치 조정, 크기·색·굵기 조절 / 긴 이름은 자동 축소
    - 출력: 개별 JPG 묶음(ZIP) 또는 A4 인쇄용(자르는 선 포함)
    - 설정(배경·위치)은 jw_templates('nametag')에 저장 → 임원 모두 같은 설정 사용 */
-const NT_PRESETS = [['100x70','가로 명찰 100×70mm'],['70x100','세로 명찰 70×100mm'],['90x55','명함형 90×55mm'],['54x86','카드형 54×86mm'],['custom','직접 입력']];
+const NT_PRESETS = [['90x60','정우회 명찰 90×60mm'],['100x70','가로 명찰 100×70mm'],['70x100','세로 명찰 70×100mm'],['90x55','명함형 90×55mm'],['54x86','카드형 54×86mm'],['custom','직접 입력']];
 const NT_DPI = 300;
-const ntDefault = () => ({size:'100x70', w:100, h:70, bgPath:'', fields:{
-  title:  {on:true,  x:50, y:30, size:7.5, color:'#1f3a68', bold:true,  src:'position'},
-  name:   {on:true,  x:50, y:52, size:17,  color:'#1b2333', bold:true,  spaced:true},
-  company:{on:true,  x:50, y:73, size:7.5, color:'#333333', bold:false},
-  photo:  {on:false, x:18, y:52, size:42}}});
+/* 기본값: 정우회 명찰 디자인(상단 빨강~주황 물결 + 로고, 하단 띠, 오른쪽 아래 JW 워터마크)에 맞춘 배치 */
+const ntDefault = () => ({size:'90x60', w:90, h:60, bgPath:'', fields:{
+  title:  {on:true,  x:46, y:41, size:8,   color:'#d32b1b', bold:true,  src:'position'},
+  name:   {on:true,  x:46, y:58, size:17,  color:'#222222', bold:true,  spaced:true},
+  company:{on:true,  x:46, y:75, size:7,   color:'#555555', bold:false},
+  photo:  {on:false, x:16, y:58, size:36}}});
 const NT_LABEL = {title:'직함', name:'이름', company:'상호', photo:'사진'};
 const nt = {cfg:null, bgImg:null, bgData:'', boxes:{}, sel:new Set(), filter:'all', q:'', loaded:false};
 
