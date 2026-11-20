@@ -641,7 +641,8 @@ function render(){
   if(!Store.ready) return;
   let [, page='dashboard', id, sub] = location.hash.split('/').map(x=>{ try{ return decodeURIComponent(x); }catch(e){ return x; } });
   if(page==='settings' && !can.admin()) page = 'dashboard';
-  const navKey = page==='member' ? 'members' : page;
+  if(page==='nametag' && !can.officer()) page = 'dashboard';
+  const navKey = page==='member' || page==='nametag' ? 'members' : page;
   const me = Store.me, mine = member(me.memberId);
   $('#who').innerHTML = `<div>${mine?`<a href="#/member/${mine.id}" style="color:#fff"><b>${esc(mine.name)}</b></a>`:''}
     <div>${memberMode ? '' : esc(me.email) + ' · '}${me.admin?'관리자':me.officer?'임원':'회원'}</div></div>
@@ -654,7 +655,7 @@ function render(){
   const meLink = mine ? `<a href="#/member/${mine.id}/edit" class="${page==='member'&&id===mine.id?'on':''}" style="${page==='member'&&id===mine.id?'':'background:rgba(255,255,255,.12);color:#fff'}"><span>✏️</span>내 정보 수정</a>` : '';
   $('#nav').innerHTML = meLink + ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('');
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
-              officers:Officers, events:Events, history:History, finance:Finance, settings:Settings}[page] || Dashboard;
+              officers:Officers, events:Events, history:History, finance:Finance, nametag:Nametag, settings:Settings}[page] || Dashboard;
   $('#view').innerHTML = fn();
   bind[page]?.(id, sub);
   window.scrollTo(0,0);
@@ -914,7 +915,7 @@ function Members(){
   return `
   <div class="head"><h1>회원명부 <span class="muted" style="font-size:15px">${list.length}명</span></h1>
     <div class="row">
-      ${can.officer()?'<button class="btn" id="vcf">📱 휴대폰 연락처 저장</button><button class="btn" id="exp">엑셀 내보내기</button>':''}
+      ${can.officer()?'<a class="btn" href="#/nametag">🪪 명찰 만들기</a><button class="btn" id="vcf">📱 휴대폰 연락처 저장</button><button class="btn" id="exp">엑셀 내보내기</button>':''}
       ${can.admin()?'<button class="btn pri" id="add">+ 회원 등록</button>':''}
     </div></div>
   <div class="panel" style="margin-bottom:14px"><div class="row">
@@ -1804,6 +1805,176 @@ function financeForm(f){
   });
 }
 
+/* ===================== 명찰 만들기 =====================
+   배경 이미지(JPG/PNG) 위에 회원 이름·상호·직함(·사진)을 얹어 인쇄 크기(300dpi) 이미지로 일괄 출력
+   - 미리보기에서 글자를 끌어서 위치 조정, 크기·색·굵기 조절 / 긴 이름은 자동 축소
+   - 출력: 개별 JPG 묶음(ZIP) 또는 A4 인쇄용(자르는 선 포함)
+   - 설정(배경·위치)은 jw_templates('nametag')에 저장 → 임원 모두 같은 설정 사용 */
+const NT_PRESETS = [['100x70','가로 명찰 100×70mm'],['70x100','세로 명찰 70×100mm'],['90x55','명함형 90×55mm'],['54x86','카드형 54×86mm'],['custom','직접 입력']];
+const NT_DPI = 300;
+const ntDefault = () => ({size:'100x70', w:100, h:70, bgPath:'', fields:{
+  title:  {on:true,  x:50, y:30, size:7.5, color:'#1f3a68', bold:true,  src:'position'},
+  name:   {on:true,  x:50, y:52, size:17,  color:'#1b2333', bold:true,  spaced:true},
+  company:{on:true,  x:50, y:73, size:7.5, color:'#333333', bold:false},
+  photo:  {on:false, x:18, y:52, size:42}}});
+const NT_LABEL = {title:'직함', name:'이름', company:'상호', photo:'사진'};
+const nt = {cfg:null, bgImg:null, bgData:'', boxes:{}, sel:new Set(), filter:'all', q:'', loaded:false};
+
+function ntText(key, m){
+  const f = nt.cfg.fields[key];
+  if(key === 'name') return f.spaced && m.name.length <= 4 ? m.name.split('').join(' ') : m.name;
+  if(key === 'company') return m.company || '';
+  if(key === 'title'){
+    const pos = posNames(m.id).join(' · ') || (m.isNew ? '신입회원' : '회원');
+    return f.src === 'company' ? (m.title || '') : f.src === 'both' ? [m.title, pos].filter(Boolean).join(' / ') : pos;
+  }
+  return '';
+}
+/* 명찰 한 장 그리기 (미리보기·출력 공용). W,H = 픽셀 */
+function ntDraw(ctx, W, H, m, photoImg){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+  if(nt.bgImg){   // 배경: 비율 유지하며 꽉 채우기(cover)
+    const r = Math.max(W / nt.bgImg.width, H / nt.bgImg.height), bw = nt.bgImg.width * r, bh = nt.bgImg.height * r;
+    ctx.drawImage(nt.bgImg, (W - bw) / 2, (H - bh) / 2, bw, bh);
+  }
+  const boxes = {};
+  const ph = nt.cfg.fields.photo;
+  if(ph.on){
+    const d = ph.size / 100 * H, cx = ph.x / 100 * W, cy = ph.y / 100 * H;
+    ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, d/2, 0, Math.PI*2); ctx.closePath();
+    if(photoImg){ ctx.clip(); const r = Math.max(d / photoImg.width, d / photoImg.height);
+      ctx.drawImage(photoImg, cx - photoImg.width*r/2, cy - photoImg.height*r/2, photoImg.width*r, photoImg.height*r); }
+    else { ctx.fillStyle = 'rgba(31,58,104,.12)'; ctx.fill(); ctx.fillStyle = '#1f3a68'; ctx.font = `700 ${d*0.4}px "Noto Sans KR", sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(m.name.slice(0,1), cx, cy); }
+    ctx.restore();
+    boxes.photo = {x:cx - d/2, y:cy - d/2, w:d, h:d};
+  }
+  for(const key of ['title','name','company']){
+    const f = nt.cfg.fields[key]; if(!f.on) continue;
+    const text = ntText(key, m); if(!text) continue;
+    let px = f.size / 100 * H;
+    const maxW = W * 0.9 - (ph.on && Math.abs(ph.x - 50) > 20 ? ph.size / 100 * H : 0);
+    ctx.font = `${f.bold ? 700 : 400} ${px}px "Noto Sans KR", sans-serif`;
+    while(ctx.measureText(text).width > maxW && px > 6){ px *= 0.94; ctx.font = `${f.bold ? 700 : 400} ${px}px "Noto Sans KR", sans-serif`; }
+    ctx.fillStyle = f.color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const x = f.x / 100 * W, y = f.y / 100 * H;
+    ctx.fillText(text, x, y);
+    const tw = ctx.measureText(text).width;
+    boxes[key] = {x:x - tw/2 - 4, y:y - px*0.65, w:tw + 8, h:px*1.3};
+  }
+  return boxes;
+}
+const ntPx = mm => Math.round(mm / 25.4 * NT_DPI);
+function ntPreviewMember(){
+  const sel = D().members.filter(m=>nt.sel.has(m.id));
+  return sel[0] || member(Store.me.memberId) || D().members.find(m=>isOfficer(m.id)) || D().members[0] || {id:'', name:'홍길동', company:'정우회상사', title:'대표'};
+}
+function ntRedraw(){
+  const cv = $('#ntCanvas'); if(!cv) return;
+  const {w, h} = nt.cfg, maxW = Math.min(cv.parentElement.clientWidth, 640), sc = Math.min(maxW / w, 420 / h);
+  cv.width = Math.round(w * sc * 2); cv.height = Math.round(h * sc * 2);
+  cv.style.width = Math.round(w * sc) + 'px'; cv.style.height = Math.round(h * sc) + 'px';
+  const m = ntPreviewMember();
+  nt.boxes = ntDraw(cv.getContext('2d'), cv.width, cv.height, m, m.photo && nt.cfg.fields.photo.on ? nt.photoCache?.[m.id] : null);
+  const ctx = cv.getContext('2d'); ctx.strokeStyle = 'rgba(47,94,168,.35)'; ctx.setLineDash([6,6]);
+  Object.values(nt.boxes).forEach(b=>ctx.strokeRect(b.x, b.y, b.w, b.h)); ctx.setLineDash([]);
+  $('#ntPreviewName').textContent = m.name ? `미리보기: ${m.name}` : '';
+}
+
+function Nametag(){
+  if(!can.officer()) return '<div class="empty">임원·관리자만 사용할 수 있습니다.</div>';
+  const c = nt.cfg || ntDefault();
+  const f = c.fields;
+  const fieldCtl = key => { const x = f[key]; return `<div class="panel" style="padding:10px 12px;margin-bottom:8px">
+    <div class="row" style="justify-content:space-between"><label class="row" style="gap:6px;font-weight:700"><input type="checkbox" data-f="${key}" data-p="on" ${x.on?'checked':''}> ${NT_LABEL[key]}</label>
+      ${key!=='photo'?`<div class="row" style="gap:6px"><input type="color" data-f="${key}" data-p="color" value="${x.color}" style="width:34px;height:28px;padding:0;border:1px solid var(--line);border-radius:6px">
+        <label class="row" style="gap:4px;font-size:13px"><input type="checkbox" data-f="${key}" data-p="bold" ${x.bold?'checked':''}>굵게</label></div>`:''}</div>
+    <label class="row" style="gap:8px;font-size:13px;color:var(--sub);margin-top:6px">크기 <input type="range" min="${key==='photo'?15:3}" max="${key==='photo'?90:35}" step="0.5" data-f="${key}" data-p="size" value="${x.size}" style="flex:1"></label>
+    ${key==='title'?`<select class="input" data-f="title" data-p="src" style="margin-top:6px;width:100%;padding:6px">
+        <option value="position" ${x.src==='position'?'selected':''}>정우회 직책 (없으면 '회원')</option>
+        <option value="company" ${x.src==='company'?'selected':''}>회사 직함 (예: 대표)</option>
+        <option value="both" ${x.src==='both'?'selected':''}>회사 직함 / 정우회 직책</option></select>`:''}
+    ${key==='name'?`<label class="row" style="gap:6px;font-size:13px;margin-top:6px"><input type="checkbox" data-f="name" data-p="spaced" ${x.spaced?'checked':''}> 글자 사이 띄우기 (김 동 관)</label>`:''}
+  </div>`; };
+  const list = ntMembers();
+  return `
+  <div class="head"><div class="row"><a class="btn sm" href="#/members">← 명부</a><h1>명찰 만들기</h1></div>
+    <div class="row"><button class="btn" id="ntSave">설정 저장</button><button class="btn" id="ntPrint">🖨 A4 인쇄용</button><button class="btn pri" id="ntZip">⬇ JPG 일괄 다운로드</button></div></div>
+  <div id="ntProg" class="muted" style="font-size:13px;margin:-8px 0 10px"></div>
+  <div class="grid two">
+    <div>
+      <div class="panel" style="margin-bottom:12px">
+        <div class="row" style="gap:10px;flex-wrap:wrap">
+          <label class="btn">🖼 배경 이미지 올리기<input type="file" id="ntBg" accept="image/jpeg,image/png" hidden></label>
+          <select class="input" id="ntSize">${NT_PRESETS.map(([k,l])=>`<option value="${k}" ${c.size===k?'selected':''}>${l}</option>`).join('')}</select>
+          <span id="ntCustom" style="${c.size==='custom'?'':'display:none'}" class="row"><input class="input" id="ntW" type="number" value="${c.w}" style="width:70px">×<input class="input" id="ntH" type="number" value="${c.h}" style="width:70px">mm</span>
+        </div>
+        <p class="muted" style="font-size:12.5px;margin:8px 0 10px">글자·사진을 <b>끌어서</b> 위치를 옮기세요. 출력은 ${NT_DPI}dpi(${ntPx(c.w)}×${ntPx(c.h)}px)입니다. 배경은 명찰 비율에 맞게 꽉 채워집니다.</p>
+        <div style="text-align:center"><canvas id="ntCanvas" style="border:1px solid var(--line);border-radius:6px;touch-action:none;cursor:move;max-width:100%"></canvas></div>
+        <div class="row" style="justify-content:space-between;margin-top:6px"><span id="ntPreviewName" class="muted" style="font-size:12.5px"></span><button class="btn sm" id="ntReset">위치 초기화</button></div>
+      </div>
+      ${['title','name','company','photo'].map(fieldCtl).join('')}
+    </div>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between"><h2 style="margin:0">출력할 회원 <span class="muted" style="font-size:14px" id="ntCount">${nt.sel.size}명 선택</span></h2>
+        <div class="row" style="gap:6px"><button class="btn sm" id="ntAll">모두 선택</button><button class="btn sm" id="ntNone">해제</button></div></div>
+      <div class="row" style="margin:10px 0">
+        <select class="input" id="ntFilter"><option value="all" ${nt.filter==='all'?'selected':''}>활동 회원 전체</option><option value="officer" ${nt.filter==='officer'?'selected':''}>임원</option><option value="new" ${nt.filter==='new'?'selected':''}>신입회원</option></select>
+        <input class="input" id="ntQ" placeholder="이름·회사 검색" value="${esc(nt.q)}" style="flex:1;min-width:120px"></div>
+      <div style="max-height:62vh;overflow:auto;border:1px solid var(--line);border-radius:8px">
+        <table>${list.map(m=>`<tr><td style="width:34px"><input type="checkbox" data-nm="${m.id}" ${nt.sel.has(m.id)?'checked':''}></td>
+          <td><b>${esc(m.name)}</b></td><td class="muted">${esc(m.company)||'-'}</td><td style="font-size:12px">${esc(posNames(m.id).join(' · ')||'')}</td></tr>`).join('')}</table>
+      </div>
+    </div>
+  </div>`;
+}
+function ntMembers(){
+  const q = nt.q.trim();
+  return activeMembers().filter(m=>(nt.filter!=='officer' || isOfficer(m.id)) && (nt.filter!=='new' || m.isNew)
+    && (!q || (m.name + ' ' + m.company).includes(q)))
+    .sort((a,b)=>(currentTerm(a.id) ? position(currentTerm(a.id).positionId)?.order ?? 99 : 999) - (currentTerm(b.id) ? position(currentTerm(b.id).positionId)?.order ?? 99 : 999) || a.name.localeCompare(b.name,'ko'));
+}
+const loadImg = src => new Promise((res,rej)=>{ const i = new Image(); i.onload = ()=>res(i); i.onerror = rej; i.src = src; });
+async function ntLoad(){
+  if(nt.loaded) return;
+  nt.cfg = ntDefault(); nt.photoCache = {};
+  try{
+    const {data} = await sb.from('jw_templates').select('*').eq('key','nametag');
+    if(data && data[0]){ const d = data[0].data || {}; nt.cfg = {...ntDefault(), ...d, fields:{...ntDefault().fields, ...(d.fields||{})}};
+      Object.keys(nt.cfg.fields).forEach(k=>nt.cfg.fields[k] = {...ntDefault().fields[k], ...nt.cfg.fields[k]}); }
+    if(nt.cfg.bgPath){ const u = await blobUrl(nt.cfg.bgPath); if(u) nt.bgImg = await loadImg(u); }
+  }catch(e){ console.warn('명찰 설정을 불러오지 못했습니다', e); }
+  nt.loaded = true;
+}
+async function ntPhotos(list){
+  if(!nt.cfg.fields.photo.on) return;
+  for(const m of list){ if(nt.photoCache[m.id] !== undefined || !m.photoPath) continue;
+    try{ const u = await blobUrl(m.photoPath); nt.photoCache[m.id] = u ? await loadImg(u) : null; }catch(e){ nt.photoCache[m.id] = null; } }
+}
+async function ntRenderBlobs(list, onProgress){
+  if(document.fonts && document.fonts.load){ try{ await Promise.all([document.fonts.load('700 40px "Noto Sans KR"'), document.fonts.load('400 40px "Noto Sans KR"')]); }catch(e){} }
+  await ntPhotos(list);
+  const W = ntPx(nt.cfg.w), H = ntPx(nt.cfg.h), cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const out = [];
+  for(let i = 0; i < list.length; i++){
+    const m = list[i];
+    ntDraw(cv.getContext('2d'), W, H, m, nt.photoCache[m.id] || null);
+    out.push({m, blob: await new Promise(r=>cv.toBlob(r, 'image/jpeg', 0.95))});
+    onProgress && onProgress(i + 1, list.length);
+  }
+  return out;
+}
+let jszipLib = null;
+function loadJSZip(){
+  if(window.JSZip) return Promise.resolve(window.JSZip);
+  return jszipLib ||= new Promise((res,rej)=>{ const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    sc.onload = ()=>res(window.JSZip); sc.onerror = ()=>{ jszipLib = null; rej(new Error('압축 모듈을 불러오지 못했습니다.')); };
+    document.head.appendChild(sc); });
+}
+const ntSelected = () => ntMembers().length ? activeMembers().filter(m=>nt.sel.has(m.id)) : [];
+
 /* ===================== 화면: 관리·백업 ===================== */
 function Settings(){
   return `
@@ -1953,6 +2124,93 @@ const bind = {
       const copy = {...src, date:(y+1)+src.date.slice(4), title:src.title.replace(String(y), String(y+1)), docs:[], attendees:''};
       await q(sb.from('jw_events').insert(toEvent(copy)));
       ui.eventYear = String(y+1); toast(`${y+1}년으로 복제했습니다. 날짜를 확인해주세요.`); Store.refresh();
+    });
+  },
+  async nametag(){
+    if(!can.officer()) return;
+    if(!nt.loaded){ $('#view').innerHTML = '<div class="empty">명찰 설정을 불러오는 중…</div>'; await ntLoad();
+      if(!nt.sel.size) ntMembers().forEach(m=>nt.sel.add(m.id)); return render(); }
+    const cv = $('#ntCanvas');
+    const redraw = async ()=>{ await ntPhotos([ntPreviewMember()]); ntRedraw(); };
+    redraw();
+    // 글자·사진 끌어서 옮기기
+    let drag = null;
+    const pos = e => { const r = cv.getBoundingClientRect(); return {x:(e.clientX - r.left) / r.width * cv.width, y:(e.clientY - r.top) / r.height * cv.height}; };
+    cv.onpointerdown = e => { const p = pos(e);
+      const hit = Object.entries(nt.boxes).reverse().find(([k,b])=>p.x>=b.x && p.x<=b.x+b.w && p.y>=b.y && p.y<=b.y+b.h);
+      if(hit){ drag = {key:hit[0], dx:p.x - nt.cfg.fields[hit[0]].x/100*cv.width, dy:p.y - nt.cfg.fields[hit[0]].y/100*cv.height}; cv.setPointerCapture(e.pointerId); } };
+    cv.onpointermove = e => { if(!drag) return; const p = pos(e), f = nt.cfg.fields[drag.key];
+      f.x = Math.max(0, Math.min(100, (p.x - drag.dx) / cv.width * 100)); f.y = Math.max(0, Math.min(100, (p.y - drag.dy) / cv.height * 100)); ntRedraw(); };
+    cv.onpointerup = cv.onpointercancel = () => { drag = null; };
+    document.querySelectorAll('[data-f]').forEach(el=>{
+      el.oninput = el.onchange = async ()=>{ const f = nt.cfg.fields[el.dataset.f], p = el.dataset.p;
+        f[p] = el.type === 'checkbox' ? el.checked : el.type === 'range' ? +el.value : el.value;
+        if(el.dataset.f === 'photo') await ntPhotos([ntPreviewMember()]);
+        ntRedraw(); };
+    });
+    $('#ntSize').onchange = e=>{ const v = e.target.value; nt.cfg.size = v;
+      if(v !== 'custom'){ const [w,h] = v.split('x').map(Number); nt.cfg.w = w; nt.cfg.h = h; }
+      render(); };
+    if($('#ntW')){ const upd = ()=>{ const w = +$('#ntW').value, h = +$('#ntH').value; if(w >= 20 && h >= 20 && w <= 300 && h <= 300){ nt.cfg.w = w; nt.cfg.h = h; ntRedraw(); } };
+      $('#ntW').onchange = upd; $('#ntH').onchange = upd; }
+    $('#ntBg').onchange = async e=>{ const file = e.target.files[0]; if(!file) return;
+      nt.bgData = await readImage(file, 3000); nt.bgImg = await loadImg(nt.bgData); nt.bgDirty = true;
+      const r = nt.bgImg.width / nt.bgImg.height, cr = nt.cfg.w / nt.cfg.h;
+      if(Math.abs(r - cr) / cr > 0.08 && confirm(`배경 이미지 비율이 선택한 명찰 크기와 다릅니다.\n이미지 비율에 맞게 크기를 바꿀까요? (가로 ${nt.cfg.w}mm 기준 → 세로 ${Math.round(nt.cfg.w / r)}mm)`)){
+        nt.cfg.size = 'custom'; nt.cfg.h = Math.round(nt.cfg.w / r); render(); } else ntRedraw();
+      toast('배경을 적용했습니다. 다음에도 쓰려면 [설정 저장]을 누르세요.'); };
+    $('#ntReset').onclick = ()=>{ const d = ntDefault().fields; Object.keys(d).forEach(k=>{ nt.cfg.fields[k].x = d[k].x; nt.cfg.fields[k].y = d[k].y; }); ntRedraw(); };
+    const syncCount = ()=>{ $('#ntCount').textContent = `${nt.sel.size}명 선택`; };
+    document.querySelectorAll('[data-nm]').forEach(cb=>cb.onchange = ()=>{ cb.checked ? nt.sel.add(cb.dataset.nm) : nt.sel.delete(cb.dataset.nm); syncCount(); ntRedraw(); });
+    $('#ntAll').onclick = ()=>{ ntMembers().forEach(m=>nt.sel.add(m.id)); render(); };
+    $('#ntNone').onclick = ()=>{ nt.sel.clear(); render(); };
+    $('#ntFilter').onchange = e=>{ nt.filter = e.target.value; render(); };
+    $('#ntQ').onchange = e=>{ nt.q = e.target.value; render(); };
+    $('#ntSave').onclick = async ()=>{
+      try{
+        if(nt.bgDirty && nt.bgData){
+          const path = `templates/nametag-bg-${Date.now()}.jpg`;
+          await q(sb.storage.from(BUCKET).upload(path, dataUrlToBlob(nt.bgData), {contentType:'image/jpeg', upsert:false}));
+          if(nt.cfg.bgPath) sb.storage.from(BUCKET).remove([nt.cfg.bgPath]);
+          nt.cfg.bgPath = path; nt.bgDirty = false;
+        }
+        const me = member(Store.me.memberId);
+        await q(sb.from('jw_templates').upsert({key:'nametag', data:nt.cfg, updated_by: me ? me.name : '관리자', updated_at:new Date().toISOString()}));
+        toast('명찰 설정을 저장했습니다.');
+      }catch(err){}
+    };
+    const run = async (btn, fn)=>{
+      const list = activeMembers().filter(m=>nt.sel.has(m.id)).sort((a,b)=>ntMembers().indexOf(a) - ntMembers().indexOf(b));
+      if(!list.length) return toast('출력할 회원을 선택해 주세요.');
+      const label = btn.textContent; btn.disabled = true;
+      try{ const res = await ntRenderBlobs(list, (i,n)=>{ $('#ntProg').textContent = `명찰 만드는 중… ${i} / ${n}`; }); await fn(res); }
+      catch(err){ console.error(err); toast(err.message || '만들지 못했습니다.'); }
+      finally{ btn.disabled = false; btn.textContent = label; $('#ntProg').textContent = ''; }
+    };
+    $('#ntZip').onclick = e=>run(e.currentTarget, async res=>{
+      const Z = await loadJSZip(); const zip = new Z();
+      res.forEach(({m, blob}, i)=>zip.file(`${String(i+1).padStart(3,'0')}_${m.name}.jpg`, blob));
+      const out = await zip.generateAsync({type:'blob'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(out); a.download = `정우회_명찰_${res.length}명_${today()}.zip`;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+      toast(`명찰 ${res.length}장을 ZIP으로 저장했습니다.`);
+    });
+    $('#ntPrint').onclick = e=>run(e.currentTarget, async res=>{
+      const {w, h} = nt.cfg, M = 5, G = 0;    // A4 여백 5mm, 명찰끼리 붙여 배치(점선 하나로 함께 자름)
+      const cols = Math.max(1, Math.floor((210 - 2*M + G) / (w + G))), rows = Math.max(1, Math.floor((297 - 2*M + G) / (h + G))), per = cols * rows;
+      const urls = res.map(r=>URL.createObjectURL(r.blob));
+      const pages = [];
+      for(let i = 0; i < urls.length; i += per) pages.push(urls.slice(i, i + per));
+      const win = window.open('', '_blank');
+      if(!win) return toast('팝업이 차단되었습니다. 브라우저에서 팝업을 허용해 주세요.');
+      win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>정우회 명찰 인쇄 (${res.length}장)</title>
+        <style>@page{size:A4;margin:0}body{margin:0;font-family:sans-serif}.bar{padding:10px;text-align:center;background:#eef3fb}
+        .sheet{width:210mm;height:297mm;box-sizing:border-box;padding:${M}mm;display:grid;grid-template-columns:repeat(${cols},${w}mm);grid-auto-rows:${h}mm;gap:${G}mm;justify-content:center;align-content:start;page-break-after:always}
+        .sheet img{width:${w}mm;height:${h}mm;outline:0.2mm dashed #999;display:block}
+        @media print{.bar{display:none}}</style></head><body>
+        <div class="bar">A4 한 장에 ${per}장 · 총 ${pages.length}장 · 인쇄 설정에서 <b>배율 100%(실제 크기)</b>로 인쇄하세요 · 점선을 따라 자르면 됩니다 <button onclick="print()">🖨 인쇄</button></div>
+        ${pages.map(pg=>`<div class="sheet">${pg.map(u=>`<img src="${u}">`).join('')}</div>`).join('')}</body></html>`);
+      win.document.close();
     });
   },
   finance(){
