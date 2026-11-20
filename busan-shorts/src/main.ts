@@ -15,6 +15,7 @@ if (q.has('capture')) document.body.classList.add('capture');
 const frame = document.querySelector<HTMLDivElement>('#frame')!;
 const fit = () => { if (!q.has('capture')) frame.style.transform = `scale(${Math.min(innerWidth / 1080, innerHeight / 1920) * 0.98})`; };
 fit(); addEventListener('resize', fit);
+if (EP.hl) { frame.style.setProperty('--hl', EP.hl.bg); frame.style.setProperty('--hl-ink', EP.hl.ink); }
 
 const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': '부산 명소 라인아트 애니메이션' });
 const { filter } = inkDefs(svg, 'ink');
@@ -32,7 +33,7 @@ const TOTAL = starts[starts.length - 1] + scenes[scenes.length - 1].dur + OUTRO;
 
 // ---------------------------------------------------------------- HUD (captions)
 const hud = document.querySelector<HTMLDivElement>('#hud')!;
-for (const k of ['top', 'bottom']) { const d = document.createElement('div'); d.className = `scrim ${k}`; hud.appendChild(d); }
+for (const k of EP.ad ? ['top'] : ['top', 'bottom']) { const d = document.createElement('div'); d.className = `scrim ${k}`; hud.appendChild(d); }
 const chip = document.createElement('div');
 chip.className = 'chip';
 chip.innerHTML = EP.chip;
@@ -122,8 +123,10 @@ run((_t, dt) => {
 });
 
 // caption timeline for the SRT (global seconds)
-(window as any).__caps = scenes.flatMap((s, i) => s.caps.map((c, k) => ({
+const capsRaw = scenes.flatMap((s, i) => s.caps.map((c, k) => ({
   a: starts[i] + c.at,
   b: starts[i] + (k < s.caps.length - 1 ? s.caps[k + 1].at : s.dur),
   text: (c.lines.join('\n') + (c.sub ? '\n' + c.sub : '')).replace(/<[^>]+>/g, ''),
 }))).concat(EP.cta.lines.length ? [{ a: starts[scenes.length - 1] + scenes[scenes.length - 1].dur, b: TOTAL, text: EP.cta.lines.join(' ') + (EP.cta.sub ? '\n' + EP.cta.sub : '') }] : []);
+// no overlapping cues: each ends when the next begins
+(window as any).__caps = capsRaw.map((c, i) => ({ ...c, b: i < capsRaw.length - 1 ? Math.min(c.b, capsRaw[i + 1].a) : c.b }));

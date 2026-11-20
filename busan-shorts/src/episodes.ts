@@ -10,6 +10,7 @@ import { gcStairs } from './scenes/gc/stairs.ts';
 import { gcFish } from './scenes/gc/fish.ts';
 import { gcRoof } from './scenes/gc/roof.ts';
 import { gcNight } from './scenes/gc/night.ts';
+import { soHook, soMood, soPick, soBreathe, soRelax, soCta } from './scenes/soom/ad.ts';
 import { adHook, adChaos, adReveal, adEvents, adCourse, adCta } from './scenes/nowro/ad.ts';
 
 export type Maker = (svg: SVGSVGElement, filter: string) => Scene;
@@ -26,6 +27,8 @@ export interface Episode {
   xf?: number;
   /** ad layout: no scene numbering */
   ad?: boolean;
+  /** caption highlight colours (<em>) */
+  hl?: { bg: string; ink: string };
 }
 
 export const EPISODES: Record<string, Episode> = {
@@ -49,5 +52,13 @@ export const EPISODES: Record<string, Episode> = {
     chip: '<b>NOWRO KOREA</b> · 나우로 부산',
     cta: { lines: [] },
     outro: 0.5, xf: 0.45, ad: true,
+  },
+  soom: {
+    id: 'soom', out: 'soomgyeol_ad_shorts',
+    makers: [soHook, soMood, soPick, soBreathe, soRelax, soCta],
+    chip: '<b>숨결</b> · 토스 미니앱',
+    cta: { lines: [] },
+    outro: 0.5, xf: 0.55, ad: true,
+    hl: { bg: '#a9502f', ink: '#f7eedd' },
   },
 };

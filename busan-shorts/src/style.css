@@ -46,5 +46,5 @@ body.capture #frame { transform: none !important; }
 .scrim.bottom { top: 1180px; height: 560px; background: linear-gradient(transparent, var(--scrim) 22%, var(--scrim) 78%, transparent); }
 .scrim.top { top: 200px; height: 360px; background: linear-gradient(transparent, var(--scrim) 30%, var(--scrim) 70%, transparent); opacity: .7; }
 .cap.top { top: 300px; }
-.cap em { font-style: normal; background: #d4f53c; color: #0b0f14; padding: 0 12px; border-radius: 10px; text-shadow: none; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.cap em { font-style: normal; background: var(--hl, #d4f53c); color: var(--hl-ink, #0b0f14); padding: 0 12px; border-radius: 10px; text-shadow: none; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .cap .big { font-size: 92px; letter-spacing: -2px; line-height: 1.18; }
