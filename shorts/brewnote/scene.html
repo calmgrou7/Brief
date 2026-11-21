@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>브루노트커피 쇼츠</title>
+<link rel="stylesheet" href="../soomgyeol/fonts/gowun/700.css">
+<style>
+@font-face{font-family:P;src:url(../fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(../fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+:root{--green:#1f4d3c;--green2:#2c5e4b;--cream:#f8f1e4;--paper:#fffaf1;--ink:#2a221b;--gold:#b8892e;--brown:#6b3e1f;--muted:#857563}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:var(--cream);font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.02em}
+.serif{font-family:'Gowun Batang',serif;font-weight:700;letter-spacing:-0.01em}
+.abs{position:absolute}
+.c{left:0;right:0;text-align:center}
+.layer{position:absolute;inset:0;opacity:0}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,#fffaf1 0%,#f8f1e4 55%,#efe3cc 100%)}
+#bgGreen{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,#2c5e4b 0%,#1f4d3c 60%,#183e30 100%);opacity:0}
+/* leaf shadows like the app photos */
+#shade{position:absolute;inset:0;background:
+  radial-gradient(ellipse 260px 90px at 120px 260px,rgba(120,100,70,.10),transparent 70%),
+  radial-gradient(ellipse 200px 70px at 980px 420px,rgba(120,100,70,.09),transparent 70%),
+  radial-gradient(ellipse 300px 80px at 900px 1700px,rgba(120,100,70,.08),transparent 70%);}
+#glass{left:0;top:0}
+.note{padding:26px 34px;background:#fff6c9;font-size:42px;font-weight:700;color:#5a4a2a;box-shadow:0 18px 30px rgba(80,60,30,.18);border-radius:6px}
+.note.b{background:#ffe1d1}.note.c{background:#e4f0dc}
+.lbl{font-size:44px;font-weight:800;color:var(--ink);text-align:center;width:300px}
+.kicker{font-size:34px;letter-spacing:.32em;color:var(--gold);font-weight:800}
+.cap{font-size:80px;line-height:1.25}
+.sub{font-size:46px;font-weight:700;color:var(--muted)}
+.phone{left:240px;top:400px;width:600px;height:963px;border-radius:72px;background:#1d2a24;padding:20px;box-shadow:0 50px 100px rgba(31,77,60,.28)}
+.screen{width:560px;height:923px;border-radius:54px;overflow:hidden;position:relative;background:var(--cream)}
+.screen img{position:absolute;left:0;top:0;width:560px}
+.ring{position:absolute;border:8px solid var(--gold);border-radius:28px;z-index:5}
+.btn{border-radius:28px;background:var(--green);color:#fffaf1;font-weight:800;font-size:56px;text-align:center;padding:40px 0;box-shadow:0 20px 40px rgba(31,77,60,.25)}
+.search{border-radius:30px;background:var(--paper);border:4px solid #e3d6bf;height:150px;display:flex;align-items:center;gap:28px;padding:0 50px;font-size:62px;font-weight:800}
+.caret{display:inline-block;width:6px;height:70px;background:var(--green);vertical-align:middle;margin-left:6px}
+.stamp{width:300px;height:300px;border-radius:50%;border:12px solid var(--gold);color:var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:52px;line-height:1.15;background:rgba(255,250,241,.85)}
+#preload{position:absolute;left:0;top:0;opacity:0;font-family:'Gowun Batang';font-weight:700;width:10px;overflow:hidden;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="bg"></div><div id="shade"></div><div id="bgGreen"></div>
+<canvas class="abs" id="glass" width="1080" height="1920"></canvas>
+
+<!-- S1 HOOK -->
+<div class="layer" id="s1">
+  <div class="abs c serif" id="s1a" style="top:170px;font-size:72px">어제 그 맛있던 라떼,</div>
+  <div class="abs c serif" id="s1b" style="top:275px;font-size:104px">비율 <span style="color:var(--green)">기억나세요?</span></div>
+  <div class="abs note" id="nt0" style="left:70px;top:620px">우유 150? 200?</div>
+  <div class="abs note b" id="nt1" style="left:640px;top:760px">시럽 한 펌프였나…</div>
+  <div class="abs note c" id="nt2" style="left:90px;top:1270px">샷은 몇 개였더라</div>
+</div>
+
+<!-- S2 PAIN -->
+<div class="layer" id="s2">
+  <div class="abs c serif" id="s2a" style="top:250px;font-size:84px;line-height:1.3">홈카페는<br>매번 맛이 달라요</div>
+  <div class="abs lbl" id="l0" style="left:50px;top:1330px">너무 진하고</div>
+  <div class="abs lbl" id="l1" style="left:390px;top:1330px">너무 밍밍하고</div>
+  <div class="abs lbl" id="l2" style="left:730px;top:1330px">어제 그 맛은?</div>
+  <div class="abs c serif" id="s2b" style="top:1520px;font-size:66px;color:var(--green)">이제, 기록해요</div>
+</div>
+
+<!-- S3 BRAND -->
+<div class="layer" id="s3">
+  <img class="abs" id="s3icon" src="assets/icon.png" style="left:380px;top:560px;width:320px;height:320px;border-radius:76px;box-shadow:0 40px 80px rgba(0,0,0,.3)">
+  <div class="abs c kicker" id="s3k" style="top:960px">BREW NOTE</div>
+  <div class="abs c serif" id="s3n" style="top:1030px;font-size:132px;color:#fffaf1">브루노트커피</div>
+  <div class="abs c" id="s3s" style="top:1230px;font-size:48px;font-weight:700;color:#e6d9bf">내 취향의 한 잔을 기록하는 레시피</div>
+</div>
+
+<!-- S4–S7 APP -->
+<div class="layer" id="sp">
+  <div class="abs c serif cap" id="cap0" style="top:120px">나만의 <span style="color:var(--green)">레시피 노트</span></div>
+  <div class="abs c sub" id="sub0" style="top:240px">원하는 맛을 골라 나만의 비율로</div>
+  <div class="abs c serif cap" id="cap1" style="top:120px">준비할 <span style="color:var(--green)">재료도 한눈에</span></div>
+  <div class="abs c sub" id="sub1" style="top:240px">잔 수까지 정하고 시작해요</div>
+  <div class="abs c serif cap" id="cap2" style="top:120px">단계별로 <span style="color:var(--green)">따라 하기</span></div>
+  <div class="abs c sub" id="sub2" style="top:240px">추출 타이머까지 함께</div>
+  <div class="abs c serif cap" id="cap3" style="top:120px">원두도 <span style="color:var(--green)">기록해요</span></div>
+  <div class="abs c sub" id="sub3" style="top:240px">마셔본 원두, 마셔보고 싶은 원두</div>
+  <div class="abs phone" id="phone"><div class="screen">
+    <img id="img0" src="assets/screen2.png"><img id="img1" src="assets/screen3.png"><img id="img2" src="assets/screen4.png"><img id="img3" src="assets/screen5.png">
+    <div class="ring" id="ring"></div>
+  </div></div>
+</div>
+
+<!-- S8 POUR PAYOFF -->
+<div class="layer" id="s8">
+  <div class="abs c serif" id="s8a" style="top:180px;font-size:96px;line-height:1.25">오늘의 한 잔,<br><span style="color:var(--green)">내 취향대로.</span></div>
+  <div class="abs stamp" id="stamp" style="left:690px;top:1180px"><span style="font-size:40px">MY RECIPE</span>기록<br>완료 ✓</div>
+</div>
+
+<!-- S9 CTA -->
+<div class="layer" id="s9">
+  <div class="abs c serif" id="s9a" style="top:200px;font-size:84px;line-height:1.3">앱 설치 없이<br><span style="color:var(--green)">토스에서 바로</span></div>
+  <div class="abs search" id="s9s" style="left:110px;width:860px;top:560px"><span style="font-size:54px">🔍</span><span id="s9q"></span><span class="caret" id="caret"></span></div>
+  <div class="abs btn" id="s9btn" style="left:110px;width:860px;top:780px">☕ 내 레시피 기록하기</div>
+  <div class="abs c sub" id="s9foot" style="top:1520px;font-size:40px">바로가기 링크는 설명란에 👇</div>
+</div>
+<div id="preload"></div>
+
+<script>
+const TOTAL = 29;
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const ss=x=>x*x*(3-2*x);
+const lerp=(a,b,k)=>a+(b-a)*k;
+function fadeUp(el,t,a,d=.5,dy=40){const k=p(t,a,a+d);el.style.opacity=ss(k);el.style.transform=`translateY(${(1-eo(k))*dy}px)`}
+function outAt(el,t,a,d=.3){el.style.opacity=parseFloat(el.style.opacity||1)*(1-p(t,a,a+d))}
+function popIn(el,t,a,d=.35,rot=0){const k=p(t,a,a+d);el.style.opacity=clamp(k*3);el.style.transform=`scale(${t<a?.6:.6+.4*eb(k)}) rotate(${rot}deg)`}
+$('preload').textContent=document.body.innerText;
+
+// ---------- iced latte glass (canvas) ----------
+const g=$('glass').getContext('2d');
+function mix(c1,c2,k){return c1.map((v,i)=>Math.round(lerp(v,c2[i],k)))}
+const MILK=[244,234,214], ESP=[96,55,28];
+/* st: {milk:0..1 fill, esp:0..1 amount, mixK:0..1 marbling, ice:bool, stream:0..1, strength:0..1, t} */
+function glass(cx,base,s,st){
+  const H=560*s, TW=380*s, BW=290*s, top=base-H;
+  const path=()=>{g.beginPath();g.moveTo(cx-TW/2,top);g.lineTo(cx+TW/2,top);g.lineTo(cx+BW/2,base-16*s);g.quadraticCurveTo(cx+BW/2,base,cx+BW/2-18*s,base);g.lineTo(cx-BW/2+18*s,base);g.quadraticCurveTo(cx-BW/2,base,cx-BW/2,base-16*s);g.closePath()};
+  // shadow
+  g.save();g.fillStyle='rgba(90,70,40,.16)';g.beginPath();g.ellipse(cx+30*s,base+10*s,BW*.75,26*s,0,0,7);g.fill();g.restore();
+  g.save();path();g.clip();
+  g.fillStyle='rgba(255,255,255,.35)';g.fillRect(cx-TW,top,TW*2,H);
+  const lvl=base-H*.86*st.milk;          // liquid surface
+  if(st.milk>0){
+    const k=st.strength??.5;
+    // milk body, tinted by how strong this latte is
+    const body=mix(MILK,ESP,.04+.26*k*st.esp);
+    g.fillStyle=`rgb(${body})`;g.fillRect(cx-TW,lvl,TW*2,base-lvl);
+    // espresso layer: wavy band sinking from the surface into the milk
+    if(st.esp>0){
+      const depth=H*(.12+.42*st.mixK)*st.esp;
+      const col=mix(ESP,MILK,.06+.16*st.mixK*(1-k));
+      g.fillStyle=`rgba(${col},${.55+.4*k})`;
+      g.beginPath();g.moveTo(cx-TW,lvl);
+      for(let x=-TW/2;x<=TW/2;x+=6){const y=lvl+depth*(.55+.35*Math.sin(x/(38*s)+st.t*1.3)+.18*Math.sin(x/(17*s)-st.t*2.1));g.lineTo(cx+x,y)}
+      g.lineTo(cx+TW,lvl);g.closePath();g.fill();
+      // marbling tendrils
+      for(let i=0;i<7;i++){const ph=i*1.7;const x=cx+Math.sin(ph+st.t*.4)*TW*.32;const y=lvl+depth*(.7+.5*((i*.37)%1))+st.mixK*30*s*Math.sin(st.t+i);
+        g.fillStyle=`rgba(${mix(ESP,MILK,.35)},${.28*st.mixK*st.esp})`;g.beginPath();g.ellipse(x,y,(40+20*Math.sin(i))*s,(90+40*((i*.53)%1))*s*st.mixK,Math.sin(ph)*.6,0,7);g.fill()}
+      g.fillStyle=`rgba(${ESP},${.75*(.6+.4*k)})`;g.fillRect(cx-TW,lvl,TW*2,8*s*st.esp);
+    }
+  }
+  // pouring stream
+  if(st.stream>0){g.fillStyle=`rgba(${ESP},.95)`;const w=16*s*st.stream;g.fillRect(cx-w/2+Math.sin(st.t*20)*2,top-400*s,w,lvl-(top-400*s));
+    g.fillStyle=`rgba(${ESP},.5)`;g.beginPath();g.ellipse(cx,lvl+6*s,40*s*st.stream,12*s,0,0,7);g.fill()}
+  // ice cubes
+  if(st.ice){[[-.17,.10,.2],[.13,.06,-.3],[-.02,.20,.5],[.2,.24,.1]].forEach(([dx,dy,r],i)=>{
+    const x=cx+dx*TW, y=top+H*dy+Math.sin(st.t*1.1+i)*4*s, w=98*s;
+    g.save();g.translate(x,y);g.rotate(r+Math.sin(st.t*.7+i)*.03);
+    g.fillStyle='rgba(255,255,255,.38)';g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=4*s;
+    g.beginPath();g.roundRect(-w/2,-w/2,w,w,18*s);g.fill();g.stroke();
+    g.fillStyle='rgba(255,255,255,.7)';g.beginPath();g.roundRect(-w/2+12*s,-w/2+12*s,w*.32,w*.14,6*s);g.fill();g.restore()})}
+  g.restore();
+  // glass outline + highlight
+  g.save();path();g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=7*s;g.stroke();
+  g.strokeStyle='rgba(170,150,120,.35)';g.lineWidth=2*s;g.stroke();
+  g.fillStyle='rgba(255,255,255,.45)';g.beginPath();g.moveTo(cx-TW/2+30*s,top+30*s);g.lineTo(cx-TW/2+52*s,top+30*s);g.lineTo(cx-BW/2+44*s,base-60*s);g.lineTo(cx-BW/2+26*s,base-60*s);g.closePath();g.fill();
+  g.restore();
+}
+function beans(){[[150,1700,.4],[210,1728,-.6],[920,1690,.9]].forEach(([x,y,r])=>{g.save();g.translate(x,y);g.rotate(r);g.fillStyle='#4a2c17';g.beginPath();g.ellipse(0,0,26,17,0,0,7);g.fill();g.strokeStyle='#2c190c';g.lineWidth=4;g.beginPath();g.moveTo(-18,0);g.quadraticCurveTo(0,8,18,0);g.stroke();g.restore()})}
+
+const SC=[['s1',0,3.5],['s2',3.5,6.5],['s3',6.5,9.5],['sp',9.5,22.3],['s8',22.3,25.5],['s9',25.5,29]];
+const SH=[[9.5,12.7],[12.7,15.9],[15.9,19.1],[19.1,22.3]];
+const RINGS=[[57,1151,770,159],[48,1876,1176,143],[95,992,1075,382],[54,1107,1155,165]];
+
+function render(t){
+  SC.forEach(([id,a,b])=>{$(id).style.opacity=t<a||t>=b?0:Math.min(a===0?1:ss(p(t,a,a+.3)),1-ss(p(t,b-.25,b)))});
+  const gk=t<6.3?0:t<6.6?ss(p(t,6.3,6.6)):t<9.3?1:1-ss(p(t,9.3,9.6)); $('bgGreen').style.opacity=gk;
+  g.clearRect(0,0,1080,1920);
+
+  if(t<3.5){ // hero glass + question notes
+    $('s1a').style.opacity=1; $('s1b').style.opacity=1;
+    glass(540,1560,1.25,{milk:1,esp:1,mixK:.55+.1*Math.sin(t),ice:true,stream:0,strength:.55,t});
+    beans();
+    [['nt0',.5,-6],['nt1',1.0,5],['nt2',1.5,-4]].forEach(([id,a,r])=>{popIn($(id),t,a,.35,r);$(id).style.transform+=` translateY(${Math.sin(t*2+a*3)*6}px)`});
+  }
+  if(t>=3.5&&t<6.5){ // three different lattes
+    fadeUp($('s2a'),t,3.6);
+    [[200,.95,0],[540,.12,.35],[880,.5,.7]].forEach(([x,k,d],i)=>{const kk=eo(p(t,3.8+d*.6,4.3+d*.6));if(kk>0)glass(x,1290+(1-kk)*60,.62,{milk:1,esp:1,mixK:.5,ice:true,stream:0,strength:k,t:t+i});
+      fadeUp($('l'+i),t,4.2+i*.35,.4,20)});
+    $('l2').style.color='#9a4a2e';
+    fadeUp($('s2b'),t,5.4,.45,24);
+  }
+  if(t>=6.5&&t<9.5){
+    const k=p(t,6.6,7.2);$('s3icon').style.opacity=ss(k);$('s3icon').style.transform=`scale(${.8+.2*eb(k)})`;
+    fadeUp($('s3k'),t,7.1,.5,20); fadeUp($('s3n'),t,7.3,.5); fadeUp($('s3s'),t,7.7,.5,24);
+  }
+  if(t>=9.5&&t<22.3){
+    const kp=p(t,9.5,10.1);$('phone').style.transform=`translateY(${(1-eo(kp))*600}px)`;
+    SH.forEach(([a,e],i)=>{const vis=t>=a&&t<e,c=$('cap'+i),s=$('sub'+i);
+      if(vis){fadeUp(c,t,a+.12,.45);fadeUp(s,t,a+.35,.45,24);outAt(c,t,e-.28);outAt(s,t,e-.28)}else{c.style.opacity=0;s.style.opacity=0}
+      const img=$('img'+i);img.style.zIndex=i+1;const k=i===0?1:eo(p(t,a-.15,a+.3));img.style.transform=`translateX(${(1-k)*560}px)`;img.style.visibility=(i===0||t>=a-.15)?'visible':'hidden'});
+    const si=SH.findIndex(([a,e])=>t>=a&&t<e),[a,e]=SH[si],R=RINGS[si],sw=560/1272;
+    const rk=p(t,a+.8,a+1.15);
+    Object.assign($('ring').style,{opacity:ss(rk)*(1-p(t,e-.35,e-.1)),left:R[0]*sw-10+'px',top:R[1]*sw-10+'px',width:R[2]*sw+20+'px',height:R[3]*sw+20+'px',transform:`scale(${1.08-.08*eo(rk)})`});
+  }
+  if(t>=22.3&&t<25.5){ // pour + stamp
+    fadeUp($('s8a'),t,22.4,.5);
+    const pour=p(t,22.7,24.0), stream=t>22.6&&t<24.1?Math.min(1,p(t,22.6,22.75),1-p(t,23.95,24.1)):0;
+    glass(540,1600,1.15,{milk:1,esp:eo(pour),mixK:ss(p(t,23.0,25.3)),ice:true,stream,strength:.55,t});
+    beans();
+    popIn($('stamp'),t,24.4,.3,-12);
+  }
+  if(t>=25.5){
+    fadeUp($('s9a'),t,25.55,.45);
+    const ks=p(t,25.95,26.3);$('s9s').style.opacity=ss(ks);$('s9s').style.transform=`translateY(${(1-eo(ks))*30}px)`;
+    const q='브루노트커피',n=Math.floor(clamp((t-26.3)/.14,0,q.length));$('s9q').textContent=q.slice(0,n);
+    $('caret').style.opacity=(n<q.length||Math.floor(t*2.5)%2===0)?1:0;
+    const kb=p(t,27.2,27.55);$('s9btn').style.opacity=ss(kb);$('s9btn').style.transform=`scale(${(.94+.06*eb(kb))*(t>27.8?1+.02*Math.sin((t-27.8)*5):1)})`;
+    glass(540,1440,.62,{milk:1,esp:1,mixK:.6,ice:true,stream:0,strength:.55,t});
+    fadeUp($('s9foot'),t,27.6,.45,16);
+  }
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
