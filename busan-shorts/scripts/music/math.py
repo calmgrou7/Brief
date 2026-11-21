@@ -79,6 +79,7 @@ put(tone(1318.5, 0.32, 'pulse', a=0.002, d=0.2), s1 + 2.6, 0.18)
 # --------------------------------------------------------------- 2..5: the groove
 BPM = 124; B = 60 / BPM
 g0, g1 = S[2], S[5] + 3.0                                 # groove runs into the CTA
+END = S[6] if len(S) > 6 else None                        # BridgeNode ending, if appended
 put(kick(0.6), g0, 0.9); put(noise(0.6, 0.25), g0, 0.22)  # drop impact
 put(tone(55, 1.2, 'sine', a=0.003, d=0.5), g0, 0.5)
 prog = [(57, (69, 72, 76)), (53, (65, 69, 72)), (60, (67, 72, 76)), (55, (67, 71, 74))]   # Am F C G
@@ -103,9 +104,18 @@ while t < g1:
     beat += 1; t += B
 
 # final chord (C major add9) ringing out over the CTA
+ring = (END + 0.2 if END else TOTAL + 0.5) - g1
 for fn in (60, 64, 67, 72, 74):
-    put(tone(note(fn), TOTAL - g1 + 0.5, 'bell', a=0.005, d=1.6), g1, 0.07)
-    put(tone(note(fn - 12), TOTAL - g1 + 0.5, 'tri', a=0.05, d=2.5), g1, 0.04)
+    put(tone(note(fn), ring, 'bell', a=0.005, d=1.6, r=0.3, hold=ring - 0.3), g1, 0.07)
+    put(tone(note(fn - 12), ring, 'tri', a=0.05, d=2.5, r=0.3, hold=ring - 0.3), g1, 0.04)
+if END:
+    # BridgeNode sting: two node pops, a soft rising sweep as the bridge draws, a wide chord on connect
+    put(tone(note(79), 0.8, 'bell', a=0.001, d=0.35), END + 0.15, 0.12, -0.3)
+    put(tone(note(86), 0.8, 'bell', a=0.001, d=0.35), END + 0.35, 0.12, 0.3)
+    n = int(0.85 * SR); tt = np.arange(n) / SR
+    put(np.sin(2 * np.pi * np.cumsum(400 + 500 * (tt / 0.85) ** 2) / SR) * np.sin(np.pi * tt / 0.85) ** 2, END + 0.5, 0.05)
+    for fn in (48, 55, 64, 67, 71, 74, 79):
+        put(tone(note(fn), TOTAL - END, 'bell' if fn > 60 else 'tri', a=0.01, d=2.2), END + 1.3, 0.075 if fn > 60 else 0.06)
 
 # --------------------------------------------------------------- SFX aligned to the picture
 ding = lambda t0, f=1568: put(tone(f, 0.6, 'bell', a=0.001, d=0.25), t0, 0.16, 0.1)

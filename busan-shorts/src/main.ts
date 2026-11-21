@@ -115,6 +115,8 @@ run((_t, dt) => {
     H.caps.forEach((c) => { c.el.style.opacity = t >= c.at - 0.01 && t < c.until + 0.4 ? '1' : '0'; reveal(c.spans, t - c.at, c.until - c.at - 0.35); });
     if (op > mainOp) { mainOp = op; main = i; }
   });
+  chip.style.visibility = scenes[main].noChip ? 'hidden' : 'visible';
+  document.querySelectorAll<HTMLDivElement>('.scrim').forEach((d) => { d.style.visibility = scenes[main].noChip ? 'hidden' : 'visible'; });
   setText(palette(lerp(scenes[main].tau[0], scenes[main].tau[1], clamp((T - starts[main]) / scenes[main].dur, 0, 1))));
   // outro CTA over the last scene
   const tl = T - (starts[scenes.length - 1] + scenes[scenes.length - 1].dur);

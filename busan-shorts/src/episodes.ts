@@ -10,6 +10,7 @@ import { gcStairs } from './scenes/gc/stairs.ts';
 import { gcFish } from './scenes/gc/fish.ts';
 import { gcRoof } from './scenes/gc/roof.ts';
 import { gcNight } from './scenes/gc/night.ts';
+import { bridgeNodeEnding } from './scenes/bridgenode.ts';
 import { mtHook, mtVs, mtReveal, mtDuel, mtGrow, mtCta } from './scenes/math/ad.ts';
 import { bzHook, bzChaos, bzReveal, bzFilter, bzSave, bzCta } from './scenes/biz/ad.ts';
 import { soHook, soMood, soPick, soBreathe, soRelax, soCta } from './scenes/soom/ad.ts';
@@ -82,6 +83,16 @@ export const EPISODES: Record<string, Episode> = {
     chip: '<b>미니 수학의신</b> · 토스 미니앱',
     cta: { lines: [] },
     outro: 0.5, xf: 0.45, ad: true,
+    hl: { bg: '#d8f57a', ink: '#154438' },
+    accent: ['#2f7a5c', '#d8f57a'],
+    music: 'math',
+  },
+  mathbn: {
+    id: 'mathbn', out: 'mathgod_ad_shorts_bridgenode',
+    makers: [mtHook, mtVs, mtReveal, mtDuel, mtGrow, mtCta, bridgeNodeEnding],
+    chip: '<b>미니 수학의신</b> · 토스 미니앱',
+    cta: { lines: [] },
+    outro: 0.3, xf: 0.45, ad: true,
     hl: { bg: '#d8f57a', ink: '#154438' },
     accent: ['#2f7a5c', '#d8f57a'],
     music: 'math',

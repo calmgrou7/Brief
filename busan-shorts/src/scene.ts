@@ -8,6 +8,8 @@ export interface Scene {
   tau: [number, number];
   title: { han: string; name: string };
   caps: Array<{ at: number; lines: string[]; sub?: string; pos?: 'top' | 'bottom' }>;
+  /** hide the top brand chip while this scene leads */
+  noChip?: boolean;
   update(t: number, dt: number, P: Palette, tau: number): void;
 }
 
