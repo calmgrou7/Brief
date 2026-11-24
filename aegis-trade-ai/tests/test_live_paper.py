@@ -284,3 +284,52 @@ def test_bounded_loop_with_actual_adapter_and_mock_http(tmp_path):
     assert report['state']['mode'] == 'SAFE_PAUSED'
     assert report['state']['pending'] is None
     session.db.close()
+
+
+def test_feed_failure_and_explicit_restart_replaying_same_quote_do_not_duplicate_fill(tmp_path):
+    """One bounded PAPER session, feed outage, and a repeated snapshot after restart."""
+    clock = Clock()
+    db = tmp_path / "reconnect"
+    session = PaperSession(db, clock, provenance="MOCK")
+
+    class DisconnectAfterFill(FixtureAPI):
+        def candles(self, **kwargs):
+            if self.calls >= 6:
+                raise QuotationError("PUBLIC_HTTP_503")
+            return super().candles(**kwargs)
+
+    api = DisconnectAfterFill(clock)
+    result = run(session, api, polls=4, seconds=150, interval=30,
+                 monotonic=lambda: clock().timestamp(), sleep=clock.advance)
+    state = result["state"]
+    assert state["mode"] == "SAFE_PAUSED"
+    assert state["stop_reason"] == "PUBLIC_FEED_ERROR"
+    assert state["pending"] is None
+    assert len(state["fills"]) == 1
+    fill = state["fills"][0]
+    assert datetime.fromisoformat(fill["time"]) > datetime.fromisoformat(fill["signal_time"])
+    assert D(fill["price"]) == D("102400000") * D("1.001")
+    session.db.close()
+
+    paused = PaperSession(db, clock, provenance="MOCK")
+    assert paused.s["mode"] == "SAFE_PAUSED"
+    paused.db.close()
+
+    class RepeatedSnapshot(FixtureAPI):
+        def ticker(self):
+            self.calls += 1
+            tick = quote(self.clock)
+            tick["time"] = fill["time"]
+            return tick
+
+    resumed = PaperSession(db, clock, resume=True, provenance="MOCK")
+    repeated = RepeatedSnapshot(clock)
+    restarted = run(resumed, repeated, polls=1, seconds=10,
+                    monotonic=lambda: clock().timestamp(), sleep=clock.advance)
+    assert repeated.calls == 2
+    assert restarted["state"]["fills"] == [fill]
+    assert restarted["state"]["position"] == state["position"]
+    assert restarted["state"]["pending"] is None
+    assert restarted["state"]["mode"] == "SAFE_PAUSED"
+    assert restarted["actual_returns"] is False
+    resumed.db.close()
