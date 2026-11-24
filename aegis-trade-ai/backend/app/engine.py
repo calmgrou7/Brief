@@ -34,6 +34,10 @@ def initial() -> dict[str, Any]:
     )
 
 
+def kst_day(at: datetime) -> str:
+    return at.astimezone(timezone(timedelta(hours=9))).date().isoformat()
+
+
 class Engine:
     def __init__(
         self, path: Path, *, candles: list[dict[str, str]] | None = None,
@@ -55,7 +59,7 @@ class Engine:
             raise ValueError("SESSION_IDENTITY_MISMATCH")
         if not row:
             self.s.update(identity=identity, cursor=start)
-            self.s["day"] = self.now().astimezone(timezone(timedelta(hours=9))).date().isoformat()
+            self.s["day"] = kst_day(self.now())
             self.save("INITIALIZED_" + self.source)
 
     def now(self) -> datetime:
@@ -70,9 +74,10 @@ class Engine:
         p = self.s["position"]
         return D(self.s["cash"]) + (D(p["qty"]) * self.price() if p else D(0))
 
-    def refresh(self) -> None:
+    def refresh(self, *, at: datetime | None = None) -> None:
         equity = self.equity()
-        day = self.now().astimezone(timezone(timedelta(hours=9))).date().isoformat()
+        at = self.now() if at is None else at
+        day = kst_day(at)
         if not self.s["day"]:
             self.s["day"], self.s["day_equity"] = day, str(equity)
         if equity <= D(self.s["day_equity"]) * D(".98"):
@@ -80,11 +85,11 @@ class Engine:
         self.s["peak_equity"] = str(max(equity, D(self.s["peak_equity"])))
         if equity <= D(self.s["peak_equity"]) * D(".92") and self.s["mode"] == "PAPER":
             self.s["mode"] = "SAFE_PAUSED"
-        if self.s["cooldown"] and self.now() >= datetime.fromisoformat(self.s["cooldown"]):
+        if self.s["cooldown"] and at >= datetime.fromisoformat(self.s["cooldown"]):
             self.s.update(cooldown=None, loss_streak=0, second_strike=True)
 
-    def gate(self) -> None:
-        self.refresh()
+    def gate(self, *, at: datetime | None = None) -> None:
+        self.refresh(at=at)
         if self.s["mode"] != "PAPER":
             raise ValueError("REJECT_MODE_NOT_ALLOWED")
         if self.s["position"]:
@@ -104,9 +109,14 @@ class Engine:
              self.costs.fee, self.costs.slippage)
         self.s["pending"] = {"stop": stop, "signal_time": self.now().isoformat()}
         self.s["last_buy_cursor"] = self.s["cursor"]
-        self.s["last_decision"] = "QUEUED_NEXT_OPEN"
+        self.s["last_decision"] = "QUEUED_NEXT_ELIGIBLE_OPEN"
 
     def exit_position(self, reference: D, reason: str) -> None:
+        self._exit_position(reference, reason, at=self.now())
+
+    def _exit_position(
+        self, reference: D, reason: str, *, at: datetime, proxy: str | None = None,
+    ) -> None:
         p = self.s["position"]
         if not p:
             raise ValueError("REJECT_NO_POSITION")
@@ -115,23 +125,29 @@ class Engine:
         fee = gross * self.costs.fee
         net_pnl = gross - fee - D(p["cost"])
         self.s["cash"] = str(D(self.s["cash"]) + gross - fee)
-        self.s["trades"].append(
-            dict(
-                time=self.now().isoformat(),
-                qty=p["qty"],
-                entry=p["entry"],
-                exit=str(fill),
-                fee=str(fee + D(p["entry_fee"])),
-                net_pnl=str(net_pnl),
-                reason=reason,
-            )
+        trade = dict(
+            time=at.isoformat(),
+            qty=p["qty"],
+            entry=p["entry"],
+            exit=str(fill),
+            fee=str(fee + D(p["entry_fee"])),
+            net_pnl=str(net_pnl),
+            reason=reason,
         )
+        if proxy is not None or "entry_proxy" in p:
+            trade.update(
+                exit_proxy=proxy or "COMPLETED_CLOSE",
+                signal_time=p.get("signal_time"),
+                entry_time=p.get("entry_time"),
+                entry_proxy=p.get("entry_proxy"),
+            )
+        self.s["trades"].append(trade)
         self.s["position"] = None
         self.s["loss_streak"] = self.s["loss_streak"] + 1 if net_pnl < 0 else 0
         if self.s["second_strike"] and self.s["loss_streak"] >= 2:
             self.s["manual_loss_lock"] = True
         elif self.s["loss_streak"] >= 3:
-            self.s["cooldown"] = (self.now() + timedelta(hours=24)).isoformat()
+            self.s["cooldown"] = (at + timedelta(hours=24)).isoformat()
         self.s["last_decision"] = reason
 
     def sell(self) -> None:
@@ -149,21 +165,15 @@ class Engine:
             self.candles[cursor - 1],
             datetime.fromisoformat(candle["time"]) + timedelta(hours=4, seconds=15),
         )
-        # Day rollover uses prior mark, not the future close of this candle.
-        newday = (
-            (datetime.fromisoformat(candle["time"]) + timedelta(hours=4, seconds=15))
-            .astimezone(timezone(timedelta(hours=9)))
-            .date()
-            .isoformat()
-        )
-        if newday != self.s["day"]:
-            self.s["day"], self.s["day_equity"] = newday, str(self.equity())
-            self.s["daily_blocked"] = False
+        opened = datetime.fromisoformat(candle["time"])
+        observed = opened + timedelta(hours=4, seconds=15)
+        prior_equity = self.equity()
+        self.roll_day(opened, prior_equity)
         pending = self.s["pending"]
-        self.s["pending"] = None
-        if pending:
+        if pending and opened > datetime.fromisoformat(pending["signal_time"]):
+            self.s["pending"] = None
             try:
-                self.gate()
+                self.gate(at=opened)
                 sized = size(
                     self.equity(), D(self.s["cash"]), D(candle["open"]), D(pending["stop"]),
                     self.costs.fee, self.costs.slippage
@@ -172,6 +182,9 @@ class Engine:
                 fee = gross * self.costs.fee
                 self.s["cash"] = str(D(self.s["cash"]) - gross - fee)
                 self.s["position"] = dict(
+                    signal_time=pending["signal_time"],
+                    entry_time=opened.isoformat(),
+                    entry_proxy="OHLC_OPEN",
                     qty=str(sized.qty),
                     entry=str(sized.entry_fill),
                     stop=pending["stop"],
@@ -186,8 +199,26 @@ class Engine:
         self.s["cursor"] = cursor
         p = self.s["position"]
         if p and D(candle["low"]) <= D(p["stop"]) and self.s["mode"] != "EMERGENCY_STOP":
-            self.exit_position(min(D(p["stop"]), D(candle["open"])), "STOP_LOSS")
+            gap = D(candle["open"]) <= D(p["stop"])
+            self._exit_position(
+                min(D(p["stop"]), D(candle["open"])), "STOP_LOSS",
+                at=opened if gap else observed,
+                proxy="OHLC_GAP_OPEN" if gap else "OHLC_STOP_TOUCH_OBSERVED",
+            )
+        self.roll_day(observed, prior_equity)
+        if self.s["pending"] and cursor + 1 == len(self.candles):
+            self.s["pending"] = None
+            self.s["last_decision"] = "CANCEL_NO_ELIGIBLE_OPEN"
         self.refresh()
+        if self.s["pending"] and self.s["mode"] != "PAPER":
+            self.s["pending"] = None
+            self.s["last_decision"] = "CANCEL_RISK_PAUSE"
+
+    def roll_day(self, at: datetime, prior_equity: D) -> None:
+        day = kst_day(at)
+        if day != self.s["day"]:
+            self.s["day"], self.s["day_equity"] = day, str(prior_equity)
+            self.s["daily_blocked"] = False
 
     def mode(self, action: str, confirmation: str) -> None:
         if action == "pause":

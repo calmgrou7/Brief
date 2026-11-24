@@ -35,7 +35,8 @@ uv run python -m backend.app.research replay --input btc-4h.json --db conservati
 `quote` makes one bounded observation; it does not feed a broker or keep running.
 `replay --steps N` advances at most N bars (1–20,000). Rerun the identical command
 and DB to resume. Do not share that DB with the dashboard. Identity checks reject
-demo/research mixing and changes to dataset, partition, strategy or cost scenario.
+demo/research mixing and changes to dataset, partition, strategy, cost scenario, or fill model. Use a
+new research DB when upgrading from the earlier opening-fill model.
 The CLI takes a nonblocking single-process file lock. State and audit save in one
 SQLite transaction per step. An interrupted uncommitted step is replayed once.
 A safe pause stops the CLI; no automatic risk-limit relaxation occurs.
@@ -48,8 +49,17 @@ A safe pause stops the CLI; no automatic risk-limit relaxation occurs.
   `--lookback` and `--stop-fraction` configure this research-only baseline. It is
   **not** PRD strategy A/B/C and has no approval for unattended operation.
 - Only completed bars through the signal bar enter the pure strategy. The existing
-  Risk Gate sizes again at the next bar's open. Both sides pay configured fees and
-  slippage; gap stops and existing drawdown/day-loss/streak limits are preserved.
+  Risk Gate sizes again at the first OHLC opening timestamp strictly later than
+  the signal timestamp (signal bar close + 15 seconds). The immediate following
+  opening has already elapsed and does not consume the pending signal. Under
+  contiguous four-hour data, the following eligible opening is one bar later.
+  The fill uses the opening price, not the fill bar's future close. An unfilled
+  signal is canceled at the current partition end or on pause/stop.
+- Entries record `signal_time`, `entry_time` and `entry_proxy=OHLC_OPEN`.
+  A gap through a stop uses the opening as a price/time proxy
+  (`OHLC_GAP_OPEN`); an intrabar touch uses the stop price and bar observation
+  time (`OHLC_STOP_TOUCH_OBSERVED`), not a claimed exact execution time.
+  Both sides pay configured fees and slippage; simulated fills are not live trades.
 - Baseline exits are protective stops only. No trailing stop or SMA exit is implied.
   Open holdings remain marked at final close, with `open_position_not_liquidated`;
   marked PnL includes unrealized value and does not deduct a hypothetical final exit.
@@ -100,7 +110,7 @@ verified with `httpx.MockTransport`; this is not evidence of live API connectivi
 Real response compatibility/4H boundaries, 3-year collection, real historical returns,
 final holdout, websocket/orderbook freshness, live-paper restart/backfill handling,
 intrabar stop monitoring, clock skew, alerts, 30-day operation and profitability are
-not verified. Current demo KST day-boundary approximation remains unchanged.
+not verified. KST day rollover still uses the prior mark when midnight is inside a four-hour bar.
 
 Next: enable authorized public-host access, validate a small fetch and actual candle
 boundaries, collect versioned history, review baseline/metrics and PRD strategy scope,

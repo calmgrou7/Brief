@@ -60,7 +60,8 @@ class Replay(Engine):
         self.manifest = dict(dataset_hash=digest(dataset), strategy=asdict(strategy),
                              partition=partition, scenario=scenario,
                              costs_checksum=costs.checksum, source=dataset["source"],
-                             execution="OFFLINE_PAPER_REPLAY", begin=begin, end=end)
+                             execution="OFFLINE_PAPER_REPLAY",
+                             fill_model="STRICTLY_LATER_OHLC_OPEN_V2", begin=begin, end=end)
         self.strategy = strategy
         super().__init__(path, candles=candles[:end], identity=digest(self.manifest),
                          start=start, costs=costs)

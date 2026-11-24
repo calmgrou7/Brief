@@ -65,9 +65,20 @@ def test_next_open_persistence_and_pause(tmp_path):
     assert e.s["position"] is None
     with pytest.raises(ValueError):
         e.buy("80000000")
-    expected = D(e.candles[e.s["cursor"] + 1]["open"]) * D("1.001")
+    pending = dict(e.s["pending"])
+    open_time = e.candles[e.s["cursor"] + 2]["time"]
+    expected = D(e.candles[e.s["cursor"] + 2]["open"]) * D("1.001")
+    e.step()
+    assert e.s["position"] is None
+    assert e.s["pending"] == pending
+    e.save("test")
+    e.db.close()
+    e = Engine(p)
     e.step()
     assert D(e.s["position"]["entry"]) == expected
+    assert e.s["position"]["entry_proxy"] == "OHLC_OPEN"
+    assert e.s["position"]["entry_time"] == open_time
+    assert datetime.fromisoformat(open_time) > datetime.fromisoformat(pending["signal_time"])
     e.mode("stop", "STOP")
     with pytest.raises(ValueError):
         e.sell()
@@ -154,6 +165,7 @@ def test_gap_stop_can_exceed_budget(tmp_path):
     e = Engine(tmp_path / "gap.db")
     e.buy(str(e.price() * D(".90")))
     e.step()
+    e.step()
     budget = D(e.s["position"]["risk_budget"])
     nxt = e.candles[e.s["cursor"] + 1]
     gap = D(e.s["position"]["stop"]) * D(".80")
@@ -161,6 +173,8 @@ def test_gap_stop_can_exceed_budget(tmp_path):
     e.step()
     assert e.s["position"] is None
     assert -D(e.s["trades"][-1]["net_pnl"]) > budget
+    assert e.s["trades"][-1]["exit_proxy"] == "OHLC_GAP_OPEN"
+    assert e.s["trades"][-1]["time"] == nxt["time"]
     e.db.close()
 
 
@@ -173,6 +187,7 @@ def test_stop_cancels_pending_and_blocks_auto_exit(tmp_path):
     e.mode("resume", "RESUME")
     e.mode("resume", "RESUME")
     e.buy(str(e.price() * D(".90")))
+    e.step()
     e.step()
     e.mode("stop", "STOP")
     nxt = e.candles[e.s["cursor"] + 1]
@@ -281,3 +296,47 @@ def test_named_ui_and_failed_action_rollback(tmp_path):
         after = client.get("/api/state").json()
         assert after["cash"] == state["cash"] and after["position"] is None
         assert after["pending"] is None
+
+
+def test_equal_open_ineligible_and_pause_cancels_pending(tmp_path):
+    e = Engine(tmp_path / "equal.db")
+    e.buy(str(e.price() * D(".90")))
+    e.s["pending"]["signal_time"] = e.candles[e.s["cursor"] + 1]["time"]
+    e.step()
+    assert not e.s["position"] and e.s["pending"]
+    e.mode("pause", "")
+    e.mode("resume", "RESUME")
+    e.step()
+    assert not e.s["position"] and not e.s["pending"]
+    e.db.close()
+
+
+def test_eligible_fill_not_sized_from_fill_candle_close(tmp_path):
+    candle_sets = [demo_candles(), demo_candles()]
+    candle = candle_sets[1][26]
+    candle["close"] = candle["high"] = str(D(candle["high"]) * 2)
+    positions = []
+    for i, candles in enumerate(candle_sets):
+        e = Engine(tmp_path / f"close-{i}.db", candles=candles)
+        e.buy(str(e.price() * D(".90")))
+        e.step()
+        e.step()
+        positions.append(e.s["position"])
+        e.db.close()
+    assert positions[0] is not None and positions[0] == positions[1]
+
+
+def test_ineligible_bar_stop_range_not_applied_to_delayed_buy(tmp_path):
+    e = Engine(tmp_path / "touch.db")
+    stop = e.price() * D(".90")
+    e.buy(str(stop))
+    e.candles[25]["low"] = str(stop / 2)
+    e.step()
+    assert not e.s["position"] and not e.s["trades"]
+    e.candles[26]["low"] = str(stop / 2)
+    e.step()
+    trade = e.s["trades"][-1]
+    assert trade["entry_time"] == e.candles[26]["time"]
+    assert trade["exit_proxy"] == "OHLC_STOP_TOUCH_OBSERVED"
+    assert trade["time"] == e.now().isoformat()
+    e.db.close()

@@ -269,3 +269,16 @@ def test_ticker_uses_post_request_receipt_clock():
     quote = service.ticker()
     assert datetime.fromisoformat(quote["received_at"]) >= observed[0]
     assert quote["status"] == "OK"
+
+
+def test_pending_ineligible_open_cancels_at_partition_end(tmp_path):
+    engine = Replay(tmp_path / "boundary", dataset(), Baseline(), partition="validation")
+    limit = engine.manifest["end"]
+    engine.s["cursor"] = limit - 2
+    engine.buy(str(engine.price() * D(".90")))
+    engine.advance(1)
+    assert engine.report()["completed"]
+    assert engine.s["cursor"] == limit - 1
+    assert engine.s["pending"] is None and engine.s["position"] is None
+    assert engine.s["last_decision"] == "CANCEL_NO_ELIGIBLE_OPEN"
+    engine.db.close()
