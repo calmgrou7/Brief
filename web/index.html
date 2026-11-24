@@ -54,6 +54,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:#fafcff}
 .bar[data-month]{cursor:pointer} .bar[data-month]:hover i{background:var(--accent)}
 th.sortable{cursor:pointer;user-select:none;white-space:nowrap} th.sortable:hover{color:var(--brand-2)}
 th.sortable .ar{font-size:10px;margin-left:3px;opacity:.35} th.sortable.on .ar{opacity:1;color:var(--brand-2)}
+@media print{ aside, .no-print, .head .row, #modal-root{display:none !important} .app{display:block} main{padding:0;max-width:none} .panel{box-shadow:none;break-inside:avoid} body{background:#fff} }
 .tag.new{background:#e7f6ee;color:#1e7a4c;font-weight:700}
 .av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--soft);display:inline-flex;align-items:center;justify-content:center;color:var(--brand);font-weight:700;flex:none}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
@@ -227,6 +228,11 @@ const Store = {
     this.db = {members:ms.map(fromMember),
       positions:ps.map(r=>({id:r.id, name:r.name, single:r.single, order:r.sort_order})),
       terms:ts.map(fromTerm), events:es.map(fromEvent), history:hs.map(fromHistory), applications:[]};
+    this.db.bylaws = null; this.db.budgets = {years:{}};
+    try{   // 회칙·예산안 (공용 설정 저장소)
+      const {data} = await sb.from('jw_templates').select('key,data').in('key', ['bylaws','budgets']);
+      (data||[]).forEach(r=>{ if(r.key === 'bylaws') this.db.bylaws = r.data; if(r.key === 'budgets') this.db.budgets = {years:{}, ...r.data}; });
+    }catch(e){ console.warn('회칙·예산안을 불러오지 못했습니다', e); }
     this.db.finance = [];
     try{   // 재무보고 (표가 없거나 실패해도 나머지 화면은 열리도록)
       const {data, error} = await sb.from('jw_finance').select('*');
@@ -633,7 +639,7 @@ function closeModal(){ $('#modal-root').innerHTML=''; }
 /* ===================== 라우팅 ===================== */
 const ROUTES = [
   ['dashboard','🏠','대시보드'],['members','👥','회원명부'],['guardians','🤝','추천인'],
-  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['finance','💰','재무보고'],['settings','⚙️','관리'],
+  ['officers','🎖️','임원진'],['events','📅','행사'],['history','📜','연혁'],['bylaws','📖','회칙'],['budget','📊','예산안'],['finance','💰','재무보고'],['settings','⚙️','관리'],
 ];
 const ui = {view:'table', q:'', type:'', year:'', eventYear:String(new Date().getFullYear()), sort:{key:'joined', dir:'desc'}, finYear:String(new Date().getFullYear())};
 
@@ -646,16 +652,20 @@ function render(){
   const me = Store.me, mine = member(me.memberId);
   $('#who').innerHTML = `<div>${mine?`<a href="#/member/${mine.id}" style="color:#fff"><b>${esc(mine.name)}</b></a>`:''}
     <div>${memberMode ? '' : esc(me.email) + ' · '}${me.admin?'관리자':me.officer?'임원':'회원'}</div></div>
-    <div class="row" style="gap:6px">${memberMode?'<button class="btn sm" id="chpw">비밀번호 변경</button>':''}<button class="btn sm" id="logout">${keyMode?'잠그기':'로그아웃'}</button></div>`;
-  $('#logout').onclick = async ()=>{
-    if(keyMode){ writeKey(''); location.reload(); }
+    <div class="row" style="gap:6px">${memberMode?'<button class="btn sm" id="chpw">비밀번호 변경</button>':''}<button class="btn sm" id="logout">로그아웃</button></div>`;
+  const logout = async ()=>{
+    if(!confirm(keyMode ? '로그아웃할까요?\n이 기기에 저장된 관리자 접속 코드가 지워져, 다시 들어오려면 코드를 입력해야 합니다.' : '로그아웃할까요?')) return;
+    if(keyMode){ writeKey(''); location.hash = ''; location.reload(); }
     else if(memberMode){ try{ await sb.rpc('jw_member_logout'); }catch(e){} writeMemberToken(''); location.reload(); }
     else sb.auth.signOut(); };
+  $('#logout').onclick = logout;
   if($('#chpw')) $('#chpw').onclick = ()=>passwordForm(false);
   const meLink = mine ? `<a href="#/member/${mine.id}/edit" class="${page==='member'&&id===mine.id?'on':''}" style="${page==='member'&&id===mine.id?'':'background:rgba(255,255,255,.12);color:#fff'}"><span>✏️</span>내 정보 수정</a>` : '';
-  $('#nav').innerHTML = meLink + ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('');
+  $('#nav').innerHTML = meLink + ROUTES.filter(([k])=>k!=='settings'||can.admin()).map(([k,i,l])=>`<a href="#/${k}" class="${k===navKey?'on':''}"><span>${i}</span>${l}${k==='settings'&&pendingCount()?` <span class="nbadge">${pendingCount()}</span>`:''}</a>`).join('')
+    + `<a href="javascript:void(0)" id="navLogout" style="margin-top:10px;opacity:.85"><span>🚪</span>로그아웃</a>`;
+  $('#navLogout').onclick = logout;
   const fn = {dashboard:Dashboard, members:Members, member:()=>MemberDetail(id), guardians:Guardians,
-              officers:Officers, events:Events, history:History, finance:Finance, nametag:Nametag, settings:Settings}[page] || Dashboard;
+              officers:Officers, events:Events, history:History, finance:Finance, bylaws:Bylaws, budget:Budget, nametag:Nametag, settings:Settings}[page] || Dashboard;
   $('#view').innerHTML = fn();
   bind[page]?.(id, sub);
   window.scrollTo(0,0);
@@ -1805,6 +1815,197 @@ function financeForm(f){
   });
 }
 
+/* ===================== 회칙 =====================
+   jw_templates('bylaws') = {versions:[{rev,label,revised,effective,summary,text,registered,by}], history:[{rev,date}]}
+   - 본문은 '제N조 (제목)' 단위로 나눠 목차·검색·조문 카드로 표시
+   - 새 개정을 등록하면 이전 본은 보관되고, 바뀐 조문에 '개정' 표시 */
+function parseBylaws(text){
+  const arts = [];
+  (text || '').split('\n').map(s=>s.trim()).filter(Boolean).forEach(line=>{
+    const h = line.match(/^제\s*(\d+)\s*조\s*\(([^)]*)\)\s*(.*)$/);
+    // '명 칭'처럼 한 글자씩 띄운 제목만 붙이고, '집행부 및 임원'은 그대로
+    const tw = h && h[2].trim().split(/\s+/), title = h ? (tw.every(w=>w.length === 1) ? tw.join('') : tw.join(' ')) : '';
+    if(h){ arts.push({no:+h[1], title, lines:[]}); if(h[3]) arts[arts.length-1].lines.push({lvl:0, text:h[3]}); return; }
+    if(!arts.length) arts.push({no:0, title:'전문', lines:[]});
+    const lvl = /^\d+\./.test(line) ? 1 : /^\d+\)/.test(line) ? 2 : 0;
+    arts[arts.length-1].lines.push({lvl, text:line});
+  });
+  return arts;
+}
+const artKey = a => a.lines.map(l=>l.text.replace(/\s+/g,'')).join('|');
+function Bylaws(){
+  const d = D().bylaws;
+  if(!d || !d.versions?.length) return `<div class="head"><h1>회칙</h1>${can.officer()?'<button class="btn pri" id="blNew">+ 회칙 등록</button>':''}</div><div class="empty">등록된 회칙이 없습니다.</div>`;
+  const vs = [...d.versions].sort((a,b)=>b.rev - a.rev);
+  const v = vs.find(x=>String(x.rev) === String(ui.blRev)) || vs[0];
+  const prev = vs.find(x=>x.rev < v.rev);
+  const arts = parseBylaws(v.text), prevArts = prev ? parseBylaws(prev.text) : [];
+  const changed = a => prev && artKey(prevArts.find(p=>p.no === a.no) || {lines:[]}) !== artKey(a);
+  const q = (ui.blQ || '').trim();
+  const hl = s => q ? esc(s).split(esc(q)).join(`<mark>${esc(q)}</mark>`) : esc(s);
+  const shown = q ? arts.filter(a=>(a.title + ' ' + a.lines.map(l=>l.text).join(' ')).includes(q)) : arts;
+  const fmtD = s => (s||'').replace(/-/g,'.');
+  return `
+  <div class="head"><div><h1>정우회 회칙</h1><div class="muted" style="font-size:13px;margin-top:4px">${esc(v.label)} · ${fmtD(v.revised)} 개정 · ${fmtD(v.effective)} 시행${v === vs[0] ? ' <span class="tag new">현행</span>' : ' <span class="tag gray">이전 회칙</span>'}</div></div>
+    <div class="row">${vs.length > 1 ? `<select class="input" id="blRev">${vs.map(x=>`<option value="${x.rev}" ${x===v?'selected':''}>${esc(x.label)} (${fmtD(x.revised)})</option>`).join('')}</select>` : ''}
+      <button class="btn" id="blPrint">🖨 인쇄</button>${can.officer()?'<button class="btn pri" id="blNew">+ 개정 등록</button>':''}</div></div>
+  <div class="panel no-print" style="margin-bottom:14px">
+    <div class="row" style="justify-content:space-between;gap:10px">
+      <div class="row" style="gap:6px;flex-wrap:wrap">${arts.map(a=>`<a class="tag" href="javascript:void(0)" data-art="${a.no}" style="cursor:pointer">제${a.no}조 ${esc(a.title)}${changed(a)?' •':''}</a>`).join('')}</div>
+      <input class="input" id="blQ" placeholder="조문 검색 (예: 회비, 경조사)" value="${esc(q)}" style="min-width:200px;flex:1;max-width:280px">
+    </div>
+    ${v.summary ? `<div class="muted" style="font-size:13px;margin-top:10px">개정 요지: ${esc(v.summary)}</div>` : ''}
+  </div>
+  ${shown.length ? shown.map(a=>`<div class="panel" id="art-${a.no}" style="margin-bottom:12px">
+      <h2 style="margin-bottom:8px">제${a.no}조 (${esc(a.title)}) ${changed(a)?`<span class="tag off">${esc(v.label)}에서 변경</span>`:''}</h2>
+      ${a.lines.map(l=>`<div style="padding-left:${l.lvl===2?28:l.lvl===1?10:0}px;margin:5px 0;line-height:1.7;${l.lvl===0?'':''}">${hl(l.text)}</div>`).join('')}
+    </div>`).join('') : `<div class="empty">'${esc(q)}'이(가) 들어간 조문이 없습니다.</div>`}
+  <div class="panel" style="margin-top:4px"><h2>개정 이력</h2>
+    <div class="row" style="gap:8px;flex-wrap:wrap">${[...(d.history||[])].sort((a,b)=>a.rev-b.rev).map(h=>`<span class="tag ${h.rev===v.rev?'off':'gray'}">${h.rev}차 개정 ${fmtD(h.date)}</span>`).join('')}</div>
+    <div class="muted" style="font-size:12px;margin-top:8px">${esc(v.by||'')} · ${fmtD(v.registered)} 등록</div></div>`;
+}
+function bylawsForm(){
+  const d = D().bylaws || {versions:[], history:[]};
+  const last = [...d.versions].sort((a,b)=>b.rev - a.rev)[0];
+  const rev = (last?.rev || 0) + 1;
+  openModal(`<h2>${last ? `${rev}차 개정 등록` : '회칙 등록'}</h2>
+    <p class="muted" style="margin-top:-6px;font-size:13px">본문은 '제1조 (명칭) …' 형식으로 조문마다 줄을 바꿔 적어 주세요. 이전 회칙은 그대로 보관되고, 바뀐 조문에 표시가 붙습니다.</p>
+    <form class="form" id="blf">
+      <label>개정 차수<input class="input" name="rev" type="number" value="${rev}" required></label>
+      <label>개정일<input class="input" name="revised" type="date" value="${today()}" required></label>
+      <label>시행일<input class="input" name="effective" type="date" value="${today()}" required></label>
+      <label>개정 요지<input class="input" name="summary" placeholder="예: 회비 인상, 경조사 범위 조정"></label>
+      <label class="full">회칙 본문<textarea class="input" name="text" rows="16" required style="font-size:14px;line-height:1.6">${esc(last?.text || '')}</textarea></label>
+      <div class="full row" style="justify-content:flex-end"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+    </form>`, root=>{
+    root.querySelector('#blf').onsubmit = async e=>{
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target)), r = +f.rev;
+      if(!parseBylaws(f.text).some(a=>a.no > 0)) return toast("'제1조 (…)' 형식의 조문을 찾지 못했습니다.");
+      const me = member(Store.me.memberId);
+      const ver = {rev:r, label:`${r}차 개정`, revised:f.revised, effective:f.effective, summary:f.summary, text:f.text.trim(),
+        registered:today(), by: me ? me.name : '관리자'};
+      const data = {versions:[...d.versions.filter(x=>x.rev !== r), ver], history:[...(d.history||[]).filter(h=>h.rev !== r), {rev:r, date:f.revised}]};
+      await q(sb.from('jw_templates').upsert({key:'bylaws', data, updated_by:ver.by, updated_at:new Date().toISOString()}));
+      ui.blRev = String(r); closeModal(); toast(`${ver.label}을 등록했습니다.`); Store.refresh();
+    };
+  });
+}
+
+/* ===================== 예산안 =====================
+   jw_templates('budgets') = {years:{'2027':{status:'draft'|'final', approved, note, income:[{name,basis,amount}], expense:[{cat,name,basis,amount,note}]}}}
+   - 금액은 원 단위 저장, 입력·표시는 만 원 단위
+   - 새 연도는 전년 예산을 복사해서 시작 / 재무보고의 실제 지출과 비교 */
+const man = n => { const v = Math.round(+n || 0) / 10000; return (Number.isInteger(v) ? v.toLocaleString('ko-KR') : v.toLocaleString('ko-KR', {maximumFractionDigits:1})) + '만'; };
+const budgetYears = () => Object.keys(D().budgets?.years || {}).sort().reverse();
+function Budget(){
+  const years = budgetYears();
+  const y = years.includes(ui.budYear) ? ui.budYear : years[0];
+  const b = y ? D().budgets.years[y] : null;
+  const head = `<div class="head"><div><h1>예산안</h1><div class="muted" style="font-size:13px;margin-top:4px">연도별 수입·지출 계획 (단위: 만 원)</div></div>
+    <div class="row">${years.length ? `<select class="input" id="budY">${years.map(x=>`<option ${x===y?'selected':''}>${x}</option>`).join('')}</select>` : ''}
+      ${b ? '<button class="btn" id="budPrint">🖨 인쇄</button><button class="btn" id="budXlsx">⬇ 엑셀</button>' : ''}
+      ${can.officer() ? `${b ? '<button class="btn" id="budEdit">수정</button>' : ''}<button class="btn pri" id="budNew">+ 새 연도</button>` : ''}</div></div>`;
+  if(!b) return head + '<div class="empty">등록된 예산안이 없습니다.</div>';
+  const exp = b.expense || [], inc = b.income || [];
+  const expT = exp.reduce((s,i)=>s + (+i.amount||0), 0), incT = inc.reduce((s,i)=>s + (+i.amount||0), 0);
+  const cats = [...new Set(exp.map(i=>i.cat || '기타'))];
+  const pct = n => expT ? (n / expT * 100).toFixed(1) + '%' : '-';
+  // 재무보고 실제 지출 (해당 연도)
+  const fin = (D().finance||[]).filter(f=>f.period.startsWith(y));
+  const actual = fin.reduce((s,f)=>s + finTotals(f).exp, 0);
+  return head + `
+  <div class="grid kpis">
+    <div class="panel kpi"><div class="l">${y}년 수입 계획</div><div class="n" style="font-size:22px;color:var(--ok)">${man(incT)}원</div></div>
+    <div class="panel kpi"><div class="l">${y}년 지출 계획</div><div class="n" style="font-size:22px;color:var(--warn)">${man(expT)}원</div></div>
+    <div class="panel kpi"><div class="l">수지 차액</div><div class="n" style="font-size:22px;color:${incT - expT < 0 ? 'var(--warn)' : 'inherit'}">${incT - expT < 0 ? '-' : ''}${man(Math.abs(incT - expT))}원</div><div class="l">${incT - expT < 0 ? '수입 부족' : '예비·이월'}</div></div>
+    <div class="panel kpi"><div class="l">실제 지출 (재무보고)</div><div class="n" style="font-size:22px">${fin.length ? man(actual) + '원' : '-'}</div><div class="l">${fin.length ? `집행률 ${expT ? Math.round(actual / expT * 100) : 0}% · ${fin.length}개월` : '재무보고 등록 후 자동 계산'}</div></div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0">${y}년 예산안 ${b.status === 'final' ? `<span class="tag new">확정${b.approved ? ' · ' + b.approved.replace(/-/g,'.') : ''}</span>` : '<span class="tag off">작성 중(안)</span>'}</h2></div>
+    ${b.note ? `<p class="muted" style="font-size:13px;white-space:pre-wrap">${esc(b.note)}</p>` : ''}
+    <h3 style="font-size:15px;margin:14px 0 6px">수입</h3>
+    <div style="overflow-x:auto"><table><tr><th>항목</th><th>산출 근거</th><th style="text-align:right">금액</th></tr>
+      ${inc.map(i=>`<tr><td>${esc(i.name)}</td><td class="muted">${esc(i.basis||'')}</td><td style="text-align:right">${man(i.amount)}</td></tr>`).join('')}
+      <tr style="font-weight:700;background:var(--soft)"><td colspan="2">수입 합계</td><td style="text-align:right">${man(incT)}</td></tr></table></div>
+    <h3 style="font-size:15px;margin:18px 0 6px">지출</h3>
+    <div style="overflow-x:auto"><table><tr><th>분류</th><th>항목</th><th class="hide-m">산출 근거</th><th style="text-align:right">금액</th><th style="text-align:right">비율</th></tr>
+      ${cats.map(c=>{ const rows = exp.filter(i=>(i.cat||'기타')===c); const sub = rows.reduce((s,i)=>s + (+i.amount||0), 0);
+        return rows.map((i,k)=>`<tr><td>${k===0?`<b>${esc(c)}</b>`:''}</td><td>${esc(i.name)}</td><td class="hide-m muted">${esc(i.basis||'')}</td><td style="text-align:right">${man(i.amount)}</td><td style="text-align:right" class="muted">${pct(+i.amount||0)}</td></tr>`).join('')
+          + `<tr style="background:#fafbfd"><td></td><td colspan="2" class="muted"><i>${esc(c)} 소계</i></td><td style="text-align:right"><i>${man(sub)}</i></td><td style="text-align:right"><i>${pct(sub)}</i></td></tr>`; }).join('')}
+      <tr style="font-weight:700;background:var(--soft)"><td colspan="3">지출 합계</td><td style="text-align:right">${man(expT)}</td><td style="text-align:right">100%</td></tr></table></div>
+    <div class="muted" style="font-size:12px;margin-top:8px">단위: 만 원${b.by ? ' · ' + esc(b.by) : ''}${b.updated ? ' ' + b.updated.slice(0,10).replace(/-/g,'.') + ' 수정' : ''}</div>
+  </div>`;
+}
+function budgetForm(y, copyFrom){
+  const all = D().budgets?.years || {};
+  const src = all[y] || (copyFrom ? all[copyFrom] : null) || {};
+  let inc = (src.income || [{name:'연회비', basis:'', amount:0}]).map(x=>({...x}));
+  let exp = (src.expense || [{cat:'', name:'', basis:'', amount:0}]).map(x=>({...x}));
+  const isNew = !all[y];
+  const incRow = (i,n) => `<tr data-n="${n}"><td><input class="input" data-k="name" value="${esc(i.name||'')}" style="padding:6px;min-width:110px"></td>
+    <td><input class="input" data-k="basis" value="${esc(i.basis||'')}" style="padding:6px;min-width:180px"></td>
+    <td><input class="input" data-k="amount" inputmode="decimal" value="${(+i.amount||0)/10000}" style="padding:6px;width:90px;text-align:right"></td>
+    <td><button type="button" class="btn sm danger" data-rm>✕</button></td></tr>`;
+  const expRow = (i,n) => `<tr data-n="${n}"><td><input class="input" data-k="cat" list="budCats" value="${esc(i.cat||'')}" style="padding:6px;width:100px"></td>
+    <td><input class="input" data-k="name" value="${esc(i.name||'')}" style="padding:6px;min-width:140px"></td>
+    <td><input class="input" data-k="basis" value="${esc(i.basis||'')}" style="padding:6px;min-width:150px"></td>
+    <td><input class="input" data-k="amount" inputmode="decimal" value="${(+i.amount||0)/10000}" style="padding:6px;width:90px;text-align:right"></td>
+    <td><button type="button" class="btn sm danger" data-rm>✕</button></td></tr>`;
+  openModal(`<h2>${y}년 예산안 ${isNew ? (copyFrom ? `만들기 (${copyFrom}년 복사)` : '만들기') : '수정'}</h2>
+    <form id="budf">
+      <div class="form">
+        <label>상태<select class="input" name="status"><option value="draft" ${src.status!=='final'?'selected':''}>작성 중(안)</option><option value="final" ${src.status==='final'?'selected':''}>총회 확정</option></select></label>
+        <label>확정일 (총회)<input class="input" type="date" name="approved" value="${src.approved||''}"></label>
+        <label class="full">설명<textarea class="input" name="note" rows="2">${esc(src.note||'')}</textarea></label>
+      </div>
+      <datalist id="budCats"><option>정기행사</option><option>특별행사</option><option>회의</option><option>회원 복지</option><option>동우회 지원</option><option>봉사</option><option>예비비</option></datalist>
+      <div style="margin-top:12px"><b>수입</b> <span class="muted" style="font-size:12px">(금액: 만 원)</span></div>
+      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px"><table><thead><tr><th>항목</th><th>산출 근거</th><th>금액</th><th></th></tr></thead><tbody id="incRows"></tbody></table></div>
+      <button type="button" class="btn sm" id="incAdd" style="margin-top:6px">+ 수입 항목</button>
+      <div style="margin-top:14px"><b>지출</b> <span class="muted" style="font-size:12px">(분류가 같은 항목끼리 소계가 계산됩니다)</span></div>
+      <div style="overflow-x:auto;max-height:38vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px"><table><thead><tr><th>분류</th><th>항목</th><th>산출 근거</th><th>금액</th><th></th></tr></thead><tbody id="expRows"></tbody></table></div>
+      <div class="row" style="justify-content:space-between;margin-top:6px"><button type="button" class="btn sm" id="expAdd">+ 지출 항목</button><span class="muted" id="budTot" style="font-size:13px"></span></div>
+      <div class="row" style="justify-content:flex-end;margin-top:14px"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
+    </form>`, root=>{
+    const amt = v => Math.round((parseFloat(String(v).replace(/[^\d.-]/g,'')) || 0) * 10000);
+    const read = (sel, keys) => [...root.querySelectorAll(sel + ' tr')].map(tr=>Object.fromEntries(keys.map(k=>[k, k==='amount' ? amt(tr.querySelector(`[data-k=${k}]`).value) : tr.querySelector(`[data-k=${k}]`).value.trim()])));
+    const total = () => { const it = read('#incRows', ['name','basis','amount']).reduce((s,i)=>s+i.amount,0), et = read('#expRows', ['cat','name','basis','amount']).reduce((s,i)=>s+i.amount,0);
+      root.querySelector('#budTot').textContent = `수입 ${man(it)} · 지출 ${man(et)} · 차액 ${man(it-et)}`; };
+    const draw = () => {
+      root.querySelector('#incRows').innerHTML = inc.map(incRow).join(''); root.querySelector('#expRows').innerHTML = exp.map(expRow).join('');
+      root.querySelectorAll('#incRows [data-rm]').forEach(b=>b.onclick=()=>{ inc = read('#incRows',['name','basis','amount']); exp = read('#expRows',['cat','name','basis','amount']); inc.splice(+b.closest('tr').dataset.n,1); draw(); });
+      root.querySelectorAll('#expRows [data-rm]').forEach(b=>b.onclick=()=>{ inc = read('#incRows',['name','basis','amount']); exp = read('#expRows',['cat','name','basis','amount']); exp.splice(+b.closest('tr').dataset.n,1); draw(); });
+      root.querySelectorAll('input').forEach(x=>x.oninput = total); total(); };
+    draw();
+    root.querySelector('#incAdd').onclick = ()=>{ inc = read('#incRows',['name','basis','amount']); exp = read('#expRows',['cat','name','basis','amount']); inc.push({name:'',basis:'',amount:0}); draw(); };
+    root.querySelector('#expAdd').onclick = ()=>{ inc = read('#incRows',['name','basis','amount']); exp = read('#expRows',['cat','name','basis','amount']); exp.push({cat: exp[exp.length-1]?.cat || '', name:'', basis:'', amount:0}); draw(); };
+    root.querySelector('#budf').onsubmit = async e=>{
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target)), me = member(Store.me.memberId);
+      const entry = {status:f.status, approved:f.approved, note:f.note,
+        income: read('#incRows',['name','basis','amount']).filter(i=>i.name),
+        expense: read('#expRows',['cat','name','basis','amount']).filter(i=>i.name).map(i=>({...i, cat:i.cat || '기타'})),
+        by: me ? me.name : '관리자', updated: new Date().toISOString()};
+      const data = {years:{...all, [y]:entry}};
+      await q(sb.from('jw_templates').upsert({key:'budgets', data, updated_by:entry.by, updated_at:entry.updated}));
+      ui.budYear = y; closeModal(); toast(`${y}년 예산안을 저장했습니다.`); Store.refresh();
+    };
+  });
+}
+async function exportBudgetXlsx(y){
+  const X = await loadXLSX(), b = D().budgets.years[y];
+  const exp = b.expense || [], inc = b.income || [];
+  const expT = exp.reduce((s,i)=>s + (+i.amount||0), 0), incT = inc.reduce((s,i)=>s + (+i.amount||0), 0);
+  const rows = [[`${y}년 정우회 예산안${b.status==='final'?' (확정)':' (안)'}`], ['단위: 원'], [], ['[수입]'], ['항목','산출 근거','금액']];
+  inc.forEach(i=>rows.push([i.name, i.basis||'', +i.amount||0])); rows.push(['수입 합계','',incT], [], ['[지출]'], ['분류','항목','산출 근거','금액','비율']);
+  [...new Set(exp.map(i=>i.cat||'기타'))].forEach(c=>{ const rs = exp.filter(i=>(i.cat||'기타')===c); const sub = rs.reduce((s,i)=>s+(+i.amount||0),0);
+    rs.forEach(i=>rows.push([c, i.name, i.basis||'', +i.amount||0, expT ? +((+i.amount||0)/expT*100).toFixed(1) + '%' : ''])); rows.push(['', `${c} 소계`, '', sub, expT ? +(sub/expT*100).toFixed(1) + '%' : '']); });
+  rows.push(['지출 합계','','',expT,'100%'], [], ['수지 차액','','',incT-expT]);
+  const ws = X.utils.aoa_to_sheet(rows); ws['!cols'] = [{wch:14},{wch:28},{wch:34},{wch:14},{wch:8}];
+  const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, `${y} 예산안`); X.writeFile(wb, `정우회_${y}년_예산안.xlsx`);
+}
+
 /* ===================== 명찰 만들기 =====================
    배경 이미지(JPG/PNG) 위에 회원 이름·상호·직함(·사진)을 얹어 인쇄 크기(300dpi) 이미지로 일괄 출력
    - 미리보기에서 글자를 끌어서 위치 조정, 크기·색·굵기 조절 / 긴 이름은 자동 축소
@@ -2128,6 +2329,29 @@ const bind = {
       await q(sb.from('jw_events').insert(toEvent(copy)));
       ui.eventYear = String(y+1); toast(`${y+1}년으로 복제했습니다. 날짜를 확인해주세요.`); Store.refresh();
     });
+  },
+  bylaws(){
+    if($('#blNew')) $('#blNew').onclick = bylawsForm;
+    if($('#blRev')) $('#blRev').onchange = e=>{ ui.blRev = e.target.value; render(); };
+    if($('#blPrint')) $('#blPrint').onclick = ()=>window.print();
+    if($('#blQ')) $('#blQ').oninput = e=>{ ui.blQ = e.target.value; const pos = e.target.selectionStart; render(); const n = $('#blQ'); n.focus(); n.setSelectionRange(pos, pos); };
+    document.querySelectorAll('[data-art]').forEach(a=>a.onclick=()=>{ const el = document.getElementById('art-' + a.dataset.art); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); });
+  },
+  budget(){
+    const y = $('#budY') ? $('#budY').value : '';
+    if($('#budY')) $('#budY').onchange = e=>{ ui.budYear = e.target.value; render(); };
+    if($('#budPrint')) $('#budPrint').onclick = ()=>window.print();
+    if($('#budXlsx')) $('#budXlsx').onclick = ()=>exportBudgetXlsx(y).catch(err=>toast(err.message));
+    if($('#budEdit')) $('#budEdit').onclick = ()=>budgetForm(y);
+    if($('#budNew')) $('#budNew').onclick = ()=>{
+      const years = budgetYears(), next = String(years.length ? +years[0] + 1 : new Date().getFullYear());
+      const v = prompt('만들 연도를 입력하세요', next); if(!v) return;
+      if(!/^\d{4}$/.test(v.trim())) return toast('연도는 4자리 숫자로 입력해 주세요.');
+      const yy = v.trim();
+      if(D().budgets.years[yy]){ ui.budYear = yy; return render(); }
+      const base = budgetYears().find(x=>x < yy) || budgetYears()[0];
+      budgetForm(yy, base && confirm(`${base}년 예산을 복사해서 시작할까요? (취소 = 빈 양식)`) ? base : null);
+    };
   },
   async nametag(){
     if(!can.officer()) return;
