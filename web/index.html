@@ -1994,8 +1994,9 @@ function Settlement(y, b, head){
   </div>
   ${funds.map(fundBlock).join('')}
   ${nm.length ? `<div class="panel" style="margin-top:16px"><details><summary style="cursor:pointer"><b>별첨. ${y}년 신입회원 현황 (${nm.length}명${nm.filter(r=>r[4]).length ? `, 재입회 ${nm.filter(r=>r[4]).length}명 포함` : ''})</b></summary>
-    <div style="overflow-x:auto;margin-top:8px"><table><tr><th>연번</th><th>입회</th><th>성명</th><th>추천인</th><th>근무처</th><th>비고</th></tr>
-    ${nm.map((r,k)=>{ const m = D().members.find(x=>x.name===r[1]); return `<tr><td>${k+1}</td><td>${esc(r[0])}</td><td>${m?`<a href="#/member/${m.id}">${esc(r[1])}</a>`:esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td></tr>`; }).join('')}
+    <div class="muted" style="font-size:12.5px;margin-top:8px">※ 보고서 작성 당시의 기록입니다. 현재 회원 정보(근무처 등)는 회원명부를 기준으로 합니다.</div>
+    <div style="overflow-x:auto;margin-top:6px"><table><tr><th>연번</th><th>입회</th><th>성명</th><th>추천인</th><th>근무처</th><th>비고</th></tr>
+    ${nm.map((r,k)=>`<tr><td>${k+1}</td><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td>${esc(r[4])}</td></tr>`).join('')}
     </table></div></details></div>` : ''}`;
 }
 async function exportSettlementXlsx(y){
