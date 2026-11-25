@@ -103,7 +103,7 @@ th.sortable .ar{font-size:10px;margin-left:3px;opacity:.35} th.sortable.on .ar{o
 .form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub)}
 .form .full{grid-column:1/-1}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;z-index:30;font-size:14px}
+.toast{position:fixed;top:16px;max-width:calc(100% - 32px);text-align:center;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;z-index:30;font-size:14px}
 body.gate aside{display:none} body.gate .app{grid-template-columns:minmax(0,1fr)}
 .gate-box{max-width:400px;margin:12vh auto 0}
 #who{margin-top:24px;padding:12px;border-top:1px solid rgba(255,255,255,.15);font-size:12px;color:#c9d5ea;word-break:break-all}
@@ -574,7 +574,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;'
 const $ = s => document.querySelector(s);
 function toast(msg){
   const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
-  document.body.appendChild(t); setTimeout(()=>t.remove(), 2400);
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 3500);
 }
 function avatar(m, size){
   const st = size ? `style="width:${size}px;height:${size}px;font-size:${size*.38}px"` : '';
@@ -779,9 +779,11 @@ async function enter(){
     Store.ready = true; document.body.classList.remove('gate');
     if(!location.hash.startsWith('#/')) history.replaceState(null, '', location.pathname + '#/dashboard');
     render();
-    if(memberMode){   // 첫 로그인(초기 비밀번호)이면 비밀번호 변경을 먼저
+    if(memberMode){   // 첫 로그인(초기 비밀번호)이면 비밀번호 변경을 한 번 권유(선택)
       const st = await sb.rpc('jw_my_password_state');
-      if(st.data && st.data.must_change) passwordForm(true);
+      const k = 'jw_pw_asked_' + readMemberToken().slice(0,12);
+      let asked = false; try{ asked = !!sessionStorage.getItem(k); sessionStorage.setItem(k,'1'); }catch(_){}
+      if(st.data && st.data.must_change && !asked) passwordForm(true);
     }
   }catch(e){
     renderGate('<p>데이터를 불러오지 못했습니다.</p><button class="btn" onclick="location.reload()">다시 시도</button>');
@@ -800,24 +802,37 @@ function boot(){
 }
 
 /* ===================== 회원 비밀번호 ===================== */
-function passwordForm(forced){
-  openModal(`<h2>${forced ? '새 비밀번호를 정해 주세요' : '비밀번호 변경'}</h2>
-    ${forced ? '<p class="muted" style="margin-top:-6px;font-size:13px;line-height:1.6">지금은 처음 비밀번호(휴대폰 뒷 4자리)로 들어오셨습니다.<br>다른 사람이 내 정보를 바꾸지 못하도록 새 비밀번호로 바꿔 주세요.</p>' : ''}
-    <form class="form" id="pwf">
-      <label class="full">현재 비밀번호${forced ? ' (휴대폰 뒷 4자리)' : ''}<input class="input" type="password" name="cur" required autocomplete="current-password"></label>
-      <label>새 비밀번호 (6자 이상)<input class="input" type="password" name="pw1" required minlength="6" autocomplete="new-password"></label>
-      <label>새 비밀번호 확인<input class="input" type="password" name="pw2" required minlength="6" autocomplete="new-password"></label>
-      <div class="full row" style="justify-content:flex-end">${forced ? '' : '<button type="button" class="btn" data-close>취소</button>'}<button class="btn pri">변경</button></div>
+function passwordForm(first){
+  // first: 처음 비밀번호(휴대폰 뒷 4자리)로 들어온 회원에게 한 번 권유 — 언제든 "나중에" 가능
+  const me = Store.db.members.find(x=>x.id===Store.me.memberId) || {};
+  const ph = (me.phone||'').replace(/\D/g,'');
+  const autoCur = first && ph.length >= 4 ? ph.slice(-4) : '';
+  openModal(`<h2>${first ? '비밀번호를 바꾸시겠어요?' : '비밀번호 변경'}</h2>
+    ${first ? '<p class="muted" style="margin-top:-6px;font-size:13px;line-height:1.6">지금은 처음 비밀번호(휴대폰 뒷 4자리)로 들어오셨습니다.<br>원하시면 새 비밀번호로 바꿀 수 있습니다. 바꾸지 않아도 지금처럼 쓰실 수 있고, 나중에 메뉴 아래쪽 <b>비밀번호 변경</b> 버튼으로 언제든 바꿀 수 있습니다.</p>' : ''}
+    <form class="form" id="pwf" novalidate>
+      ${autoCur ? `<input type="hidden" name="cur" value="${autoCur}">` : '<label class="full">현재 비밀번호<input class="input" type="password" name="cur" autocomplete="current-password"></label>'}
+      <label>새 비밀번호 (6자 이상)<input class="input" type="password" name="pw1" autocomplete="new-password"></label>
+      <label>새 비밀번호 확인<input class="input" type="password" name="pw2" autocomplete="new-password"></label>
+      <p class="full muted" style="margin:0;font-size:12.5px">숫자·영문 아무거나 6자 이상, 휴대폰 번호와는 다르게 정해 주세요.</p>
+      <div class="full" id="pwerr" role="alert" style="display:none;background:#fdecec;color:#b42318;border-radius:8px;padding:10px 12px;font-size:14px;font-weight:600"></div>
+      <div class="full row" style="justify-content:flex-end"><button type="button" class="btn" data-close>${first ? '나중에 바꾸기' : '취소'}</button><button class="btn pri">변경</button></div>
     </form>`, root=>{
-    if(forced){ const mask = root; mask.onclick = null; mask.addEventListener('click', e=>e.stopImmediatePropagation(), true); }
-    root.querySelector('#pwf').onsubmit = async e=>{
-      e.preventDefault();
-      const f = Object.fromEntries(new FormData(e.target));
-      if(f.pw1 !== f.pw2) return toast('새 비밀번호가 서로 다릅니다.');
-      const {data, error} = await sb.rpc('jw_change_password', {p_current:f.cur, p_new:f.pw1});
-      if(error) return toast('변경하지 못했습니다. 잠시 후 다시 시도해 주세요.');
-      if(!data.ok) return toast(data.error);
-      $('#modal-root').innerHTML = ''; toast('비밀번호를 변경했습니다. 다음부터 새 비밀번호로 로그인하세요.');
+    const form = root.querySelector('#pwf'), err = root.querySelector('#pwerr');
+    const fail = msg=>{ err.textContent = msg; err.style.display = 'block'; err.scrollIntoView({block:'center', behavior:'smooth'}); };
+    form.onsubmit = async e=>{
+      e.preventDefault(); err.style.display = 'none';
+      const f = Object.fromEntries(new FormData(form));
+      const pw1 = (f.pw1||'').trim(), pw2 = (f.pw2||'').trim(), cur = (f.cur||'').trim();
+      if(!autoCur && !cur) return fail('현재 비밀번호를 입력해 주세요.');
+      if(pw1.length < 6) return fail('새 비밀번호는 6자 이상으로 정해 주세요. (지금 ' + pw1.length + '자)');
+      if(pw1 !== pw2) return fail('새 비밀번호와 확인 칸이 서로 다릅니다. 다시 입력해 주세요.');
+      if(ph.length >= 4 && (pw1 === ph.slice(-4) || pw1 === ph || pw1 === ph.slice(-8))) return fail('휴대폰 번호와 다른 비밀번호를 정해 주세요.');
+      const btn = form.querySelector('.btn.pri'); btn.disabled = true; btn.textContent = '변경 중…';
+      const {data, error} = await sb.rpc('jw_change_password', {p_current:cur, p_new:pw1});
+      btn.disabled = false; btn.textContent = '변경';
+      if(error) return fail('변경하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.');
+      if(!data || !data.ok) return fail((data && data.error) || '변경하지 못했습니다.');
+      closeModal(); toast('비밀번호를 변경했습니다. 다음부터 새 비밀번호로 로그인하세요.');
     };
   });
 }
