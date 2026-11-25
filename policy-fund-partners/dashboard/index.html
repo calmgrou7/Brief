@@ -1,4 +1,4 @@
-<title>채움 정책자금 보드</title>
+<title>채움 업무 보드</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,6 +10,7 @@
   --accent:#0d6e5f;--accent-ink:#ffffff;--accent-soft:#dbeee8;
   --warn:#a86a12;--warn-soft:#fbefd9;--bad:#bb3528;--bad-soft:#f8e0dc;--info:#2862a8;--info-soft:#e0ebf7;--ok:#2d7d52;--ok-soft:#ddf0e4;
   --shadow:0 10px 30px rgba(15,40,32,.12);
+  --s1:#0d6e5f;--s2:#6b4fbb;--s3:#b4581f;--s4:#2862a8;--s5:#8a6d00;--s6:#a33a6b;
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
@@ -17,12 +18,12 @@
   --bg:#0e1412;--surface:#151d1a;--surface2:#1c2622;--ink:#e2ebe7;--muted:#92a39c;--line:#283430;
   --accent:#3dbea4;--accent-ink:#04211b;--accent-soft:#15382f;
   --warn:#e2ae4a;--warn-soft:#382c14;--bad:#ee7b6e;--bad-soft:#3b1d19;--info:#7aa7df;--info-soft:#19293b;--ok:#66c291;--ok-soft:#16311f;
-  --shadow:0 10px 30px rgba(0,0,0,.45);color-scheme:dark}}
+  --shadow:0 10px 30px rgba(0,0,0,.45);--s1:#3dbea4;--s2:#a68cf0;--s3:#ef9a5d;--s4:#7aa7df;--s5:#d9b84a;--s6:#e783ae;color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0e1412;--surface:#151d1a;--surface2:#1c2622;--ink:#e2ebe7;--muted:#92a39c;--line:#283430;
   --accent:#3dbea4;--accent-ink:#04211b;--accent-soft:#15382f;
   --warn:#e2ae4a;--warn-soft:#382c14;--bad:#ee7b6e;--bad-soft:#3b1d19;--info:#7aa7df;--info-soft:#19293b;--ok:#66c291;--ok-soft:#16311f;
-  --shadow:0 10px 30px rgba(0,0,0,.45);color-scheme:dark}
+  --shadow:0 10px 30px rgba(0,0,0,.45);--s1:#3dbea4;--s2:#a68cf0;--s3:#ef9a5d;--s4:#7aa7df;--s5:#d9b84a;--s6:#e783ae;color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5;word-break:keep-all}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
@@ -73,9 +74,9 @@ h2{font-size:15px;margin:0;letter-spacing:-.01em;display:flex;align-items:center
 
 /* todo */
 .todo{display:flex;flex-direction:column;gap:6px;max-height:520px;overflow:auto}
-.todo button{all:unset;cursor:pointer;display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 12px 9px 0;border-radius:8px;background:var(--surface2)}
-.todo button:hover{outline:1px solid var(--line)}
-.todo button:focus-visible{outline:2px solid var(--accent)}
+.todo>button{all:unset;cursor:pointer;display:grid;grid-template-columns:4px minmax(0,1fr) auto;gap:12px;align-items:center;padding:9px 12px 9px 0;border-radius:8px;background:var(--surface2)}
+.todo>button:hover{outline:1px solid var(--line)}
+.todo>button:focus-visible{outline:2px solid var(--accent)}
 .todo .bar{align-self:stretch;border-radius:4px 0 0 4px}
 .sev-bad .bar{background:var(--bad)}.sev-warn .bar{background:var(--warn)}.sev-info .bar{background:var(--info)}
 .todo .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -205,16 +206,28 @@ details.sec[open]>summary{margin-bottom:10px}
 .x{border:0;background:transparent;font-size:20px;line-height:1;color:var(--muted);padding:2px 6px;border-radius:6px}
 .x:hover{background:var(--surface2)}
 @media (prefers-reduced-motion:no-preference){.drawer{animation:slide .18s ease-out}@keyframes slide{from{transform:translateX(24px);opacity:.6}}}
+
+.svc{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:0 7px;border-radius:6px;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent)}
+.opp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;border-radius:8px;background:var(--surface2)}
+.opp .t{font-weight:600;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.opp .r{font-size:12.5px;color:var(--muted)}
+.dist{display:grid;grid-template-columns:repeat(5,28px);gap:3px}
+.dist span{height:22px;border-radius:5px;background:var(--surface2);font-size:11.5px;font-weight:600;display:grid;place-items:center;font-family:var(--f-num)}
+.dist span.on{background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c)}
+.brief{white-space:pre-wrap;word-break:break-word;font-family:var(--f-body);font-size:13px;line-height:1.65;background:var(--surface2);border-radius:10px;padding:14px;margin:0;max-height:560px;overflow:auto}
+.brief.ai{background:var(--accent-soft)}
+a.btn{text-decoration:none;color:inherit}
 </style>
 
 <header class="top">
   <div class="wrap">
-    <div class="brand"><i>채</i>채움 정책자금 보드</div>
+    <div class="brand"><i>채</i>채움 업무 보드</div>
     <nav id="nav">
       <a href="#today">오늘</a>
+      <a href="#brief">브리핑</a>
       <a href="#board">진행 보드</a>
       <a href="#list">전체 목록</a>
-      <a href="#fees">수수료 정산</a>
+      <a href="#fees">정산</a>
       <a href="#sources">소개처</a>
     </nav>
     <div class="top-actions">
@@ -232,28 +245,67 @@ details.sec[open]>summary{margin-bottom:10px}
 
 <script>
 /* ---------- constants ---------- */
-const STAGES=['접수','1차 미팅','자료 받기','진행 체크','자금 집행'];
 const STATUSES=['진행중','보류','반려','취소','거절','완료'];
 const CLOSED=['반려','취소','거절'];
 const ACTIVE=['진행중','보류'];
 const REASONS={
-  반려:['세금체납','금융연체','신용점수미달','지원제외업종','업력요건미달','보증한도초과','매출부족','휴폐업','기타'],
+  반려:['세금체납','금융연체','신용점수미달','지원제외업종','업력요건미달','요건미달','보증한도초과','매출부족','휴폐업','기타'],
   취소:['연락두절','고객변심','타사진행','시기연기','수수료이견','소개처요청','기타'],
-  거절:['기관심사부결','실사부적합','예산소진','서류미비','기타']};
-const STATUS_HELP={반려:'검토 결과 진행 불가로 판단해 소개처에 돌려보냅니다.',취소:'고객사나 소개처 사정으로 진행을 멈춥니다.',거절:'기관 심사에서 부결되었습니다.'};
+  거절:['기관심사부결','인증심사탈락','실사부적합','예산소진','서류미비','기타']};
+const STATUS_HELP={반려:'검토 결과 진행 불가로 판단해 돌려보냅니다.',취소:'고객사나 소개처 사정으로 진행을 멈춥니다.',거절:'기관 심사(자금·인증·연구소)에서 부결되었습니다.'};
 const AGENCIES=['중진공','소진공','신보','기보','지역신보','지자체','은행협약','기타'];
 const SUB3=['신청서 작성','기관 접수','현장 실사','심사 중','승인'];
 const REGIONS=['서울','부산','대구','인천','광주','대전','울산','세종','경기','강원','충북','충남','전북','전남','경북','경남','제주'];
-const CERTS=['벤처','이노비즈','메인비즈','기업부설연구소','특허','여성기업','장애인기업','사회적기업'];
+const CERTS=['벤처','이노비즈','메인비즈','기업부설연구소','연구개발전담부서','ISO','특허','여성기업','장애인기업','사회적기업','뿌리기업'];
 const DOC_ST=['미요청','요청','수령','보완필요','해당없음'];
-const DEFAULT_DOCS=[['사업자등록증'],['표준재무제표증명(3년)'],['부가세 과세표준증명'],['국세·지방세 납세증명서'],['4대보험 가입자명부'],['대표자 신분증 사본'],['법인등기부등본',1],['주주명부',1],['사업장 임대차계약서'],['신용정보 조회 동의서'],['사업계획서']];
 const LOG_TYPES=['전화','미팅','카톡','이메일','기관 연락','소개처 보고','메모'];
 const FEE_ST=['청구전','청구','입금완료'];
+const GEN_STAGES=['접수','착수','자료','진행','완료'];
+const YEARS=(()=>{const y=new Date().getFullYear();return [String(y),String(y-1),String(y+1)]})();
+
+/* service lines: 5 stages each, so the board, stepper and funnel share one shape */
+const SERVICES={
+  '정책자금':{c:'--s1',stages:['접수','1차 미팅','자료 받기','진행 체크','자금 집행'],
+    hints:['1차 미팅 일정 잡기','1차 미팅 진행·진단','필요 서류 요청','신청서 작성','집행 확인'],
+    fields:[['agency','대상 기관','select',AGENCIES],['fundName','자금명','text'],['planAmount','신청 예정 금액 (만원)','num'],['sub3','3단계 세부','select',SUB3],['approved','승인 금액 (만원)','num'],['executed','집행 금액 (만원)','num'],['executedAt','집행일','date']],
+    base:'executed',done:'executedAt',doneLabel:'집행 완료 처리',label:c=>c.agency||'기관 미정',amt:c=>c.planAmount,
+    docs:[['사업자등록증'],['표준재무제표증명(3년)'],['부가세 과세표준증명'],['국세·지방세 납세증명서'],['4대보험 가입자명부'],['대표자 신분증 사본'],['법인등기부등본',1],['주주명부',1],['사업장 임대차계약서'],['신용정보 조회 동의서'],['사업계획서']]},
+  '기업컨설팅':{c:'--s2',stages:['접수','진단 미팅','제안·계약','수행','완료 보고'],
+    hints:['진단 미팅 일정 잡기','현황 진단·과제 정리','제안서 발송·계약','중간 점검','완료 보고서 전달'],
+    fields:[['topic','컨설팅 주제','select',['경영전략','사업계획서','조직·인사','마케팅','투자·IR','원가·재무','기타']],['contractAmount','계약 금액 (만원)','num'],['startAt','착수일','date'],['endAt','종료(완료)일','date']],
+    base:'contractAmount',done:'endAt',doneLabel:'완료 처리',label:c=>c.topic||'주제 미정',
+    docs:[['사업자등록증'],['회사소개서'],['최근 재무제표'],['조직도'],['컨설팅 계약서']]},
+  '가결산':{c:'--s3',stages:['접수','자료 요청','자료 수령','가결산 작성','결과 전달'],
+    hints:['범위·기간 확인','자료 요청','자료 검토','가결산 작성','결과 설명·전달'],
+    fields:[['period','대상 기간','text'],['usage','활용 목적','select',['정책자금 심사','은행 대출','세무 검토','투자 유치','기타']],['contractAmount','계약 금액 (만원)','num'],['deliverAt','전달일','date']],
+    base:'contractAmount',done:'deliverAt',doneLabel:'완료 처리',label:c=>c.usage||c.period||'',
+    docs:[['사업자등록증'],['부가세 신고서(당해)'],['월별 매출·매입 자료'],['통장 거래내역'],['카드 사용내역'],['급여대장'],['전년도 결산서']]},
+  '기업인증':{c:'--s4',stages:['접수','요건 검토','서류 준비','신청·심사','인증 취득'],
+    hints:['요건 검토','요건 확인·보완 계획','서류 준비','심사 대응','인증서 전달'],
+    fields:[['certType','인증 종류','select',['벤처','이노비즈','메인비즈','ISO 9001','ISO 14001','여성기업','뿌리기업','기타']],['contractAmount','계약 금액 (만원)','num'],['appliedAt','신청일','date'],['certAt','취득일','date'],['expireAt','유효기간 만료일','date']],
+    base:'contractAmount',done:'certAt',doneLabel:'인증 취득 처리',label:c=>c.certType||'인증 미정',
+    docs:[['사업자등록증'],['재무제표'],['4대보험 가입자명부'],['법인등기부등본',1],['특허·기술 자료'],['사업계획서'],['대표자 경력 자료']]},
+  '기업부설연구소':{c:'--s5',stages:['접수','요건 검토','서류·공간 준비','신청(KOITA)','인정 완료'],
+    hints:['요건 검토','연구원·공간 요건 확인','도면·서류 준비','신청·보완 대응','인정서 전달'],
+    fields:[['labType','구분','select',['기업부설연구소','연구개발전담부서']],['researchers','연구원 수','num'],['contractAmount','계약 금액 (만원)','num'],['appliedAt','신청일','date'],['certAt','인정일','date']],
+    base:'contractAmount',done:'certAt',doneLabel:'인정 완료 처리',label:c=>c.labType||'',
+    docs:[['사업자등록증'],['연구원 재직증명'],['연구원 학위·경력증명'],['연구공간 도면·사진'],['사업장 임대차계약서'],['연구개발 계획'],['조직도']]},
+  '재무결산':{c:'--s6',stages:['접수','자료 요청','자료 수령','결산 작성','신고·전달'],
+    hints:['결산 범위 확인','자료 요청','자료 검토','결산 작성','신고·결과 전달'],
+    fields:[['fiscalYear','결산 연도','select',YEARS],['filingDue','신고 기한','date'],['contractAmount','계약 금액 (만원)','num'],['filedAt','신고·전달일','date']],
+    base:'contractAmount',done:'filedAt',doneLabel:'완료 처리',label:c=>c.fiscalYear?c.fiscalYear+'년':'',
+    docs:[['사업자등록증'],['통장 거래내역'],['매출·매입 세금계산서'],['카드 사용내역'],['급여대장'],['고정자산 내역'],['차입금 잔액증명'],['전년도 결산서']]}
+};
+const SVC_NAMES=Object.keys(SERVICES);
+const svc=c=>SERVICES[c.service]?c.service:'정책자금';
+const SV=c=>SERVICES[svc(c)];
+const stName=c=>SV(c).stages[n0(c.stage)];
+const svcChip=name=>`<span class="svc" style="--c:var(${SERVICES[name].c})">${esc(name)}</span>`;
 
 const CLIENT_BASIC=[
   ['name','기업명','text'],['bizNo','사업자등록번호','text'],['ceo','대표자명','text'],['phone','대표자 연락처','text'],
   ['bizType','사업자 형태','select',['개인','법인']],['region','소재지(시/도)','select',REGIONS],['city','시군구','text'],['industry','업종','text'],
-  ['foundedAt','개업일','date'],['wantAmount','희망 금액 (만원)','num'],['purpose','자금 용도','select',['운전','시설','운전+시설']],
+  ['foundedAt','개업일','date'],['fiscalEnd','결산월','select',['12월','3월','6월','9월','기타']],['wantAmount','정책자금 희망 금액 (만원)','num'],['purpose','자금 용도','select',['운전','시설','운전+시설']],
   ['timing','희망 시기','select',['즉시','1개월 내','3개월 내','미정']],['sourceStaff','소개처 담당자','text'],['receivedAt','접수일','date'],
   ['request','요청 내용·특이사항','area']];
 const CLIENT_DIAG=[
@@ -262,30 +314,33 @@ const CLIENT_DIAG=[
   ['balJung','중진공 잔액 (만원)','num'],['balShin','신보 잔액 (만원)','num'],['balGi','기보 잔액 (만원)','num'],['balLocal','지역신보 잔액 (만원)','num'],
   ['loanBank','금융권 대출 잔액 (만원)','num'],['grade','진단 등급','select',['A 유력','B 가능','C 어려움']],
   ['taxArrears','세금 체납','tri'],['delinquent','금융 연체','tri'],['rehab','회생·파산 이력','tri'],
-  ['certs','보유 인증','multi',CERTS],['opinion','진단 의견 (가능 자금, 예상 한도, 리스크)','area'],
+  ['certs','보유 인증','multi',CERTS],['opinion','진단 의견 (가능 자금·서비스, 리스크)','area'],
   ['consent','개인정보·신용조회 동의 받음','bool'],['consentAt','동의일','date']];
 const SOURCE_FIELDS=[
   ['name','소개처명','text'],['kind','구분','select',['직접','플랫폼','개인 소개자','기타']],
   ['contact','담당자','text'],['phone','연락처','text'],['email','이메일','text'],
-  ['feeType','수수료 기준','select',['집행액 × %','건당 고정액','없음']],['feeRate','수수료율 (%)','num'],['feeFixed','건당 고정액 (만원)','num'],
-  ['billTo','수수료 청구처','select',['소개처','고객사']],['settle','정산 시점','select',['집행 확인 후','월말 일괄','고객 수금 후']],
+  ['feeType','정책자금 수수료 기준','select',['집행액 × %','건당 고정액','없음']],['feeRate','정책자금 수수료율 (%)','num'],['feeFixed','건당 고정액 (만원)','num'],
+  ['billTo','정책자금 수수료 청구처','select',['소개처','고객사']],['settle','정산 시점','select',['집행 확인 후','월말 일괄','고객 수금 후']],
   ['contractEnd','계약 만료일','date'],['note','비고','area']];
 
 /* ---------- state ---------- */
 const S={db:null,sources:new Map(),clients:new Map(),cases:new Map(),loaded:{sources:false,clients:false,cases:false},
-  slow:false,err:null,view:'today',open:null,pendingStop:null,f:{status:'active',source:'',q:''},bf:{source:'',q:''},sample:null,dupAck:null,drawerDirty:false};
+  slow:false,err:null,view:'today',open:null,pendingStop:null,
+  f:{status:'active',source:'',q:'',svc:''},bf:{source:'',q:'',svc:''},br:{period:'week',source:''},
+  sample:null,dupAck:null,drawerDirty:false,aiBrief:'',aiBusy:false};
 
 /* ---------- utils ---------- */
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
-const today=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
-const addDays=(iso,n)=>{const d=iso?new Date(iso+'T00:00:00'):new Date();d.setDate(d.getDate()+n);return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const isoOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>isoOf(new Date());
+const addDays=(iso,n)=>{const d=iso?new Date(iso+'T00:00:00'):new Date();d.setDate(d.getDate()+n);return isoOf(d)};
 const daysSince=iso=>iso?Math.floor((Date.now()-new Date(iso).getTime())/864e5):0;
 const daysUntil=iso=>Math.round((new Date(iso+'T00:00:00')-new Date(today()+'T00:00:00'))/864e5);
 const ym=iso=>(iso||'').slice(0,7);
 const thisMonth=()=>today().slice(0,7);
-const short=iso=>iso?iso.slice(5).replace('-','.'):'';
+const short=iso=>iso?iso.slice(5,10).replace('-','.'):'';
 const digits=s=>String(s||'').replace(/\D/g,'');
 const n0=v=>Number(v)||0;
 function man(v){v=n0(v);if(!v)return '0';const neg=v<0;v=Math.abs(v);const e=Math.floor(v/10000),r=Math.round((v%10000)*10)/10;
@@ -308,12 +363,15 @@ const cli=id=>S.clients.get(id)||{name:'(고객사 없음)'};
 const isDirect=id=>src(id).kind==='직접';
 const casesArr=()=>[...S.cases.values()];
 const sourcesArr=()=>[...S.sources.values()].sort((a,b)=>(a.order??99)-(b.order??99)||String(a.name).localeCompare(b.name));
-function nextCode(){const y=new Date().getFullYear();let mx=0;S.cases.forEach(c=>{const m=/^P-(\d{4})-(\d+)$/.exec(c.code||'');if(m&&+m[1]===y)mx=Math.max(mx,+m[2])});return `P-${y}-${String(mx+1).padStart(4,'0')}`}
-function nextClientCode(){const y=new Date().getFullYear();let mx=0;S.clients.forEach(c=>{const m=/^C-(\d{4})-(\d+)$/.exec(c.code||'');if(m&&+m[1]===y)mx=Math.max(mx,+m[2])});return `C-${y}-${String(mx+1).padStart(4,'0')}`}
+function maxCode(map,prefix){const y=new Date().getFullYear();let mx=0;const re=new RegExp(`^${prefix}-(\\d{4})-(\\d+)$`);map.forEach(c=>{const m=re.exec(c.code||'');if(m&&+m[1]===y)mx=Math.max(mx,+m[2])});return mx}
+const fmtCode=(p,n)=>`${p}-${new Date().getFullYear()}-${String(n).padStart(4,'0')}`;
 const reached=c=>c.status==='완료'?4:n0(c.stage);
 const stale=c=>ACTIVE.includes(c.status)?daysSince(c.stageAt||c.createdAt):0;
 const unreported=c=>!isDirect(c.sourceId)&&c.reportedKey!==`${c.stage}|${c.status}`;
 const feeLate=c=>c.fee&&c.fee.status!=='입금완료'&&c.fee.dueAt&&c.fee.dueAt<today();
+const doneAt=c=>c[SV(c).done]||(c.dates||{}).s4||'';
+/* expected revenue of an open case: fee rate × amount for 정책자금, contract amount for others */
+function expRevenue(c){if(svc(c)==='정책자금'){const s=src(c.sourceId);if(s.feeType==='집행액 × %'&&s.feeRate)return n0(c.planAmount)*s.feeRate/100;if(s.feeType==='건당 고정액')return n0(s.feeFixed);return 0}return n0(c.contractAmount)}
 
 /* ---------- boot ---------- */
 let rq=0;function schedule(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;render()})}
@@ -332,9 +390,10 @@ async function init(){
       schedule();
     },e=>{S.err=e.code;clearTimeout(timer);schedule()});
   }
-  use('sample').then(s=>{S.sample=s}).catch(()=>{});
+  use('sample').then(s=>{S.sample=s;schedule()}).catch(()=>{});
 }
-function route(){const h=location.hash.slice(1);S.view=['today','board','list','fees','sources'].includes(h)?h:'today'}
+const ROUTES=['today','brief','board','list','fees','sources'];
+function route(){const h=location.hash.slice(1);S.view=ROUTES.includes(h)?h:'today'}
 
 /* ---------- render ---------- */
 function render(){
@@ -349,120 +408,225 @@ function render(){
   if(fid){const el=document.getElementById(fid);if(el){el.focus();if(sel&&el.setSelectionRange)try{el.setSelectionRange(sel[0],sel[1])}catch(e){}}}
   renderDrawer();
 }
+function svcSeg(val,group){return `<div class="seg">${['',...SVC_NAMES].map(n=>`<button data-act="svcf" data-g="${group}" data-v="${n}" aria-pressed="${val===n}">${n||'전체'}</button>`).join('')}</div>`}
 
 /* ---------- views ---------- */
 function kpiTiles(){
   const cs=casesArr(),m=thisMonth();
   const act=cs.filter(c=>ACTIVE.includes(c.status));
   const newM=cs.filter(c=>ym(c.createdAt)===m);
-  const exM=cs.filter(c=>c.status==='완료'&&ym(c.executedAt)===m);
-  const feeM=exM.reduce((s,c)=>s+n0(c.fee&&c.fee.amount),0);
+  const doneM=cs.filter(c=>c.status==='완료'&&ym(doneAt(c))===m);
+  const pfEx=doneM.filter(c=>svc(c)==='정책자금').reduce((s,c)=>s+n0(c.executed),0);
+  const revM=doneM.reduce((s,c)=>s+n0(c.fee&&c.fee.amount),0);
   const unpaid=cs.filter(c=>c.fee&&c.fee.status!=='입금완료').reduce((s,c)=>s+n0(c.fee.amount),0);
   const late=cs.filter(feeLate).length;
   return `<section class="kpis">
-    <div class="kpi"><span class="l">진행 중</span><span class="v num">${act.length}<small>건</small></span><span class="d">파이프라인 ${man(act.reduce((s,c)=>s+n0(c.planAmount),0))}원 · 보류 ${act.filter(c=>c.status==='보류').length}</span></div>
-    <div class="kpi"><span class="l">이번 달 신규 접수</span><span class="v num">${newM.length}<small>건</small></span><span class="d">${sourcesArr().map(s=>`${esc(s.name)} ${newM.filter(c=>c.sourceId===s.id).length}`).join(' · ')||'—'}</span></div>
-    <div class="kpi"><span class="l">이번 달 자금 집행</span><span class="v num">${man(exM.reduce((s,c)=>s+n0(c.executed),0))}<small>원</small></span><span class="d">${exM.length}건 집행 완료</span></div>
-    <div class="kpi"><span class="l">수수료 · 이번 달 발생</span><span class="v num">${man(feeM)}<small>원</small></span><span class="d" style="${late?'color:var(--bad)':''}">미수금 ${man(unpaid)}원${late?` · 지연 ${late}건`:''}</span></div>
+    <div class="kpi"><span class="l">진행 중</span><span class="v num">${act.length}<small>건</small></span><span class="d">예상 매출 ${man(act.reduce((s,c)=>s+expRevenue(c),0))}원 · 보류 ${act.filter(c=>c.status==='보류').length}</span></div>
+    <div class="kpi"><span class="l">이번 달 신규 접수</span><span class="v num">${newM.length}<small>건</small></span><span class="d">${SVC_NAMES.map(n=>[n,newM.filter(c=>svc(c)===n).length]).filter(x=>x[1]).map(([n,k])=>`${n} ${k}`).join(' · ')||'—'}</span></div>
+    <div class="kpi"><span class="l">이번 달 완료</span><span class="v num">${doneM.length}<small>건</small></span><span class="d">정책자금 집행 ${man(pfEx)}원</span></div>
+    <div class="kpi"><span class="l">이번 달 매출 발생</span><span class="v num">${man(revM)}<small>원</small></span><span class="d" style="${late?'color:var(--bad)':''}">미수금 ${man(unpaid)}원${late?` · 지연 ${late}건`:''}</span></div>
   </section>`;
 }
 function todoItems(){
   const out=[],t=today();
   casesArr().forEach(c=>{
-    const nm=cli(c.clientId).name;
+    const nm=cli(c.clientId).name;const sv=svc(c);
     if(ACTIVE.includes(c.status)){
-      if(c.nextDue&&c.nextDue<=t){const d=daysUntil(c.nextDue);out.push({c,nm,sev:d<0?'bad':'warn',w:d<0?0:1,r:`${d<0?`기한 ${-d}일 지남`:'오늘 기한'} · ${c.nextAction||'다음 할 일'}`})}
-      else if(!c.nextAction)out.push({c,nm,sev:'info',w:5,r:'다음 할 일이 비어 있습니다'});
-      const st=stale(c);if(st>=14)out.push({c,nm,sev:'warn',w:2,r:`${STAGES[c.stage]} 단계에서 ${st}일째 정체`});
-      const fix=(c.docs||[]).filter(d=>d.st==='보완필요').length;if(fix)out.push({c,nm,sev:'warn',w:2,r:`서류 보완 필요 ${fix}건`});
-      if(n0(c.stage)>=1&&!cli(c.clientId).consent)out.push({c,nm,sev:'info',w:4,r:'개인정보·신용조회 동의 확인 필요'});
+      if(c.nextDue&&c.nextDue<=t){const d=daysUntil(c.nextDue);out.push({c,nm,sv,sev:d<0?'bad':'warn',w:d<0?0:1,r:`${d<0?`기한 ${-d}일 지남`:'오늘 기한'} · ${c.nextAction||'다음 할 일'}`})}
+      else if(!c.nextAction)out.push({c,nm,sv,sev:'info',w:5,r:'다음 할 일이 비어 있습니다'});
+      const st=stale(c);if(st>=14)out.push({c,nm,sv,sev:'warn',w:2,r:`${stName(c)} 단계에서 ${st}일째 정체`});
+      const fix=(c.docs||[]).filter(d=>d.st==='보완필요').length;if(fix)out.push({c,nm,sv,sev:'warn',w:2,r:`서류 보완 필요 ${fix}건`});
+      if(sv==='정책자금'&&n0(c.stage)>=1&&!cli(c.clientId).consent)out.push({c,nm,sv,sev:'info',w:4,r:'개인정보·신용조회 동의 확인 필요'});
+      if(sv==='재무결산'&&c.filingDue){const d=daysUntil(c.filingDue);if(d<=14)out.push({c,nm,sv,sev:d<0?'bad':'warn',w:d<0?0:1,r:`신고 기한 ${d<0?`${-d}일 지남`:`D-${d}`} (${short(c.filingDue)})`})}
     }
-    if(unreported(c)&&(n0(c.stage)>0||c.status!=='진행중'))out.push({c,nm,sev:'info',w:3,r:`${src(c.sourceId).name}에 진행 상황 미보고 (${c.status==='진행중'?STAGES[c.stage]:c.status})`});
-    if(feeLate(c))out.push({c,nm,sev:'bad',w:0,r:`수수료 입금 지연 · ${man(c.fee.amount)}원 (예정 ${short(c.fee.dueAt)})`});
+    if(c.status==='완료'&&c.expireAt){const d=daysUntil(c.expireAt);if(d<=90)out.push({c,nm,sv,sev:d<0?'bad':'warn',w:d<0?1:3,r:`${c.certType||'인증'} 유효기간 ${d<0?'만료됨':`만료 D-${d}`} · 갱신 제안`})}
+    if(unreported(c)&&(n0(c.stage)>0||c.status!=='진행중'))out.push({c,nm,sv,sev:'info',w:3,r:`${src(c.sourceId).name}에 진행 상황 미보고 (${c.status==='진행중'?stName(c):c.status})`});
+    if(feeLate(c))out.push({c,nm,sv,sev:'bad',w:0,r:`입금 지연 · ${man(c.fee.amount)}원 (예정 ${short(c.fee.dueAt)})`});
   });
   return out.sort((a,b)=>a.w-b.w);
 }
+/* cross-sell: services a client is likely to need next */
+function opportunities(){
+  const out=[],m=new Date().getMonth()+1;
+  const byClient={};casesArr().forEach(c=>{(byClient[c.clientId]=byClient[c.clientId]||[]).push(c)});
+  Object.entries(byClient).forEach(([cid,cs])=>{
+    const cl=cli(cid);if(!cl.name||cs.every(c=>CLOSED.includes(c.status)&&c.stopReason!=='기관심사부결'))return;
+    const has=new Set(cs.filter(c=>c.status!=='취소').map(svc));const certs=cl.certs||[];
+    const pf=cs.some(c=>svc(c)==='정책자금'&&!['반려','취소'].includes(c.status));
+    const sample=cs.some(c=>c.sample);
+    if(pf&&!certs.some(x=>['벤처','이노비즈','메인비즈'].includes(x))&&!has.has('기업인증'))out.push({cid,cl,sv:'기업인증',sample,r:'보유 인증 없음 · 벤처·이노비즈 취득 시 정책자금 한도·금리 우대'});
+    if(!certs.includes('기업부설연구소')&&!certs.includes('연구개발전담부서')&&!has.has('기업부설연구소')&&/제조|IT|SW|소프트|개발|바이오|연구|기술|전자|기계/.test(cl.industry||''))out.push({cid,cl,sv:'기업부설연구소',sample,r:`기술 업종(${cl.industry}) · 연구소 설립 시 R&D 과제·세액공제·기보 연계`});
+    if(pf&&m>=9&&!has.has('가결산'))out.push({cid,cl,sv:'가결산',sample,r:'하반기 · 올해 매출 가결산으로 심사 자료 보강'});
+    if(cl.bizType==='법인'&&(m>=11||m<=2)&&!has.has('재무결산')&&cs.some(c=>c.status==='완료'))out.push({cid,cl,sv:'재무결산',sample,r:'법인 결산 시즌 (3월 말 신고) · 기존 거래 고객'});
+  });
+  return out;
+}
 function vToday(){
-  const items=todoItems(),cs=casesArr();
-  const funnel=STAGES.map((s,i)=>cs.filter(c=>reached(c)>=i).length);
-  const mx=Math.max(1,funnel[0]);
+  const items=todoItems(),cs=casesArr(),opps=opportunities();
   const rc={};cs.filter(c=>CLOSED.includes(c.status)).forEach(c=>{const k=`${c.status} · ${c.stopReason||'사유 없음'}`;rc[k]=(rc[k]||0)+1});
   const rtop=Object.entries(rc).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  return `<div class="row" style="justify-content:space-between"><div><h1>오늘 할 일</h1><div class="sub">${today().replace(/-/g,'.')} 기준</div></div></div>
+  return `<div class="row" style="justify-content:space-between"><div><h1>오늘 할 일</h1><div class="sub">${today().replace(/-/g,'.')} 기준 · 전체 업무</div></div><a class="btn" href="#brief">브리핑 보기</a></div>
   ${kpiTiles()}
   <div class="grid2">
     <section class="panel"><div class="panel-h"><h2>처리할 일 <span class="count num">${items.length}</span></h2><span class="sub">기한 지남 → 오늘 → 정체 → 보고 순</span></div>
-      ${items.length?`<div class="todo">${items.map(it=>`<button class="sev-${it.sev}" data-open="${it.c.id}"><span class="bar"></span><span style="min-width:0"><div class="t">${esc(it.nm)}${it.c.sample?'<span class="tag-ex">예시</span>':''}</div><div class="r">${esc(it.r)}</div></span><span class="src">${esc(src(it.c.sourceId).name)}</span></button>`).join('')}</div>`
+      ${items.length?`<div class="todo">${items.map(it=>`<button class="sev-${it.sev}" data-open="${it.c.id}"><span class="bar"></span><span style="min-width:0"><div class="t">${esc(it.nm)}${it.c.sample?'<span class="tag-ex">예시</span>':''}</div><div class="r">${esc(it.r)}</div></span><span class="row" style="gap:4px">${svcChip(it.sv)}</span></button>`).join('')}</div>`
       :`<div class="empty"><b>오늘 처리할 일이 없습니다</b>진행건마다 '다음 할 일'과 기한을 적어 두면 여기에 모입니다.</div>`}
     </section>
-    <section class="panel"><div class="panel-h"><h2>단계별 도달 현황</h2><span class="sub">전체 ${cs.length}건</span></div>
-      <div class="funnel">${STAGES.map((s,i)=>`<div class="fun-row"><span>${i} ${s}</span><div class="fun-track"><div class="fun-fill" style="width:${funnel[i]/mx*100}%"></div></div><span class="num" style="text-align:right">${funnel[i]}</span></div>`).join('')}</div>
-      <h2 style="margin-top:18px">반려·취소·거절 사유</h2>
-      ${rtop.length?`<div class="reasons">${rtop.map(([k,v])=>`<div><span>${esc(k)}</span><b class="num">${v}</b></div>`).join('')}</div>`:`<div class="sub" style="margin-top:6px">아직 중단된 건이 없습니다.</div>`}
+    <section class="panel"><div class="panel-h"><h2>추가 영업 기회 <span class="count num">${opps.length}</span></h2><span class="sub">기존 고객에게 제안할 서비스</span></div>
+      ${opps.length?`<div class="todo">${opps.slice(0,12).map(o=>`<div class="opp"><span style="min-width:0"><div class="t">${esc(o.cl.name)}${o.sample?'<span class="tag-ex">예시</span>':''} ${svcChip(o.sv)}</div><div class="r">${esc(o.r)}</div></span><button class="btn sm" data-act="oppCreate" data-client="${o.cid}" data-v="${o.sv}">진행건 만들기</button></div>`).join('')}</div>`
+      :`<div class="empty"><b>지금은 제안할 서비스가 없습니다</b>고객사 업종·보유 인증을 채우면 정확해집니다.</div>`}
     </section>
   </div>
-  ${sourcePerf()}`;
+  ${svcTable()}
+  <div class="grid2">${sourcePerf()}
+    <section class="panel"><div class="panel-h"><h2>반려·취소·거절 사유</h2></div>
+      ${rtop.length?`<div class="reasons">${rtop.map(([k,v])=>`<div><span>${esc(k)}</span><b class="num">${v}</b></div>`).join('')}</div>`:`<div class="sub">아직 중단된 건이 없습니다.</div>`}</section></div>`;
+}
+function svcTable(){
+  const cs=casesArr(),m=thisMonth();
+  const rows=SVC_NAMES.map(n=>{const a=cs.filter(c=>svc(c)===n);const act=a.filter(c=>ACTIVE.includes(c.status));const dm=a.filter(c=>c.status==='완료'&&ym(doneAt(c))===m);
+    return {n,act,dist:[0,1,2,3,4].map(i=>act.filter(c=>n0(c.stage)===i).length),done:dm.length,exp:act.reduce((s,c)=>s+expRevenue(c),0),rev:dm.reduce((s,c)=>s+n0(c.fee&&c.fee.amount),0)}});
+  return `<section class="panel"><div class="panel-h"><h2>업무별 현황</h2><span class="sub">단계 칸에 마우스를 올리면 단계 이름이 보입니다</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>업무</th><th class="r">진행 중</th><th>단계 분포 (접수 → 완료 직전)</th><th class="r">이번 달 완료</th><th class="r">진행 중 예상 매출</th><th class="r">이번 달 매출</th></tr></thead>
+  <tbody>${rows.map(r=>`<tr class="click" data-act="goBoard" data-v="${r.n}"><td>${svcChip(r.n)}</td><td class="r num"><b>${r.act.length}</b></td><td><div class="dist">${r.dist.map((k,i)=>`<span title="${i} ${SERVICES[r.n].stages[i]}: ${k}건" class="${k?'on':''}" style="--c:var(${SERVICES[r.n].c})">${k||''}</span>`).join('')}</div></td><td class="r num">${r.done}</td><td class="r num">${man(r.exp)}</td><td class="r num">${man(r.rev)}</td></tr>`).join('')}</tbody>
+  <tfoot><tr><td>합계</td><td class="r num">${rows.reduce((s,r)=>s+r.act.length,0)}</td><td></td><td class="r num">${rows.reduce((s,r)=>s+r.done,0)}</td><td class="r num">${man(rows.reduce((s,r)=>s+r.exp,0))}</td><td class="r num">${man(rows.reduce((s,r)=>s+r.rev,0))}</td></tr></tfoot></table></div></section>`;
 }
 function sourcePerf(){
   const cs=casesArr();
   const rows=sourcesArr().map(s=>{const a=cs.filter(c=>c.sourceId===s.id);const done=a.filter(c=>c.status==='완료');const ended=a.filter(c=>c.status==='완료'||CLOSED.includes(c.status));
-    return {s,n:a.length,act:a.filter(c=>ACTIVE.includes(c.status)).length,done:done.length,rate:ended.length?Math.round(done.length/ended.length*100):null,
-      rej:a.filter(c=>c.status==='반려').length,ex:done.reduce((t,c)=>t+n0(c.executed),0),fee:a.reduce((t,c)=>t+n0(c.fee&&c.fee.amount),0)}});
-  return `<section class="panel"><div class="panel-h"><h2>소개처별 성과</h2><span class="sub">집행률 = 집행 ÷ 종료된 건(집행+반려+취소+거절)</span></div>
-  <div class="tbl-wrap"><table><thead><tr><th>소개처</th><th class="r">접수</th><th class="r">진행중</th><th class="r">집행</th><th class="r">집행률</th><th class="r">반려</th><th class="r">집행액</th><th class="r">수수료</th></tr></thead>
-  <tbody>${rows.map(r=>`<tr><td><b>${esc(r.s.name)}</b> <span class="sub">${esc(r.s.kind||'')}</span></td><td class="r num">${r.n}</td><td class="r num">${r.act}</td><td class="r num">${r.done}</td><td class="r num">${r.rate==null?'—':r.rate+'%'}</td><td class="r num">${r.rej}</td><td class="r num">${man(r.ex)}</td><td class="r num">${man(r.fee)}</td></tr>`).join('')}</tbody></table></div></section>`;
+    return {s,n:a.length,act:a.filter(c=>ACTIVE.includes(c.status)).length,done:done.length,rate:ended.length?Math.round(done.length/ended.length*100):null,rej:a.filter(c=>c.status==='반려').length,fee:a.reduce((t,c)=>t+n0(c.fee&&c.fee.amount),0)}});
+  return `<section class="panel"><div class="panel-h"><h2>소개처별 성과</h2><span class="sub">완료율 = 완료 ÷ 종료된 건</span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>소개처</th><th class="r">접수</th><th class="r">진행중</th><th class="r">완료</th><th class="r">완료율</th><th class="r">반려</th><th class="r">매출</th></tr></thead>
+  <tbody>${rows.map(r=>`<tr><td><b>${esc(r.s.name)}</b></td><td class="r num">${r.n}</td><td class="r num">${r.act}</td><td class="r num">${r.done}</td><td class="r num">${r.rate==null?'—':r.rate+'%'}</td><td class="r num">${r.rej}</td><td class="r num">${man(r.fee)}</td></tr>`).join('')}</tbody></table></div></section>`;
 }
+
+/* ---------- briefing ---------- */
+function periodRange(p){const t=today();if(p==='today')return [t,t,'오늘'];if(p==='week')return [addDays(t,-6),t,'최근 7일'];return [thisMonth()+'-01',t,'이번 달']}
+function briefData(){
+  const [from,to,label]=periodRange(S.br.period),inR=d=>d&&d.slice(0,10)>=from&&d.slice(0,10)<=to;
+  const cs=casesArr();
+  const created=cs.filter(c=>inR(c.createdAt));
+  const moves=[];cs.forEach(c=>{const ds=c.dates||{};[1,2,3].forEach(i=>{if(inR(ds['s'+i]))moves.push({c,i})})});
+  const done=cs.filter(c=>c.status==='완료'&&inR(doneAt(c)));
+  const stopped=cs.filter(c=>CLOSED.includes(c.status)&&inR(c.closedAt));
+  const paid=cs.filter(c=>c.fee&&c.fee.status==='입금완료'&&inR(c.fee.paidAt));
+  const upcoming=cs.filter(c=>ACTIVE.includes(c.status)&&c.nextDue&&daysUntil(c.nextDue)<=7).sort((a,b)=>a.nextDue.localeCompare(b.nextDue));
+  return {from,to,label,created,moves,done,stopped,paid,upcoming,todo:todoItems(),opps:opportunities()};
+}
+function briefText(B){
+  const L=[],nm=c=>cli(c.clientId).name;
+  L.push(`[채움파트너스 업무 브리핑] ${today().replace(/-/g,'.')} · ${B.label}`);
+  L.push(`■ 요약: 신규 ${B.created.length}건 · 단계 진행 ${B.moves.length}건 · 완료 ${B.done.length}건 · 중단 ${B.stopped.length}건 · 매출 발생 ${man(B.done.reduce((s,c)=>s+n0(c.fee&&c.fee.amount),0))}원 · 입금 ${man(B.paid.reduce((s,c)=>s+n0(c.fee.amount),0))}원`);
+  L.push('','■ 업무별 진행 현황');
+  SVC_NAMES.forEach(n=>{const a=casesArr().filter(c=>svc(c)===n&&ACTIVE.includes(c.status));if(!a.length&&!B.done.some(c=>svc(c)===n))return;
+    const dist=SERVICES[n].stages.map((s,i)=>[s,a.filter(c=>n0(c.stage)===i).length]).filter(x=>x[1]).map(([s,k])=>`${s} ${k}`).join(' · ');
+    const d=B.done.filter(c=>svc(c)===n);L.push(`- ${n}: 진행 ${a.length}건${dist?` (${dist})`:''}${d.length?` / 완료 ${d.length}건`:''}`)});
+  if(B.done.length){L.push('','■ 완료');B.done.forEach(c=>L.push(`- ${nm(c)} · ${svc(c)} ${SV(c).label(c)}${svc(c)==='정책자금'?` · 집행 ${man(c.executed)}원`:''}${c.fee&&c.fee.amount?` · 매출 ${man(c.fee.amount)}원`:''}`))}
+  if(B.created.length){L.push('','■ 신규 접수');B.created.forEach(c=>L.push(`- ${nm(c)} · ${svc(c)} · ${src(c.sourceId).name}`))}
+  if(B.stopped.length){L.push('','■ 중단');B.stopped.forEach(c=>L.push(`- ${nm(c)} · ${svc(c)} · ${c.status}(${c.stopReason||''})`))}
+  L.push('',`■ 처리할 일 (${B.todo.length}건)`);B.todo.slice(0,10).forEach(t=>L.push(`- ${t.nm} [${t.sv}] ${t.r}`));if(B.todo.length>10)L.push(`- 외 ${B.todo.length-10}건`);
+  if(B.upcoming.length){L.push('','■ 7일 내 일정');B.upcoming.slice(0,10).forEach(c=>L.push(`- ${short(c.nextDue)} ${nm(c)} [${svc(c)}] ${c.nextAction||''}`))}
+  if(B.opps.length){L.push('','■ 추가 영업 기회');B.opps.slice(0,6).forEach(o=>L.push(`- ${o.cl.name} → ${o.sv}: ${o.r}`))}
+  return L.join('\n');
+}
+function sourceReport(sid){
+  const s=src(sid);const cs=casesArr().filter(c=>c.sourceId===sid&&(ACTIVE.includes(c.status)||daysSince(c.closedAt||doneAt(c)||c.createdAt)<=31)).sort((a,b)=>reached(b)-reached(a));
+  const L=[`[${s.name} 진행 현황 공유] ${today().replace(/-/g,'.')} · 채움파트너스`,''];
+  if(!cs.length)L.push('진행 중인 건이 없습니다.');
+  cs.forEach(c=>{const cl=cli(c.clientId);let line=`- ${cl.name} (${svc(c)}): `;
+    if(c.status==='완료')line+=`완료${svc(c)==='정책자금'&&c.executed?` · ${man(c.executed)}원 집행`:''}`;
+    else if(CLOSED.includes(c.status))line+=`${c.status} · 사유: ${c.stopReason||''}${c.stopDetail?` (${c.stopDetail})`:''}`;
+    else line+=`${n0(c.stage)}단계 ${stName(c)}${c.status==='보류'?' (보류)':''}${c.nextAction?` · 다음: ${c.nextAction}${c.nextDue?` (${short(c.nextDue)})`:''}`:''}`;
+    L.push(line)});
+  const rej=cs.filter(c=>c.status==='반려').map(c=>c.stopReason);
+  if(rej.length)L.push('',`※ 반려 사유: ${[...new Set(rej)].join(', ')} — 이런 조건의 기업은 접수 전에 한 번 확인 부탁드립니다.`);
+  return {text:L.join('\n'),cases:cs};
+}
+function vBrief(){
+  const B=briefData();const txt=briefText(B);
+  const ext=sourcesArr().filter(s=>s.kind!=='직접');if(!S.br.source&&ext[0])S.br.source=ext[0].id;
+  const rep=S.br.source?sourceReport(S.br.source):null;const pend=rep?rep.cases.filter(unreported).length:0;
+  const tile=(l,v,d)=>`<div class="kpi"><span class="l">${l}</span><span class="v num">${v}</span><span class="d">${d}</span></div>`;
+  return `<div class="row" style="justify-content:space-between"><div><h1>브리핑</h1><div class="sub">${B.from.replace(/-/g,'.')} ~ ${B.to.replace(/-/g,'.')} · 복사해서 메모·카톡으로 보낼 수 있습니다</div></div>
+    <div class="seg">${[['today','오늘'],['week','최근 7일'],['month','이번 달']].map(([k,l])=>`<button data-act="brp" data-v="${k}" aria-pressed="${S.br.period===k}">${l}</button>`).join('')}</div></div>
+  <section class="kpis">${tile('신규 접수',B.created.length+'<small>건</small>',SVC_NAMES.map(n=>[n,B.created.filter(c=>svc(c)===n).length]).filter(x=>x[1]).map(x=>x.join(' ')).join(' · ')||'—')}
+    ${tile('단계 진행',B.moves.length+'<small>건</small>','다음 단계로 넘어간 건')}
+    ${tile('완료 · 중단',`${B.done.length}<small>건</small> · ${B.stopped.length}<small>건</small>`,`매출 발생 ${man(B.done.reduce((s,c)=>s+n0(c.fee&&c.fee.amount),0))}원`)}
+    ${tile('입금',man(B.paid.reduce((s,c)=>s+n0(c.fee.amount),0))+'<small>원</small>',`${B.paid.length}건 입금 완료`)}</section>
+  <div class="grid2">
+    <section class="panel"><div class="panel-h"><h2>업무 브리핑</h2><div class="row"><button class="btn sm" data-act="copy" data-target="brief-text">복사</button>${S.sample?`<button class="btn sm pri" data-act="aiBrief" ${S.aiBusy?'disabled':''}>${S.aiBusy?'작성 중…':'AI 우선순위 정리'}</button>`:''}</div></div>
+      ${S.aiBrief?`<div class="brief ai" id="ai-brief">${esc(S.aiBrief)}</div><div class="row" style="margin:8px 0 14px"><button class="btn sm" data-act="copy" data-target="ai-brief">AI 정리 복사</button><button class="btn sm" data-act="aiClear">닫기</button></div>`:''}
+      <pre class="brief" id="brief-text">${esc(txt)}</pre></section>
+    <section class="panel"><div class="panel-h"><h2>소개처 보고</h2><select class="inp" style="width:auto" id="br-source" data-filter="br.source">${ext.map(s=>`<option value="${s.id}" ${s.id===S.br.source?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+      ${rep?`<div class="sub" style="margin-bottom:8px">진행 중인 건과 최근 한 달 안에 끝난 건 ${rep.cases.length}건 · 아직 보고하지 않은 변경 <b style="color:${pend?'var(--info)':'inherit'}">${pend}건</b></div>
+      <pre class="brief" id="src-text">${esc(rep.text)}</pre>
+      <div class="row" style="margin-top:10px"><button class="btn sm" data-act="copy" data-target="src-text">복사</button><button class="btn sm pri" data-act="markReported" ${pend?'':'disabled'}>복사해서 보냈으면: ${pend}건 보고 완료로 표시</button></div>`
+      :'<div class="sub">외부 소개처가 없습니다.</div>'}</section>
+  </div>`;
+}
+async function aiBrief(){
+  if(!S.sample||S.aiBusy)return;S.aiBusy=true;render();
+  try{const r=await S.sample(`당신은 1인 컨설팅 회사(채움파트너스: 정책자금, 기업컨설팅, 가결산, 기업인증, 기업부설연구소, 재무결산) 대표의 업무 비서입니다. 아래 업무 브리핑 자료를 보고 한국어로 다음 형식에 맞춰 짧게 정리하세요. 자료에 없는 사실은 만들지 마세요.\n\n1) 오늘 꼭 할 일 3가지 (이유 한 줄씩)\n2) 놓치면 손해 보는 것 (기한, 미수금, 정체 건)\n3) 이번 주 매출을 키울 제안 2가지\n\n자료:\n${briefText(briefData())}`,{modelTier:'default',onText:({text})=>{S.aiBrief=text;const el=$('#ai-brief');if(el)el.textContent=text;else schedule()}});
+    S.aiBrief=r.text;}
+  catch(e){toast(e&&e.code==='not_granted'?'AI 정리 권한이 없습니다':e&&e.code==='rate_limited'?'잠시 후 다시 시도하세요':'AI 정리에 실패했습니다','bad')}
+  S.aiBusy=false;render();
+}
+
 function srcOptions(sel,blank){return (blank?`<option value="">${blank}</option>`:'')+sourcesArr().map(s=>`<option value="${s.id}" ${s.id===sel?'selected':''}>${esc(s.name)}</option>`).join('')}
-function matchQ(c,q){if(!q)return true;const cl=cli(c.clientId);return [cl.name,cl.ceo,cl.bizNo,c.code,c.fundName,c.agency].join(' ').toLowerCase().includes(q.toLowerCase())}
+function matchQ(c,q){if(!q)return true;const cl=cli(c.clientId);return [cl.name,cl.ceo,cl.bizNo,c.code,c.fundName,c.agency,c.certType,c.topic,svc(c)].join(' ').toLowerCase().includes(q.toLowerCase())}
 function vBoard(){
-  const cs=casesArr().filter(c=>ACTIVE.includes(c.status)&&(!S.bf.source||c.sourceId===S.bf.source)&&matchQ(c,S.bf.q));
-  return `<div class="row" style="justify-content:space-between"><div><h1>진행 보드</h1><div class="sub">진행중·보류 ${cs.length}건 · 카드를 누르면 상세 관리</div></div>
-  <div class="filters"><select id="bf-source" data-filter="bf.source">${srcOptions(S.bf.source,'모든 소개처')}</select><input id="bf-q" data-filter="bf.q" placeholder="기업명·대표자·사업자번호" value="${esc(S.bf.q)}"></div></div>
-  <div class="board-scroll"><div class="board">${STAGES.map((s,i)=>{const col=cs.filter(c=>n0(c.stage)===i).sort((a,b)=>(a.nextDue||'9')<(b.nextDue||'9')?-1:1);
-    return `<div class="col"><div class="col-h"><b>${i} ${s}</b><span class="num">${col.length}건 · ${man(col.reduce((t,c)=>t+n0(c.planAmount),0))}</span></div>
-    ${col.map(cardHtml).join('')||'<div class="sub" style="padding:8px 4px">비어 있음</div>'}</div>`}).join('')}</div></div>`;
+  const F=S.bf;const cs=casesArr().filter(c=>ACTIVE.includes(c.status)&&(!F.source||c.sourceId===F.source)&&(!F.svc||svc(c)===F.svc)&&matchQ(c,F.q));
+  const names=F.svc?SERVICES[F.svc].stages:GEN_STAGES;
+  return `<div class="row" style="justify-content:space-between"><div><h1>진행 보드</h1><div class="sub">진행중·보류 ${cs.length}건 · ${F.svc?F.svc+' 단계 기준':'업무를 고르면 그 업무의 단계 이름으로 보입니다'}</div></div>
+  <div class="filters"><select id="bf-source" data-filter="bf.source">${srcOptions(F.source,'모든 소개처')}</select><input id="bf-q" data-filter="bf.q" placeholder="기업명·대표자·사업자번호" value="${esc(F.q)}"></div></div>
+  <div class="filters">${svcSeg(F.svc,'bf')}</div>
+  <div class="board-scroll"><div class="board">${names.map((s,i)=>{const col=cs.filter(c=>n0(c.stage)===i).sort((a,b)=>(a.nextDue||'9')<(b.nextDue||'9')?-1:1);
+    return `<div class="col"><div class="col-h"><b>${i} ${s}</b><span class="num">${col.length}건</span></div>
+    ${col.map(c=>cardHtml(c,!F.svc)).join('')||'<div class="sub" style="padding:8px 4px">비어 있음</div>'}</div>`}).join('')}</div></div>`;
 }
-function cardHtml(c){
-  const cl=cli(c.clientId),st=stale(c),due=c.nextDue&&c.nextDue<=today();
+function cardHtml(c,showStage){
+  const cl=cli(c.clientId),st=stale(c),due=c.nextDue&&c.nextDue<=today(),sv=svc(c),amt=sv==='정책자금'?c.planAmount:c.contractAmount;
   return `<button class="card" data-open="${c.id}"><div class="nm"><span>${esc(cl.name)}${c.sample?'<span class="tag-ex">예시</span>':''}</span>${c.status==='보류'?'<span class="pill st-보류">보류</span>':''}</div>
-  <div class="meta"><span class="src">${esc(src(c.sourceId).name)}</span><span>${esc(c.agency||'기관 미정')}</span><span class="num">${man(c.planAmount)}</span>${c.stage==3&&c.sub3?`<span>· ${esc(c.sub3)}</span>`:''}</div>
+  <div class="meta">${svcChip(sv)}${showStage?`<span>${esc(stName(c))}</span>`:''}<span>${esc(SV(c).label(c))}</span>${amt?`<span class="num">${man(amt)}</span>`:''}</div>
   ${c.nextAction?`<div class="nx ${due?'due':''}">${c.nextDue?`<b class="num">${short(c.nextDue)}</b> `:''}${esc(c.nextAction)}</div>`:''}
-  <div class="meta"><span class="${st>=14?'stale':''}">${st}일째</span>${unreported(c)?'<span>· 미보고</span>':''}</div></button>`;
+  <div class="meta"><span class="src">${esc(src(c.sourceId).name)}</span><span class="${st>=14?'stale':''}">${st}일째</span>${unreported(c)?'<span>· 미보고</span>':''}</div></button>`;
 }
 function vList(){
-  const F=S.f;const cs=casesArr().filter(c=>(F.status==='all'||(F.status==='active'?ACTIVE.includes(c.status):c.status===F.status))&&(!F.source||c.sourceId===F.source)&&matchQ(c,F.q))
+  const F=S.f;const base=casesArr().filter(c=>(!F.svc||svc(c)===F.svc));
+  const cs=base.filter(c=>(F.status==='all'||(F.status==='active'?ACTIVE.includes(c.status):c.status===F.status))&&(!F.source||c.sourceId===F.source)&&matchQ(c,F.q))
     .sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
   const segs=[['active','진행중·보류'],['완료','완료'],['반려','반려'],['취소','취소'],['거절','거절'],['all','전체']];
   return `<div class="row" style="justify-content:space-between"><div><h1>전체 목록</h1><div class="sub">${cs.length}건</div></div></div>
-  <div class="filters"><div class="seg">${segs.map(([k,l])=>`<button data-act="fstatus" data-v="${k}" aria-pressed="${F.status===k}">${l} <span class="num">${k==='all'?S.cases.size:k==='active'?casesArr().filter(c=>ACTIVE.includes(c.status)).length:casesArr().filter(c=>c.status===k).length}</span></button>`).join('')}</div>
+  <div class="filters">${svcSeg(F.svc,'f')}</div>
+  <div class="filters"><div class="seg">${segs.map(([k,l])=>`<button data-act="fstatus" data-v="${k}" aria-pressed="${F.status===k}">${l} <span class="num">${k==='all'?base.length:k==='active'?base.filter(c=>ACTIVE.includes(c.status)).length:base.filter(c=>c.status===k).length}</span></button>`).join('')}</div>
   <select id="f-source" data-filter="f.source">${srcOptions(F.source,'모든 소개처')}</select><input id="f-q" data-filter="f.q" placeholder="기업명·대표자·사업자번호·진행건 번호" value="${esc(F.q)}"></div>
-  <section class="panel" style="padding:8px 12px">${cs.length?`<div class="tbl-wrap"><table><thead><tr><th>진행건</th><th>기업명</th><th>소개처</th><th>기관·자금</th><th class="r">신청 예정</th><th>단계</th><th>상태</th><th>${F.status==='active'||F.status==='all'?'다음 할 일':'사유'}</th><th>접수일</th></tr></thead><tbody>
-  ${cs.map(c=>{const cl=cli(c.clientId);return `<tr class="click" data-open="${c.id}"><td class="num sub">${esc(c.code)}</td><td><b>${esc(cl.name)}</b>${c.sample?'<span class="tag-ex">예시</span>':''}</td><td><span class="src">${esc(src(c.sourceId).name)}</span></td><td>${esc(c.agency||'—')} <span class="sub">${esc(c.fundName||'')}</span></td><td class="r num">${man(c.planAmount)}</td><td>${n0(c.stage)} ${STAGES[n0(c.stage)]}</td><td><span class="pill st-${c.status}">${c.status}</span></td><td>${CLOSED.includes(c.status)?esc(c.stopReason||''):c.nextAction?`${c.nextDue?`<span class="num">${short(c.nextDue)}</span> `:''}${esc(c.nextAction)}`:'<span class="sub">—</span>'}</td><td class="num sub">${short((c.createdAt||'').slice(0,10))}</td></tr>`}).join('')}
+  <section class="panel" style="padding:8px 12px">${cs.length?`<div class="tbl-wrap"><table><thead><tr><th>진행건</th><th>기업명</th><th>업무</th><th>내용</th><th>소개처</th><th class="r">금액</th><th>단계</th><th>상태</th><th>${F.status==='active'||F.status==='all'?'다음 할 일':'사유'}</th><th>접수일</th></tr></thead><tbody>
+  ${cs.map(c=>{const cl=cli(c.clientId);const amt=svc(c)==='정책자금'?c.planAmount:c.contractAmount;return `<tr class="click" data-open="${c.id}"><td class="num sub">${esc(c.code)}</td><td><b>${esc(cl.name)}</b>${c.sample?'<span class="tag-ex">예시</span>':''}</td><td>${svcChip(svc(c))}</td><td>${esc(SV(c).label(c))} <span class="sub">${esc(c.fundName||'')}</span></td><td><span class="src">${esc(src(c.sourceId).name)}</span></td><td class="r num">${amt?man(amt):'—'}</td><td>${n0(c.stage)} ${esc(stName(c))}</td><td><span class="pill st-${c.status}">${c.status}</span></td><td>${CLOSED.includes(c.status)?esc(c.stopReason||''):c.nextAction?`${c.nextDue?`<span class="num">${short(c.nextDue)}</span> `:''}${esc(c.nextAction)}`:'<span class="sub">—</span>'}</td><td class="num sub">${short((c.createdAt||'').slice(0,10))}</td></tr>`}).join('')}
   </tbody></table></div>`:`<div class="empty"><b>조건에 맞는 진행건이 없습니다</b>필터를 바꾸거나 '+ 신규 접수'로 등록하세요.</div>`}</section>`;
 }
 function vFees(){
-  const cs=casesArr().filter(c=>c.fee||c.status==='완료').sort((a,b)=>(b.executedAt||'').localeCompare(a.executedAt||''));
+  const cs=casesArr().filter(c=>c.fee||c.status==='완료').sort((a,b)=>doneAt(b).localeCompare(doneAt(a)));
   const sum=k=>cs.filter(k).reduce((t,c)=>t+n0(c.fee&&c.fee.amount),0);
-  return `<div><h1>수수료 정산</h1><div class="sub">집행 완료 처리 시 소개처의 수수료 기준으로 자동 계산됩니다. 금액은 만원 단위입니다.</div></div>
+  return `<div><h1>수수료·용역비 정산</h1><div class="sub">정책자금은 소개처 요율 × 집행액, 다른 업무는 계약 금액으로 자동 계산됩니다. 금액은 만원 단위입니다.</div></div>
   <section class="kpis">
     <div class="kpi"><span class="l">청구 전</span><span class="v num">${man(sum(c=>(c.fee||{}).status==='청구전'))}<small>원</small></span><span class="d">${cs.filter(c=>(c.fee||{}).status==='청구전').length}건</span></div>
     <div class="kpi"><span class="l">청구 · 입금 대기</span><span class="v num">${man(sum(c=>(c.fee||{}).status==='청구'))}<small>원</small></span><span class="d">${cs.filter(c=>(c.fee||{}).status==='청구').length}건</span></div>
     <div class="kpi"><span class="l">지연</span><span class="v num" style="color:${cs.some(feeLate)?'var(--bad)':'inherit'}">${man(sum(feeLate))}<small>원</small></span><span class="d">입금 예정일 지남 ${cs.filter(feeLate).length}건</span></div>
     <div class="kpi"><span class="l">입금 완료 · 이번 달</span><span class="v num">${man(sum(c=>(c.fee||{}).status==='입금완료'&&ym(c.fee.paidAt)===thisMonth()))}<small>원</small></span><span class="d">누적 ${man(sum(c=>(c.fee||{}).status==='입금완료'))}원</span></div>
   </section>
-  <section class="panel" style="padding:8px 12px">${cs.length?`<div class="tbl-wrap"><table><thead><tr><th>기업명</th><th>소개처</th><th>청구처</th><th>집행일</th><th class="r">집행액</th><th class="r">요율</th><th class="r">수수료</th><th>상태</th><th>입금 예정</th><th>입금일</th><th>계산서</th></tr></thead><tbody>
-  ${cs.map(c=>{const f=c.fee||{};return `<tr class="click" data-open="${c.id}"><td><b>${esc(cli(c.clientId).name)}</b>${c.sample?'<span class="tag-ex">예시</span>':''}</td><td><span class="src">${esc(src(c.sourceId).name)}</span></td><td>${esc(f.billTo||'—')}</td><td class="num">${short(c.executedAt)}</td><td class="r num">${man(c.executed)}</td><td class="r num">${f.rate!=null&&f.rate!==''?f.rate+'%':'—'}</td><td class="r num"><b>${man(f.amount)}</b></td><td><span class="pill ${feeLate(c)?'st-반려':f.status==='입금완료'?'st-완료':f.status==='청구'?'st-진행중':''}">${feeLate(c)?'지연':esc(f.status||'—')}</span></td><td class="num">${short(f.dueAt)}</td><td class="num">${short(f.paidAt)}</td><td>${f.invoice?'발행':'—'}</td></tr>`}).join('')}
-  </tbody></table></div>`:`<div class="empty"><b>아직 정산할 건이 없습니다</b>진행건에서 '집행 완료 처리'를 하면 여기에 쌓입니다.</div>`}</section>`;
+  <section class="panel" style="padding:8px 12px">${cs.length?`<div class="tbl-wrap"><table><thead><tr><th>기업명</th><th>업무</th><th>소개처</th><th>청구처</th><th>완료일</th><th class="r">기준 금액</th><th class="r">요율</th><th class="r">청구액</th><th>상태</th><th>입금 예정</th><th>입금일</th><th>계산서</th></tr></thead><tbody>
+  ${cs.map(c=>{const f=c.fee||{};return `<tr class="click" data-open="${c.id}"><td><b>${esc(cli(c.clientId).name)}</b>${c.sample?'<span class="tag-ex">예시</span>':''}</td><td>${svcChip(svc(c))}</td><td><span class="src">${esc(src(c.sourceId).name)}</span></td><td>${esc(f.billTo||'—')}</td><td class="num">${short(doneAt(c))}</td><td class="r num">${man(c[SV(c).base])}</td><td class="r num">${f.rate!=null&&f.rate!==''?f.rate+'%':'—'}</td><td class="r num"><b>${man(f.amount)}</b></td><td><span class="pill ${feeLate(c)?'st-반려':f.status==='입금완료'?'st-완료':f.status==='청구'?'st-진행중':''}">${feeLate(c)?'지연':esc(f.status||'—')}</span></td><td class="num">${short(f.dueAt)}</td><td class="num">${short(f.paidAt)}</td><td>${f.invoice?'발행':'—'}</td></tr>`}).join('')}
+  </tbody></table></div>`:`<div class="empty"><b>아직 정산할 건이 없습니다</b>진행건에서 완료 처리를 하면 여기에 쌓입니다.</div>`}</section>`;
 }
 function vSources(){
   const hasSample=[...S.cases.values(),...S.clients.values()].some(x=>x.sample);
-  return `<div class="row" style="justify-content:space-between"><div><h1>소개처</h1><div class="sub">수수료 기준을 여기서 정하면 집행 시 자동으로 계산됩니다.</div></div><button class="btn pri" data-act="editSource">+ 소개처 추가</button></div>
-  <section class="panel" style="padding:8px 12px"><div class="tbl-wrap"><table><thead><tr><th>소개처</th><th>구분</th><th>담당자</th><th>연락처</th><th>수수료 기준</th><th>청구처</th><th>정산 시점</th><th>계약 만료</th><th></th></tr></thead><tbody>
+  return `<div class="row" style="justify-content:space-between"><div><h1>소개처</h1><div class="sub">정책자금 수수료 기준을 여기서 정하면 집행 시 자동으로 계산됩니다. 다른 업무는 진행건의 계약 금액을 씁니다.</div></div><button class="btn pri" data-act="editSource">+ 소개처 추가</button></div>
+  <section class="panel" style="padding:8px 12px"><div class="tbl-wrap"><table><thead><tr><th>소개처</th><th>구분</th><th>담당자</th><th>연락처</th><th>정책자금 수수료</th><th>청구처</th><th>정산 시점</th><th>계약 만료</th><th></th></tr></thead><tbody>
   ${sourcesArr().map(s=>{const exp=s.contractEnd&&daysUntil(s.contractEnd)<=30;return `<tr><td><b>${esc(s.name)}</b></td><td>${esc(s.kind||'')}</td><td>${esc(s.contact||'—')}</td><td class="num">${esc(s.phone||'—')}</td><td>${s.feeType==='집행액 × %'?(s.feeRate!=null&&s.feeRate!==''?`집행액 × ${s.feeRate}%`:'<span style="color:var(--warn)">요율 미입력</span>'):s.feeType==='건당 고정액'?`건당 ${man(s.feeFixed)}원`:esc(s.feeType||'—')}</td><td>${esc(s.billTo||'—')}</td><td>${esc(s.settle||'—')}</td><td class="num" style="${exp?'color:var(--bad);font-weight:600':''}">${esc(s.contractEnd||'—')}</td><td><button class="btn sm" data-act="editSource" data-v="${s.id}">수정</button></td></tr>`}).join('')}
   </tbody></table></div></section>
   ${hasSample?`<section class="panel"><div class="panel-h"><div><h2>예시 데이터</h2><div class="sub">화면 확인용으로 넣어 둔 '예시' 표시 고객사와 진행건입니다. 실제 업무를 시작할 때 지우세요.</div></div><button class="btn danger" data-act="clearSamples" id="btn-clear">예시 데이터 모두 삭제</button></div></section>`:''}`;
 }
-const VIEWS={today:vToday,board:vBoard,list:vList,fees:vFees,sources:vSources};
+const VIEWS={today:vToday,brief:vBrief,board:vBoard,list:vList,fees:vFees,sources:vSources};
 
 /* ---------- field rendering ---------- */
 function fld(t,obj,def,extra){
@@ -487,53 +651,54 @@ function renderDrawer(){
   const ae=document.activeElement;
   if(ae&&host.contains(ae)&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName)&&ae.type!=='checkbox'){S.drawerDirty=true;return}
   const scroll=host.querySelector('.dr-b')?.scrollTop||0;
-  const cl=cli(c.clientId),s=src(c.sourceId),stg=n0(c.stage),dates=c.dates||{};
+  const cl=cli(c.clientId),s=src(c.sourceId),stg=n0(c.stage),dates=c.dates||{},sv=svc(c),SD=SERVICES[sv];
   const docs=c.docs||[];const okN=docs.filter(d=>d.st==='수령'||d.st==='해당없음').length;
   const others=casesArr().filter(x=>x.clientId===c.clientId&&x.id!==c.id);
   const dup=cl.bizNo?[...S.clients.values()].filter(x=>x.id!==cl.id&&digits(x.bizNo)&&digits(x.bizNo)===digits(cl.bizNo)):[];
+  const fields=SD.fields.filter(f=>!(f[0]==='sub3'&&stg<3));
   host.innerHTML=`<div class="scrim" data-act="close"></div><aside class="drawer" role="dialog" aria-label="진행건 상세">
   <div class="dr-h"><div class="ttl"><h1>${esc(cl.name)}${c.sample?'<span class="tag-ex">예시</span>':''}</h1>
-    <div class="meta"><span class="num">${esc(c.code)}</span><span class="src">${esc(s.name)}</span><span class="pill st-${c.status}">${c.status}</span><span>${esc(cl.ceo||'')} ${esc(cl.phone||'')}</span></div></div>
+    <div class="meta">${svcChip(sv)}<span class="num">${esc(c.code)}</span><span class="src">${esc(s.name)}</span><span class="pill st-${c.status}">${c.status}</span><span>${esc(cl.ceo||'')} ${esc(cl.phone||'')}</span></div></div>
     <button class="x" data-act="close" aria-label="닫기">×</button></div>
   <div class="dr-b">
     ${dup.length?`<div class="notice bad">같은 사업자번호로 등록된 고객사가 있습니다: ${dup.map(d=>`${esc(d.name)} (${esc(src(d.sourceId).name)}, ${esc(d.receivedAt||'')})`).join(', ')}. 수수료 귀속은 먼저 접수된 소개처 기준입니다.</div>`:''}
-    <section class="sec"><h3>진행 단계 <span class="sub" style="font-weight:500">${stale(c)?`이 단계 ${stale(c)}일째`:''}</span></h3>
-      <div class="stepper">${STAGES.map((n,i)=>`<button class="step ${i<stg||c.status==='완료'?'done':''} ${i===stg&&c.status!=='완료'?'cur':''}" data-act="stage" data-v="${i}" ${CLOSED.includes(c.status)||c.status==='완료'?'disabled':''}><span>${i} ${n}</span><small>${short(dates['s'+i])||'·'}</small></button>`).join('')}</div>
+    <section class="sec"><h3>${esc(sv)} 진행 단계 <span class="sub" style="font-weight:500">${stale(c)?`이 단계 ${stale(c)}일째`:''}</span></h3>
+      <div class="stepper">${SD.stages.map((n,i)=>`<button class="step ${i<stg||c.status==='완료'?'done':''} ${i===stg&&c.status!=='완료'?'cur':''}" data-act="stage" data-v="${i}" ${CLOSED.includes(c.status)||c.status==='완료'?'disabled':''}><span>${i} ${n}</span><small>${short(dates['s'+i])||'·'}</small></button>`).join('')}</div>
       <div class="statusbar">${STATUSES.map(x=>`<button data-act="status" data-v="${x}" aria-pressed="${c.status===x}" class="${c.status===x?'pill st-'+x:''}">${x}</button>`).join('')}</div>
       ${S.pendingStop?`<div class="stopbox"><b>${S.pendingStop} 처리</b><span class="sub" style="color:inherit">${STATUS_HELP[S.pendingStop]}</span>
         <div class="form"><label class="fld"><span>사유 <span class="req">*</span></span><select id="stop-reason"><option value="">선택</option>${REASONS[S.pendingStop].map(r=>`<option>${r}</option>`).join('')}</select></label>
         <label class="fld"><span>상세 내용</span><input id="stop-detail" type="text"></label></div>
         <div class="row"><button class="btn pri" data-act="stopConfirm">${S.pendingStop}(으)로 변경</button><button class="btn" data-act="stopCancel">취소</button></div></div>`:''}
-      ${CLOSED.includes(c.status)?`<div class="notice bad" style="margin-top:10px">${c.status} · ${esc(c.stopReason||'')} ${c.stopDetail?'· '+esc(c.stopDetail):''} <span class="sub">(${STAGES[n0(c.stopStage)]} 단계에서 중단, ${esc(c.closedAt||'')})</span></div>`:''}
-      ${!isDirect(c.sourceId)?`<div class="row" style="margin-top:10px;justify-content:space-between"><span class="sub">${s.name} 보고: ${c.reportedAt?`마지막 ${short(c.reportedAt)}`:'보고 기록 없음'}${unreported(c)?' · <b style="color:var(--info)">보고할 변경 있음</b>':''}</span>${unreported(c)?`<button class="btn sm" data-act="reported">보고 완료로 표시</button>`:''}</div>`:''}
+      ${CLOSED.includes(c.status)?`<div class="notice bad" style="margin-top:10px">${c.status} · ${esc(c.stopReason||'')} ${c.stopDetail?'· '+esc(c.stopDetail):''} <span class="sub">(${esc(SD.stages[n0(c.stopStage)])} 단계에서 중단, ${esc(c.closedAt||'')})</span></div>`:''}
+      ${!isDirect(c.sourceId)?`<div class="row" style="margin-top:10px;justify-content:space-between"><span class="sub">${esc(s.name)} 보고: ${c.reportedAt?`마지막 ${short(c.reportedAt)}`:'보고 기록 없음'}${unreported(c)?' · <b style="color:var(--info)">보고할 변경 있음</b>':''}</span>${unreported(c)?`<button class="btn sm" data-act="reported">보고 완료로 표시</button>`:''}</div>`:''}
     </section>
     <section class="sec"><h3>다음 할 일</h3>
       <div class="form">${fld('case',c,['nextAction','할 일','text'])}${fld('case',c,['nextDue','기한','date'])}</div>
       <div class="quick"><span class="sub" style="align-self:center">기한:</span>${[['오늘',0],['+1일',1],['+3일',3],['+7일',7],['+14일',14]].map(([l,d])=>`<button class="btn sm" data-act="due" data-v="${d}">${l}</button>`).join('')}</div>
     </section>
-    <section class="sec"><h3>자금 정보</h3>
-      <div class="form">${fld('case',c,['agency','대상 기관','select',AGENCIES])}${fld('case',c,['fundName','자금명','text'])}${fld('case',c,['planAmount','신청 예정 금액 (만원)','num'])}${stg>=3?fld('case',c,['sub3','3단계 세부','select',SUB3]):'<span></span>'}
-      ${fld('case',c,['approved','승인 금액 (만원)','num'])}${fld('case',c,['executed','집행 금액 (만원)','num'])}${fld('case',c,['executedAt','집행일','date'])}</div>
-      ${ACTIVE.includes(c.status)&&stg>=3?`<div class="row" style="margin-top:10px"><button class="btn pri" data-act="complete">집행 완료 처리</button><span class="sub">집행 금액을 넣고 누르면 수수료가 계산됩니다.</span></div>`:''}
+    <section class="sec"><h3>${sv==='정책자금'?'자금 정보':'업무 정보'}</h3>
+      <div class="form">${fields.map(f=>fld('case',c,f)).join('')}</div>
+      ${ACTIVE.includes(c.status)&&stg>=3?`<div class="row" style="margin-top:10px"><button class="btn pri" data-act="complete">${SD.doneLabel}</button><span class="sub">${sv==='정책자금'?'집행 금액을 넣고 누르면 수수료가 계산됩니다.':'계약 금액으로 청구액이 잡힙니다.'}</span></div>`:''}
     </section>
-    ${c.fee||c.status==='완료'?`<section class="sec"><h3>수수료 정산 <button class="btn sm" data-act="recalc">다시 계산</button></h3>
-      <div class="form">${fld('case',c,['fee.rate','수수료율 (%)','num'])}${fld('case',c,['fee.amount','수수료 (만원)','num'])}${fld('case',c,['fee.billTo','청구처','select',['소개처','고객사']])}${fld('case',c,['fee.status','정산 상태','select',FEE_ST])}
+    ${c.fee||c.status==='완료'?`<section class="sec"><h3>${sv==='정책자금'?'수수료':'용역비'} 정산 <button class="btn sm" data-act="recalc">다시 계산</button></h3>
+      <div class="form">${sv==='정책자금'?fld('case',c,['fee.rate','수수료율 (%)','num']):''}${fld('case',c,['fee.amount','청구액 (만원)','num'])}${fld('case',c,['fee.billTo','청구처','select',['소개처','고객사']])}${fld('case',c,['fee.status','정산 상태','select',FEE_ST])}
       ${fld('case',c,['fee.billedAt','청구일','date'])}${fld('case',c,['fee.dueAt','입금 예정일','date'])}${fld('case',c,['fee.paidAt','입금일','date'])}${fld('case',c,['fee.invoice','세금계산서 발행','bool'])}</div>
       ${feeLate(c)?'<div class="notice bad" style="margin-top:10px">입금 예정일이 지났습니다.</div>':''}</section>`:''}
     <section class="sec"><h3>서류 체크 <span class="sub num" style="font-weight:500">${okN}/${docs.length}</span></h3>
       <div class="progress"><i style="width:${docs.length?okN/docs.length*100:0}%"></i></div>
-      <div class="docs">${docs.map((d,i)=>`<div class="doc ${d.st==='수령'||d.st==='해당없음'?'ok':''} ${d.st==='보완필요'?'fix':''}"><span>${esc(d.name)}${d.at?` <small class="sub num">${short(d.at)}</small>`:''}</span><select data-doc="${i}" aria-label="${esc(d.name)} 상태">${DOC_ST.map(o=>`<option ${o===d.st?'selected':''}>${o}</option>`).join('')}</select></div>`).join('')}</div>
-      <div class="row" style="margin-top:8px"><input class="inp grow" id="doc-new" placeholder="서류 추가 (예: 수출실적증명)"><button class="btn sm" data-act="addDoc">추가</button><button class="btn sm" data-act="reqAll">미요청 → 요청</button></div>
+      <div class="docs">${docs.map((d,i)=>`<div class="doc ${d.st==='수령'||d.st==='해당없음'?'ok':''} ${d.st==='보완필요'?'fix':''}"><span>${esc(d.name)}${d.at?` <small class="sub num">${short(d.at)}</small>`:''}</span><select data-doc="${i}" aria-label="${esc(d.name)} 상태">${DOC_ST.map(o=>`<option ${o===d.st?'selected':''}>${o}</option>`).join('')}</select></div>`).join('')||'<div class="sub">서류 목록이 비어 있습니다. <button class="btn sm" data-act="defaultDocs">기본 서류 넣기</button></div>'}</div>
+      <div class="row" style="margin-top:8px"><input class="inp grow" id="doc-new" placeholder="서류 추가"><button class="btn sm" data-act="addDoc">추가</button><button class="btn sm" data-act="reqAll">미요청 → 요청</button></div>
     </section>
     <section class="sec"><h3>활동 기록</h3>
       <div class="row"><select class="inp" id="lg-type" style="width:auto">${LOG_TYPES.map(t=>`<option>${t}</option>`).join('')}</select><input class="inp grow" id="lg-text" placeholder="미팅·통화 내용 요약"><button class="btn sm pri" data-act="addLog">기록</button></div>
       <div class="logs">${(c.logs||[]).map(l=>`<div class="log"><div class="h"><b>${esc(l.type)}</b><span class="num">${esc((l.at||'').slice(0,16).replace('T',' '))}</span></div>${esc(l.text)}</div>`).join('')||'<div class="sub">아직 기록이 없습니다.</div>'}</div>
     </section>
     <details class="sec" open><summary>고객사 기본 정보</summary><div class="form">${CLIENT_BASIC.map(d=>fld('client',cl,d)).join('')}</div></details>
-    <details class="sec" ${stg>=1?'open':''}><summary>진단 정보 (1차 미팅 후)</summary><div class="form">${CLIENT_DIAG.map(d=>fld('client',cl,d)).join('')}</div></details>
-    <section class="sec"><h3>기타</h3>
-      ${others.length?`<div class="sub" style="margin-bottom:8px">같은 고객사의 다른 진행건: ${others.map(o=>`<button class="btn sm" data-open="${o.id}">${esc(o.code)} ${esc(o.agency||'')} · ${o.status}</button>`).join(' ')}</div>`:''}
-      <div class="row"><button class="btn" data-act="addCaseForClient">이 고객사로 진행건 추가</button><label class="row sub" style="gap:6px">소개처 <select class="inp" style="width:auto" data-t="case" data-k="sourceId" data-type="text" id="f-case-sourceId">${srcOptions(c.sourceId)}</select></label>
+    <details class="sec" ${stg>=1?'open':''}><summary>진단 정보</summary><div class="form">${CLIENT_DIAG.map(d=>fld('client',cl,d)).join('')}</div></details>
+    <section class="sec"><h3>이 고객사의 다른 업무</h3>
+      ${others.length?`<div class="row" style="margin-bottom:10px">${others.map(o=>`<button class="btn sm" data-open="${o.id}">${esc(svc(o))} · ${esc(stName(o))} · ${o.status}</button>`).join('')}</div>`:''}
+      <div class="row"><select class="inp" style="width:auto" id="new-svc">${SVC_NAMES.map(n=>`<option>${n}</option>`).join('')}</select><button class="btn" data-act="addCaseForClient">진행건 추가</button>
+      <label class="row sub" style="gap:6px">소개처 <select class="inp" style="width:auto" data-t="case" data-k="sourceId" data-type="text" id="f-case-sourceId">${srcOptions(c.sourceId)}</select></label>
       <span class="grow"></span><button class="btn danger" data-act="delCase" id="btn-delcase">진행건 삭제</button></div>
     </section>
   </div></aside>`;
@@ -542,35 +707,47 @@ function renderDrawer(){
 function openCase(id){S.open=id;S.pendingStop=null;renderDrawer();setTimeout(()=>$('#drawer .x')?.focus(),0)}
 
 /* ---------- case logic ---------- */
-function makeDocs(bizType){return DEFAULT_DOCS.map(([n,corp])=>({name:n,st:corp&&bizType==='개인'?'해당없음':'미요청'}))}
-function createCase(clientId,sourceId,extra){
+function makeDocs(service,bizType){return SERVICES[service].docs.map(([n,corp])=>({name:n,st:corp&&bizType==='개인'?'해당없음':'미요청'}))}
+function createCase(clientId,sourceId,service,extra,code){
   const id=newId('p');const now=new Date().toISOString();
-  const data={code:nextCode(),clientId,sourceId,agency:'',fundName:'',planAmount:null,stage:0,status:'진행중',sub3:'',dates:{s0:today()},stageAt:now,createdAt:now,
-    nextAction:'1차 미팅 일정 잡기',nextDue:addDays(today(),2),docs:makeDocs(cli(clientId).bizType),logs:[],reportedKey:'',...extra};
-  put('cases',id,data);return id;
+  const data={code:code||fmtCode('P',maxCode(S.cases,'P')+1),service,clientId,sourceId,stage:0,status:'진행중',dates:{s0:today()},stageAt:now,createdAt:now,
+    nextAction:SERVICES[service].hints[0],nextDue:addDays(today(),2),docs:makeDocs(service,cli(clientId).bizType),logs:[],reportedKey:'',...extra};
+  put('cases',id,data);S.cases.set(id,{id,...data});return id;
 }
 function setStage(c,i){
   if(i===n0(c.stage))return;
   const dates={...(c.dates||{})};if(!dates['s'+i])dates['s'+i]=today();
   const patch={stage:i,dates,stageAt:new Date().toISOString()};
-  const hint={1:'1차 미팅 진행·진단',2:'필요 서류 요청',3:'신청서 작성',4:'집행 확인'}[i];
-  if(hint&&i>n0(c.stage))patch.nextAction=hint;
-  upd('cases',c.id,patch);toast(`${STAGES[i]} 단계로 변경했습니다`);
+  if(i>n0(c.stage))patch.nextAction=SV(c).hints[i];
+  upd('cases',c.id,patch);toast(`${SV(c).stages[i]} 단계로 변경했습니다`);
 }
-function completeCase(c){
-  const ex=n0(c.executed);if(!ex){toast('집행 금액을 먼저 입력하세요','bad');$('#f-case-executed')?.focus();return}
-  const exAt=c.executedAt||today();const fee=calcFee(c,ex);
-  const dates={...(c.dates||{}),s4:exAt};
-  upd('cases',c.id,{stage:4,status:'완료',dates,executedAt:exAt,stageAt:new Date().toISOString(),nextAction:'',nextDue:'',
-    fee:{status:'청구전',billedAt:'',paidAt:'',invoice:false,...(c.fee||{}),...fee,dueAt:(c.fee&&c.fee.dueAt)||addDays(exAt,30)}});
-  toast(fee.amount!=null?`집행 완료 · 수수료 ${man(fee.amount)}원 계산됨`:'집행 완료 · 소개처 수수료 기준이 없어 금액을 직접 입력하세요');
-}
-function calcFee(c,ex){const s=src(c.sourceId);
+function calcFee(c){
+  if(svc(c)!=='정책자금')return {rate:null,amount:n0(c.contractAmount)||null,billTo:'고객사'};
+  const s=src(c.sourceId),ex=n0(c.executed);
   if(s.feeType==='집행액 × %'&&s.feeRate!=null&&s.feeRate!=='')return {rate:+s.feeRate,amount:Math.round(ex*s.feeRate/100*10)/10,billTo:s.billTo||'소개처'};
   if(s.feeType==='건당 고정액')return {rate:null,amount:n0(s.feeFixed),billTo:s.billTo||'소개처'};
-  return {rate:null,amount:null,billTo:s.billTo||'고객사'};}
+  return {rate:null,amount:null,billTo:s.billTo||'고객사'};
+}
+function completeCase(c){
+  const SD=SV(c);
+  if(svc(c)==='정책자금'&&!n0(c.executed)){toast('집행 금액을 먼저 입력하세요','bad');$('#f-case-executed')?.focus();return}
+  const at=c[SD.done]||today();const fee=calcFee(c);
+  const patch={stage:4,status:'완료',dates:{...(c.dates||{}),s4:at},[SD.done]:at,stageAt:new Date().toISOString(),nextAction:'',nextDue:'',
+    fee:{status:'청구전',billedAt:'',paidAt:'',invoice:false,...(c.fee||{}),...fee,dueAt:(c.fee&&c.fee.dueAt)||addDays(at,30)}};
+  if(svc(c)==='기업인증'&&c.certType&&!c.expireAt&&['벤처','이노비즈','메인비즈'].includes(c.certType))patch.expireAt=addDays(at,365*3);
+  upd('cases',c.id,patch);
+  if((svc(c)==='기업인증'||svc(c)==='기업부설연구소')){const cl=cli(c.clientId);const tag=svc(c)==='기업인증'?(CERTS.find(x=>(c.certType||'').startsWith(x))||null):(c.labType||'기업부설연구소');
+    if(tag&&!(cl.certs||[]).includes(tag))upd('clients',c.clientId,{certs:[...(cl.certs||[]),tag]})}
+  toast(fee.amount!=null?`완료 · 청구액 ${man(fee.amount)}원 계산됨`:'완료 · 청구 기준이 없어 금액을 직접 입력하세요');
+}
+
+/* ---------- copy ---------- */
+function copyText(id,btn){const el=document.getElementById(id);if(!el)return;const t=el.textContent;
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);toast('텍스트를 선택했습니다. Ctrl+C(⌘C)로 복사하세요')};
+  try{navigator.clipboard.writeText(t).then(()=>toast('복사했습니다'),fallback)}catch(e){fallback()}}
 
 /* ---------- events ---------- */
+function armed(b,label){if(b.classList.contains('armed'))return true;b.classList.add('armed');const o=b.textContent;b.textContent=label||'한 번 더 누르면 삭제';setTimeout(()=>{b.classList.remove('armed');b.textContent=o},3000);return false}
 document.addEventListener('click',e=>{
   const o=e.target.closest('[data-open]');if(o){openCase(o.dataset.open);return}
   const b=e.target.closest('[data-act]');if(!b)return;
@@ -588,25 +765,36 @@ document.addEventListener('click',e=>{
     case 'stopConfirm':{const r=$('#stop-reason').value;if(!r){toast('사유를 선택하세요','bad');return}
       upd('cases',c.id,{status:S.pendingStop,stopReason:r,stopDetail:$('#stop-detail').value.trim(),stopStage:n0(c.stage),closedAt:today(),nextAction:'',nextDue:''});
       toast(`${S.pendingStop} 처리했습니다${!isDirect(c.sourceId)?` · ${src(c.sourceId).name}에 알려 주세요`:''}`);S.pendingStop=null;break}
-    case 'reported':upd('cases',c.id,{reportedKey:`${c.stage}|${c.status}`,reportedAt:today(),logs:[{at:new Date().toISOString(),type:'소개처 보고',text:`${src(c.sourceId).name}에 ${c.status==='진행중'?STAGES[c.stage]+' 단계':c.status} 보고`},...(c.logs||[])].slice(0,200)});break;
+    case 'reported':upd('cases',c.id,{reportedKey:`${c.stage}|${c.status}`,reportedAt:today(),logs:[{at:new Date().toISOString(),type:'소개처 보고',text:`${src(c.sourceId).name}에 ${c.status==='진행중'?stName(c)+' 단계':c.status} 보고`},...(c.logs||[])].slice(0,200)});break;
     case 'due':upd('cases',c.id,{nextDue:addDays(today(),+v)});break;
     case 'complete':c&&completeCase(c);break;
-    case 'recalc':{const f=calcFee(c,n0(c.executed));upd('cases',c.id,{fee:{...f}});toast(f.amount!=null?`수수료 ${man(f.amount)}원으로 다시 계산했습니다`:'소개처 수수료 기준이 없습니다');break}
+    case 'recalc':{const f=calcFee(c);upd('cases',c.id,{fee:{...f}});toast(f.amount!=null?`청구액 ${man(f.amount)}원으로 다시 계산했습니다`:'계산 기준(요율 또는 계약 금액)이 없습니다');break}
     case 'addDoc':{const n=$('#doc-new').value.trim();if(!n)return;upd('cases',c.id,{docs:[...(c.docs||[]),{name:n,st:'요청',at:today()}]});break}
+    case 'defaultDocs':upd('cases',c.id,{docs:makeDocs(svc(c),cli(c.clientId).bizType)});break;
     case 'reqAll':upd('cases',c.id,{docs:(c.docs||[]).map(d=>d.st==='미요청'?{...d,st:'요청',at:today()}:d)});toast('미요청 서류를 요청 상태로 바꿨습니다');break;
     case 'addLog':{const t=$('#lg-text').value.trim();if(!t){$('#lg-text').focus();return}
       upd('cases',c.id,{logs:[{at:new Date().toISOString(),type:$('#lg-type').value,text:t},...(c.logs||[])].slice(0,200)});$('#lg-text').value='';break}
-    case 'addCaseForClient':{const id=createCase(c.clientId,c.sourceId,{nextAction:'자금 검토'});toast('새 진행건을 만들었습니다');setTimeout(()=>openCase(id),300);break}
+    case 'addCaseForClient':{const sv=$('#new-svc').value;const id=createCase(c.clientId,c.sourceId,sv,{});toast(`${sv} 진행건을 만들었습니다`);setTimeout(()=>openCase(id),200);break}
+    case 'oppCreate':{const cl=cli(b.dataset.client);const id=createCase(b.dataset.client,cl.sourceId||(S.cases.size?casesArr().find(x=>x.clientId===b.dataset.client).sourceId:''),v,{});toast(`${cl.name} · ${v} 진행건을 만들었습니다`);setTimeout(()=>openCase(id),200);break}
     case 'delCase':
-      if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='한 번 더 누르면 삭제';setTimeout(()=>{b.classList.remove('armed');b.textContent='진행건 삭제'},3000);return}
+      if(!armed(b))return;
       {const clientId=c.clientId;del('cases',c.id);S.open=null;renderDrawer();
        if(!casesArr().some(x=>x.clientId===clientId&&x.id!==c.id))del('clients',clientId);toast('삭제했습니다')}break;
     case 'fstatus':S.f.status=v;render();break;
+    case 'svcf':S[b.dataset.g].svc=v;render();break;
+    case 'goBoard':S.bf.svc=v;location.hash='board';break;
+    case 'brp':S.br.period=v;S.aiBrief='';render();break;
+    case 'copy':copyText(b.dataset.target,b);break;
+    case 'aiBrief':aiBrief();break;
+    case 'aiClear':S.aiBrief='';render();break;
+    case 'markReported':{const rep=sourceReport(S.br.source);const t=new Date().toISOString();let n=0;
+      rep.cases.filter(unreported).forEach(x=>{n++;upd('cases',x.id,{reportedKey:`${x.stage}|${x.status}`,reportedAt:today(),logs:[{at:t,type:'소개처 보고',text:`${src(x.sourceId).name} 현황 공유 (${x.status==='진행중'?stName(x)+' 단계':x.status})`},...(x.logs||[])].slice(0,200)})});
+      toast(`${n}건을 보고 완료로 표시했습니다`);break}
     case 'openIntake':openIntake();break;
     case 'openImport':openImport();break;
     case 'editSource':openSource(v);break;
     case 'clearSamples':
-      if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='한 번 더 누르면 삭제';setTimeout(()=>{b.classList.remove('armed');b.textContent='예시 데이터 모두 삭제'},3000);return}
+      if(!armed(b))return;
       S.cases.forEach(x=>x.sample&&del('cases',x.id));S.clients.forEach(x=>x.sample&&del('clients',x.id));toast('예시 데이터를 삭제했습니다');break;
     case 'modalClose':closeModal();break;
     case 'intakeSave':saveIntake();break;
@@ -614,18 +802,17 @@ document.addEventListener('click',e=>{
     case 'importPreview':importPreview();break;
     case 'importRun':importRun();break;
     case 'sourceSave':saveSource();break;
-    case 'sourceDel':
-      if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='한 번 더 누르면 삭제';return}
-      del('sources',b.dataset.id);closeModal();toast('소개처를 삭제했습니다');break;
+    case 'sourceDel':if(!armed(b))return;del('sources',b.dataset.id);closeModal();toast('소개처를 삭제했습니다');break;
   }
 });
 document.addEventListener('change',e=>{
   const el=e.target;
   if(el.dataset.doc!=null&&S.open){const c=S.cases.get(S.open);const docs=(c.docs||[]).map(d=>({...d}));const d=docs[+el.dataset.doc];d.st=el.value;d.at=today();
     const patch={docs};const all=docs.every(x=>x.st==='수령'||x.st==='해당없음');
-    if(all&&n0(c.stage)===2){patch.stage=3;patch.dates={...(c.dates||{}),s3:(c.dates||{}).s3||today()};patch.stageAt=new Date().toISOString();patch.nextAction='신청서 작성';toast('서류를 모두 받아 3단계(진행 체크)로 넘겼습니다')}
+    if(all&&n0(c.stage)===2){patch.stage=3;patch.dates={...(c.dates||{}),s3:(c.dates||{}).s3||today()};patch.stageAt=new Date().toISOString();patch.nextAction=SV(c).hints[3];toast(`서류를 모두 받아 3단계(${SV(c).stages[3]})로 넘겼습니다`)}
     upd('cases',c.id,patch);return}
   if(el.dataset.filter){const [g,k]=el.dataset.filter.split('.');S[g][k]=el.value;render();return}
+  if(el.name==='m-svc'){toggleIntakeFields();return}
   const t=el.dataset.t;if(!t||!S.open)return;
   const k=el.dataset.k,type=el.dataset.type;let v;
   if(type==='multi')v=[...el.closest('.chips').querySelectorAll('input:checked')].map(x=>x.value);
@@ -633,8 +820,7 @@ document.addEventListener('change',e=>{
   else if(type==='num')v=el.value===''?null:Number(el.value);
   else v=el.value.trim?el.value.trim():el.value;
   const c=S.cases.get(S.open);if(!c)return;
-  if(t==='case'){const patch=nest(k,v);if(k==='fee.status'&&v==='청구'&&!(c.fee||{}).billedAt)patch.fee.billedAt=today();if(k==='fee.status'&&v==='입금완료'&&!(c.fee||{}).paidAt)patch.fee.paidAt=today();
-    if(k==='consent'){};upd('cases',c.id,patch)}
+  if(t==='case'){const patch=nest(k,v);if(k==='fee.status'&&v==='청구'&&!(c.fee||{}).billedAt)patch.fee.billedAt=today();if(k==='fee.status'&&v==='입금완료'&&!(c.fee||{}).paidAt)patch.fee.paidAt=today();upd('cases',c.id,patch)}
   else if(t==='client'){const patch=nest(k,v);if(k==='consent'&&v&&!cli(c.clientId).consentAt)patch.consentAt=today();upd('clients',c.clientId,patch);
     if(k==='bizNo'&&digits(v)){const d=[...S.clients.values()].find(x=>x.id!==c.clientId&&digits(x.bizNo)===digits(v));if(d)toast(`이미 등록된 사업자번호입니다: ${d.name} (${src(d.sourceId).name})`,'bad')}}
 });
@@ -644,56 +830,64 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#modal').inne
   if(e.key==='Enter'&&e.target.id==='lg-text'){e.preventDefault();document.querySelector('[data-act="addLog"]').click()}});
 
 /* ---------- modals ---------- */
-function modal(title,body,foot){$('#modal').innerHTML=`<div class="modal" data-act="modalBg"><div class="modal-c" role="dialog" aria-label="${esc(title)}"><div class="modal-h"><h2>${title}</h2><button class="x" data-act="modalClose" aria-label="닫기">×</button></div><div class="modal-b">${body}</div><div class="modal-f">${foot}</div></div></div>`;
+function modal(title,body,foot){$('#modal').innerHTML=`<div class="modal"><div class="modal-c" role="dialog" aria-label="${esc(title)}"><div class="modal-h"><h2>${title}</h2><button class="x" data-act="modalClose" aria-label="닫기">×</button></div><div class="modal-b">${body}</div><div class="modal-f">${foot}</div></div></div>`;
   setTimeout(()=>$('#modal input, #modal select, #modal textarea')?.focus(),0)}
 function closeModal(){$('#modal').innerHTML='';S.dupAck=null}
-const mf=(k,label,type,opts,req,wide)=>{const id='m-'+k;let inp;
-  if(type==='select')inp=`<select id="${id}">${opts.startsWith?opts:`<option value="">선택</option>${opts.map(o=>`<option>${esc(o)}</option>`).join('')}`}</select>`;
+const mf=(k,label,type,opts,req,cls)=>{const id='m-'+k;let inp;
+  if(type==='select')inp=`<select id="${id}">${typeof opts==='string'?opts:`<option value="">선택</option>${opts.map(o=>`<option>${esc(o)}</option>`).join('')}`}</select>`;
   else if(type==='area')inp=`<textarea id="${id}" rows="3"></textarea>`;
   else inp=`<input id="${id}" type="${type==='num'?'number':type}" ${type==='num'?'inputmode="decimal" step="any"':''}>`;
-  return `<label class="fld ${wide||type==='area'?'wide':''}"><span>${label}${req?' <span class="req">*</span>':''}</span>${inp}</label>`};
+  return `<label class="fld ${type==='area'?'wide':''} ${cls||''}"><span>${label}${req?' <span class="req">*</span>':''}</span>${inp}</label>`};
+function selectedSvcs(){return [...document.querySelectorAll('input[name="m-svc"]:checked')].map(x=>x.value)}
+function toggleIntakeFields(){const s=selectedSvcs();document.querySelectorAll('#modal .only-pf').forEach(el=>el.hidden=!s.includes('정책자금'));document.querySelectorAll('#modal .only-other').forEach(el=>el.hidden=!s.some(x=>x!=='정책자금'))}
 function openIntake(){
   const ai=S.sample?`<section class="sec" style="background:var(--accent-soft);border-color:transparent"><h3 style="color:var(--accent)">카톡·문자·메일 내용으로 자동 채우기</h3>
     <textarea class="inp" id="ai-text" rows="3" placeholder="소개처가 보낸 기업 정보를 그대로 붙여 넣으세요"></textarea><div class="row" style="margin-top:8px"><button class="btn sm pri" data-act="aiFill">내용으로 채우기</button><span class="sub">채운 뒤 꼭 확인하세요.</span></div></section>`:'';
   modal('신규 접수',`${ai}
+  <div class="fld"><span>업무 <span class="req">*</span> <span class="sub">여러 개를 고르면 업무마다 진행건이 따로 만들어집니다</span></span><div class="chips">${SVC_NAMES.map(n=>`<label><input type="checkbox" name="m-svc" value="${n}" ${n==='정책자금'?'checked':''}>${n}</label>`).join('')}</div></div>
   <div class="form">
     ${mf('sourceId','소개처','select',`<option value="">선택</option>${srcOptions('')}`,1)}${mf('sourceStaff','소개처 담당자','text')}
     ${mf('name','기업명','text',0,1)}${mf('bizNo','사업자등록번호','text')}${mf('ceo','대표자명','text')}${mf('phone','대표자 연락처','text')}
     ${mf('bizType','사업자 형태','select',['개인','법인'])}${mf('region','소재지(시/도)','select',REGIONS)}${mf('industry','업종','text')}${mf('foundedAt','개업일','date')}
-    ${mf('wantAmount','희망 금액 (만원)','num')}${mf('purpose','자금 용도','select',['운전','시설','운전+시설'])}${mf('timing','희망 시기','select',['즉시','1개월 내','3개월 내','미정'])}${mf('agency','희망 기관 (알면)','select',AGENCIES)}
+    ${mf('wantAmount','정책자금 희망 금액 (만원)','num',0,0,'only-pf')}${mf('purpose','자금 용도','select',['운전','시설','운전+시설'],0,'only-pf')}${mf('timing','희망 시기','select',['즉시','1개월 내','3개월 내','미정'],0,'only-pf')}${mf('agency','희망 기관 (알면)','select',AGENCIES,0,'only-pf')}
+    ${mf('contractAmount','다른 업무 계약 금액 (만원, 알면)','num',0,0,'only-other')}${mf('certType','인증 종류 (기업인증)','select',SERVICES['기업인증'].fields[0][3],0,'only-other')}
     ${mf('request','요청 내용·특이사항 (체납·연체 여부를 알면 적어 주세요)','area')}
     <label class="fld chk wide"><input type="checkbox" id="m-consent"> <span style="font-size:13px;color:var(--ink)">고객사로부터 정보 제공·상담 동의를 받았습니다 <span class="req">*</span></span></label>
   </div>`,`<span class="msg" id="m-msg"></span><button class="btn" data-act="modalClose">닫기</button><button class="btn pri" data-act="intakeSave">접수 등록</button>`);
+  toggleIntakeFields();
 }
 async function aiFill(b){
   const text=$('#ai-text').value.trim();if(!text){$('#ai-text').focus();return}
   b.disabled=true;b.textContent='읽는 중…';
-  const keys={sourceStaff:'소개한 담당자 이름',name:'기업명',bizNo:'사업자등록번호 000-00-00000 형식',ceo:'대표자명',phone:'대표자 연락처',bizType:'"개인" 또는 "법인"',region:`시/도, 다음 중 하나: ${REGIONS.join(',')}`,industry:'업종',foundedAt:'개업일 YYYY-MM-DD',wantAmount:'희망 금액을 만원 단위 숫자로 (예: 2억 → 20000)',purpose:'"운전","시설","운전+시설" 중 하나',agency:`희망 기관, 다음 중 하나: ${AGENCIES.join(',')}`,request:'그 밖의 요청·특이사항 요약 (체납, 연체 언급 포함)'};
+  const keys={services:`필요한 업무 배열, 다음 중에서: ${SVC_NAMES.join(',')}`,sourceStaff:'소개한 담당자 이름',name:'기업명',bizNo:'사업자등록번호 000-00-00000 형식',ceo:'대표자명',phone:'대표자 연락처',bizType:'"개인" 또는 "법인"',region:`시/도, 다음 중 하나: ${REGIONS.join(',')}`,industry:'업종',foundedAt:'개업일 YYYY-MM-DD',wantAmount:'정책자금 희망 금액을 만원 단위 숫자로 (예: 2억 → 20000)',purpose:'"운전","시설","운전+시설" 중 하나',agency:`희망 기관, 다음 중 하나: ${AGENCIES.join(',')}`,request:'그 밖의 요청·특이사항 요약 (체납, 연체 언급 포함)'};
   try{
-    const v=await S.sample.json(`다음은 정책자금 컨설팅 접수 내용입니다. 아래 키만 가진 JSON 객체 하나를 출력하세요. 내용에 없는 값은 빈 문자열로 두고 추측하지 마세요.\n키 설명: ${JSON.stringify(keys)}\n\n접수 내용:\n${text}`,{modelTier:'quick'});
-    let n=0;Object.keys(keys).forEach(k=>{const el=$('#m-'+k);const val=v&&v[k];if(el&&val!==''&&val!=null){el.value=String(val);if(el.value!=='')n++}});
+    const v=await S.sample.json(`다음은 컨설팅 접수 내용입니다. 아래 키만 가진 JSON 객체 하나를 출력하세요. 내용에 없는 값은 빈 문자열(배열은 빈 배열)로 두고 추측하지 마세요.\n키 설명: ${JSON.stringify(keys)}\n\n접수 내용:\n${text}`,{modelTier:'quick'});
+    let n=0;Object.keys(keys).forEach(k=>{if(k==='services')return;const el=$('#m-'+k);const val=v&&v[k];if(el&&val!==''&&val!=null){el.value=String(val);if(el.value!=='')n++}});
+    if(v&&Array.isArray(v.services)&&v.services.length){document.querySelectorAll('input[name="m-svc"]').forEach(x=>x.checked=v.services.includes(x.value));toggleIntakeFields();n++}
     toast(n?`${n}개 항목을 채웠습니다. 확인 후 등록하세요`:'채울 수 있는 정보를 찾지 못했습니다');
   }catch(e){toast(e&&e.code==='not_granted'?'자동 채우기 권한이 없습니다':'자동 채우기에 실패했습니다','bad')}
   b.disabled=false;b.textContent='내용으로 채우기';
 }
 function saveIntake(){
-  const g=k=>{const el=$('#m-'+k);return el?el.value.trim():''};const msg=$('#m-msg');
+  const g=k=>{const el=$('#m-'+k);return el?el.value.trim():''};const msg=$('#m-msg');const svcs=selectedSvcs();
+  if(!svcs.length){msg.innerHTML='<span style="color:var(--bad)">업무를 하나 이상 고르세요.</span>';return}
   if(!g('sourceId')||!g('name')){msg.innerHTML='<span style="color:var(--bad)">소개처와 기업명은 꼭 입력하세요.</span>';return}
   if(!$('#m-consent').checked){msg.innerHTML='<span style="color:var(--bad)">고객사 동의 여부를 확인해 주세요.</span>';return}
   const biz=digits(g('bizNo'));const dup=biz?[...S.clients.values()].find(x=>digits(x.bizNo)===biz):null;
   if(dup&&S.dupAck!==dup.id){S.dupAck=dup.id;msg.innerHTML=`<span style="color:var(--bad)">이미 등록된 고객사입니다: ${esc(dup.name)} (${esc(src(dup.sourceId).name)}, ${esc(dup.receivedAt||'')}). 다시 누르면 기존 고객사에 새 진행건으로 추가하고, 수수료는 먼저 접수된 소개처에 귀속됩니다.</span>`;return}
-  const extra={agency:g('agency'),planAmount:g('wantAmount')?Number(g('wantAmount')):null};
-  if(dup){const id=createCase(dup.id,dup.sourceId,{...extra,logs:[{at:new Date().toISOString(),type:'메모',text:`중복 접수: ${src(g('sourceId')).name}에서도 접수됨 (${today()})`}]});closeModal();toast('기존 고객사에 진행건을 추가했습니다');setTimeout(()=>openCase(id),300);return}
-  const clientId=newId('c');
-  put('clients',clientId,{code:nextClientCode(),sourceId:g('sourceId'),sourceStaff:g('sourceStaff'),receivedAt:today(),name:g('name'),bizNo:g('bizNo'),ceo:g('ceo'),phone:g('phone'),bizType:g('bizType'),region:g('region'),industry:g('industry'),foundedAt:g('foundedAt'),wantAmount:extra.planAmount,purpose:g('purpose'),timing:g('timing'),request:g('request'),consent:false,certs:[],intakeConsent:true});
-  S.clients.set(clientId,{id:clientId,bizType:g('bizType'),name:g('name')});
-  const id=createCase(clientId,g('sourceId'),extra);closeModal();toast(`${g('name')} 접수를 등록했습니다`);setTimeout(()=>openCase(id),300);
+  const extraFor=sv=>sv==='정책자금'?{agency:g('agency'),planAmount:g('wantAmount')?Number(g('wantAmount')):null}:{contractAmount:g('contractAmount')?Number(g('contractAmount')):null,...(sv==='기업인증'&&g('certType')?{certType:g('certType')}:{})};
+  let clientId,sourceId=g('sourceId'),note=null;
+  if(dup){clientId=dup.id;sourceId=dup.sourceId;note=[{at:new Date().toISOString(),type:'메모',text:`중복 접수: ${src(g('sourceId')).name}에서도 접수됨 (${today()})`}]}
+  else{clientId=newId('c');const data={code:fmtCode('C',maxCode(S.clients,'C')+1),sourceId,sourceStaff:g('sourceStaff'),receivedAt:today(),name:g('name'),bizNo:g('bizNo'),ceo:g('ceo'),phone:g('phone'),bizType:g('bizType'),region:g('region'),industry:g('industry'),foundedAt:g('foundedAt'),wantAmount:g('wantAmount')?Number(g('wantAmount')):null,purpose:g('purpose'),timing:g('timing'),request:g('request'),consent:false,certs:[],intakeConsent:true};
+    put('clients',clientId,data);S.clients.set(clientId,{id:clientId,...data})}
+  const ids=svcs.map(sv=>createCase(clientId,sourceId,sv,{...extraFor(sv),...(note?{logs:note}:{})}));
+  const nm=g('name');closeModal();toast(`${nm} · ${svcs.join(', ')} 접수를 등록했습니다`);setTimeout(()=>openCase(ids[0]),200);
 }
-const IMPORT_MAP={기업명:'name',상호:'name',업체명:'name',사업자등록번호:'bizNo',사업자번호:'bizNo',대표자명:'ceo',대표자:'ceo',대표자연락처:'phone',연락처:'phone',전화번호:'phone',휴대폰:'phone',사업자형태:'bizType',소재지:'region',지역:'region',소재지_시도:'region',업종:'industry',설립일:'foundedAt',개업일:'foundedAt',희망금액:'wantAmount',자금용도:'purpose',요청내용:'request',비고:'request',메모:'request',소개처담당자:'sourceStaff'};
+const IMPORT_MAP={기업명:'name',상호:'name',업체명:'name',사업자등록번호:'bizNo',사업자번호:'bizNo',대표자명:'ceo',대표자:'ceo',대표자연락처:'phone',연락처:'phone',전화번호:'phone',휴대폰:'phone',사업자형태:'bizType',소재지:'region',지역:'region',소재지_시도:'region',업종:'industry',설립일:'foundedAt',개업일:'foundedAt',희망금액:'wantAmount',계약금액:'contractAmount',자금용도:'purpose',요청내용:'request',비고:'request',메모:'request',소개처담당자:'sourceStaff'};
 let IMPORT_ROWS=[];
 function openImport(){
-  modal('일괄 등록',`<div class="notice info">소개처가 보낸 엑셀에서 <b>제목 행을 포함해</b> 복사한 뒤 붙여 넣으세요. 인식하는 제목: 기업명(상호), 사업자등록번호, 대표자명, 연락처, 사업자형태, 소재지, 업종, 개업일, 희망금액(만원), 자금용도, 요청내용</div>
-  <div class="form">${mf('isource','소개처','select',`<option value="">선택</option>${srcOptions('')}`,1)}<span></span></div>
+  modal('일괄 등록',`<div class="notice info">소개처가 보낸 엑셀에서 <b>제목 행을 포함해</b> 복사한 뒤 붙여 넣으세요. 인식하는 제목: 기업명(상호), 사업자등록번호, 대표자명, 연락처, 사업자형태, 소재지, 업종, 개업일, 희망금액(만원), 계약금액(만원), 자금용도, 요청내용</div>
+  <div class="form">${mf('isource','소개처','select',`<option value="">선택</option>${srcOptions('')}`,1)}${mf('isvc','업무','select',SVC_NAMES.map(n=>`<option>${n}</option>`).join(''),1)}</div>
   <textarea class="inp" id="imp-text" rows="8" placeholder="기업명	사업자등록번호	대표자명	연락처	..."></textarea>
   <label class="chk"><input type="checkbox" id="imp-consent"> <span style="font-size:13px">목록의 고객사들로부터 정보 제공 동의를 받았다는 소개처 확인을 받았습니다</span></label>
   <div id="imp-prev"></div>`,`<span class="msg" id="m-msg"></span><button class="btn" data-act="importPreview">미리 보기</button><button class="btn pri" data-act="importRun" id="imp-run" disabled>가져오기</button>`);
@@ -706,23 +900,21 @@ function importPreview(){
   const exist=new Set([...S.clients.values()].map(x=>digits(x.bizNo)).filter(Boolean));
   IMPORT_ROWS.forEach(r=>r._dup=!!(digits(r.bizNo)&&exist.has(digits(r.bizNo))));
   const ok=IMPORT_ROWS.filter(r=>!r._dup).length;
-  $('#imp-prev').innerHTML=IMPORT_ROWS.length?`<div class="tbl-wrap"><table><thead><tr><th>기업명</th><th>사업자번호</th><th>대표자</th><th>소재지</th><th class="r">희망(만원)</th><th></th></tr></thead><tbody>${IMPORT_ROWS.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${esc(r.bizNo||'')}</td><td>${esc(r.ceo||'')}</td><td>${esc(r.region||'')}</td><td class="r num">${esc(r.wantAmount||'')}</td><td>${r._dup?'<span class="pill st-반려">중복 · 건너뜀</span>':'<span class="pill st-완료">신규</span>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="notice">인식된 행이 없습니다. 제목 행에 "기업명"이 있는지 확인하세요.</div>';
+  $('#imp-prev').innerHTML=IMPORT_ROWS.length?`<div class="tbl-wrap"><table><thead><tr><th>기업명</th><th>사업자번호</th><th>대표자</th><th>소재지</th><th class="r">금액(만원)</th><th></th></tr></thead><tbody>${IMPORT_ROWS.map(r=>`<tr><td>${esc(r.name)}</td><td class="num">${esc(r.bizNo||'')}</td><td>${esc(r.ceo||'')}</td><td>${esc(r.region||'')}</td><td class="r num">${esc(r.wantAmount||r.contractAmount||'')}</td><td>${r._dup?'<span class="pill st-반려">중복 · 건너뜀</span>':'<span class="pill st-완료">신규</span>'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="notice">인식된 행이 없습니다. 제목 행에 "기업명"이 있는지 확인하세요.</div>';
   $('#imp-run').disabled=!ok;$('#imp-run').textContent=`${ok}건 가져오기`;
 }
 function importRun(){
-  const sid=$('#m-isource').value,msg=$('#m-msg');
+  const sid=$('#m-isource').value,sv=$('#m-isvc').value,msg=$('#m-msg');
   if(!sid){msg.innerHTML='<span style="color:var(--bad)">소개처를 선택하세요.</span>';return}
   if(!$('#imp-consent').checked){msg.innerHTML='<span style="color:var(--bad)">동의 확인에 체크해 주세요.</span>';return}
-  let n=0,y=new Date().getFullYear(),cMax=0,pMax=0;
-  S.clients.forEach(c=>{const m=/^C-(\d{4})-(\d+)$/.exec(c.code||'');if(m&&+m[1]===y)cMax=Math.max(cMax,+m[2])});
-  S.cases.forEach(c=>{const m=/^P-(\d{4})-(\d+)$/.exec(c.code||'');if(m&&+m[1]===y)pMax=Math.max(pMax,+m[2])});
+  let n=0,cMax=maxCode(S.clients,'C'),pMax=maxCode(S.cases,'P');
   IMPORT_ROWS.filter(r=>!r._dup).forEach(r=>{
-    const cid=newId('c'),pid=newId('p'),now=new Date().toISOString(),amt=r.wantAmount?Number(digits(r.wantAmount))||null:null;
+    const cid=newId('c'),amt=r.wantAmount?Number(digits(r.wantAmount))||null:null,camt=r.contractAmount?Number(digits(r.contractAmount))||null:null;
     const bt=/법인/.test(r.bizType||'')?'법인':/개인/.test(r.bizType||'')?'개인':'';
     const reg=REGIONS.find(x=>(r.region||'').startsWith(x))||'';
-    put('clients',cid,{code:`C-${y}-${String(++cMax).padStart(4,'0')}`,sourceId:sid,receivedAt:today(),name:r.name,bizNo:r.bizNo||'',ceo:r.ceo||'',phone:r.phone||'',bizType:bt,region:reg,city:'',industry:r.industry||'',foundedAt:r.foundedAt||'',wantAmount:amt,purpose:r.purpose||'',request:r.request||'',sourceStaff:r.sourceStaff||'',consent:false,certs:[],intakeConsent:true});
-    put('cases',pid,{code:`P-${y}-${String(++pMax).padStart(4,'0')}`,clientId:cid,sourceId:sid,agency:'',fundName:'',planAmount:amt,stage:0,status:'진행중',sub3:'',dates:{s0:today()},stageAt:now,createdAt:now,nextAction:'1차 미팅 일정 잡기',nextDue:addDays(today(),2),docs:makeDocs(bt),logs:[],reportedKey:''});
-    n++;});
+    const data={code:fmtCode('C',++cMax),sourceId:sid,receivedAt:today(),name:r.name,bizNo:r.bizNo||'',ceo:r.ceo||'',phone:r.phone||'',bizType:bt,region:reg,city:'',industry:r.industry||'',foundedAt:r.foundedAt||'',wantAmount:amt,purpose:r.purpose||'',request:r.request||'',sourceStaff:r.sourceStaff||'',consent:false,certs:[],intakeConsent:true};
+    put('clients',cid,data);S.clients.set(cid,{id:cid,...data});
+    createCase(cid,sid,sv,sv==='정책자금'?{planAmount:amt}:{contractAmount:camt},fmtCode('P',++pMax));n++;});
   closeModal();toast(`${n}건을 등록했습니다`);
 }
 function openSource(id){
