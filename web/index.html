@@ -1210,7 +1210,7 @@ function MemberDetail(id){
           return `<div class="muted" style="margin-top:6px;font-size:13px">🔑 비밀번호: ${st}${ps?.last_login ? ` · 최근 로그인 ${ps.last_login.slice(0,10).replace(/-/g,'.')}` : ''}</div>`; })() : ''}
         <div style="margin-top:12px"><b>이 회원이 추천한 회원 (${rec.length})</b></div>
         <div class="row" style="margin-top:6px">${rec.length?rec.map(r=>`<a class="tag" href="#/member/${r.id}">${esc(r.name)}</a>`).join(''):'<span class="muted">없음</span>'}</div>
-        ${m.memo?`<div style="margin-top:12px"><b>메모</b><pre class="text">${esc(m.memo)}</pre></div>`:''}
+        ${m.memo && can.officer()?`<div style="margin-top:12px"><b>메모</b> <span class="muted" style="font-size:12px">(운영진만 보임)</span><pre class="text">${esc(m.memo)}</pre></div>`:''}
       </div>
     </div>
   </div>`;
@@ -1240,7 +1240,7 @@ function memberForm(m){
       <label>추천인<select class="input" name="guardianId" ${lock}><option value="">없음</option>${opts}</select></label>
       <label>상태<select class="input" name="status" ${lock}><option value="active">활동</option><option value="inactive" ${m.status==='inactive'?'selected':''}>휴면</option></select></label>
       ${imgf('photo','인물 사진')}${imgf('companyImage','회사 이미지')}${imgf('cardImage','명함 이미지')}
-      <label class="full">메모<textarea class="input" name="memo" rows="3">${esc(m.memo)}</textarea></label>
+      ${can.officer() ? `<label class="full">메모 <span style="font-size:12px">(운영진만 보임)</span><textarea class="input" name="memo" rows="3">${esc(m.memo)}</textarea></label>` : ''}
       <div class="full row" style="justify-content:space-between">
         <div>${isNew||!can.admin()?'':'<button type="button" class="btn danger" id="del">회원 삭제</button>'}</div>
         <div class="row"><button type="button" class="btn" data-close>취소</button><button class="btn pri">저장</button></div>
