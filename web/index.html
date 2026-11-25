@@ -1612,7 +1612,8 @@ async function approveApplication(a, {guardianId, joined, isNew}){
    - 카카오뱅크 '거래내역 엑셀'을 올리면 입금·출금·잔액을 자동으로 채움 (내용에 '찬조'가 있으면 찬조로 표시)
    - 영수증·캡처 이미지 첨부 가능 */
 const won = n => (Math.round(+n || 0)).toLocaleString('ko-KR') + '원';
-const fromFinance = r => ({id:r.id, period:r.period, opening:+r.opening_balance || 0, items:Array.isArray(r.items) ? r.items : [],
+const FUNDS = ['본회','봉사기금'];
+const fromFinance = r => ({id:r.id, period:r.period, fund:r.fund || '본회', opening:+r.opening_balance || 0, items:Array.isArray(r.items) ? r.items : [],
   note:r.note || '', images:Array.isArray(r.images) ? r.images : [], imageUrls:{}, updatedBy:r.updated_by || '', updatedAt:r.updated_at});
 function finTotals(f){
   const inc = f.items.filter(i=>i.kind==='in').reduce((s,i)=>s + (+i.amount||0), 0);
@@ -1620,37 +1621,48 @@ function finTotals(f){
   const spo = f.items.filter(i=>i.kind==='in' && i.sponsor).reduce((s,i)=>s + (+i.amount||0), 0);
   return {inc, exp, spo, closing: f.opening + inc - exp};
 }
-const finSorted = () => [...(D().finance||[])].sort((a,b)=>b.period.localeCompare(a.period));
-const prevClosing = period => { const p = finSorted().find(f=>f.period < period); return p ? finTotals(p).closing : 0; };
+/* 기금(본회/봉사기금)별 보고. fund 생략 또는 '전체'면 모든 기금 */
+const finSorted = fund => [...(D().finance||[])].filter(f=>!fund || fund === '전체' || f.fund === fund)
+  .sort((a,b)=>b.period.localeCompare(a.period) || FUNDS.indexOf(a.fund) - FUNDS.indexOf(b.fund));
+const prevClosing = (period, fund = '본회') => { const p = finSorted(fund).find(f=>f.period < period); return p ? finTotals(p).closing : 0; };
 
 function Finance(){
-  const all = finSorted();
-  const years = [...new Set([String(new Date().getFullYear()), ...all.map(f=>f.period.slice(0,4))])].sort().reverse();
+  const fund = ui.finFund || '본회';
+  const all = finSorted(fund);
+  const years = [...new Set([String(new Date().getFullYear()), ...finSorted().map(f=>f.period.slice(0,4))])].sort().reverse();
   const list = all.filter(f=>f.period.startsWith(ui.finYear));
   const sum = list.reduce((s,f)=>{ const t = finTotals(f); s.inc += t.inc; s.exp += t.exp; s.spo += t.spo; return s; }, {inc:0, exp:0, spo:0});
-  const latest = all[0];
-  const months = [...list].reverse();
-  const max = Math.max(1, ...months.map(f=>{ const t = finTotals(f); return Math.max(t.inc, t.exp); }));
+  // 현재 잔액: 기금별 가장 최근 보고의 월말 잔액 (전체 = 두 기금 합)
+  const latestOf = fd => finSorted(fd)[0];
+  const latestList = fund === '전체' ? FUNDS.map(latestOf).filter(Boolean) : [latestOf(fund)].filter(Boolean);
+  const curBal = latestList.reduce((s,f)=>s + finTotals(f).closing, 0);
+  const latest = latestList.sort((a,b)=>b.period.localeCompare(a.period))[0];
+  // 월별 그래프: 같은 달은 기금 합산
+  const byM = {}; list.forEach(f=>{ const t = finTotals(f); (byM[f.period] ||= {period:f.period, inc:0, exp:0}); byM[f.period].inc += t.inc; byM[f.period].exp += t.exp; });
+  const months = Object.values(byM).sort((a,b)=>a.period.localeCompare(b.period));
+  const max = Math.max(1, ...months.map(m=>Math.max(m.inc, m.exp)));
+  const fundTag = f => `<span class="tag ${f.fund==='봉사기금'?'new':'off'}">${esc(f.fund)}</span>`;
   const kindLabel = i => i.kind === 'in' ? (i.sponsor ? '<span class="tag new">찬조</span>' : '<span class="tag">입금</span>') : '<span class="tag off">출금</span>';
   return `
-  <div class="head"><div><h1>재무보고</h1><div class="muted" style="font-size:13px;margin-top:4px">정우회 모임통장 월별 입출금·찬조 내역을 투명하게 공개합니다.</div></div>
+  <div class="head"><div><h1>재무보고</h1><div class="muted" style="font-size:13px;margin-top:4px">정우회 본회·봉사기금 통장의 월별 입출금·찬조 내역을 투명하게 공개합니다.</div></div>
     <div class="row"><select class="input" id="fy">${years.map(y=>`<option ${y===ui.finYear?'selected':''}>${y}</option>`).join('')}</select>
     ${can.officer()?'<button class="btn pri" id="fadd">+ 월 보고 등록</button>':''}</div></div>
+  <div class="row" style="gap:6px;margin:-4px 0 14px">${[...FUNDS, '전체'].map(fd=>`<button class="btn sm ${fd===fund?'pri':''}" data-fund="${fd}">${fd==='전체'?'합계 (본회+봉사기금)':fd}</button>`).join('')}</div>
   <div class="grid kpis">
-    <div class="panel kpi"><div class="l">${ui.finYear}년 수입</div><div class="n" style="font-size:22px;color:var(--ok)">${won(sum.inc)}</div></div>
-    <div class="panel kpi"><div class="l">${ui.finYear}년 지출</div><div class="n" style="font-size:22px;color:var(--warn)">${won(sum.exp)}</div></div>
+    <div class="panel kpi"><div class="l">${ui.finYear}년 ${fund==='전체'?'':fund+' '}수입</div><div class="n" style="font-size:22px;color:var(--ok)">${won(sum.inc)}</div></div>
+    <div class="panel kpi"><div class="l">${ui.finYear}년 ${fund==='전체'?'':fund+' '}지출</div><div class="n" style="font-size:22px;color:var(--warn)">${won(sum.exp)}</div></div>
     <div class="panel kpi"><div class="l">${ui.finYear}년 찬조</div><div class="n" style="font-size:22px">${won(sum.spo)}</div></div>
-    <div class="panel kpi"><div class="l">현재 잔액 ${latest ? `(${latest.period.replace('-','.')} 말)` : ''}</div><div class="n" style="font-size:22px">${latest ? won(finTotals(latest).closing) : '-'}</div></div>
+    <div class="panel kpi"><div class="l">${fund==='전체'?'':fund+' '}현재 잔액 ${latest ? `(${latest.period.replace('-','.')} 말)` : ''}</div><div class="n" style="font-size:22px">${latest ? won(curBal) : '-'}</div>${fund==='전체' && latestList.length ? `<div class="l">${latestList.map(f=>`${f.fund} ${won(finTotals(f).closing)}`).join(' · ')}</div>` : ''}</div>
   </div>
   ${months.length ? `<div class="panel" style="margin-top:16px"><h2>월별 수입·지출 <span class="muted" style="font-size:12px;font-weight:400"><span style="color:var(--ok)">■</span> 수입 <span style="color:var(--warn)">■</span> 지출</span></h2>
-    <div class="bars" style="height:170px">${months.map(f=>{ const t = finTotals(f); return `<div class="bar" style="flex-direction:row;align-items:flex-end;gap:3px;justify-content:center" title="${f.period}: 수입 ${won(t.inc)} / 지출 ${won(t.exp)}">
+    <div class="bars" style="height:170px">${months.map(t=>{ return `<div class="bar" style="flex-direction:row;align-items:flex-end;gap:3px;justify-content:center" title="${t.period}: 수입 ${won(t.inc)} / 지출 ${won(t.exp)}">
       <i style="height:${t.inc/max*130}px;background:var(--ok);max-width:20px"></i><i style="height:${t.exp/max*130}px;background:var(--warn);max-width:20px"></i></div>`; }).join('')}</div>
     <div class="row" style="justify-content:space-around;font-size:12px;color:var(--sub)">${months.map(f=>`<span>${+f.period.slice(5)}월</span>`).join('')}</div></div>` : ''}
   <div style="margin-top:16px">
   ${list.length ? list.map(f=>{ const t = finTotals(f);
     return `<div class="panel" style="margin-bottom:14px">
       <div class="row" style="justify-content:space-between">
-        <h2 style="margin:0">${f.period.slice(0,4)}년 ${+f.period.slice(5)}월 보고</h2>
+        <h2 style="margin:0">${fundTag(f)} ${f.period.slice(0,4)}년 ${+f.period.slice(5)}월 보고</h2>
         ${can.officer()?`<div class="row"><button class="btn sm" data-fedit="${f.id}">수정</button><button class="btn sm danger" data-fdel="${f.id}">삭제</button></div>`:''}
       </div>
       <div class="row" style="gap:16px;margin:10px 0;font-size:14px;flex-wrap:wrap">
@@ -1665,7 +1677,7 @@ function Finance(){
       ${f.images.length?`<div class="row" style="margin-top:10px">${f.images.map(pth=>f.imageUrls[pth]?`<a href="${f.imageUrls[pth]}" target="_blank" rel="noopener"><img src="${f.imageUrls[pth]}" style="height:72px;border-radius:6px;border:1px solid var(--line)"></a>`:'').join('')}</div>`:''}
       <div class="muted" style="font-size:12px;margin-top:8px;text-align:right">${f.updatedBy?esc(f.updatedBy)+' · ':''}${(f.updatedAt||'').slice(0,10).replace(/-/g,'.')} 업데이트</div>
     </div>`; }).join('')
-  : `<div class="empty">${ui.finYear}년 재무보고가 아직 없습니다.${can.officer()?'<br>카카오뱅크 거래내역 엑셀을 올리면 입금·출금이 자동으로 정리됩니다.':''}</div>`}
+  : `<div class="empty">${ui.finYear}년 ${fund==='전체'?'':fund+' '}재무보고가 아직 없습니다.${can.officer()?'<br>카카오뱅크 거래내역 엑셀을 올리면 입금·출금이 자동으로 정리됩니다.':''}</div>`}
   </div>`;
 }
 
@@ -1716,6 +1728,7 @@ const bankOpening = list => list.length && list[0].bal != null ? list[0].bal - (
 function financeForm(f){
   const isNew = !f;
   const period0 = f ? f.period : today().slice(0,7);
+  const fund0 = f ? f.fund : (ui.finFund && ui.finFund !== '전체' ? ui.finFund : '본회');
   let items = f ? f.items.map(i=>({...i})) : [];
   let images = f ? [...f.images] : [];
   const newImgs = [];
@@ -1735,8 +1748,9 @@ function financeForm(f){
     </div>
     <form id="ff">
       <div class="form">
+        <label>기금<select class="input" name="fund" ${isNew?'':'disabled'}>${FUNDS.map(fd=>`<option ${fd===fund0?'selected':''}>${fd}</option>`).join('')}</select></label>
         <label>보고 월<input class="input" type="month" name="period" value="${period0}" required ${isNew?'':'readonly'}></label>
-        <label>전월 이월 잔액 (원)<input class="input" name="opening" inputmode="numeric" value="${f ? f.opening : prevClosing(period0)}"></label>
+        <label class="full">전월 이월 잔액 (원) <span style="font-size:12px">(같은 기금의 지난 보고 월말 잔액이 자동으로 들어갑니다)</span><input class="input" name="opening" inputmode="numeric" value="${f ? f.opening : prevClosing(period0, fund0)}"></label>
       </div>
       <div style="margin-top:12px"><b style="font-size:14px">거래 내역</b> <span class="muted" style="font-size:12px">(찬조 칸 체크 = 찬조금)</span></div>
       <div style="overflow-x:auto;max-height:36vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;margin-top:6px">
@@ -1764,6 +1778,8 @@ function financeForm(f){
       root.querySelectorAll('[data-rmimg]').forEach(a=>a.onclick=e=>{ e.preventDefault(); images.splice(+a.dataset.rmimg,1); drawImgs(); }); };
     draw(); drawImgs();
     root.querySelector('[name=opening]').oninput = total;
+    if(isNew){ const syncOpen = ()=>{ root.querySelector('[name=opening]').value = prevClosing(root.querySelector('[name=period]').value || period0, root.querySelector('[name=fund]').value); total(); };
+      root.querySelector('[name=fund]').onchange = syncOpen; root.querySelector('[name=period]').onchange = syncOpen; }
     root.querySelector('#faddrow').onclick = () => { items = read(); items.push({date: (root.querySelector('[name=period]').value||period0) + '-01', kind:'in', desc:'', amount:'', sponsor:false}); draw(); };
     root.querySelector('#bankFile').onchange = async e => {
       const file = e.target.files[0]; if(!file) return;
@@ -1792,8 +1808,9 @@ function financeForm(f){
       const fd = Object.fromEntries(new FormData(e.target));
       const period = fd.period || period0;
       const rows = read().filter(i=>i.amount > 0);
-      const exist = (D().finance||[]).find(x=>x.period === period);
-      if(isNew && exist && !confirm(`${period.replace('-','.')} 보고가 이미 있습니다. 덮어쓸까요?`)) return;
+      const fund = f ? f.fund : (fd.fund || '본회');
+      const exist = (D().finance||[]).find(x=>x.period === period && x.fund === fund);
+      if(isNew && exist && !confirm(`${fund} ${period.replace('-','.')} 보고가 이미 있습니다. 덮어쓸까요?`)) return;
       const btn = e.submitter; btn.disabled = true; btn.textContent = '저장 중…';
       try{
         const id = f?.id || exist?.id || uid();
@@ -1806,9 +1823,9 @@ function financeForm(f){
         const removed = (f?.images || exist?.images || []).filter(p=>!paths.includes(p));
         if(removed.length) sb.storage.from(BUCKET).remove(removed);
         const me = member(Store.me.memberId);
-        await q(sb.from('jw_finance').upsert({id, period, opening_balance: Math.round(+String(fd.opening).replace(/[^\d.-]/g,'') || 0),
-          items: rows, note: fd.note || '', images: paths, updated_by: me ? me.name : (Store.me.admin ? '관리자' : ''), updated_at: new Date().toISOString()}, {onConflict:'period'}));
-        ui.finYear = period.slice(0,4);
+        await q(sb.from('jw_finance').upsert({id, period, fund, opening_balance: Math.round(+String(fd.opening).replace(/[^\d.-]/g,'') || 0),
+          items: rows, note: fd.note || '', images: paths, updated_by: me ? me.name : (Store.me.admin ? '관리자' : ''), updated_at: new Date().toISOString()}, {onConflict:'period,fund'}));
+        ui.finYear = period.slice(0,4); if(ui.finFund !== '전체') ui.finFund = fund;
         closeModal(); toast('재무보고를 저장했습니다.'); Store.refresh();
       }catch(err){ btn.disabled = false; btn.textContent = '저장'; }
     };
@@ -1913,14 +1930,14 @@ function Budget(){
   const cats = [...new Set(exp.map(i=>i.cat || '기타'))];
   const pct = n => expT ? (n / expT * 100).toFixed(1) + '%' : '-';
   // 재무보고 실제 지출 (해당 연도)
-  const fin = (D().finance||[]).filter(f=>f.period.startsWith(y));
+  const fin = (D().finance||[]).filter(f=>f.period.startsWith(y) && f.fund === '본회');   // 예산은 본회 운영 기준
   const actual = fin.reduce((s,f)=>s + finTotals(f).exp, 0);
   return head + `
   <div class="grid kpis">
     <div class="panel kpi"><div class="l">${y}년 수입 계획</div><div class="n" style="font-size:22px;color:var(--ok)">${man(incT)}원</div></div>
     <div class="panel kpi"><div class="l">${y}년 지출 계획</div><div class="n" style="font-size:22px;color:var(--warn)">${man(expT)}원</div></div>
     <div class="panel kpi"><div class="l">수지 차액</div><div class="n" style="font-size:22px;color:${incT - expT < 0 ? 'var(--warn)' : 'inherit'}">${incT - expT < 0 ? '-' : ''}${man(Math.abs(incT - expT))}원</div><div class="l">${incT - expT < 0 ? '수입 부족' : '예비·이월'}</div></div>
-    <div class="panel kpi"><div class="l">실제 지출 (재무보고)</div><div class="n" style="font-size:22px">${fin.length ? man(actual) + '원' : '-'}</div><div class="l">${fin.length ? `집행률 ${expT ? Math.round(actual / expT * 100) : 0}% · ${fin.length}개월` : '재무보고 등록 후 자동 계산'}</div></div>
+    <div class="panel kpi"><div class="l">실제 지출 (재무보고·본회)</div><div class="n" style="font-size:22px">${fin.length ? man(actual) + '원' : '-'}</div><div class="l">${fin.length ? `집행률 ${expT ? Math.round(actual / expT * 100) : 0}% · ${fin.length}개월` : '재무보고 등록 후 자동 계산'}</div></div>
   </div>
   <div class="panel" style="margin-top:16px">
     <div class="row" style="justify-content:space-between"><h2 style="margin:0">${y}년 예산안 ${b.status === 'final' ? `<span class="tag new">확정${b.approved ? ' · ' + b.approved.replace(/-/g,'.') : ''}</span>` : '<span class="tag off">작성 중(안)</span>'}</h2></div>
@@ -2538,11 +2555,12 @@ const bind = {
   },
   finance(){
     $('#fy').onchange = e=>{ ui.finYear = e.target.value; render(); };
+    document.querySelectorAll('[data-fund]').forEach(b=>b.onclick=()=>{ ui.finFund = b.dataset.fund; render(); });
     if($('#fadd')) $('#fadd').onclick = ()=>financeForm();
     document.querySelectorAll('[data-fedit]').forEach(b=>b.onclick=()=>financeForm(D().finance.find(f=>f.id===b.dataset.fedit)));
     document.querySelectorAll('[data-fdel]').forEach(b=>b.onclick=async()=>{
       const f = D().finance.find(x=>x.id===b.dataset.fdel);
-      if(!confirm(`${f.period.replace('-','.')} 재무보고를 삭제할까요?`)) return;
+      if(!confirm(`${f.fund} ${f.period.replace('-','.')} 재무보고를 삭제할까요?`)) return;
       await q(sb.from('jw_finance').delete().eq('id', f.id));
       if(f.images.length) sb.storage.from(BUCKET).remove(f.images);
       toast('삭제했습니다.'); Store.refresh();
