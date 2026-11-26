@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>브루노트커피 POV 쇼츠</title>
+<style>
+@font-face{font-family:P;src:url(../fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(../fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Black.woff2);font-weight:900}
+:root{--green:#1f4d3c;--cream:#f8f1e4;--ink:#111;--gold:#b8892e}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#fff}
+body{font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.035em}
+.abs{position:absolute}
+.c{left:0;right:0;text-align:center}
+/* meme template: white caption band on top, square scene below */
+#top{left:0;top:0;width:1080px;height:560px;background:#fff;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 44px}
+#cap{font-weight:900;font-size:78px;line-height:1.22;text-align:center;word-break:keep-all}
+#sub{font-weight:700;font-size:42px;color:#8a8a8a;text-align:center;margin-top:16px;min-height:52px}
+#stage{left:0;top:560px;width:1080px;height:1080px;overflow:hidden;background:#efe3cc}
+#cv{position:absolute;left:0;top:0;transform-origin:50% 50%}
+#bot{left:0;top:1640px;width:1080px;height:280px;background:#fff;z-index:5}
+.hl{background:linear-gradient(transparent 58%,#ffe27a 58%);padding:0 6px}
+.g{color:var(--green)}
+/* overlays inside stage */
+.ov{position:absolute;opacity:0}
+.emo{font-size:150px;line-height:1}
+.phone{left:240px;top:58px;width:600px;height:963px;border-radius:72px;background:#1d2a24;padding:20px;box-shadow:0 40px 80px rgba(0,0,0,.25)}
+.screen{width:560px;height:923px;border-radius:54px;overflow:hidden;position:relative;background:var(--cream)}
+.screen img{position:absolute;left:0;top:0;width:560px;opacity:0}
+.ring{position:absolute;border:9px solid #ff3b30;border-radius:26px;z-index:5}
+.memo{left:180px;top:90px;width:720px;height:900px;border-radius:50px;background:#fffdf3;box-shadow:0 30px 60px rgba(0,0,0,.2);padding:70px 60px;font-size:46px;font-weight:700;line-height:1.75;color:#3a3a3a}
+.memo .t{font-size:34px;color:#c9a227;font-weight:800;margin-bottom:20px}
+.pause{left:470px;top:470px;width:140px;height:140px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;gap:22px}
+.pause i{display:block;width:22px;height:64px;background:#fff;border-radius:6px}
+.stamp{width:300px;height:300px;border-radius:50%;border:12px solid #e5484d;color:#e5484d;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:56px;line-height:1.1;background:rgba(255,255,255,.85)}
+.search{border-radius:30px;background:#fff;border:5px solid #111;height:150px;display:flex;align-items:center;gap:28px;padding:0 50px;font-size:62px;font-weight:900}
+.caret{display:inline-block;width:6px;height:70px;background:var(--green);vertical-align:middle;margin-left:6px}
+.tag{display:inline-block;padding:14px 30px;border-radius:999px;background:#111;color:#fff;font-weight:800;font-size:40px;margin:0 8px}
+#handle{top:1700px;font-weight:800;font-size:36px;color:#b5b5b5}
+</style>
+</head>
+<body>
+<div class="abs" id="top"><div id="cap"></div><div id="sub"></div></div>
+<div class="abs" id="stage">
+  <canvas id="cv" width="1080" height="1080"></canvas>
+  <div class="ov pause" id="pause"><i></i><i></i></div>
+  <div class="ov emo" id="e1" style="left:760px;top:150px">🤤</div>
+  <div class="ov emo" id="e2" style="left:800px;top:130px;font-size:170px">❓</div>
+  <div class="ov memo" id="memo"><div class="t">메모 · 3개월 전</div>라떼 맛있음!!!!<br>원두 뭐였지<br>우유 많이 X (조금?)<br>시럽 2번… 아니 3번<br>그 컵으로 하면 됨<br><span style="color:#bbb">ㅋㅋㅋ 기억 안 날 듯</span></div>
+  <div class="ov" id="icon" style="left:340px;top:250px;width:400px;height:400px"><img src="../brewnote/assets/icon.png" style="width:400px;height:400px;border-radius:96px;box-shadow:0 30px 80px rgba(0,0,0,.35)"></div>
+  <div class="ov c" id="iconName" style="top:730px;font-weight:900;font-size:110px;color:#fff;text-shadow:0 6px 30px rgba(0,0,0,.4)">브루노트커피</div>
+  <div class="ov phone" id="phone"><div class="screen">
+    <img id="img0" src="../brewnote/assets/screen2.png"><img id="img1" src="../brewnote/assets/screen4.png"><img id="img2" src="../brewnote/assets/screen5.png">
+    <div class="ring" id="ring"></div>
+  </div></div>
+  <div class="ov stamp" id="stamp" style="left:700px;top:600px">어제<br>그 맛 ✓</div>
+  <div class="ov" id="cta" style="left:0;right:0;top:120px">
+    <div class="c" style="font-weight:900;font-size:66px;line-height:1.35;margin-bottom:60px">앱 설치 <span style="color:#e5484d">X</span><br>토스에서 <span class="g">바로</span></div>
+    <div class="search" style="margin:0 110px"><span style="font-size:54px">🔍</span><span id="q"></span><span class="caret" id="caret"></span></div>
+    <div class="c" style="margin-top:60px"><span class="tag">레시피 노트</span><span class="tag">추출 타이머</span><span class="tag">원두 기록</span></div>
+  </div>
+</div>
+<div class="abs" id="bot"></div>
+<div class="abs c" id="handle">@brewnote · 토스 미니앱</div>
+
+<script>
+const TOTAL = 26;
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const ss=x=>x*x*(3-2*x);
+const lerp=(a,b,k)=>a+(b-a)*k;
+const g=$('cv').getContext('2d'), S=1080;
+
+// ---------- cuts (meme beats) ----------
+const CUTS=[
+ {a:0,   b:2.2, cap:'POV: 홈카페 시작한 지<br><span class="hl">3개월 차</span>', sub:'(카페값 아끼는 중이라고 믿는 중)'},
+ {a:2.2, b:4.2, cap:'어제 만든 라떼<br><span class="hl">진짜 미쳤음</span> ✨', sub:'이 정도면 창업해야 하나'},
+ {a:4.2, b:6.4, cap:'근데 오늘 똑같이<br>만들었는데…', sub:''},
+ {a:6.4, b:8.6, cap:'우유 몇 ml였지<br>시럽 몇 번 눌렀지', sub:'샷은… 두 개였나?'},
+ {a:8.6, b:10.6,cap:'메모장 뒤져봄', sub:'도움 1도 안 됨'},
+ {a:10.6,b:12.4,cap:'갤러리엔<br>라떼 사진만 <span class="hl">300장</span> 📸', sub:'레시피는 0장'},
+ {a:12.4,b:14.2,cap:'그래서 찾았다', sub:''},
+ {a:14.2,b:16.4,cap:'내 비율 그대로<br><span class="g">레시피 노트</span>에 저장', sub:'커피 · 라떼 · 논커피'},
+ {a:16.4,b:18.6,cap:'단계별 안내에<br><span class="g">추출 타이머</span>까지 ⏱️', sub:'그냥 따라만 하면 끝'},
+ {a:18.6,b:20.8,cap:'마셔본 원두도<br><span class="g">전부 기록</span>', sub:'마셔보고 싶은 원두까지'},
+ {a:20.8,b:23.0,cap:'오늘도<br><span class="hl">어제 그 맛</span> 성공 ✅', sub:'이제 매번 같은 맛'},
+ {a:23.0,b:26.0,cap:'브루노트커피', sub:'바로가기 링크는 설명란에 👇'},
+];
+const cutAt=t=>CUTS.findIndex(c=>t>=c.a&&t<c.b);
+
+// ---------- drawing ----------
+const MILK=[244,234,214], ESP=[96,55,28];
+const mix=(c1,c2,k)=>c1.map((v,i)=>Math.round(lerp(v,c2[i],k)));
+function kitchen(dim=0,warm=1){
+  const gr=g.createLinearGradient(0,0,0,S);gr.addColorStop(0,'#f3e6cf');gr.addColorStop(.62,'#ead9bb');gr.addColorStop(.62,'#b9875a');gr.addColorStop(1,'#8f6440');g.fillStyle=gr;g.fillRect(0,0,S,S);
+  g.fillStyle='rgba(255,255,255,.25)';for(let i=0;i<5;i++)g.fillRect(0,690+i*70,S,3);           // wood grain
+  g.fillStyle='rgba(120,90,50,.10)';g.beginPath();g.ellipse(180,170,260,70,-.3,0,7);g.fill();g.beginPath();g.ellipse(900,280,200,60,.4,0,7);g.fill(); // leaf shadows
+  if(dim){g.fillStyle=`rgba(0,0,0,${dim})`;g.fillRect(0,0,S,S)}
+}
+function glass(cx,base,s,st){
+  const H=560*s,TW=380*s,BW=290*s,top=base-H;
+  const path=()=>{g.beginPath();g.moveTo(cx-TW/2,top);g.lineTo(cx+TW/2,top);g.lineTo(cx+BW/2,base-16*s);g.quadraticCurveTo(cx+BW/2,base,cx+BW/2-18*s,base);g.lineTo(cx-BW/2+18*s,base);g.quadraticCurveTo(cx-BW/2,base,cx-BW/2,base-16*s);g.closePath()};
+  g.save();g.fillStyle='rgba(60,40,20,.22)';g.beginPath();g.ellipse(cx+26*s,base+8*s,BW*.75,24*s,0,0,7);g.fill();g.restore();
+  g.save();path();g.clip();g.fillStyle='rgba(255,255,255,.35)';g.fillRect(cx-TW,top,TW*2,H);
+  const lvl=base-H*.86, k=st.strength;
+  g.fillStyle=`rgb(${mix(MILK,ESP,.04+.26*k)})`;g.fillRect(cx-TW,lvl,TW*2,base-lvl);
+  const depth=H*(.12+.42*st.mixK);g.fillStyle=`rgba(${mix(ESP,MILK,.06+.16*st.mixK*(1-k))},${.55+.4*k})`;
+  g.beginPath();g.moveTo(cx-TW,lvl);for(let x=-TW/2;x<=TW/2;x+=6){g.lineTo(cx+x,lvl+depth*(.55+.35*Math.sin(x/(38*s)+st.t*1.3)+.18*Math.sin(x/(17*s)-st.t*2.1)))}g.lineTo(cx+TW,lvl);g.closePath();g.fill();
+  for(let i=0;i<7;i++){const x=cx+Math.sin(i*1.7+st.t*.4)*TW*.32,y=lvl+depth*(.7+.5*((i*.37)%1));g.fillStyle=`rgba(${mix(ESP,MILK,.35)},${.28*st.mixK})`;g.beginPath();g.ellipse(x,y,(40+20*Math.sin(i))*s,(90+40*((i*.53)%1))*s*st.mixK,Math.sin(i*1.7)*.6,0,7);g.fill()}
+  [[-.17,.10,.2],[.13,.06,-.3],[-.02,.20,.5],[.2,.24,.1]].forEach(([dx,dy,r],i)=>{const x=cx+dx*TW,y=top+H*dy+Math.sin(st.t*1.1+i)*4*s,w=98*s;
+    g.save();g.translate(x,y);g.rotate(r);g.fillStyle='rgba(255,255,255,.38)';g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=4*s;g.beginPath();g.roundRect(-w/2,-w/2,w,w,18*s);g.fill();g.stroke();g.restore()});
+  g.restore();
+  g.save();path();g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=7*s;g.stroke();
+  g.fillStyle='rgba(255,255,255,.45)';g.beginPath();g.moveTo(cx-TW/2+30*s,top+30*s);g.lineTo(cx-TW/2+52*s,top+30*s);g.lineTo(cx-BW/2+44*s,base-60*s);g.lineTo(cx-BW/2+26*s,base-60*s);g.closePath();g.fill();g.restore();
+}
+function sparkles(t,n=6){for(let i=0;i<n;i++){const a=i/n*Math.PI*2+t*.8,r=330+Math.sin(t*3+i)*30,x=540+Math.cos(a)*r,y=500+Math.sin(a)*r*.8,s=18+10*Math.sin(t*6+i)**2;
+  g.fillStyle='#fff6c2';g.beginPath();g.moveTo(x,y-s*2);g.lineTo(x+s*.5,y-s*.5);g.lineTo(x+s*2,y);g.lineTo(x+s*.5,y+s*.5);g.lineTo(x,y+s*2);g.lineTo(x-s*.5,y+s*.5);g.lineTo(x-s*2,y);g.lineTo(x-s*.5,y-s*.5);g.fill()}}
+function mathFog(t){ // floating formulas around a thinking face
+  const items=['150ml?','200ml?','시럽 ×2','시럽 ×3','샷 1? 2?','얼음 몇 개','18g → ?','1 : 4 ?','우유 ÷ 샷','???'];
+  g.font='800 54px P';g.textAlign='center';
+  items.forEach((s,i)=>{const a=i/items.length*Math.PI*2+t*.5,r=300+60*Math.sin(t*1.3+i),x=540+Math.cos(a)*r,y=520+Math.sin(a)*r*.75;
+    g.fillStyle=`rgba(30,30,30,${.35+.35*Math.sin(t*2+i)**2})`;g.save();g.translate(x,y);g.rotate(Math.sin(t+i)*.15);g.fillText(s,0,0);g.restore()});
+  g.font='240px "Noto Color Emoji"';g.fillText('🤔',540,620);
+}
+function gallery(t){
+  g.fillStyle='#111';g.fillRect(0,0,S,S);
+  const off=(t*420)%270, cell=266;
+  for(let r=-1;r<6;r++)for(let c=0;c<4;c++){const x=c*270+2,y=r*270-off+2;
+    const gr=g.createLinearGradient(0,y,0,y+cell);gr.addColorStop(0,'#f3e6cf');gr.addColorStop(.7,'#ead9bb');gr.addColorStop(.7,'#b9875a');gr.addColorStop(1,'#8f6440');g.fillStyle=gr;g.fillRect(x,y,cell,cell);
+    g.save();g.beginPath();g.rect(x,y,cell,cell);g.clip();glass(x+cell/2,y+cell-26,.36,{strength:.25+.6*(((r*4+c)*.37+.11)%1),mixK:.5,t:t+r+c});g.restore()}
+  g.fillStyle='rgba(0,0,0,.55)';g.fillRect(0,0,S,110);g.fillStyle='#fff';g.font='800 46px P';g.textAlign='left';g.fillText('최근 항목  ·  사진 312장',40,72);
+}
+
+function render(t){
+  const ci=cutAt(t), cut=CUTS[ci], lt=t-cut.a;
+  if($('cap').dataset.i!=ci){$('cap').innerHTML=cut.cap;$('sub').innerHTML=cut.sub;$('cap').dataset.i=ci}
+  // caption pop on each cut
+  const kc=p(lt,0,.18); $('cap').style.transform=`scale(${ci===0&&t<.01?1:.86+.14*eb(kc)})`; $('sub').style.opacity=ss(p(lt,.25,.5));
+  // zoom punch on each cut + gentle push
+  let z=1.10-.10*eo(p(lt,0,.22))+.03*p(lt,0,cut.b-cut.a), shake=0;
+  ['pause','e1','e2','memo','icon','iconName','phone','stamp','cta'].forEach(id=>$(id).style.opacity=0);
+  g.clearRect(0,0,S,S); $('cv').style.filter='none';
+  if(ci===0){kitchen();glass(540,930,1.25,{strength:.55,mixK:.6,t})}
+  else if(ci===1){kitchen();glass(540,930,1.25,{strength:.6,mixK:.7,t});sparkles(t);const e=$('e1');e.style.opacity=ss(p(lt,.3,.5));e.style.transform=`rotate(${Math.sin(t*6)*8}deg)`}
+  else if(ci===2){ // pale latte → freeze frame
+    const fr=lt>1.0; kitchen();glass(540,930,1.25,{strength:.06,mixK:.25,t:fr?4.2+1.0:t});
+    if(fr){$('cv').style.filter='grayscale(.85) contrast(1.05)';$('pause').style.opacity=1;z=1.12;const e=$('e2');e.style.opacity=1;e.style.transform=`scale(${.8+.2*eb(p(lt,1.0,1.25))})`;shake=lt<1.15?14:0}
+  }
+  else if(ci===3){g.fillStyle='#f6f1e7';g.fillRect(0,0,S,S);mathFog(t)}
+  else if(ci===4){kitchen(.25);const m=$('memo');m.style.opacity=1;m.style.transform=`translateY(${(1-eo(p(lt,0,.3)))*300}px) rotate(-2deg)`}
+  else if(ci===5){gallery(t)}
+  else if(ci===6){ // twist reveal
+    g.fillStyle='#000';g.fillRect(0,0,S,S);
+    if(lt>.45){const k=p(lt,.45,.9);const gr=g.createRadialGradient(540,450,40,540,450,700);gr.addColorStop(0,`rgba(44,94,75,${k})`);gr.addColorStop(1,`rgba(24,62,48,${k})`);g.fillStyle=gr;g.fillRect(0,0,S,S);
+      const ic=$('icon');ic.style.opacity=ss(k);ic.style.transform=`scale(${.4+.6*eb(k)}) rotate(${(1-eo(k))*-25}deg)`;
+      const nm=$('iconName');nm.style.opacity=ss(p(lt,.8,1.1));nm.style.transform=`translateY(${(1-eo(p(lt,.8,1.1)))*40}px)`;sparkles(t,8)}
+    z=1;
+  }
+  else if(ci>=7&&ci<=9){
+    g.fillStyle='#f3ecdf';g.fillRect(0,0,S,S);
+    const ph=$('phone');ph.style.opacity=1;ph.style.transform=ci===7?`translateY(${(1-eo(p(lt,0,.35)))*700}px)`:'none';
+    const j=ci-7;[0,1,2].forEach(k=>$('img'+k).style.opacity=k===j?1:0);
+    const R=[[57,1151,770,159],[95,992,1075,382],[54,1107,1155,165]][j],sw=560/1272,rk=p(lt,.6,.9);
+    Object.assign($('ring').style,{opacity:ss(rk),left:R[0]*sw-10+'px',top:R[1]*sw-10+'px',width:R[2]*sw+20+'px',height:R[3]*sw+20+'px',transform:`scale(${1.1-.1*eo(rk)})`});
+    z=1.04-.04*eo(p(lt,0,.25));
+  }
+  else if(ci===10){kitchen();glass(540,930,1.25,{strength:.55,mixK:.65,t});sparkles(t,5);const st=$('stamp');st.style.opacity=lt>.5?1:0;st.style.transform=`scale(${lt>.5?1.6-.6*eo(p(lt,.5,.7)):1}) rotate(-12deg)`;if(lt>.5&&lt<.62)shake=10}
+  else if(ci===11){
+    g.fillStyle='#f3ecdf';g.fillRect(0,0,S,S);const c=$('cta');c.style.opacity=ss(p(lt,0,.3));
+    const q='브루노트커피',n=Math.floor(clamp((lt-.5)/.13,0,q.length));$('q').textContent=q.slice(0,n);$('caret').style.opacity=(n<q.length||Math.floor(t*2.5)%2===0)?1:0;
+    glass(540,1050,.42,{strength:.55,mixK:.6,t});z=1;
+  }
+  const sx=shake?Math.sin(t*90)*shake:0;
+  $('cv').style.transform=`translateX(${sx}px) scale(${z})`;
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
