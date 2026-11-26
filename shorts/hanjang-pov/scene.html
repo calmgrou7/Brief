@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>한장견적 POV 쇼츠</title>
+<style>
+@font-face{font-family:P;src:url(../fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(../fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Black.woff2);font-weight:900}
+:root{--green:#223a32;--terra:#a0442f;--cream:#faf6ee;--ink:#111}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#fff}
+body{font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.035em}
+.abs{position:absolute}
+.c{left:0;right:0;text-align:center}
+#top{left:0;top:0;width:1080px;height:560px;background:#fff;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;padding:0 60px 44px}
+#cap{font-weight:900;font-size:78px;line-height:1.22;text-align:center;word-break:keep-all}
+#sub{font-weight:700;font-size:42px;color:#8a8a8a;text-align:center;margin-top:16px;min-height:52px}
+#stage{left:0;top:560px;width:1080px;height:1080px;overflow:hidden;background:#eee}
+#cv{position:absolute;left:0;top:0;transform-origin:50% 50%}
+#bot{left:0;top:1640px;width:1080px;height:280px;background:#fff;z-index:5}
+.hl{background:linear-gradient(transparent 58%,#ffe27a 58%);padding:0 6px}
+.t{color:var(--terra)}
+.ov{position:absolute;opacity:0}
+.emo{font-size:150px;line-height:1}
+.chat{left:150px;width:780px;display:flex;flex-direction:column;gap:26px}
+.msg{max-width:640px;padding:30px 38px;border-radius:40px;font-size:44px;font-weight:700;line-height:1.4;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.msg.in{background:#fff;color:#222;border-bottom-left-radius:10px;align-self:flex-start}
+.msg.out{background:#fee500;color:#222;border-bottom-right-radius:10px;align-self:flex-end}
+.msg small{display:block;font-size:30px;color:#999;margin-bottom:6px}
+.finder{left:140px;top:150px;width:800px;height:640px;border-radius:24px;background:#fff;box-shadow:0 30px 60px rgba(0,0,0,.35);overflow:hidden}
+.finder .bar{height:70px;background:#ececec;display:flex;align-items:center;gap:14px;padding:0 26px}
+.finder .bar i{width:22px;height:22px;border-radius:50%;display:block}
+.finder .row{display:flex;align-items:center;gap:22px;padding:22px 36px;font-size:38px;font-weight:700;border-bottom:2px solid #f2f2f2;color:#333}
+.finder .row.sel{background:#2f6fe4;color:#fff}
+.pause{left:470px;top:470px;width:140px;height:140px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;gap:22px}
+.pause i{display:block;width:22px;height:64px;background:#fff;border-radius:6px}
+.phone{left:240px;top:58px;width:600px;height:963px;border-radius:72px;background:#1d2420;padding:20px;box-shadow:0 40px 80px rgba(0,0,0,.25)}
+.screen{width:560px;height:923px;border-radius:54px;overflow:hidden;position:relative;background:var(--cream)}
+.screen img{position:absolute;left:0;top:0;width:560px;opacity:0}
+.ring{position:absolute;border:9px solid #ff3b30;border-radius:24px;z-index:5}
+.stamp{width:280px;height:280px;border-radius:50%;border:12px solid var(--terra);color:var(--terra);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:54px;line-height:1.1;background:rgba(255,255,255,.9)}
+.search{border-radius:30px;background:#fff;border:5px solid #111;height:150px;display:flex;align-items:center;gap:28px;padding:0 50px;font-size:62px;font-weight:900}
+.caret{display:inline-block;width:6px;height:70px;background:var(--terra);vertical-align:middle;margin-left:6px}
+.tag{display:inline-block;padding:14px 30px;border-radius:999px;background:var(--green);color:#fff;font-weight:800;font-size:40px;margin:0 8px}
+#clock{left:0;right:0;top:300px;text-align:center;font-weight:900;font-size:230px;color:#ff5a4e;letter-spacing:.02em;font-variant-numeric:tabular-nums;text-shadow:0 0 50px rgba(255,90,78,.6)}
+#handle{top:1700px;font-weight:800;font-size:36px;color:#b5b5b5}
+</style>
+</head>
+<body>
+<div class="abs" id="top"><div id="cap"></div><div id="sub"></div></div>
+<div class="abs" id="stage">
+  <canvas id="cv" width="1080" height="1080"></canvas>
+  <div class="ov chat" id="chat1" style="top:330px"><div class="msg in"><small>고객님 · 오후 11:02</small>사장님 견적서<br>내일 오전까지 가능할까요? 🙏</div></div>
+  <div class="ov finder" id="finder"><div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><b style="margin-left:20px;font-size:32px;color:#666">견적서 양식</b></div>
+    <div class="row">📄 견적서_양식.xlsx</div><div class="row">📄 견적서_최종.xlsx</div><div class="row">📄 견적서_최종_진짜.xlsx</div><div class="row sel">📄 견적서_진짜최종(2).xlsx</div><div class="row">📄 견적서_이거쓰기.hwp</div></div>
+  <div class="ov emo" id="e1" style="left:780px;top:760px">😵‍💫</div>
+  <div class="ov pause" id="pause"><i></i><i></i></div>
+  <div class="ov emo" id="e2" style="left:800px;top:120px;font-size:170px">🤯</div>
+  <div class="ov" id="clock">01:07</div>
+  <div class="ov emo" id="e3" style="left:465px;top:620px">🫠</div>
+  <div class="ov" id="icon" style="left:340px;top:230px;width:400px;height:400px"><img src="assets/icon.png" style="width:400px;height:400px;border-radius:96px;box-shadow:0 30px 80px rgba(0,0,0,.35)"></div>
+  <div class="ov c" id="iconName" style="top:720px;font-weight:900;font-size:120px;color:#fff;text-shadow:0 6px 30px rgba(0,0,0,.4)">한장견적</div>
+  <div class="ov phone" id="phone"><div class="screen">
+    <img id="img0" src="assets/screen2.png"><img id="img1" src="assets/screen3.png"><img id="img2" src="assets/screen1.png">
+    <div class="ring" id="ring"></div>
+  </div></div>
+  <div class="ov chat" id="chat2" style="top:230px"><div class="msg out">견적서 보내드렸어요!<br>📎 견적서_오후의공방.pdf</div><div class="msg in" id="reply"><small>고객님 · 오후 11:06</small>헉 벌써요?! 👍</div></div>
+  <div class="ov stamp" id="stamp" style="left:720px;top:690px">전송<br>완료 ✓</div>
+  <div class="ov" id="cta" style="left:0;right:0;top:120px">
+    <div class="c" style="font-weight:900;font-size:66px;line-height:1.35;margin-bottom:60px">앱 설치 <span style="color:#e5484d">X</span><br>토스에서 <span class="t">바로</span></div>
+    <div class="search" style="margin:0 110px"><span style="font-size:54px">🔍</span><span id="q"></span><span class="caret" id="caret"></span></div>
+    <div class="c" style="margin-top:60px"><span class="tag">견적서</span><span class="tag">PDF 저장</span><span class="tag">입금 관리</span></div>
+  </div>
+</div>
+<div class="abs" id="bot"></div>
+<div class="abs c" id="handle">@한장견적 · 토스 미니앱</div>
+
+<script>
+const TOTAL = 26.4;
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const ss=x=>x*x*(3-2*x);
+const g=$('cv').getContext('2d'), S=1080;
+
+const CUTS=[
+ {a:0,   b:2.2, cap:'POV: 1인 사업자<br><span class="hl">밤 11시</span>에 견적 요청 받음', sub:'(내일 오전까지래요)'},
+ {a:2.2, b:4.4, cap:'일단 노트북 켬', sub:'양식이 왜 5개나 있지'},
+ {a:4.4, b:6.6, cap:'부가세 계산하고<br>합계는 <span class="hl">한글로</span> 쓰고', sub:'이십칠만… 오천… 원정?'},
+ {a:6.6, b:8.6, cap:'PDF로 바꿨더니<br>표가 다 깨짐', sub:''},
+ {a:8.6, b:10.4,cap:'정신 차려보니', sub:'아직도 견적서 1장'},
+ {a:10.4,b:12.2,cap:'그래서 찾았다', sub:''},
+ {a:12.2,b:14.6,cap:'품목만 넣으면<br><span class="t">견적서 완성</span>', sub:'작성일 · 유효기간까지 깔끔하게'},
+ {a:14.6,b:17.0,cap:'합계 · 부가세에<br><span class="t">한글 금액</span>까지', sub:'일금 이십칠만오천원정 ✍️'},
+ {a:17.0,b:19.2,cap:'<span class="t">PDF · 이미지</span>로<br>바로 저장', sub:'표 깨질 걱정 끝'},
+ {a:19.2,b:21.4,cap:'입금 대기 · 만료 임박도<br><span class="t">한눈에</span>', sub:'연락할 곳까지 챙겨줌'},
+ {a:21.4,b:23.4,cap:'밤 11시 6분<br><span class="hl">견적서 전송 완료</span> ✅', sub:'이제 진짜 퇴근'},
+ {a:23.4,b:26.4,cap:'한장견적', sub:'바로가기 링크는 설명란에 👇'},
+];
+const cutAt=t=>CUTS.findIndex(c=>t>=c.a&&t<c.b);
+
+function room(t,glow=1){ // dark room, desk, glowing phone
+  const gr=g.createLinearGradient(0,0,0,S);gr.addColorStop(0,'#111a2e');gr.addColorStop(.68,'#1b2440');gr.addColorStop(.68,'#3a2b22');gr.addColorStop(1,'#271d17');g.fillStyle=gr;g.fillRect(0,0,S,S);
+  g.fillStyle='rgba(255,230,160,.06)';g.beginPath();g.moveTo(820,0);g.lineTo(1080,0);g.lineTo(1080,500);g.fill();
+  const r=g.createRadialGradient(540,860,30,540,860,520);r.addColorStop(0,`rgba(140,190,255,${.35*glow})`);r.addColorStop(1,'rgba(140,190,255,0)');g.fillStyle=r;g.fillRect(0,0,S,S);
+  g.save();g.translate(540,880);g.rotate(-.06);g.fillStyle='#0c0c0f';g.beginPath();g.roundRect(-130,-40,260,90,24);g.fill();g.fillStyle=`rgba(170,205,255,${.8*glow})`;g.beginPath();g.roundRect(-118,-30,236,70,16);g.fill();g.restore();
+}
+function desk(t){ // laptop on desk under a lamp
+  const gr=g.createLinearGradient(0,0,0,S);gr.addColorStop(0,'#2a3146');gr.addColorStop(.82,'#323a52');gr.addColorStop(.82,'#5a4334');gr.addColorStop(1,'#3e2f25');g.fillStyle=gr;g.fillRect(0,0,S,S);
+  const r=g.createRadialGradient(540,420,40,540,420,620);r.addColorStop(0,'rgba(200,220,255,.25)');r.addColorStop(1,'rgba(200,220,255,0)');g.fillStyle=r;g.fillRect(0,0,S,S);
+  g.fillStyle='#16181d';g.beginPath();g.roundRect(100,110,880,740,30);g.fill();
+  g.fillStyle='#9aa0aa';g.beginPath();g.moveTo(40,880);g.lineTo(1040,880);g.lineTo(980,930);g.lineTo(100,930);g.fill();
+}
+function calcFog(t){
+  g.fillStyle='#f6f1e7';g.fillRect(0,0,S,S);
+  const items=['250,000','× 1.1','부가세 10%','= 275,000?','180,000 + 70,000','일금…','이십칠만','오천원정?','단가 × 수량','합계 다시','VAT 별도?','₩₩₩'];
+  g.font='800 52px P';g.textAlign='center';
+  items.forEach((s,i)=>{const a=i/items.length*Math.PI*2+t*.55,r=310+60*Math.sin(t*1.3+i),x=540+Math.cos(a)*r,y=530+Math.sin(a)*r*.75;
+    g.fillStyle=`rgba(30,30,30,${.35+.4*Math.sin(t*2+i)**2})`;g.save();g.translate(x,y);g.rotate(Math.sin(t+i)*.15);g.fillText(s,0,0);g.restore()});
+  g.font='230px "Noto Color Emoji"';g.fillText('🧮',540,620);
+}
+function brokenSheet(t){ // a quote table that fell apart after PDF export
+  g.fillStyle='#d9d4cb';g.fillRect(0,0,S,S);
+  g.save();g.translate(540,540);g.rotate(-.03);g.fillStyle='#fff';g.shadowColor='rgba(0,0,0,.25)';g.shadowBlur=40;g.fillRect(-360,-470,720,940);g.shadowBlur=0;
+  g.fillStyle='#222';g.font='900 64px P';g.textAlign='left';g.fillText('견  적  서',-300,-370);
+  const rows=[['품목','수량','단가','금액'],['브랜드 카드 디','1','180,0','00'],['자인 인쇄물','2','35,000','70,0'],['00','','합계','250,0'],['00원 (부가','세 별도)','','']];
+  g.font='700 34px P';
+  rows.forEach((r,i)=>{r.forEach((c,j)=>{const x=-310+j*165+(i*j%3)*18-(j===3?i*14:0),y=-260+i*110+(j*i%2)*22;
+    g.strokeStyle='#999';g.lineWidth=3;g.strokeRect(x-12+(i%2)*10,y-50+j*6,150+(j===1?40:0),86-(i%3)*12);g.fillStyle='#333';g.fillText(c,x,y+(j%2)*12)})});
+  g.fillStyle='#e5484d';g.font='900 46px P';g.fillText('#REF!',120,330);g.restore();
+}
+function night(t){g.fillStyle='#07080d';g.fillRect(0,0,S,S);g.fillStyle='rgba(255,255,255,.5)';g.font='800 60px P';g.textAlign='center';for(let i=0;i<3;i++){const y=260-((t*60+i*70)%210);g.globalAlpha=.25+.25*i;g.fillText('z',760+i*40,y+i*10)}g.globalAlpha=1}
+
+function render(t){
+  const ci=cutAt(t), cut=CUTS[ci], lt=t-cut.a;
+  if($('cap').dataset.i!=ci){$('cap').innerHTML=cut.cap;$('sub').innerHTML=cut.sub;$('cap').dataset.i=ci}
+  const kc=p(lt,0,.18); $('cap').style.transform=`scale(${ci===0&&t<.01?1:.86+.14*eb(kc)})`; $('sub').style.opacity=ss(p(lt,.25,.5));
+  let z=1.10-.10*eo(p(lt,0,.22))+.03*p(lt,0,cut.b-cut.a), shake=0;
+  ['chat1','finder','e1','pause','e2','clock','e3','icon','iconName','phone','chat2','stamp','cta'].forEach(id=>$(id).style.opacity=0);
+  g.clearRect(0,0,S,S); $('cv').style.filter='none';
+  if(ci===0){room(t);const c=$('chat1');const k=p(t,.25,.5);c.style.opacity=t<.01?0:ss(k);c.style.transform=`translateY(${(1-eo(k))*60}px) translateX(${lt>.5&&lt<.9?Math.sin(t*70)*6:0}px)`}
+  else if(ci===1){desk(t);const f=$('finder');f.style.opacity=1;f.style.transform=`translateY(${(1-eo(p(lt,0,.3)))*80}px)`;const e=$('e1');e.style.opacity=ss(p(lt,.9,1.1));e.style.transform=`rotate(${Math.sin(t*5)*10}deg)`}
+  else if(ci===2){calcFog(t)}
+  else if(ci===3){brokenSheet(t);if(lt>.9){$('cv').style.filter='grayscale(.85) contrast(1.05)';$('pause').style.opacity=1;z=1.12;const e=$('e2');e.style.opacity=1;e.style.transform=`scale(${.8+.2*eb(p(lt,.9,1.15))})`;shake=lt<1.05?14:0}}
+  else if(ci===4){night(t);const c=$('clock');c.style.opacity=1;c.style.opacity=Math.floor(t*2)%2?1:.8;const e=$('e3');e.style.opacity=ss(p(lt,.3,.5))}
+  else if(ci===5){g.fillStyle='#000';g.fillRect(0,0,S,S);
+    if(lt>.45){const k=p(lt,.45,.9);const gr=g.createRadialGradient(540,430,40,540,430,700);gr.addColorStop(0,`rgba(52,86,74,${k})`);gr.addColorStop(1,`rgba(34,58,50,${k})`);g.fillStyle=gr;g.fillRect(0,0,S,S);
+      const ic=$('icon');ic.style.opacity=ss(k);ic.style.transform=`scale(${.4+.6*eb(k)}) rotate(${(1-eo(k))*-25}deg)`;
+      const nm=$('iconName');nm.style.opacity=ss(p(lt,.8,1.1));nm.style.transform=`translateY(${(1-eo(p(lt,.8,1.1)))*40}px)`}
+    z=1}
+  else if(ci>=6&&ci<=9){
+    g.fillStyle='#f3ecdf';g.fillRect(0,0,S,S);
+    const ph=$('phone');ph.style.opacity=1;ph.style.transform=ci===6?`translateY(${(1-eo(p(lt,0,.35)))*700}px)`:'none';
+    const j=[0,1,1,2][ci-6];[0,1,2].forEach(k=>$('img'+k).style.opacity=k===j?1:0);
+    const R=[[120,1230,1030,650],[125,280,1030,300],[115,1700,1040,175],[50,1110,1170,710]][ci-6],sw=560/1272,rk=p(lt,.6,.9);
+    Object.assign($('ring').style,{opacity:ss(rk),left:R[0]*sw-10+'px',top:R[1]*sw-10+'px',width:R[2]*sw+20+'px',height:R[3]*sw+20+'px',transform:`scale(${1.1-.1*eo(rk)})`});
+    z=1.04-.04*eo(p(lt,0,.25));
+  }
+  else if(ci===10){room(t,.8);const c=$('chat2');c.style.opacity=1;c.style.transform=`translateY(${(1-eo(p(lt,0,.3)))*80}px)`;
+    const r=$('reply');r.style.opacity=ss(p(lt,.45,.6));
+    const st=$('stamp');st.style.opacity=lt>.8?1:0;st.style.transform=`scale(${lt>.8?1.6-.6*eo(p(lt,.8,1.0)):1}) rotate(-12deg)`;if(lt>.8&&lt<.92)shake=10}
+  else {g.fillStyle='#f3ecdf';g.fillRect(0,0,S,S);const c=$('cta');c.style.opacity=ss(p(lt,0,.3));
+    const q='한장견적',n=Math.floor(clamp((lt-.5)/.16,0,q.length));$('q').textContent=q.slice(0,n);$('caret').style.opacity=(n<q.length||Math.floor(t*2.5)%2===0)?1:0;z=1}
+  const sx=shake?Math.sin(t*90)*shake:0;
+  $('cv').style.transform=`translateX(${sx}px) scale(${z})`;
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
