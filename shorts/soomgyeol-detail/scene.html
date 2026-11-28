@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>숨결 상세페이지 쇼츠</title>
+<link rel="stylesheet" href="../soomgyeol/fonts/gowun/700.css">
+<style>
+@font-face{font-family:P;src:url(../fonts/Pretendard-Medium.woff2);font-weight:500}
+@font-face{font-family:P;src:url(../fonts/Pretendard-Bold.woff2);font-weight:700}
+@font-face{font-family:P;src:url(../fonts/Pretendard-ExtraBold.woff2);font-weight:800}
+:root{--cream:#f7ecdc;--card:#f1e1c4;--ink:#3a281c;--terra:#9a4a2e;--sage:#9fb08a;--muted:#8a7562}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{background:var(--cream);font-family:P,'Noto Color Emoji',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;letter-spacing:-0.02em}
+.serif{font-family:'Gowun Batang',serif;font-weight:700;letter-spacing:-0.01em}
+.abs{position:absolute}
+.c{left:0;right:0;text-align:center}
+.layer{position:absolute;inset:0;opacity:0}
+#bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,#fbf3e6 0%,#f7ecdc 55%,#efdfc4 100%)}
+#cv{left:0;top:0}
+.chip{position:absolute;width:440px;height:200px;border-radius:36px;background:var(--card);border:3px solid #e2cba4;padding:34px 38px;box-shadow:0 14px 30px rgba(90,60,30,.10)}
+.chip b{display:block;font-size:50px;font-weight:800;color:var(--ink);margin-bottom:10px}
+.chip span{font-size:34px;font-weight:600;color:var(--muted);line-height:1.35}
+.chip.on{background:#fff7ea;border-color:var(--terra);box-shadow:0 0 0 8px rgba(154,74,46,.18),0 20px 40px rgba(90,60,30,.16)}
+.cap{font-size:80px;line-height:1.25}
+.sub{font-size:46px;font-weight:700;color:var(--muted)}
+.phone{left:240px;top:400px;width:600px;height:963px;border-radius:72px;background:#2a1d15;padding:20px;box-shadow:0 50px 100px rgba(58,40,28,.28)}
+.screen{width:560px;height:923px;border-radius:54px;overflow:hidden;position:relative;background:var(--cream)}
+.screen img{position:absolute;left:0;top:0;width:560px}
+.ring{position:absolute;border:8px solid var(--terra);border-radius:30px;z-index:5}
+/* listing card (detail page style) */
+.list{left:90px;width:900px;top:560px;border-radius:48px;background:#fffaf2;box-shadow:0 30px 70px rgba(58,40,28,.16);padding:56px 56px 50px}
+.list .row{display:flex;gap:40px;align-items:center}
+.list img{width:220px;height:220px;border-radius:54px}
+.list h2{font-family:'Gowun Batang',serif;font-size:96px;line-height:1.1}
+.list p{font-size:40px;font-weight:700;color:var(--muted);margin-top:14px;line-height:1.35}
+.list .meta{display:flex;gap:18px;margin-top:40px;font-size:34px;font-weight:700;color:var(--muted)}
+.list .meta span{padding:12px 26px;border-radius:999px;background:var(--cream)}
+.list .btn{margin-top:44px;border-radius:30px;background:var(--terra);color:#fff8ee;font-weight:800;font-size:56px;text-align:center;padding:38px 0}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<canvas class="abs" id="cv" width="1080" height="1920"></canvas>
+
+<!-- S1 + S2 : 마음 선택 -->
+<div class="layer" id="s1">
+  <div class="abs c serif" id="s1a" style="top:230px;font-size:104px">지금 마음이<br>어떤가요?</div>
+  <div class="chip" id="c0" style="left:90px;top:640px"><b>화가 나요</b><span>열이 오르고 욱해요</span></div>
+  <div class="chip" id="c1" style="left:550px;top:640px"><b>긴장돼요</b><span>발표·면접·중요한 통화 전</span></div>
+  <div class="chip" id="c2" style="left:90px;top:870px"><b>불안하고 답답해요</b><span>가슴이 꽉 막힌 느낌</span></div>
+  <div class="chip" id="c3" style="left:550px;top:870px"><b>머리가 복잡해요</b><span>생각이 꼬리를 물어요</span></div>
+  <div class="chip" id="c4" style="left:90px;top:1100px"><b>잠이 안 와요</b><span>누웠는데 정신이 또렷해요</span></div>
+  <div class="chip" id="c5" style="left:550px;top:1100px;padding:34px 22px 34px 30px"><b style="font-size:37px;letter-spacing:-0.05em;white-space:nowrap;margin-top:6px">그냥 숨 고르고 싶어요</b><span>매일의 작은 습관으로</span></div>
+  <div class="abs c serif" id="s1b" style="top:1390px;font-size:60px;line-height:1.4">마음마다<br><span style="color:var(--terra)">필요한 호흡</span>이 달라요</div>
+</div>
+
+<!-- S3 : 브랜드 -->
+<div class="layer" id="s3">
+  <img class="abs" id="s3icon" src="assets/icon.png" style="left:390px;top:560px;width:300px;height:300px;border-radius:72px;box-shadow:0 30px 70px rgba(58,40,28,.25)">
+  <div class="abs c serif" id="s3n" style="top:930px;font-size:150px">숨결</div>
+  <div class="abs c sub" id="s3s" style="top:1140px">빛과 소리를 따라 나에게 맞는 호흡</div>
+  <div class="abs c" id="s3t" style="top:1240px;font-size:36px;font-weight:700;color:var(--muted)">토스 미니앱 · 건강</div>
+</div>
+
+<!-- 상세페이지 스크린샷 투어 -->
+<div class="layer" id="sp">
+  <div class="abs c serif cap" id="cap0" style="top:120px">지금 마음을 고르면</div>
+  <div class="abs c sub" id="sub0" style="top:240px">화남 · 긴장 · 불안 · 잠 안 옴…</div>
+  <div class="abs c serif cap" id="cap1" style="top:120px"><span style="color:var(--terra)">필요한 호흡</span>을 추천해요</div>
+  <div class="abs c sub" id="sub1" style="top:240px">들숨·날숨 리듬과 횟수까지</div>
+  <div class="abs c serif cap" id="cap2" style="top:120px">1분부터 20분까지</div>
+  <div class="abs c sub" id="sub2" style="top:240px">여유 시간에 맞춰 골라요</div>
+  <div class="abs c serif cap" id="cap3" style="top:120px">원을 따라 숨만 쉬면</div>
+  <div class="abs c sub" id="sub3" style="top:240px">음성 안내와 배경 음악이 함께해요</div>
+  <div class="abs c serif cap" id="cap4" style="top:120px">잠깐, 숨을 고를 시간</div>
+  <div class="abs c sub" id="sub4" style="top:240px">오늘의 호흡, 지금 바로 찾기</div>
+  <div class="abs phone" id="phone"><div class="screen">
+    <img id="img0" src="assets/screen4.png"><img id="img1" src="assets/screen5.png"><img id="img2" src="assets/screen2.png"><img id="img3" src="assets/screen3.png"><img id="img4" src="assets/screen1.png">
+    <div class="ring" id="ring"></div>
+  </div></div>
+</div>
+
+<!-- CTA : 상세페이지 카드 -->
+<div class="layer" id="s9">
+  <div class="abs c serif" id="s9a" style="top:250px;font-size:84px;line-height:1.3">앱 설치 없이<br><span style="color:var(--terra)">토스에서 바로</span></div>
+  <div class="abs list" id="list">
+    <div class="row"><img src="assets/icon.png"><div><h2>숨결</h2><p>빛과 소리를 따라<br>나에게 맞는 호흡</p></div></div>
+    <div class="meta"><span>건강</span><span>제작자 브라운리</span><span>설치 없음</span></div>
+    <div class="btn" id="btn">토스에서 보기</div>
+  </div>
+  <div class="abs c sub" id="s9f" style="top:1500px;font-size:40px">바로가기 링크는 설명란에 👇</div>
+</div>
+
+<script>
+const TOTAL = 28.7;
+const $ = id => document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const p=(t,a,b)=>clamp((t-a)/(b-a));
+const eo=x=>1-Math.pow(1-x,3);
+const eb=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)};
+const ss=x=>x*x*(3-2*x);
+function fadeUp(el,t,a,d=.5,dy=40){const k=p(t,a,a+d);el.style.opacity=ss(k);el.style.transform=`translateY(${(1-eo(k))*dy}px)`}
+function outAt(el,t,a,d=.3){el.style.opacity=parseFloat(el.style.opacity||1)*(1-p(t,a,a+d))}
+const g=$('cv').getContext('2d');
+// soft textured breathing ring like the app's new visual
+let seed=9;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const GR=[...Array(900)].map(()=>[rnd()*Math.PI*2,rnd(),rnd()]);
+function ring(cx,cy,R,alpha,col='154,74,46'){
+  if(alpha<=0)return;g.save();g.globalAlpha=alpha;
+  const gl=g.createRadialGradient(cx,cy,R*.6,cx,cy,R*1.6);gl.addColorStop(0,`rgba(${col},.10)`);gl.addColorStop(1,`rgba(${col},0)`);g.fillStyle=gl;g.beginPath();g.arc(cx,cy,R*1.6,0,7);g.fill();
+  g.strokeStyle=`rgba(${col},.55)`;g.lineWidth=R*.07;g.beginPath();g.arc(cx,cy,R,0,7);g.stroke();
+  g.fillStyle=`rgba(${col},.55)`;GR.forEach(([a,r,s])=>{const rr=R*(.95+.1*r);g.fillRect(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,1.5+s*2,1.5+s*2)});
+  g.restore();
+}
+
+const SC=[['s1',0,6.4],['s3',6.4,9.2],['sp',9.2,25.2],['s9',25.2,28.7]];
+const SH=[[9.2,12.4],[12.4,15.6],[15.6,18.8],[18.8,22.0],[22.0,25.2]];
+// rings per shot: [startOffset, rect in source px]
+const RINGS=[[[.7,[100,955,1065,945]]],[[.7,[100,850,1065,600]]],[[.7,[90,1285,840,175]]],[[.6,[90,310,1090,890]],[1.9,[228,1258,813,170]]],[[.7,[100,1580,990,195]]]];
+
+function render(t){
+  SC.forEach(([id,a,b])=>{$(id).style.opacity=t<a||t>=b?0:Math.min(a===0?1:ss(p(t,a,a+.35)),1-ss(p(t,b-.3,b)))});
+  g.clearRect(0,0,1080,1920);
+  if(t<6.4){
+    const br=(Math.sin(t*1.1-1.2)+1)/2; ring(540,980,430+br*40,.35);
+    $('s1a').style.opacity=1;
+    for(let i=0;i<6;i++){const el=$('c'+i);const k=p(t,.25+i*.18,.6+i*.18);el.style.opacity=t<.01&&i>1?0:ss(k);el.style.transform=`translateY(${(1-eo(k))*40}px) scale(${.92+.08*eo(k)})`;
+      const hot=[[3.3,4.2,0],[4.2,5.1,1],[5.1,6.4,4]].find(([a,b,j])=>t>=a&&t<b&&j===i);el.classList.toggle('on',!!hot);if(hot)el.style.transform+=` scale(1.04)`}
+    fadeUp($('s1b'),t,3.4,.5,24);
+  }
+  if(t>=6.4&&t<9.2){
+    ring(540,710,250+Math.sin(t*1.4)*12,.45);
+    const k=p(t,6.5,7.1);$('s3icon').style.opacity=ss(k);$('s3icon').style.transform=`scale(${.85+.15*eo(k)})`;
+    fadeUp($('s3n'),t,7.0,.5);fadeUp($('s3s'),t,7.35,.5,24);fadeUp($('s3t'),t,7.7,.5,16);
+  }
+  if(t>=9.2&&t<25.2){
+    const kp=p(t,9.2,9.8);$('phone').style.transform=`translateY(${(1-eo(kp))*600}px)`;
+    SH.forEach(([a,e],i)=>{const vis=t>=a&&t<e,c=$('cap'+i),s=$('sub'+i);
+      if(vis){fadeUp(c,t,a+.12,.5);fadeUp(s,t,a+.35,.5,24);outAt(c,t,e-.3);outAt(s,t,e-.3)}else{c.style.opacity=0;s.style.opacity=0}
+      const img=$('img'+i);img.style.zIndex=i+1;const k=i===0?1:ss(p(t,a-.2,a+.3));img.style.opacity=k;});
+    const si=SH.findIndex(([a,e])=>t>=a&&t<e),[a,e]=SH[si],lt=t-a,sw=560/1272;
+    const list=RINGS[si];let cur=null,st=0;list.forEach(([o,r],j)=>{if(lt>=o){cur=r;st=o}});const nextStart=(list.find(([o])=>o>lt)||[e-a])[0];
+    const rk=p(lt,st,st+.35);const ro=cur?ss(rk)*(1-p(lt,nextStart-.25,nextStart)):0;
+    if(cur)Object.assign($('ring').style,{left:cur[0]*sw-10+'px',top:cur[1]*sw-10+'px',width:cur[2]*sw+20+'px',height:cur[3]*sw+20+'px',transform:`scale(${1.08-.08*eo(rk)})`});
+    $('ring').style.opacity=ro;
+  }
+  if(t>=25.2){
+    ring(540,1700,260+Math.sin(t*1.3)*16,.3);
+    fadeUp($('s9a'),t,25.3,.5);
+    const kl=p(t,25.6,26.1);$('list').style.opacity=ss(kl);$('list').style.transform=`translateY(${(1-eo(kl))*60}px)`;
+    const press=t>26.9?Math.floor((t-26.9)*1.6)%2:0;$('btn').style.transform=`scale(${press?.97:1})`;$('btn').style.filter=press?'brightness(.92)':'none';
+    fadeUp($('s9f'),t,26.5,.5,16);
+  }
+}
+window.render=render; window.TOTAL=TOTAL; render(0);
+</script>
+</body>
+</html>
